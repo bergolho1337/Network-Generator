@@ -1,4 +1,6 @@
 - Refactor Purkinje-Miocardium code into this project
+	- Finish Lsystem part
+
 - Build 3 modules
 	- L-System
 	- CO

@@ -2,18 +2,23 @@
 #define LSYSTEM_H
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string>
 #include <random>
+#include <queue>
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
+#include <cfloat>
 
 #include "graph.h"
 #include "miocardium.h"
 
 #define MAX_SIZE_RAND_ARRAY 1000			// Max size of the random number array
 #define SIGMA_RANDOM_DISTRIBUTION 0.2			// 0.1*l_bra gerou bons resultados
+
+#define TOLERANCE_NEAREST 1.0E-08			// Tolerance to find the nearest point over the miocardium
 
 class Lsystem_Config
 {
@@ -40,12 +45,27 @@ private:
 	Miocardium *the_miocardium;
 	double root_point[3];
 	double rand_numbers[MAX_SIZE_RAND_ARRAY];
+	queue<Node*> growing_nodes;
 
 	void initialize_root_point ();
 	void initialize_random_array (const double l_bra);
+	void make_root (const double l_bra);
+	void link_to_miocardium ();
+	void grow_network (Lsystem_Config *config);
+	void grow_branch ();
+	void calculate_gradient (Node *ptr, double d_gra[], const double cube_size);
+	void grow_branch (Node *p, Lsystem_Config *config);
+	double compute_sobel_filter (const Node *p, double sobel[3][3][3], double d_gra[], const double cube_size);
+	bool check_mini_cube (const double x, const double y, const double z,\
+			     const double width, const double lenght, const double height);
+	bool is_inside_cube (const Node *ptr,\
+			     const double x, const double y, const double z,\
+			     const double width, const double lenght, const double height);
+	double calculate_convolution (double d_gra[], double sobel[3][3][3]);
 
 public:
 	Lsystem_Generator (Lsystem_Config *config);
+	void write_network_to_VTK ();
 		
 };
 

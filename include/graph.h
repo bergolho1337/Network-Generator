@@ -68,6 +68,7 @@ public:
 	int get_total_nodes () { return total_nodes; }
 	int get_total_edges () { return total_edges; }
 	Node* get_list_nodes () { return list_nodes; }
+	Node* get_last_node () { return last_node; }
 	double* get_dist () { return dist; }
 	int* get_term () { return term; }
 	int get_nterm() { return nterm; }

@@ -28,8 +28,7 @@ public:
 
 public:
 	int id;				// Identifier of the destination node
-	int link_type;		// Type of connection between the cells
-	double w;		    // Size of the edge, euclidean distance
+	double w;		    	// Size of the edge, euclidean distance
 	Edge *next;			// Pointer to the next Edge
 	Node *dest;			// Pointer to the destination Node
 };
@@ -43,12 +42,11 @@ public:
     Node (const int i, const double pos[]);
 
 public:
-	int type;				// Remove this variable later ....
-	int id;					// Identifier of the Node 
+	int id;				// Identifier of the Node 
 	double x, y, z;			// Coordinates (x,y,z)
-	double diameter;		// Diameter of the cell
+	double d_ori[3];		// Original direction of the growth	
 	int num_edges;			// Number of edges
-	Node *next;				// Pointer to the next Node
+	Node *next;			// Pointer to the next Node
 	Edge *list_edges;		// Pointer to the list of Edges
 };
 // =============================================================================================================
@@ -60,9 +58,9 @@ public:
     Graph ();
 	~Graph ();
 
-    void print ();
+    	void print ();
 	//void printterm ();
-    void error (const char msg[]);
+    	void error (const char msg[]);
 	void dijkstra (int s);
 	// Inline
 	int get_total_nodes () { return total_nodes; }
@@ -75,7 +73,6 @@ public:
 
 	void insert_node_graph (const double pos[]);
 	void insert_edge_graph (const int id_1, const int id_2);
-	void set_gap_junctions (const int num_div_cell);
 private:
 	Node *list_nodes;			// Pointer to the lists of Nodes
 	Node *last_node;				// Pointer to the last Node of the list
@@ -86,7 +83,6 @@ private:
 	int *term;					// Pointer to the terminals 
 
 	Node* search_node (int id);
-	void insertPMJ ();
 	void calc_position (Node *p1, Node *p2, double p[]);
 	void set_term ();
 

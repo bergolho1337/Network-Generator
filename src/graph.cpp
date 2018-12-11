@@ -56,7 +56,6 @@ Graph::~Graph ()
 
 Node::Node (const int i, const double pos[])
 {
-    type = 0;
     id = i;
     x = pos[0];
     y = pos[1];
@@ -200,9 +199,8 @@ void Graph::print ()
         ptrl = ptr->list_edges;
 		while (ptrl != NULL)
 		{
-			printf(" --> || %d %.2lf (%.2lf %.2lf %.2lf) * %d * ||",ptrl->id,ptrl->w,\
-                                ptrl->dest->x,ptrl->dest->y,ptrl->dest->z,\
-				ptrl->link_type);
+			printf(" --> || %d %.2lf (%.2lf %.2lf %.2lf) ||",ptrl->id,ptrl->w,\
+                                ptrl->dest->x,ptrl->dest->y,ptrl->dest->z);
 			ptrl = ptrl->next;
 		}
 		printf("\n");
@@ -213,40 +211,5 @@ void Graph::print ()
     printf("Number of edges = %d\n",total_edges);
 }
 
-void Graph::set_gap_junctions (const int num_div_cell)
-{
-    int count = 0;
-    Node *ptr = list_nodes;
-
-    ptr->list_edges->link_type = 0;
-    ptr = ptr->next;
-    count++;
-
-    while (ptr != NULL)
-    {
-        int u = ptr->id;
-        Edge *ptrl = ptr->list_edges;
-        while (ptrl != NULL)
-        {
-            int v = ptrl->id;
-            // The volumes will be linked by a gap junction
-            if (v > u && count % num_div_cell == 0)
-            {
-                ptrl->link_type = 1;
-                count = 0;
-                ptr->next->list_edges->link_type = 1;
-            }
-            // The volumes will be linker by citoplasm
-            else
-            {
-                if (ptrl->link_type != 1)
-                    ptrl->link_type = 0;
-            }
-            ptrl = ptrl->next;
-        }
-        count++;
-        ptr = ptr->next;
-    }
-}
 
 

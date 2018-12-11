@@ -35,7 +35,7 @@ void Lsystem_Generator::grow_network (Lsystem_Config *config)
 			Node *ptr = growing_nodes.front();
 			growing_nodes.pop();
 			
-			grow_branch(ptr,config);
+			grow_branch(ptr,config,0);
 			in_the_queue--; 
 		}
 	}
@@ -147,9 +147,44 @@ void Lsystem_Generator::calculate_gradient (Node *p, double d_gra[], const doubl
 
 }
 
-void Lsystem_Generator::grow_branch (Node *ptr, Lsystem_Config *config)
+void Lsystem_Generator::calculate_grow_direction (const Node *gnode, const double d_gra[], const double theta)
 {
-	int branch_type = 0;
+	double norm;
+	double d[3], d_rot[3];
+
+	// The vector d_ori it has already been calculated for the Node (insert_node_graph)
+	// The vector d_gra it has already been calculated for the Node (calculate_gradient)
+
+	/*
+	// Calcula a direcao de crescimento do ramo: d = d_ori + w1*d_gra
+	// Substituir na formula (pra direita)
+	if (teta >= 0)
+	{
+		rotate(gnode->d_ori,d_rot,ANGLE);
+		for (int i = 0; i < 3; i++)
+			//d[i] = d_rot[i] + w_1*d_gra[i];
+			d[i] = p->d_ori[i] + w_1*d_gra[i];	
+	}
+	else
+	{
+		rotate(p->d_ori,d_rot,-M_PI/4.0);
+		for (int i = 0; i < 3; i++)
+			//d[i] = d_rot[i] - w_1*d_gra[i];
+			d[i] = p->d_ori[i] - w_1*d_gra[i];
+	}
+	// Vetor unitario da direcao de crescimento
+	norm = sqrt(pow(d[0],2) + pow(d[1],2) + pow(d[2],2));
+	for (int i = 0; i < 3; i++) d[i] /= norm;
+
+	// Criar o ramo na direcao calculada, repete-se a geracao do ramo 5 vezes dentro desse procedimento
+	generateBranch(g,p,d);
+	// Resetar o contador de segmentos
+	cont_segments = 1;
+	*/
+}
+
+void Lsystem_Generator::grow_branch (Node *gnode, Lsystem_Config *config, const int branch_type)
+{
 	double l_bra = config->branch_length;
 	double w1 = config->w_1;
 	double cube_size = config->sobel_cube_size;
@@ -157,31 +192,27 @@ void Lsystem_Generator::grow_branch (Node *ptr, Lsystem_Config *config)
 	double tolerance_miocardium_collision = config->tolerance_miocardium_collision;
 	double tolerance_terminal_collision = config->tolerance_terminal_collision;
 	
-	// Calculate the distance gradient by applying the Sobel filter
+	// Calculate the distance gradient by applying the Sobel filter over the growing node
 	double d_gra[3];
-	calculate_gradient(ptr,d_gra,cube_size);
+	calculate_gradient(gnode,d_gra,cube_size);
 
-	// TODO: Finish this part ...
-
-	/*	
-	// Verifica qual o tipo de ramo
-	switch (type)
+	// Verify the type of branch
+	switch (branch_type)
 	{
-		// Inicio do ramo, gera dois filhos
+		// Generate two offsprings
 		case 0: {
-					calculateGrowDirection(g,p,d_gra,1);
-					calculateGradient(*g,p,d_gra);
-					calculateGrowDirection(g,p,d_gra,-1);
-					break;
-				}
-		// Meio do ramo, gera um filho
+				calculate_grow_direction(gnode,d_gra,1);
+				calculate_gradient(gnode,d_gra,cube_size);
+				calculate_grow_direction(gnode,d_gra,-1);
+				break;
+			}
+		// Middle of the branch generate only one offspring
 		case 1: {
-					calculateGrowDirection(g,p,d_gra,0);
-					break;
-				}
+				calculate_grow_direction(gnode,d_gra,0);
+				break;
+			}
 		default: break;
 	}
-	*/
 }
 
 void Lsystem_Generator::make_root (const double l_bra)

@@ -54,15 +54,23 @@ Graph::~Graph ()
         free(dist);
 }
 
-Node::Node (const int i, const double pos[])
+Node::Node (const int i, const double pos[], const double d[])
 {
-    id = i;
-    x = pos[0];
-    y = pos[1];
-    z = pos[2];
-    num_edges = 0;
-    next = NULL;
-    list_edges = NULL;
+	id = i;
+
+	x = pos[0];
+	y = pos[1];
+	z = pos[2];
+
+	d_ori[0] = d[0];
+	d_ori[1] = d[1];
+	d_ori[2] = d[2];
+
+	is_terminal = false;
+
+	num_edges = 0;
+	next = NULL;
+	list_edges = NULL;
 }
 
 Edge::Edge (const int i, const double weight, Node *destination)
@@ -73,23 +81,69 @@ Edge::Edge (const int i, const double weight, Node *destination)
     next = NULL;
 }
 
-void Graph::insert_node_graph (const double pos[])
+void Graph::calc_original_growth_direction (double d_ori[], const Node *prev,\
+					    const double x, const double y, const double z)
 {
-    Node *tmp = list_nodes;
-    Node *node = new Node(total_nodes++,pos);
+	if (prev == NULL)
+	{
+		d_ori[0] = 0.0;
+		d_ori[1] = 0.0;
+		d_ori[2] = 0.0;
+	}
+	else
+	{
+		double norm = calc_norm(prev->x,prev->y,prev->z,x,y,z);
+		d_ori[0] = (x - prev->x) / norm;
+		d_ori[1] = (y - prev->y) / norm;
+		d_ori[2] = (z - prev->z) / norm;
+	}
+}
 
-    // First node of the list
-    if (!tmp)
-    {
-        list_nodes = node;
-        last_node = node;
-    }
-    // Insert after the last node and update the pointer
-    else
-    {
-        last_node->next = node;
-        last_node = last_node->next;
-    }
+// Insert a node in the graph by receiving its position (x,y,z) and a reference to its predecessor
+Node* Graph::insert_node_graph (const double pos[], const Node *prev)
+{
+	// First check if the node already exists in the network
+	if (!is_duplicate(pos))
+	{
+		double d_ori[3];
+		calc_original_growth_direction(d_ori,prev,pos[0],pos[1],pos[2]);
+
+		Node *tmp = list_nodes;		
+		Node *node = new Node(total_nodes++,pos,d_ori);
+		
+		// First node of the list
+		if (!tmp)
+		{
+			list_nodes = node;
+			last_node = node;
+		}
+		// Insert after the last node and update the pointer
+		else
+		{
+			last_node->next = node;
+			last_node = last_node->next;
+		}
+	
+		// Return a reference to the node that has been inserted
+		return node;
+	}
+	else
+	{
+		printf("[-] ERROR! Position (%.10lf,%10lf,%10lf) has already been taken by a Node!\n",pos[0],pos[1],pos[2]);
+		return NULL;
+	}
+}
+
+bool Graph::is_duplicate (const double pos[])
+{
+	Node *ptr = list_nodes;
+	while (ptr != NULL)
+	{	
+		if (calc_norm(pos[0],pos[0],pos[0],ptr->x,ptr->y,ptr->z) < TOLERANCE_DUPLICATE)
+			return true;
+		ptr = ptr->next;
+	}
+	return false;
 }
 
 Node* Graph::search_node (const int id)
@@ -185,22 +239,18 @@ void Graph::dijkstra (int s)
 
 void Graph::print ()
 {
-    Edge *ptrl;
-    Node *ptr = list_nodes;
+    	Node *ptr = list_nodes;
 	printf("======================= PRINTING GRAPH ================================\n");
 	while (ptr != NULL)
 	{
-        #ifdef DIAMETER
-	    printf("|| %d (%.4lf %.4lf %.4lf) [%.4lf] %d ||",ptr->id,ptr->x,ptr->y,ptr->z,ptr->d,ptr->num_edges);
-		#else
-        printf("|| %d (%.2lf %.2lf %.2lf) %d ||",ptr->id,ptr->x,ptr->y,ptr->z,ptr->num_edges);
-		#endif
-
-        ptrl = ptr->list_edges;
+        	printf("|| %d (%.2lf %.2lf %.2lf) %d ||",ptr->id,ptr->x,ptr->y,ptr->z,ptr->num_edges);
+	
+        	Edge *ptrl = ptr->list_edges;
 		while (ptrl != NULL)
 		{
-			printf(" --> || %d %.2lf (%.2lf %.2lf %.2lf) ||",ptrl->id,ptrl->w,\
-                                ptrl->dest->x,ptrl->dest->y,ptrl->dest->z);
+			printf(" --> || %d %.2lf (%.2lf %.2lf %.2lf) d_ori(%.2lf %.2lf %.2lf) ||",ptrl->id,ptrl->w,\
+                                ptrl->dest->x,ptrl->dest->y,ptrl->dest->z,\
+				ptrl->dest->d_ori[0],ptrl->dest->d_ori[1],ptrl->dest->d_ori[2]);
 			ptrl = ptrl->next;
 		}
 		printf("\n");

@@ -1,5 +1,7 @@
 #include "../include/lsystem.h"
 
+int cont_segments = 1;
+
 // Build a Lsystem Purkinje network over a endocardium mesh
 Lsystem_Generator::Lsystem_Generator (Lsystem_Config *config)
 {
@@ -18,6 +20,8 @@ Lsystem_Generator::Lsystem_Generator (Lsystem_Config *config)
 	
 	this->make_root(config->branch_length);
 	this->grow_network(config);
+
+	//this->the_purkinje_network->print();
 
 }
 
@@ -38,6 +42,7 @@ void Lsystem_Generator::grow_network (Lsystem_Config *config)
 			grow_branch(ptr,config,0);
 			in_the_queue--; 
 		}
+		//this->the_purkinje_network->print();
 	}
 }
 
@@ -147,51 +152,111 @@ void Lsystem_Generator::calculate_gradient (Node *p, double d_gra[], const doubl
 
 }
 
-void Lsystem_Generator::calculate_grow_direction (const Node *gnode, const double d_gra[], const double theta)
+void Lsystem_Generator::rotate_direction (double d[], const double u[], const double teta)
+{
+	d[0] = u[0]*(cos(teta) + pow(u[0],2)*(1-cos(teta))) +\
+		u[1]*(u[0]*u[1]*(1-cos(teta)) - u[2]*sin(teta)) +\
+		u[2]*(u[0]*u[2]*(1-cos(teta)) + u[1]*sin(teta));
+
+	d[1] = u[0]*(u[0]*u[1]*(1-cos(teta)) + u[2]*sin(teta)) +\
+		u[1]*(cos(teta) + pow(u[1],2)*(1-cos(teta))) +\
+		u[2]*(u[1]*u[2]*(1-cos(teta)) - u[0]*sin(teta));
+
+	d[2] = u[0]*(u[0]*u[2]*(1-cos(teta)) - u[1]*sin(teta)) +\
+		u[1]*(u[1]*u[2]*(1-cos(teta)) + u[0]*sin(teta)) +\
+		u[2]*(cos(teta) + pow(u[2],2)*(1-cos(teta)));
+}	
+
+double Lsystem_Generator::calculate_size_branch (const double l_bra)
+{
+	int i = rand() % MAX_SIZE_RAND_ARRAY;
+	double number = rand_numbers[i];
+	return (l_bra + number);
+}
+
+void Lsystem_Generator::generate_branch (const Node *gnode, const double d[], const Lsystem_Config *config)
+{
+	Graph *pk = this->the_purkinje_network;
+
+	double l_bra = config->branch_length;
+	double tolerance_tree_collision = config->tolerance_tree_collision;
+	double tolerance_miocardium_collision = config->tolerance_miocardium_collision;
+	double tolerance_terminal_collision = config->tolerance_terminal_collision;
+
+
+	// Coordinates of the new node
+	double d_new[3];
+	d_new[0] = gnode->x + calculate_size_branch(l_bra)*d[0];
+	d_new[1] = gnode->y + calculate_size_branch(l_bra)*d[1];
+	d_new[2] = gnode->z + calculate_size_branch(l_bra)*d[2];
+
+	//printf("Growing node (%.2lf,%.2lf,%.2lf) --- New node (%.2lf,%.2lf,%.2lf)\n",gnode->x,gnode->y,gnode->z,d_new[0],d_new[1],d_new[2]);	
+
+	// !!!! Verify if the point does NOT inflict any restriction  !!!!
+	if (!check_terminals(gnode,d_new[0],d_new[1],d_new[2],tolerance_terminal_collision) && \
+	    !check_collision_tree(gnode,d_new[0],d_new[1],d_new[2],tolerance_tree_collision) && \
+	    !check_collision_miocardium(gnode,d_new[0],d_new[1],d_new[2],tolerance_miocardium_collision) && \
+	    !check_limits(gnode,d_new[0],d_new[1],d_new[2]))
+	{
+		Node *tmp = pk->insert_node_graph(d,gnode);
+		if (tmp != NULL)
+		{
+			pk->insert_edge_graph(gnode->id,tmp->id);
+			cont_segments++;
+
+			// TODO: Try to repeat this 4 times ...
+			if (cont_segments <= 1) 
+				grow_branch(tmp,config,1);
+			// Enqueue the last node
+			else
+				growing_nodes.push(tmp);
+		}
+	}
+}
+
+void Lsystem_Generator::calculate_grow_direction (const Node *gnode, const double d_gra[], const Lsystem_Config *config, const double theta)
 {
 	double norm;
 	double d[3], d_rot[3];
 
+	double w1 = config->w_1;	
+	
 	// The vector d_ori it has already been calculated for the Node (insert_node_graph)
 	// The vector d_gra it has already been calculated for the Node (calculate_gradient)
 
-	/*
-	// Calcula a direcao de crescimento do ramo: d = d_ori + w1*d_gra
-	// Substituir na formula (pra direita)
-	if (teta >= 0)
+	// Calculate the growing direction of the branch by using the rule
+	// Rule: d = d_ori + w1*d_gra
+
+	// TODO: Revise this formula when teta = 0.0	
+	if (theta >= 0)
 	{
-		rotate(gnode->d_ori,d_rot,ANGLE);
+		rotate_direction(d_rot,gnode->d_ori,ANGLE);
 		for (int i = 0; i < 3; i++)
-			//d[i] = d_rot[i] + w_1*d_gra[i];
-			d[i] = p->d_ori[i] + w_1*d_gra[i];	
+			d[i] = gnode->d_ori[i] + w1*d_gra[i];	
 	}
 	else
 	{
-		rotate(p->d_ori,d_rot,-M_PI/4.0);
+		rotate_direction(d_rot,gnode->d_ori,-ANGLE);
 		for (int i = 0; i < 3; i++)
-			//d[i] = d_rot[i] - w_1*d_gra[i];
-			d[i] = p->d_ori[i] - w_1*d_gra[i];
+			d[i] = gnode->d_ori[i] - w1*d_gra[i];
 	}
-	// Vetor unitario da direcao de crescimento
+	// Calculate the unitary vector for the direction
 	norm = sqrt(pow(d[0],2) + pow(d[1],2) + pow(d[2],2));
 	for (int i = 0; i < 3; i++) d[i] /= norm;
 
-	// Criar o ramo na direcao calculada, repete-se a geracao do ramo 5 vezes dentro desse procedimento
-	generateBranch(g,p,d);
+	// Create the branch with the calculated direction
+	generate_branch(gnode,d,config);
+
 	// Resetar o contador de segmentos
 	cont_segments = 1;
-	*/
+
 }
 
-void Lsystem_Generator::grow_branch (Node *gnode, Lsystem_Config *config, const int branch_type)
-{
-	double l_bra = config->branch_length;
-	double w1 = config->w_1;
+void Lsystem_Generator::grow_branch (Node *gnode, const Lsystem_Config *config, const int branch_type)
+{	
+
 	double cube_size = config->sobel_cube_size;
-	double tolerance_tree_collision = config->tolerance_tree_collision;
-	double tolerance_miocardium_collision = config->tolerance_miocardium_collision;
-	double tolerance_terminal_collision = config->tolerance_terminal_collision;
-	
+
 	// Calculate the distance gradient by applying the Sobel filter over the growing node
 	double d_gra[3];
 	calculate_gradient(gnode,d_gra,cube_size);
@@ -201,14 +266,14 @@ void Lsystem_Generator::grow_branch (Node *gnode, Lsystem_Config *config, const 
 	{
 		// Generate two offsprings
 		case 0: {
-				calculate_grow_direction(gnode,d_gra,1);
+				calculate_grow_direction(gnode,d_gra,config,1);
 				calculate_gradient(gnode,d_gra,cube_size);
-				calculate_grow_direction(gnode,d_gra,-1);
+				calculate_grow_direction(gnode,d_gra,config,-1);
 				break;
 			}
 		// Middle of the branch generate only one offspring
 		case 1: {
-				calculate_grow_direction(gnode,d_gra,0);
+				calculate_grow_direction(gnode,d_gra,config,0);
 				break;
 			}
 		default: break;
@@ -219,6 +284,7 @@ void Lsystem_Generator::make_root (const double l_bra)
 {
 	Graph *pk = this->the_purkinje_network;
 	
+	Node *prev;
 	double p1[3], p2[3];
 	p1[0] = this->root_point[0]; 
 	p1[1] = this->root_point[1]; 
@@ -228,8 +294,8 @@ void Lsystem_Generator::make_root (const double l_bra)
 	p2[1] = this->root_point[1]; 
 	p2[2] = this->root_point[2] + l_bra;
 	
-	pk->insert_node_graph(p1);		
-	pk->insert_node_graph(p2);
+	prev = pk->insert_node_graph(p1,NULL);		
+	prev = pk->insert_node_graph(p2,prev);
 	pk->insert_edge_graph(0,1);
 		
 	// Link the last node to the nearest point in the miocardium
@@ -262,7 +328,7 @@ void Lsystem_Generator::link_to_miocardium ()
 	pos[1] = cloud_points[id_most_near].y;
 	pos[2] = cloud_points[id_most_near].z;
 
-	pk->insert_node_graph(pos);
+	pk->insert_node_graph(pos,last_node);
 	pk->insert_edge_graph(1,2);
 
 	growing_nodes.push(pk->get_last_node());
@@ -291,6 +357,142 @@ void Lsystem_Generator::initialize_random_array (const double l_bra)
 	normal_distribution<double> distribution(0.0,l_bra*SIGMA_RANDOM_DISTRIBUTION);			
 	for (int i = 0; i < MAX_SIZE_RAND_ARRAY; i++)
 		this->rand_numbers[i] = distribution(generator);
+}
+
+bool Lsystem_Generator::check_collision_tree (const Node *gnode, const double x, const double y, const double z, const double tolerance)
+{
+	Graph *pk = this->the_purkinje_network;
+	
+	Node *ptr = pk->get_list_nodes();
+	while (ptr != NULL)
+	{
+		if (calc_norm(ptr->x,ptr->y,ptr->z,x,y,z) < tolerance && ptr->is_terminal == false)
+		{
+			return true;
+		}
+		ptr = ptr->next;
+	}
+	return false;
+}
+
+bool Lsystem_Generator::check_collision_miocardium (const Node *gnode, const double x, const double y, const double z, const double tolerance)
+{
+	Graph *pk = this->the_purkinje_network;
+
+	int n = this->the_miocardium->num_cloud_points;
+	Point *cloud_points = this->the_miocardium->cloud_points;
+	
+	// Find the nearest point in the cloud of points of the tissue from the growing Node
+	int id = search_most_near(cloud_points,n,x,y,z);
+	double dist = calc_norm(cloud_points[id].x,cloud_points[id].y,cloud_points[id].z,x,y,z);
+
+	// Check if the distance is in the tolerance
+	if (dist < tolerance)
+	{
+		// Insert the Node from the miocardium
+		double pos[3];
+		pos[0] = cloud_points[id].x;
+		pos[1] = cloud_points[id].y;
+		pos[2] = cloud_points[id].z;
+		Node *tmp = pk->insert_node_graph(pos,gnode);
+		if (tmp != NULL)
+		{
+			pk->insert_edge_graph(gnode->id,tmp->id);
+			// Enqueue ths node ...
+			growing_nodes.push(tmp);
+			
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	return false;
+}
+
+bool Lsystem_Generator::check_limits (const Node *gnode, const double x, const double y, const double z)
+{
+	double *max_xyz = this->the_miocardium->max_xyz;
+	double *min_xyz = this->the_miocardium->min_xyz;
+	
+	if (x >= min_xyz[0] && x <= max_xyz[0] && \
+	    y >= min_xyz[1] && y <= max_xyz[1] && \
+	    z >= min_xyz[2] && z <= max_xyz[2] )
+		return false;
+	else
+		return true;
+}
+
+int Lsystem_Generator::search_most_near (const Point *arr, const unsigned int n, const double x, const double y, const double z)
+{
+	double dist = DBL_MAX;
+	int id_nearest = -1;
+	for (unsigned int i = 0; i < n; i++)
+	{
+		if (!arr[i].taken)
+		{
+			double norm = calc_norm(arr[i].x,arr[i].y,arr[i].z,x,y,z);
+			if (norm < dist)
+			{
+				dist = norm;
+				id_nearest = i;
+			}
+		}
+	}
+	return id_nearest;
+}
+
+// Check if the growing node is not too close of a terminal point
+// True = Fail the test
+// False = Pass the test
+bool Lsystem_Generator::check_terminals(const Node *gnode, const double x, const double y, const double z, const double tolerance)
+{
+	// Checar se o anterior for terminal retornar erro
+	if (gnode->is_terminal) return true;
+
+	Graph *pk = this->the_purkinje_network;
+
+	unsigned int n = this->the_miocardium->num_terminal_points;
+	Point *terminals = this->the_miocardium->terminal_points;
+
+	// Find the nearest terminal from the growing node position
+	int id = search_most_near(terminals,n,x,y,z);
+	double dist = calc_norm(terminals[id].x,terminals[id].y,terminals[id].z,x,y,z);
+
+	// Check if the distance is less than collision tolerance	
+	if (dist < tolerance)
+	{
+		printf("Terminal colision! Index = %d\n",id);
+		// Mark this terminal as taken
+		terminals[id].taken = true;
+		
+		// Copy the coordinate values to an array
+		double pos[3];
+		pos[0] = terminals[id].x;
+		pos[1] = terminals[id].y;
+		pos[2] = terminals[id].z;
+
+		// TODO: Find a way to apply the Sobel filter here too ...
+		// Insert the terminal node in the graph
+		Node *tmp = pk->insert_node_graph(pos,gnode);
+		if (tmp != NULL)
+		{
+			tmp->is_terminal = true;
+			pk->insert_edge_graph(gnode->id,tmp->id);
+			// !!! We DO NOT enqueue this node for growing
+			return true;
+		}
+		//
+		else
+		{
+			return false;
+		}
+	}	
+
+	return false;
+	
 }
 
 void Lsystem_Generator::write_network_to_VTK ()

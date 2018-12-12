@@ -55,7 +55,7 @@ private:
 	void link_to_miocardium ();
 	void grow_network (Lsystem_Config *config);
 	void calculate_gradient (Node *ptr, double d_gra[], const double cube_size);
-	void grow_branch (Node *gnode, Lsystem_Config *config, const int branch_type);
+	void grow_branch (Node *gnode, const Lsystem_Config *config, const int branch_type);
 	double compute_sobel_filter (const Node *p, double sobel[3][3][3], double d_gra[], const double cube_size);
 	bool check_mini_cube (const double x, const double y, const double z,\
 			     const double width, const double lenght, const double height);
@@ -63,7 +63,16 @@ private:
 			     const double x, const double y, const double z,\
 			     const double width, const double lenght, const double height);
 	double calculate_convolution (double d_gra[], double sobel[3][3][3]);
-	void calculate_grow_direction (const Node *gnode, const double d_gra[], const double theta);
+	void calculate_grow_direction (const Node *gnode, const double d_gra[], const Lsystem_Config *config, const double theta);
+	void rotate_direction (double d[], const double u[], const double teta);
+	void generate_branch (const Node *gnode, const double d[], const Lsystem_Config *config);
+	double calculate_size_branch (const double l_bra);
+	int search_most_near (const Point *arr, const unsigned int n, const double x, const double y, const double z);
+
+	bool check_terminals (const Node *gnode, const double x, const double y, const double z, const double tolerance);
+	bool check_collision_tree (const Node *gnode, const double x, const double y, const double z, const double tolerance);	
+	bool check_collision_miocardium (const Node *gnode, const double x, const double y, const double z, const double tolerance);
+	bool check_limits (const Node *gnode, const double x, const double y, const double z);
 
 public:
 	Lsystem_Generator (Lsystem_Config *config);

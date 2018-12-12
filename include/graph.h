@@ -14,6 +14,7 @@
 using namespace std;
 
 const double INF = __DBL_MAX__;
+const double TOLERANCE_DUPLICATE = 1.0e-20;
 
 class Edge;
 class Node;
@@ -39,12 +40,13 @@ public:
 class Node
 {
 public:
-    Node (const int i, const double pos[]);
+    Node (const int i, const double pos[], const double d[]);
 
 public:
 	int id;				// Identifier of the Node 
 	double x, y, z;			// Coordinates (x,y,z)
-	double d_ori[3];		// Original direction of the growth	
+	double d_ori[3];		// Original direction of the growth
+	bool is_terminal;		// Flag that identify Node as a terminal or not	
 	int num_edges;			// Number of edges
 	Node *next;			// Pointer to the next Node
 	Edge *list_edges;		// Pointer to the list of Edges
@@ -71,7 +73,7 @@ public:
 	int* get_term () { return term; }
 	int get_nterm() { return nterm; }
 
-	void insert_node_graph (const double pos[]);
+	Node* insert_node_graph (const double pos[], const Node *prev);
 	void insert_edge_graph (const int id_1, const int id_2);
 private:
 	Node *list_nodes;			// Pointer to the lists of Nodes
@@ -83,7 +85,9 @@ private:
 	int *term;					// Pointer to the terminals 
 
 	Node* search_node (int id);
-	void calc_position (Node *p1, Node *p2, double p[]);
+	bool is_duplicate (const double pos[]);
+	void calc_original_growth_direction (double d_ori[], const Node *prev,\
+					    const double x, const double y, const double z);
 	void set_term ();
 
 	void free_list_nodes ();

@@ -9,7 +9,10 @@ Miocardium::Miocardium ()
 	this->terminal_points = NULL;
 }
 
-Point::Point () { }
+Point::Point () 
+{ 
+	this->taken = false;
+}
 
 void Miocardium::read_cloud_points (const std::string miocardium_filename)
 {

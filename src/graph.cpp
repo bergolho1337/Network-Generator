@@ -243,14 +243,15 @@ void Graph::print ()
 	printf("======================= PRINTING GRAPH ================================\n");
 	while (ptr != NULL)
 	{
-        	printf("|| %d (%.2lf %.2lf %.2lf) %d ||",ptr->id,ptr->x,ptr->y,ptr->z,ptr->num_edges);
+        	printf("|| %d (%.2lf %.2lf %.2lf) d_ori(%.2lf %.2lf %.2lf) Edges = %d (%d) ||",ptr->id,ptr->x,ptr->y,ptr->z,\
+											ptr->d_ori[0],ptr->d_ori[1],ptr->d_ori[2],\
+											ptr->num_edges,ptr->is_terminal);
 	
         	Edge *ptrl = ptr->list_edges;
 		while (ptrl != NULL)
 		{
-			printf(" --> || %d %.2lf (%.2lf %.2lf %.2lf) d_ori(%.2lf %.2lf %.2lf) ||",ptrl->id,ptrl->w,\
-                                ptrl->dest->x,ptrl->dest->y,ptrl->dest->z,\
-				ptrl->dest->d_ori[0],ptrl->dest->d_ori[1],ptrl->dest->d_ori[2]);
+			printf(" --> || %d %.2lf (%.2lf %.2lf %.2lf) ||",ptrl->id,ptrl->w,\
+                                ptrl->dest->x,ptrl->dest->y,ptrl->dest->z);
 			ptrl = ptrl->next;
 		}
 		printf("\n");

@@ -19,9 +19,12 @@ Lsystem_Generator::Lsystem_Generator (Lsystem_Config *config)
 	this->initialize_random_array(config->branch_length);
 	
 	this->make_root(config->branch_length);
+	// Ate aqui ta igual !!
+
+
 	this->grow_network(config);
 
-	//this->the_purkinje_network->print();
+	this->the_purkinje_network->print();
 
 }
 
@@ -32,7 +35,7 @@ void Lsystem_Generator::grow_network (Lsystem_Config *config)
 	for (unsigned int k = 0; k < max_iter; k++)
 	{	
 		unsigned int in_the_queue = growing_nodes.size();
-		printf("[Lsystem] Iteration %d! Growing branches ...\n",k+1);
+		printf("[Lsystem] Iteration %d! Growing %d branches ...\n",k+1,in_the_queue);
 		// Take a growing node out of the queue and apply the growing rule on it
 		while (in_the_queue > 0)
 		{
@@ -171,7 +174,8 @@ double Lsystem_Generator::calculate_size_branch (const double l_bra)
 {
 	int i = rand() % MAX_SIZE_RAND_ARRAY;
 	double number = rand_numbers[i];
-	return (l_bra + number);
+	//return (l_bra + number);
+	return l_bra;
 }
 
 void Lsystem_Generator::generate_branch (const Node *gnode, const double d[], const Lsystem_Config *config)
@@ -198,7 +202,7 @@ void Lsystem_Generator::generate_branch (const Node *gnode, const double d[], co
 	    !check_collision_miocardium(gnode,d_new[0],d_new[1],d_new[2],tolerance_miocardium_collision) && \
 	    !check_limits(gnode,d_new[0],d_new[1],d_new[2]))
 	{
-		Node *tmp = pk->insert_node_graph(d,gnode);
+		Node *tmp = pk->insert_node_graph(d_new,gnode);
 		if (tmp != NULL)
 		{
 			pk->insert_edge_graph(gnode->id,tmp->id);
@@ -220,7 +224,7 @@ void Lsystem_Generator::calculate_grow_direction (const Node *gnode, const doubl
 	double d[3], d_rot[3];
 
 	double w1 = config->w_1;	
-	
+
 	// The vector d_ori it has already been calculated for the Node (insert_node_graph)
 	// The vector d_gra it has already been calculated for the Node (calculate_gradient)
 
@@ -328,8 +332,27 @@ void Lsystem_Generator::link_to_miocardium ()
 	pos[1] = cloud_points[id_most_near].y;
 	pos[2] = cloud_points[id_most_near].z;
 
-	pk->insert_node_graph(pos,last_node);
+	last_node = pk->insert_node_graph(pos,last_node);
 	pk->insert_edge_graph(1,2);
+
+	// Repeat this again to build a segment inside the miocardium
+	dist = DBL_MAX;
+	id_most_near = -1;
+	for (int i = 0; i < n; i++)
+	{
+		double norm = calc_norm(last_node->x,last_node->y,last_node->z,cloud_points[i].x,cloud_points[i].y,cloud_points[i].z);
+		if (norm < dist && norm > TOLERANCE_NEAREST)
+		{
+			id_most_near = i;
+			dist = norm;
+		}
+	}
+	pos[0] = cloud_points[id_most_near].x;
+	pos[1] = cloud_points[id_most_near].y;
+	pos[2] = cloud_points[id_most_near].z;
+
+	last_node = pk->insert_node_graph(pos,last_node);
+	pk->insert_edge_graph(2,3);
 
 	growing_nodes.push(pk->get_last_node());
 }
@@ -364,10 +387,11 @@ bool Lsystem_Generator::check_collision_tree (const Node *gnode, const double x,
 	Graph *pk = this->the_purkinje_network;
 	
 	Node *ptr = pk->get_list_nodes();
-	while (ptr != NULL)
+	while (ptr->next != NULL)
 	{
 		if (calc_norm(ptr->x,ptr->y,ptr->z,x,y,z) < tolerance && ptr->is_terminal == false)
 		{
+			printf("Collision tree! Between indexes %d -- %d\n",gnode->id,ptr->id);
 			return true;
 		}
 		ptr = ptr->next;
@@ -389,6 +413,7 @@ bool Lsystem_Generator::check_collision_miocardium (const Node *gnode, const dou
 	// Check if the distance is in the tolerance
 	if (dist < tolerance)
 	{
+		printf("Collision miocardium -- Index = %d -- Dist = %.10lf\n",id,dist);
 		// Insert the Node from the miocardium
 		double pos[3];
 		pos[0] = cloud_points[id].x;

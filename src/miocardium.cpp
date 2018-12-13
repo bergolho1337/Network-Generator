@@ -1,6 +1,5 @@
 #include "../include/miocardium.h"
 
-// TODO: Pur this in a separate file 'miocardium.cpp'
 Miocardium::Miocardium ()
 {
 	this->num_cloud_points = 0;

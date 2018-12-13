@@ -26,6 +26,7 @@ static const double ANGLE = M_PI / 4.0;			// Rotation angle for the growing rule
 class Lsystem_Config
 {
 public:
+	double root_point[3];
 	unsigned int max_grow_iterations;
 	double branch_length;
 	double w_1;
@@ -44,13 +45,15 @@ public:
 class Lsystem_Generator 
 {
 private:
-	Graph *the_purkinje_network;
-	Miocardium *the_miocardium;
-	double root_point[3];
-	double rand_numbers[MAX_SIZE_RAND_ARRAY];
-	queue<Node*> growing_nodes;
+	Graph *the_purkinje_network;			// Reference to the Purkinje network
+	Miocardium *the_miocardium;			// Reference to the miocardium structure
+	double root_point[3];				// Root position
+	double rand_numbers[MAX_SIZE_RAND_ARRAY];	// Array of random numbers
+	queue<Node*> growing_nodes;			// Growing queue of Nodes
+	int cont_segments;				// Current number of branches from a segment
 
-	void initialize_root_point ();
+	// Functions for the L-System tree generation
+	void initialize_root_point (const double root_point[]);
 	void initialize_random_array (const double l_bra);
 	void make_root (const double l_bra);
 	void link_to_miocardium ();

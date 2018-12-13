@@ -8,11 +8,20 @@ Network_Generator::Network_Generator (User_Options *options)
 		lsystem_generator = new Lsystem_Generator(options->lsystem_config);
 		lsystem_generator->write_network_to_VTK();
 	}
-	/*
 	else if (this->method_name == "CO")
+	{
 		co_generator = new CO_Generator(options->co_config);
-	if (this->method_name == "PhaseField")
+		co_generator->write_network_to_VTK();
+	}	
+	else if (this->method_name == "PhaseField")
+	{
 		phase_generator = new PhaseField_Generator(options->phase_config);
-	*/
+		phase_generator->write_network_to_VTK();
+	}
+	else
+	{
+		printf("[-] ERROR! Invalid method name\n");
+		exit(EXIT_FAILURE);
+	}
 
 }

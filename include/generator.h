@@ -19,8 +19,8 @@ private:
 	// Structures for the generation algorithm
 	// TODO: Make this an abstract class
 	Lsystem_Generator *lsystem_generator;
-	//CO_Generator *co_generator;
-	//PhaseField *phase_generator;
+	CO_Generator *co_generator;
+	PhaseField_Generator *phase_generator;
 
 public:
 	Network_Generator (User_Options *options);

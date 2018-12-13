@@ -1,5 +1,5 @@
 - Refactor Purkinje-Miocardium code into this project
-	- Finish Lsystem part
+	- Solve leak memory errors from the Lsystem part
 
 - Build 3 modules
 	- L-System

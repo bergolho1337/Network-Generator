@@ -16,9 +16,9 @@ int compare (const void *a, const void *b);
 class Point
 {
 public:
-	double x, y, z;
-	double scalar;
-	bool taken;
+	double x, y, z;				// Coordinates (x,y,z)
+	double scalar;				// Value
+	bool taken;				// Flag in the case this Point is a terminal
 public:
 	Point ();
 };
@@ -26,12 +26,12 @@ public:
 class Miocardium
 {
 public:
-	unsigned int num_cloud_points;
-	unsigned int num_terminal_points;
-	Point *cloud_points;
-	Point *terminal_points;
-	double max_xyz[3];
-	double min_xyz[3];
+	unsigned int num_cloud_points;		// Number of cloud points from the tissue surface
+	unsigned int num_terminal_points;	// Number of terminal points from the tissue surface
+	Point *cloud_points;			// Reference to the array of cloud points
+	Point *terminal_points;			// Reference to the array of terminal points
+	double max_xyz[3];			// Minimum limits for the domain (x,y,z)
+	double min_xyz[3];			// Maximum limits for the domain (x,y,z)
 	
 public:
 	Miocardium ();

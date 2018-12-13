@@ -13,8 +13,8 @@
 
 using namespace std;
 
-const double INF = __DBL_MAX__;
-const double TOLERANCE_DUPLICATE = 1.0e-20;
+const double INF = __DBL_MAX__;				// The value of infinity is set to be the maximum value of a 'double'
+const double TOLERANCE_DUPLICATE = 1.0e-20;		// Distance tolerance to consider two Nodes equal
 
 class Edge;
 class Node;
@@ -47,7 +47,7 @@ public:
 	double x, y, z;			// Coordinates (x,y,z)
 	double d_ori[3];		// Original direction of the growth
 	bool is_terminal;		// Flag that identify Node as a terminal or not	
-	int num_edges;			// Number of edges
+	int num_edges;			// Number of edges of the Node
 	Node *next;			// Pointer to the next Node
 	Edge *list_edges;		// Pointer to the list of Edges
 };
@@ -70,20 +70,16 @@ public:
 	Node* get_list_nodes () { return list_nodes; }
 	Node* get_last_node () { return last_node; }
 	double* get_dist () { return dist; }
-	int* get_term () { return term; }
-	int get_nterm() { return nterm; }
 
 	Node* insert_node_graph (const double pos[], const Node *prev);
 	void insert_edge_graph (const int id_1, const int id_2);
 	Node* search_node (int id);
 private:
 	Node *list_nodes;			// Pointer to the lists of Nodes
-	Node *last_node;				// Pointer to the last Node of the list
+	Node *last_node;			// Pointer to the last Node of the list
 	int total_nodes;			// Total number of Nodes
 	int total_edges;			// Total number of Edges
-	int nterm;					// Number of terminals
 	double *dist;				// Distance from the source node to all the others
-	int *term;					// Pointer to the terminals 
 
 	bool is_duplicate (const double pos[]);
 	void calc_original_growth_direction (double d_ori[], const Node *prev,\
@@ -99,7 +95,6 @@ private:
 // =============================================================================================================
 // Funcoes auxiliares
 double calc_norm (double x1, double y1, double z1, double x2, double y2, double z2);
-void calcPosition (Node *p1, Node *p2, double p[]);
 // =============================================================================================================
 
 #endif

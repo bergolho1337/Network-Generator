@@ -1,6 +1,7 @@
 #include "../include/lsystem.h"
 
-int cont_segments = 1;
+// Default constructor 
+Lsystem_Config::Lsystem_Config () { }
 
 // Build a Lsystem Purkinje network over a endocardium mesh
 Lsystem_Generator::Lsystem_Generator (Lsystem_Config *config)
@@ -9,13 +10,14 @@ Lsystem_Generator::Lsystem_Generator (Lsystem_Config *config)
 
 	this->the_purkinje_network = new Graph();
 	this->the_miocardium = new Miocardium();
+	this->cont_segments = 1;
 
 	this->the_miocardium->read_cloud_points(config->miocardium_filename);
 	this->the_miocardium->read_terminal_points(config->terminals_filename);
 
 	this->the_miocardium->set_limits();	
 
-	this->initialize_root_point();
+	this->initialize_root_point(config->root_point);
 	this->initialize_random_array(config->branch_length);
 	
 	this->make_root(config->branch_length);
@@ -214,10 +216,10 @@ void Lsystem_Generator::generate_branch (const Node *gnode, const double d[], co
 		if (tmp != NULL)
 		{
 			pk->insert_edge_graph(gnode->id,tmp->id);
-			cont_segments++;
+			this->cont_segments++;
 
 			// TODO: Try to repeat this 4 times ...
-			if (cont_segments <= 1) 
+			if (this->cont_segments <= 1) 
 				grow_branch(tmp,config,1);
 			// Enqueue the last node
 			else
@@ -239,16 +241,20 @@ void Lsystem_Generator::calculate_grow_direction (const Node *gnode, const doubl
 	// Calculate the growing direction of the branch by using the rule
 	// Rule: d = d_ori + w1*d_gra
 
-	// TODO: Revise this formula when teta = 0.0	
-	if (theta >= 0)
+	if (theta > 0.0)
 	{
 		rotate_direction(d_rot,gnode->d_ori,ANGLE);
 		for (int i = 0; i < 3; i++)
 			d[i] = gnode->d_ori[i] + w1*d_gra[i];	
 	}
-	else
+	else if (theta < 0.0)
 	{
 		rotate_direction(d_rot,gnode->d_ori,-ANGLE);
+		for (int i = 0; i < 3; i++)
+			d[i] = gnode->d_ori[i] - w1*d_gra[i];
+	}
+	else
+	{
 		for (int i = 0; i < 3; i++)
 			d[i] = gnode->d_ori[i] - w1*d_gra[i];
 	}
@@ -260,7 +266,7 @@ void Lsystem_Generator::calculate_grow_direction (const Node *gnode, const doubl
 	generate_branch(gnode,d,config);
 
 	// Resetar o contador de segmentos
-	cont_segments = 1;
+	this->cont_segments = 1;
 
 }
 
@@ -365,20 +371,13 @@ void Lsystem_Generator::link_to_miocardium ()
 	growing_nodes.push(pk->get_last_node());
 }
 
-
-Lsystem_Config::Lsystem_Config ()
-{
-
-}
-
-// TODO: Put this option in the input configuration file
-void Lsystem_Generator::initialize_root_point ()
+void Lsystem_Generator::initialize_root_point (const double root_point[])
 {
 	// Benjamin's root position : (158.5,240.28,54.6504)
 	// Scaling to the reduced mesh ...
-	this->root_point[0] = 39.625;
-	this->root_point[1] = 60.07;
-	this->root_point[2] = 13.6626;
+	this->root_point[0] = root_point[0];
+	this->root_point[1] = root_point[1];
+	this->root_point[2] = root_point[2];
 }
 
 void Lsystem_Generator::initialize_random_array (const double l_bra)
@@ -450,20 +449,7 @@ bool Lsystem_Generator::check_limits (const Node *gnode, const double x, const d
 	double *max_xyz = this->the_miocardium->max_xyz;
 	double *min_xyz = this->the_miocardium->min_xyz;
 	
-	/*
-	if (x >= min_xyz[0] && x <= max_xyz[0] && \
-	    y >= min_xyz[1] && y <= max_xyz[1] && \
-	    z >= min_xyz[2] && z <= max_xyz[2] )
-	{
-		return false;
-	}	
-	else
-	{
-		printf("Out of limits\n");
-		return true;
-	}
-	*/
-	// TODO: Understand what exacly I did here ...
+	// TODO: Rethink this condition ...
 	if (x >= min_xyz[0]-1 && x >= max_xyz[0]+1 && y >= min_xyz[1]-1 && y >= max_xyz[1]+1 \
 	    && z >= min_xyz[2]-1 && z >= max_xyz[2]+1)
 	{
@@ -651,28 +637,28 @@ void Lsystem_Generator::write_network_to_VTK ()
 		}
 		ptr = ptr->next;
 	}
-	// TODO: Calculate the terminals of the network
-	// Imprimir os escalares dos Nodes
-	/*
-	fprintf(fileVTK,"POINT_DATA %d\n",g->total_nodes);
-	fprintf(fileVTK,"SCALARS vm float 1\n");
-	fprintf(fileVTK,"LOOKUP_TABLE default\n");
-	ptr = g->listNodes;
+
+	// Write the scalars (terminals)
+	file << "POINT_DATA " << pk->get_total_nodes() << std::endl;
+	file << "SCALARS terminal float 1" << std::endl;
+	file << "LOOKUP_TABLE default" << std::endl;
+	
+	ptr = pk->get_list_nodes();
 	while (ptr != NULL)
 	{
-		if (!ptr->isTerminal)
-			fprintf(fileVTK,"0\n");
+		if (!ptr->is_terminal)
+			file << "0" << std::endl;
 		else
-			fprintf(fileVTK,"1\n");
+			file << "1" << std::endl;
 		ptr = ptr->next;
 	}
-	*/
 
 	file.close();
 }
 
 void Lsystem_Config::print ()
 {
+	printf("[Lsystem] root_point = (%.10lf,%.10lf,%.10lf)\n",this->root_point[0],this->root_point[1],this->root_point[2]);
 	printf("[Lsystem] max_grow_iterations = %u\n",this->max_grow_iterations);
 	printf("[Lsystem] branch_length = %.10lf\n",this->branch_length);
 	printf("[Lsystem] w_1 = %.10lf\n",this->w_1);

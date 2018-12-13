@@ -19,12 +19,9 @@ Lsystem_Generator::Lsystem_Generator (Lsystem_Config *config)
 	this->initialize_random_array(config->branch_length);
 	
 	this->make_root(config->branch_length);
-	// Ate aqui ta igual !!
-
-
 	this->grow_network(config);
 
-	this->the_purkinje_network->print();
+	//this->the_purkinje_network->print();
 
 }
 
@@ -52,16 +49,15 @@ void Lsystem_Generator::grow_network (Lsystem_Config *config)
 double Lsystem_Generator::calculate_convolution (double d_gra[], double sobel[3][3][3])
 {
 	d_gra[0] = (-sobel[0][0][0] + sobel[0][0][2] - 2*sobel[0][1][0] + 2*sobel[0][1][2] - sobel[0][2][0] + sobel[0][2][2]) +\
-		   (-2*sobel[1][0][0] + 2*sobel[1][0][2] - 4*sobel[1][1][0] + 4*sobel[1][1][2] - 2*sobel[1][2][0] + 2*sobel[1][2][2]) +\
-		   (-sobel[2][0][0] + sobel[2][0][2] - 2*sobel[2][1][0] + 2*sobel[2][1][2] - sobel[2][2][0] + sobel[2][2][2]);
+			(-2*sobel[1][0][0] + 2*sobel[1][0][2] - 4*sobel[1][1][0] + 4*sobel[1][1][2] - 2*sobel[1][2][0] + 2*sobel[1][2][2]) +\
+			(-sobel[2][0][0] + sobel[2][0][2] - 2*sobel[2][1][0] + 2*sobel[2][1][2] - sobel[2][2][0] + sobel[2][2][2]);
 
 	d_gra[1] = (sobel[0][0][2] + 2*sobel[1][0][2] + sobel[2][0][2] - sobel[0][2][2] - 2*sobel[1][2][2] - sobel[2][2][2]) +\
-		   (2*sobel[0][0][1] + 4*sobel[1][0][1] + 2*sobel[2][0][1] - 2*sobel[0][2][1] - 4*sobel[1][2][1] - 2*sobel[2][2][1]) +\
-		   (sobel[0][0][0] + 2*sobel[1][0][0] + sobel[2][0][0] - sobel[0][2][0] - 2*sobel[1][2][0] - sobel[2][2][0]);
+			(2*sobel[0][0][1] + 4*sobel[1][0][1] + 2*sobel[2][0][1] - 2*sobel[0][2][1] - 4*sobel[1][2][1] - 2*sobel[2][2][1]) +\
+			(sobel[0][0][0] + 2*sobel[1][0][0] + sobel[2][0][0] - sobel[0][2][0] - 2*sobel[1][2][0] - sobel[2][2][0]);
 
-	d_gra[2] = (-sobel[0][2][2] - 2*sobel[0][2][1] - sobel[0][2][0] - 2*sobel[1][2][2] - 4*sobel[1][2][1] - 2*sobel[1][2][0]) -\
-		   (sobel[2][2][2] - 2*sobel[2][2][1] - sobel[2][2][0] + sobel[0][0][2] + 2*sobel[0][0][1] + sobel[0][0][0]) +\
-		   (2*sobel[1][0][2] + 4*sobel[1][0][1] + 2*sobel[1][0][0] + sobel[2][0][2] + 2*sobel[2][0][1] + sobel[2][0][0]);
+	d_gra[2] = (-sobel[0][2][2] - 2*sobel[0][2][1] - sobel[0][2][0] - 2*sobel[1][2][2] - 4*sobel[1][2][1] - 2*sobel[1][2][0] - sobel[2][2][2] - 2*sobel[2][2][1] - sobel[2][2][0]) + (sobel[0][0][2] + 2*sobel[0][0][1] + sobel[0][0][0] + 2*sobel[1][0][2] + 4*sobel[1][0][1] + 2*sobel[1][0][0] + sobel[2][0][2] + 2*sobel[2][0][1] + sobel[2][0][0]);
+
 
 	return sqrt(pow(d_gra[0],2)+pow(d_gra[1],2)+pow(d_gra[2],2));
 }
@@ -153,6 +149,8 @@ void Lsystem_Generator::calculate_gradient (Node *p, double d_gra[], const doubl
 	d_gra[1] = -d_gra[1]/norm;
 	d_gra[2] = -d_gra[2]/norm;	
 
+	//printf("d_gra = (%.10lf,%.10lf,%.10lf)\n",d_gra[0],d_gra[1],d_gra[2]);
+
 }
 
 void Lsystem_Generator::rotate_direction (double d[], const double u[], const double teta)
@@ -194,7 +192,7 @@ void Lsystem_Generator::generate_branch (const Node *gnode, const double d[], co
 	d_new[1] = gnode->y + calculate_size_branch(l_bra)*d[1];
 	d_new[2] = gnode->z + calculate_size_branch(l_bra)*d[2];
 
-	//printf("Growing node (%.2lf,%.2lf,%.2lf) --- New node (%.2lf,%.2lf,%.2lf)\n",gnode->x,gnode->y,gnode->z,d_new[0],d_new[1],d_new[2]);	
+	//printf("Growing node (%.10lf,%.10lf,%.10lf) --- New node (%.10lf,%.10lf,%.10lf)\n",gnode->x,gnode->y,gnode->z,d_new[0],d_new[1],d_new[2]);	
 
 	// !!!! Verify if the point does NOT inflict any restriction  !!!!
 	if (!check_terminals(gnode,d_new[0],d_new[1],d_new[2],tolerance_terminal_collision) && \
@@ -391,7 +389,7 @@ bool Lsystem_Generator::check_collision_tree (const Node *gnode, const double x,
 	{
 		if (calc_norm(ptr->x,ptr->y,ptr->z,x,y,z) < tolerance && ptr->is_terminal == false)
 		{
-			printf("Collision tree! Between indexes %d -- %d\n",gnode->id,ptr->id);
+			//printf("Collision tree! Between indexes %d -- %d\n",gnode->id,ptr->id);
 			return true;
 		}
 		ptr = ptr->next;
@@ -413,7 +411,7 @@ bool Lsystem_Generator::check_collision_miocardium (const Node *gnode, const dou
 	// Check if the distance is in the tolerance
 	if (dist < tolerance)
 	{
-		printf("Collision miocardium -- Index = %d -- Dist = %.10lf\n",id,dist);
+		//printf("Collision miocardium -- Index = %d -- Dist = %.10lf\n",id,dist);
 		// Insert the Node from the miocardium
 		double pos[3];
 		pos[0] = cloud_points[id].x;
@@ -442,12 +440,30 @@ bool Lsystem_Generator::check_limits (const Node *gnode, const double x, const d
 	double *max_xyz = this->the_miocardium->max_xyz;
 	double *min_xyz = this->the_miocardium->min_xyz;
 	
+	/*
 	if (x >= min_xyz[0] && x <= max_xyz[0] && \
 	    y >= min_xyz[1] && y <= max_xyz[1] && \
 	    z >= min_xyz[2] && z <= max_xyz[2] )
+	{
 		return false;
+	}	
 	else
+	{
+		printf("Out of limits\n");
 		return true;
+	}
+	*/
+	// TODO: Understand what exacly I did here ...
+	if (x >= min_xyz[0]-1 && x >= max_xyz[0]+1 && y >= min_xyz[1]-1 && y >= max_xyz[1]+1 \
+	    && z >= min_xyz[2]-1 && z >= max_xyz[2]+1)
+	{
+		return false;
+	}
+	else
+	{
+		//printf("Out of limits\n");
+		return true;
+	}
 }
 
 int Lsystem_Generator::search_most_near (const Point *arr, const unsigned int n, const double x, const double y, const double z)
@@ -489,7 +505,7 @@ bool Lsystem_Generator::check_terminals(const Node *gnode, const double x, const
 	// Check if the distance is less than collision tolerance	
 	if (dist < tolerance)
 	{
-		printf("Terminal colision! Index = %d\n",id);
+		//printf("Terminal colision! Index = %d\n",id);
 		// Mark this terminal as taken
 		terminals[id].taken = true;
 		

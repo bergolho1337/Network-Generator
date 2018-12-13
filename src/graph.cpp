@@ -171,6 +171,9 @@ void Graph::insert_edge_graph (const int id_1, const int id_2)
     n1 = search_node(id_1);
     n2 = search_node(id_2);
 
+    //printf("Insert edge (%d,%d) -- (%.10lf,%.10lf,%.10lf) -> (%.10lf,%.10lf,%.10lf)\n",n1->id,n2->id,\
+								n1->x,n1->y,n1->z,n2->x,n2->y,n2->z);
+
     norm = calc_norm(n1->x,n1->y,n1->z,n2->x,n2->y,n2->z);
     edge = new Edge(id_2,norm,n2);
 

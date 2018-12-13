@@ -8,6 +8,16 @@ Miocardium::Miocardium ()
 	this->terminal_points = NULL;
 }
 
+Miocardium::~Miocardium ()
+{
+	printf("Free miocardium memory\n");
+	if (this->cloud_points)
+		delete [] this->cloud_points;
+
+	if (this->terminal_points)
+		delete [] this->terminal_points;
+}
+
 Point::Point () 
 { 
 	this->taken = false;

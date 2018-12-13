@@ -1,5 +1,5 @@
 #!/bin/bash
-PNAME="./bin/FDMMonodomain1D"
+PNAME="./bin/NetworkGenerator"
 
 if [ "$#" -ne 1 ]; then
 	echo "[ERROR] Illegal number of parameters"

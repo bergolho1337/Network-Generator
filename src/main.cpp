@@ -49,8 +49,8 @@ int main (int argc, char *argv[])
 	// ...
 
 	// Free all the structures
-	//delete generator;
-	//delete options;
+	delete generator;
+	delete options;
 
 	
 	return 0;  

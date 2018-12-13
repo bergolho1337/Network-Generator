@@ -83,6 +83,7 @@ private:
 
 public:
 	Lsystem_Generator (Lsystem_Config *config);
+	~Lsystem_Generator ();
 	void write_network_to_VTK ();
 		
 };

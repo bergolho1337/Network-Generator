@@ -35,6 +35,7 @@ public:
 	
 public:
 	Miocardium ();
+	~Miocardium ();
 
 	void read_cloud_points (const std::string miocardium_filename);
 	void read_terminal_points (const std::string terminals_filename);	

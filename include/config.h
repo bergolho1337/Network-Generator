@@ -28,6 +28,7 @@ public:
 	void Read_Input_File (const char filename[]);
 public:
 	User_Options (int argc, char *argv[]);
+	~User_Options ();
 	void print ();
 	
 };

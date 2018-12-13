@@ -24,7 +24,7 @@ private:
 
 public:
 	Network_Generator (User_Options *options);
-	
+	~Network_Generator ();
 };
 
 #endif

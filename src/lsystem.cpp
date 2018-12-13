@@ -37,6 +37,16 @@ Lsystem_Generator::Lsystem_Generator (Lsystem_Config *config)
 
 }
 
+Lsystem_Generator::~Lsystem_Generator ()
+{
+	if (this->the_purkinje_network)
+		delete this->the_purkinje_network;
+
+	if (this->the_miocardium)
+		delete this->the_miocardium;
+	
+}
+
 void Lsystem_Generator::grow_network (Lsystem_Config *config)
 {
 	unsigned int max_iter = config->max_grow_iterations;

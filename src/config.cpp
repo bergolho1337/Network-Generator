@@ -6,6 +6,11 @@ User_Options::User_Options (int argc, char *argv[])
 	Read_Input_File(argv[1]);
 }
 
+User_Options::~User_Options ()
+{
+	
+}
+
 void User_Options::Read_Input_File (const char filename[])
 {
 	std::string str, str2, str3;

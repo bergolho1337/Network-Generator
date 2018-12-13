@@ -21,6 +21,16 @@ Lsystem_Generator::Lsystem_Generator (Lsystem_Config *config)
 	this->make_root(config->branch_length);
 	this->grow_network(config);
 
+	printf("%s\n",PRINT_LINE);
+	printf("[Lsystem] Purkinje structure was build with sucess!\n");
+	printf("[Lsystem] There are %d nodes\n",this->the_purkinje_network->get_total_nodes());
+	printf("[Lsystem] There are %d edges\n",this->the_purkinje_network->get_total_edges());
+	printf("%s\n",PRINT_LINE);
+
+	this->join_terminals();
+
+	// DEBUG
+	//this->count_number_terminals();
 	//this->the_purkinje_network->print();
 
 }
@@ -534,6 +544,76 @@ bool Lsystem_Generator::check_terminals(const Node *gnode, const double x, const
 
 	return false;
 	
+}
+
+void Lsystem_Generator::join_terminals ()
+{
+	Graph *pk = this->the_purkinje_network;
+
+	int n = this->the_miocardium->num_terminal_points;
+	Point *terminals = this->the_miocardium->terminal_points;
+
+	// Pass through all the terminals and verify if there is one that has not been already taken
+	for (int i = 0; i < n; i++)
+	{
+		if (!terminals[i].taken)
+		{
+			terminals[i].taken = true;
+			double dist = DBL_MAX;
+			int id_most_near = -1;
+			double x, y, z;
+			Node *ptr = pk->get_list_nodes();
+			while (ptr != NULL)
+			{
+				double norm = calc_norm(terminals[i].x,terminals[i].y,terminals[i].z,ptr->x,ptr->y,ptr->z);
+				if (norm < dist && ptr->num_edges < 2)
+				{
+					dist = norm;
+					id_most_near = ptr->id;
+					x = ptr->x;
+					y = ptr->y;
+					z = ptr->z;	
+				}
+				ptr = ptr->next;
+			}
+			// Get the reference to the nearest Node of a terminal
+			Node *prev = pk->search_node(id_most_near);
+			
+			double pos[3];
+			pos[0] = terminals[i].x;
+			pos[1] = terminals[i].y;
+			pos[2] = terminals[i].z;
+			Node *tmp = pk->insert_node_graph(pos,prev);
+
+			if (tmp != NULL)
+			{
+				pk->insert_edge_graph(prev->id,tmp->id);
+				tmp->is_terminal = true;
+			}
+			/*
+			printf("=====================================================================\n");
+			printf("Most near Node = %d\n",id_most_near);
+			printf("Terminal point = (%.10lf,%.10lf,%.10lf) - Most near Node = (%.10lf,%.10lf,%.10lf)\n", \
+				terminals[i].x,terminals[i].y,terminals[i].z,x,y,z);
+			printf("Distance = %.10lf\n",dist);
+			printf("=====================================================================\n");
+			*/
+		}
+	}
+}
+
+void Lsystem_Generator::count_number_terminals ()
+{
+	int n = this->the_miocardium->num_terminal_points;
+	Point *terminals = this->the_miocardium->terminal_points;
+
+	int cont = 0;
+	for (int i = 0; i < n; i++)
+	{
+		if (terminals[i].taken) 
+			cont++;
+	}
+	printf("[!] There are %d terminals\n",cont);
 }
 
 void Lsystem_Generator::write_network_to_VTK ()

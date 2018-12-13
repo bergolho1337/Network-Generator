@@ -75,6 +75,7 @@ public:
 
 	Node* insert_node_graph (const double pos[], const Node *prev);
 	void insert_edge_graph (const int id_1, const int id_2);
+	Node* search_node (int id);
 private:
 	Node *list_nodes;			// Pointer to the lists of Nodes
 	Node *last_node;				// Pointer to the last Node of the list
@@ -84,7 +85,6 @@ private:
 	double *dist;				// Distance from the source node to all the others
 	int *term;					// Pointer to the terminals 
 
-	Node* search_node (int id);
 	bool is_duplicate (const double pos[]);
 	void calc_original_growth_direction (double d_ori[], const Node *prev,\
 					    const double x, const double y, const double z);

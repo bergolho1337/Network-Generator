@@ -14,6 +14,7 @@
 
 #include "graph.h"
 #include "miocardium.h"
+#include "utils.h"
 
 #define MAX_SIZE_RAND_ARRAY 1000			// Max size of the random number array
 #define SIGMA_RANDOM_DISTRIBUTION 0.2			// 0.1*l_bra gerou bons resultados
@@ -68,11 +69,14 @@ private:
 	void generate_branch (const Node *gnode, const double d[], const Lsystem_Config *config);
 	double calculate_size_branch (const double l_bra);
 	int search_most_near (const Point *arr, const unsigned int n, const double x, const double y, const double z);
+	void join_terminals ();
+	void count_number_terminals ();
 
 	bool check_terminals (const Node *gnode, const double x, const double y, const double z, const double tolerance);
 	bool check_collision_tree (const Node *gnode, const double x, const double y, const double z, const double tolerance);	
 	bool check_collision_miocardium (const Node *gnode, const double x, const double y, const double z, const double tolerance);
 	bool check_limits (const Node *gnode, const double x, const double y, const double z);
+	
 
 public:
 	Lsystem_Generator (Lsystem_Config *config);

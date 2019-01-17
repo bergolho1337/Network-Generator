@@ -4,37 +4,72 @@
 #include <cmath>
 #include <ctime>
 #include <vector>
+#include <algorithm>
 
 #include "options.h"
 
+// Constants and Macros
+const int ROOT_STICKER = 0;
+const int TERMINAL_STICKER = 1;
+const int BIFURCATION_STICKER = 2;
+const int UNDEFINED_VALUE = -1;
+const double ETA = 3.6e-03;         // Viscosity of blood (Pa.s)
+const int N_toss = 200;             // Number of tosses for a new terminal
+
+#define PRINT_LINE "------------------------------------------------------------------------------"
+
 using namespace std;
 
-struct Point
+class Point
 {
+public:
     double x, y, z;
-}typedef Point;
 
-struct Segment
+public:
+    Point ();
+    Point (const double x, const double y, const double z);
+};
+
+class Segment
 {
+public:
     int type;
 
     double beta_l;
     double beta_r;
     double Q;
+    double p;
+    double radius;
+    double length;
 
+    int index_source;
+    int index_destination;
     Point *p1;
     Point *p2;
 
     Segment *left;
     Segment *right;
     Segment *parent;
-}typedef Segment;
+public:
+    Segment ();
+    Segment (Point *p1, Point *p2,\
+            int index_source, int index_destination,\
+            Segment *left, Segment *right, Segment *parent,\
+            const double Q, const double p);
+    double calc_dproj (const Point p);
+    double calc_dortho (const Point p);
+    double calc_dend (const Point p);
+private:
+    int get_segment_type ();
+    void calc_bifurcation_ratio ();
+};
 
 class CCO_Network
 {
 private:
     int num_terminals;
 
+    int N_term;
     double Q_perf;
     double p_perf;
     double r_perf;
@@ -47,9 +82,22 @@ public:
     CCO_Network (User_Options *options);
     void grow_tree ();
     void make_root ();
+    void generate_new_terminal ();
+
+    void print_points ();
+    void print_segments ();
+    void write_to_vtk ();
+
+private:
+    void calc_middle_segment (Point *p, const Segment segment);
+    double calc_dthreashold (const double radius, const int num_term);
+    bool has_collision (const Point p, const unsigned int iconn_index);
 };
 
+double calc_size_segment (const Point *p1, const Point *p2);
+double calc_poisseulle (const double Q, const double p, const double l);
 void generate_point_inside_circle (Point *p, const double radius);
+void print_point (const Point p);
 
 /*
 #include "graph.h"

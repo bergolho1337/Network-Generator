@@ -22,6 +22,8 @@ int main (int argc, char *argv[])
     CCO_Network *the_network = new CCO_Network(options);
     
     the_network->grow_tree();
+    
+    the_network->write_to_vtk();
 
     delete the_network;
 

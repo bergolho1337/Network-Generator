@@ -4,11 +4,10 @@ User_Options* read_user_input (int argc, char *argv[])
 {
     User_Options *options = new User_Options();
 
-    options->x0 = atof(argv[1]); options->y0 = atof(argv[2]);
-    options->Q_perf = atof(argv[3]);
-    options->p_perf = atof(argv[4]);
-    options->r_perf = atof(argv[5]);
-    options->N_term = atoi(argv[6]);
+    options->Q_perf = atof(argv[1]);
+    options->p_perf = atof(argv[2]);
+    options->r_perf = atof(argv[3]);
+    options->N_term = atoi(argv[4]);
 
     return options;
 }

@@ -56,6 +56,11 @@ public:
             int index_source, int index_destination,\
             Segment *left, Segment *right, Segment *parent,\
             const double Q, const double p);
+    void set_parent (Segment *new_parent) { this->parent = new_parent; }
+    void set_left_offspring (Segment *new_offspring) { this->left = new_offspring; }
+    void set_right_offspring (Segment *new_offspring) { this->right = new_offspring; }
+
+    void add_offspring (Segment *new_segment);
     double calc_dproj (const Point p);
     double calc_dortho (const Point p);
     double calc_dend (const Point p);
@@ -83,6 +88,7 @@ public:
     void grow_tree ();
     void make_root ();
     void generate_new_terminal ();
+    void create_bifurcation (const int iconn_index, Point new_point);
 
     void print_points ();
     void print_segments ();

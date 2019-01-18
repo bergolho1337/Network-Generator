@@ -66,6 +66,21 @@ double Segment::calc_dend (const Point p)
     return min(d_distal,d_proximal);
 }
 
+void Segment::add_offspring (Segment *new_segment)
+{
+    this->left = new_segment;
+    /*
+    if (this->left == NULL)
+        this->left = new_segment;
+    else if (this->right == NULL)
+        this->right = new_segment;
+    else
+    {
+        printf("[-] ERROR! Segment has already 2 offsprings\n");
+    }
+    */
+} 
+
 int Segment::get_segment_type ()
 {
     // Root
@@ -123,9 +138,13 @@ void CCO_Network::grow_tree ()
     // Main iteration loop
     while (num_terminals <= this->N_term)
     {
+        printf("%s\n",PRINT_LINE);
+        printf("[!] Working on terminal number %d\n",num_terminals);
+
         generate_new_terminal();
 
         num_terminals++;
+        printf("%s\n",PRINT_LINE);
     }
 }
 
@@ -145,12 +164,12 @@ void CCO_Network::make_root ()
     // Insert the points into the array of Point
     points.push_back(proximal);
     points.push_back(distal);
-    print_points();
+    //print_points();
 
     // Build and insert the root Segment into the array of Segments
     Segment root(&points[0],&points[1],0,1,NULL,NULL,NULL,Q_perf,p_perf);
     segments.push_back(root);
-    print_segments();
+    //print_segments();
 
     num_terminals++;
 }
@@ -158,7 +177,8 @@ void CCO_Network::make_root ()
 void CCO_Network::calc_middle_segment (Point *p, const Segment segment)
 {
     p->x = (segment.p1->x + segment.p2->x) / 2.0;
-    p->y = (segment.p1->y + segment.p2->y) / 2.0; 
+    p->y = (segment.p1->y + segment.p2->y) / 2.0;
+    p->z = (segment.p1->z + segment.p2->z) / 2.0;
 }
 
 bool CCO_Network::has_collision (const Point p, const unsigned iconn_index)
@@ -166,8 +186,15 @@ bool CCO_Network::has_collision (const Point p, const unsigned iconn_index)
     // Calculate the middle point of each segment
     Point middle_point;
 
+    // TODO:
+    // Build the two points of the new segment
+    // Then, for all the current segments of the tree, except ibiff and iconn,
+    // check if there is a collision
+
     for (unsigned int i = 0; i < segments.size(); i++)
     {
+        // TODO: Add the iold segment here ...
+        // Avoid the iconn and the iold segments from the check ..
         if (i != iconn_index)
         {
             Point *p1 = segments[i].p1;
@@ -193,7 +220,7 @@ bool CCO_Network::has_collision (const Point p, const unsigned iconn_index)
             }
         }
     }
-    
+
     return false;
 }
 
@@ -206,8 +233,11 @@ void CCO_Network::generate_new_terminal ()
     // Calculating the radius of the black-box
     double r_supp = sqrt(Q_perf / (num_terminals*M_PI));
 
+    // Save the current number of segments
+    unsigned int curr_num_segment = segments.size();
+
     // Find the best segment to make the connection
-    for (unsigned int i = 0; i < segments.size(); i++)
+    for (unsigned int i = 0; i < curr_num_segment; i++)
     {
         point_is_ok = false;
         toss = 0;
@@ -252,8 +282,59 @@ void CCO_Network::generate_new_terminal ()
         // Insert the new point into the array of points
         points.push_back(new_point);
 
+        //save_state_segment()
+        create_bifurcation(i,new_point);
 
     }
+
+}
+
+void CCO_Network::create_bifurcation (const int iconn_index, Point new_point)
+{
+    // Saving the old values
+    Segment *iconn = &segments[iconn_index];
+    Segment *iold = iconn->parent;
+    Point *p1 = iconn->p1;
+    Point *p2 = iconn->p2;
+    int terminal_index = (int)points.size()-1;
+
+    // Calculating the middle point
+    Point middle_point;
+    calc_middle_segment(&middle_point,segments[iconn_index]);
+    points.push_back(middle_point);
+
+    // Create the bifurcation segment
+    Segment ibiff(iconn->p1,&middle_point,\
+                iconn->index_source,(int)points.size()-1,\
+                NULL,NULL,NULL,0,0);
+    
+    // Create the terminal segment
+    Segment inew(&middle_point,&new_point,\
+                (int)points.size()-1,terminal_index,\
+                NULL,NULL,NULL,0,0);
+
+    // Set the pointers of the new segments
+    ibiff.set_parent(iold);
+    ibiff.set_left_offspring(iconn);
+    ibiff.set_right_offspring(&inew);
+
+    // Corner case: It can be the root ...
+    if (iold != NULL)
+        iold->add_offspring(&ibiff);
+
+    iconn->set_parent(&ibiff);
+    inew.set_parent(&ibiff);
+    
+    // Add the segment to the array
+    segments.push_back(ibiff);
+    segments.push_back(inew);
+
+    //print_segments();
+
+    // Update the tree
+    //update_tree();
+
+    //print_points();
 
 }
 

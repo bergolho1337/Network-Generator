@@ -1,2 +1,3 @@
-- Rebuild the code using a vector of segments
-- Add assert for some functions
+- Finish test2()
+- Implement destroy_segment()
+- Build a test3()

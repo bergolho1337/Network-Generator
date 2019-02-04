@@ -6,13 +6,17 @@
 #include <vector>
 #include <algorithm>
 
+#include <vtkRegularPolygonSource.h>
+#include <vtkXMLPolyDataWriter.h>
+
+
 #include "options.h"
 
 // Constants and Macros
-const int ROOT_STICKER = 0;
-const int TERMINAL_STICKER = 1;
-const int BIFURCATION_STICKER = 2;
-const int UNDEFINED_VALUE = -1;
+const int ROOT_STICKER = 1;
+const int TERMINAL_STICKER = 2;
+const int BIFURCATION_STICKER = 3;
+const int NIL = -1;
 const double ETA = 3.6e-03;         // Viscosity of blood (Pa.s)
 const int N_toss = 200;             // Number of tosses for a new terminal
 
@@ -23,11 +27,12 @@ using namespace std;
 class Point
 {
 public:
+    unsigned int id;
     double x, y, z;
 
 public:
     Point ();
-    Point (const double x, const double y, const double z);
+    Point (const int id, const double x, const double y, const double z);
 };
 
 class Segment
@@ -40,25 +45,26 @@ public:
     double Q;
     double p;
     double radius;
+    double resistance;          // Relative resistance
     double length;
+    int ndist;
 
-    int index_source;
-    int index_destination;
-    Point *p1;
-    Point *p2;
+    unsigned int src;           // Source Point index
+    unsigned int dest;          // Destination Point index
+    //Point *p1;
+    //Point *p2;
 
-    Segment *left;
-    Segment *right;
-    Segment *parent;
+    int left;          // Left offspring Segment index
+    int right;         // Right offspring Segment index
+    int parent;        // Parent offspring Segment index
+    //Segment *left;
+    //Segment *right;
+    //Segment *parent;
 public:
     Segment ();
     Segment (Point *p1, Point *p2,\
-            int index_source, int index_destination,\
-            Segment *left, Segment *right, Segment *parent,\
+            int left, int right, int parent,\
             const double Q, const double p);
-    void set_parent (Segment *new_parent) { this->parent = new_parent; }
-    void set_left_offspring (Segment *new_offspring) { this->left = new_offspring; }
-    void set_right_offspring (Segment *new_offspring) { this->right = new_offspring; }
 
     void add_offspring (Segment *new_segment);
     double calc_dproj (const Point p);
@@ -66,7 +72,6 @@ public:
     double calc_dend (const Point p);
 private:
     int get_segment_type ();
-    void calc_bifurcation_ratio ();
 };
 
 class CCO_Network
@@ -78,41 +83,46 @@ private:
     double Q_perf;
     double p_perf;
     double r_perf;
+    double r_supp;
     
     vector<Point> points;
     vector<Segment> segments;
+    Point center;
 
 public:
     CCO_Network ();
     CCO_Network (User_Options *options);
     void grow_tree ();
     void make_root ();
+    void test1 ();
+    void test2 ();
+
     void generate_new_terminal ();
+    void build_segment (const unsigned int j);
+    void build_segment (const unsigned int j, double new_pos[]);
+    void destroy_segment (const int j);
     void create_bifurcation (const int iconn_index, Point new_point);
+
+    void get_feasible_point (Point *p, const double radius);
+    void generate_point_inside_perfusion_area (Point *p, const double radius);
+
+    bool is_inside_perfusion_area (const Point *p, const double radius);
 
     void print_points ();
     void print_segments ();
     void write_to_vtk ();
+    void draw_perfusion_area (const double radius);
 
 private:
-    void calc_middle_segment (Point *p, const Segment segment);
+    void calc_middle_segment (double pos[], Segment *s);
     double calc_dthreashold (const double radius, const int num_term);
-    bool has_collision (const Point p, const unsigned int iconn_index);
+    bool has_collision (Point p, const unsigned int iconn_index);
+    void calc_bifurcation_ratio (Segment *s);
 };
 
 double calc_size_segment (const Point *p1, const Point *p2);
 double calc_poisseulle (const double Q, const double p, const double l);
 void generate_point_inside_circle (Point *p, const double radius);
 void print_point (const Point p);
-
-/*
-#include "graph.h"
-
-bool is_inside_circle (const double x, const double y, const double r);
-void make_root (Graph *the_network, const double Q_perf, const double p_perf);
-void generate_terminals (Graph *the_network, const int N_term);
-void grow_cco_tree (Graph *the_network, User_Options *options);
-void add_terminal (Graph *the_network);
-*/
 
 #endif

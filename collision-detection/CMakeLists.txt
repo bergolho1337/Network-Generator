@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.1)
-project(Cco)
+project(Collision)
 
 if (CMAKE_VERSION VERSION_LESS "3.1")
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -13,13 +13,10 @@ SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin )
 
 SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -fno-strict-aliasing -Wall -Wno-unused-function")
 
-find_package(VTK REQUIRED)
-include(${VTK_USE_FILE})
-
 INCLUDE_DIRECTORIES(include)
 
 FILE(GLOB SOURCES "src/*.cpp")
 
-ADD_EXECUTABLE(Cco ${SOURCES}) 
+ADD_EXECUTABLE(Collision ${SOURCES}) 
 
-TARGET_LINK_LIBRARIES(Cco ${VTK_LIBRARIES} m)
+TARGET_LINK_LIBRARIES(Collision m)

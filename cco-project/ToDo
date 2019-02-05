@@ -1,3 +1,2 @@
-- Finish test2()
-- Implement destroy_segment()
-- Build a test3()
+- Implement generate_new_terminal()
+- Implement restore_state()

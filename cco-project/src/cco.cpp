@@ -217,7 +217,9 @@ void CCO_Network::grow_tree ()
 
     //test1();
 
-    test2();
+    //test2();
+
+    test3();
 
     /*
     // Main iteration loop
@@ -404,7 +406,7 @@ void CCO_Network::build_segment (const unsigned int j, double new_pos[])
     segments[j].right = inew_index;
     segments.push_back(inew);
 
-    print_segments();
+    //print_segments();
 
 }
 
@@ -424,9 +426,57 @@ void CCO_Network::build_segment (const unsigned int j)
     points.push_back(new_point);
 }
 
-void CCO_Network::destroy_segment (const int j)
+// Update the numbers of the points
+void CCO_Network::update_points (const unsigned int index)
 {
+    for (unsigned int i = 0; i < points.size(); i++)
+    {
+        if (points[i].id >= index)
+            points[i].id--;
+    }
+}
 
+// Update the numbers of the segment structure
+void CCO_Network::update_segments (const int s_index, const unsigned int p_index)
+{
+    for (unsigned int i = 0; i < segments.size(); i++)
+    {
+        // Point indexes
+        if (segments[i].src >= p_index)
+            segments[i].src--;
+        if (segments[i].dest >= p_index)
+            segments[i].dest--;
+
+        // Segment indexes
+        if (segments[i].left >= s_index)
+            segments[i].left--;
+        if (segments[i].right >= s_index)
+            segments[i].right--;
+    }
+}
+
+void CCO_Network::destroy_offspring (const int s_index)
+{
+    // Get the reference to the parent Segment
+    int parent_index = segments[s_index].parent;
+
+    // Find out if the offspring to be destroy is on the 'left' or 'right'
+    if (segments[parent_index].left == s_index)
+        segments[parent_index].left = NIL;
+    else
+        segments[parent_index].right = NIL;
+}
+
+void CCO_Network::destroy_segment (const int iconn_index)
+{
+    
+    unsigned int distal_point_index = segments[iconn_index].dest;
+    points.erase(points.begin() + distal_point_index);
+    update_points(distal_point_index);
+
+    destroy_offspring(iconn_index);
+    segments.erase(segments.begin() + iconn_index);
+    update_segments(iconn_index,distal_point_index); 
 }
 
 void CCO_Network::generate_new_terminal ()
@@ -564,6 +614,34 @@ double calc_poisseulle (const double Q, const double p, const double l)
     return pow( (8.0*Q*l*ETA)/(p*M_PI) , 0.25 );
 }
 
+void CCO_Network::test3 ()
+{
+    // Root
+    Point A(0,0,0,0);
+    Point B(1,-3,-3,0);
+    points.push_back(A);
+    points.push_back(B);
+
+    Segment s1(&A,&B,NIL,NIL,NIL,Q_perf,p_perf);
+    segments.push_back(s1);
+
+    // First segment
+    double pos1[3] = {1,-3,0};
+    build_segment(0,pos1);
+
+    // Second segment
+    double pos2[3] = {-2,-4,0};
+    build_segment(1,pos2);
+
+    // Third segment
+    double pos3[3] = {-1,-3,0};
+    build_segment(2,pos3);
+
+    destroy_segment(3);
+    destroy_segment(5);
+
+}
+
 void CCO_Network::test2 ()
 {
     // Root
@@ -580,8 +658,12 @@ void CCO_Network::test2 ()
     build_segment(0,pos1);
 
     // Second segment
-    //double pos2[3] = {-2,-4,0};
-    //build_segment(1,pos2);
+    double pos2[3] = {-2,-4,0};
+    build_segment(1,pos2);
+
+    // Third segment
+    double pos3[3] = {-1,-3,0};
+    build_segment(2,pos3);
 
     print_segments();
 

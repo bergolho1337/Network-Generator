@@ -96,12 +96,17 @@ public:
     void make_root ();
     void test1 ();
     void test2 ();
+    void test3 ();
 
     void generate_new_terminal ();
     void build_segment (const unsigned int j);
     void build_segment (const unsigned int j, double new_pos[]);
-    void destroy_segment (const int j);
+    void destroy_segment (const int iconn_index);
     void create_bifurcation (const int iconn_index, Point new_point);
+
+    void update_points (const unsigned int index);
+    void update_segments (const int s_index, const unsigned int p_index);
+    void destroy_offspring (const int s_index);
 
     void get_feasible_point (Point *p, const double radius);
     void generate_point_inside_perfusion_area (Point *p, const double radius);

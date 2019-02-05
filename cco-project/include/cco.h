@@ -97,11 +97,14 @@ public:
     void test1 ();
     void test2 ();
     void test3 ();
+    void test4 ();
 
     void generate_new_terminal ();
+    void build_segment (double new_pos[]);
     void build_segment (const unsigned int j);
     void build_segment (const unsigned int j, double new_pos[]);
     void destroy_segment (const int iconn_index);
+    int connection_search (const double pos[]);
     void create_bifurcation (const int iconn_index, Point new_point);
 
     void update_points (const unsigned int index);
@@ -121,8 +124,9 @@ public:
 private:
     void calc_middle_segment (double pos[], Segment *s);
     double calc_dthreashold (const double radius, const int num_term);
-    bool has_collision (Point p, const unsigned int iconn_index);
+    bool has_collision (const double pos[], const int iconn);
     void calc_bifurcation_ratio (Segment *s);
+    bool collision_detect (Point p1, Point p2, Point p3, Point p4);
 };
 
 double calc_size_segment (const Point *p1, const Point *p2);

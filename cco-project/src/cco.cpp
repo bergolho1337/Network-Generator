@@ -213,15 +213,14 @@ void CCO_Network::make_root ()
 
 void CCO_Network::grow_tree ()
 {
-    //make_root();
-
     //test1();
-
     //test2();
-
-    test3();
+    //test3();
+    test4();
 
     /*
+    make_root();
+
     // Main iteration loop
     while (num_terminals <= this->N_term)
     {
@@ -265,48 +264,6 @@ void CCO_Network::calc_middle_segment (double pos[], Segment *s)
     pos[0] = (p1->x + p2->x) / 2.0;
     pos[1] = (p1->y + p2->y) / 2.0;
     pos[2] = (p1->z + p2->z) / 2.0;
-}
-
-// TODO: Revise
-bool CCO_Network::has_collision (Point p, const unsigned iconn_index)
-{
-/*
-    // Calculate the middle point of the connection segment
-    Point middle_point;
-    calc_middle_segment(&middle_point,segments[iconn_index]);
-  
-    // Then, check for collision with all segments of the tree, except iconn,
-    for (unsigned int i = 0; i < segments.size(); i++)
-    {
-        if (i != iconn_index)
-        {
-            printf("Checking collison between segment %d -- %d\n",i,iconn_index);
-
-            Point *p1 = segments[i].p1;
-            Point *p2 = segments[i].p2;
-            calc_middle_segment(&middle_point,segments[i]);
-
-            double denominator = ((p2->x - p1->x) * (p.y - middle_point.y)) - ((p2->y - p1->y) * (p.x - middle_point.x));
-            double numerator1 = ((p1->y - middle_point.y) * (p.x - middle_point.x)) - ((p1->x - middle_point.x) * (p.y - middle_point.y));
-            double numerator2 = ((p1->y - middle_point.y) * (p2->x - p1->x)) - ((p1->x - middle_point.x) * (p2->y - p1->y));
-            
-            // Detect coincident lines (has a problem, read below)
-            if (denominator == 0) return numerator1 == 0 && numerator2 == 0;
-
-            double r = numerator1 / denominator;
-            double s = numerator2 / denominator;
-
-            bool intersect = (r >= 0 && r <= 1) && (s >= 0 && s <= 1);
-
-            if (intersect)
-            {
-                printf("[-] Intersection with segment %u !\n",i);
-                return true;
-            }
-        }
-    }
-*/
-    return false;
 }
 
 void CCO_Network::get_feasible_point (Point *p, const double radius)
@@ -410,6 +367,110 @@ void CCO_Network::build_segment (const unsigned int j, double new_pos[])
 
 }
 
+bool CCO_Network::collision_detect (Point p1, Point p2, Point p3, Point p4)
+{
+    double denominator = ((p2.x - p1.x) * (p3.y - p4.y)) - ((p2.y - p1.y) * (p3.x - p4.x));
+    double numerator1 = ((p1.y - p4.y) * (p3.x - p4.x)) - ((p1.x - p4.x) * (p3.y - p4.y));
+    double numerator2 = ((p1.y - p4.y) * (p2.x - p1.x)) - ((p1.x - p4.x) * (p2.y - p1.y));
+    
+    // Detect coincident lines (has a problem, read below)
+    if (denominator == 0) return numerator1 == 0 && numerator2 == 0;
+
+    double r = numerator1 / denominator;
+    double s = numerator2 / denominator;
+
+    return (r >= 0 && r <= 1) && (s >= 0 && s <= 1);
+
+}
+
+bool CCO_Network::has_collision (const double pos[], const int iconn)
+{
+    // Create the new point
+    Point new_point(0,pos[0],pos[1],pos[2]);
+
+    // Calculate the middle point of the connection segment
+    double middle_pos[3];
+    calc_middle_segment(middle_pos,&segments[iconn]);
+    Point middle_point(1,middle_pos[0],middle_pos[1],middle_pos[2]);
+  
+    printf("[+] Trying connection with segment %u\n",iconn);
+    // Then, check for collision with all segments of the tree, except iconn,
+    for (int i = 0; i < (int)segments.size(); i++)
+    {
+        if (i != iconn)
+        {
+            printf("\t[!] Checking collison between segment %d\n",i);
+
+            // Get the reference to the points of the current segment
+            Point src = points[segments[i].src];
+            Point dest = points[segments[i].dest];
+
+            bool intersect = collision_detect(middle_point,new_point,src,dest);
+            if (intersect)
+            {
+                printf("\t[-] ERROR! Intersection with segment %d !\n",i);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+int CCO_Network::connection_search (const double pos[])
+{
+    for (int i = 0; i < (int)segments.size(); i++)
+    {
+        if (!has_collision(pos,i))
+        {
+            printf("[!] Making connection with segment %u\n",i);
+            return i;
+        }
+    }
+    printf("[!] Collision with all segments!\n");
+    return -1;
+}
+
+void CCO_Network::build_segment (double new_pos[])
+{
+    unsigned int iconn_index = connection_search(new_pos);
+    Segment *iconn = &segments[iconn_index];
+
+    double pos[3];
+    unsigned int middle_point_index = points.size(); 
+    calc_middle_segment(pos,iconn);
+    Point middle_point(middle_point_index,pos[0],pos[1],pos[2]);
+    points.push_back(middle_point);
+
+    // Save iconn data
+    unsigned int iconn_parent = iconn->parent;
+    unsigned int iconn_left = iconn->left;
+    unsigned int iconn_right = iconn->right;
+    unsigned int iconn_src = iconn->src;
+    unsigned int iconn_dest = iconn->dest;
+
+    // Create ibiff
+    unsigned int ibiff_index = segments.size();
+    Segment ibiff(&points[middle_point_index],&points[iconn->dest],\
+                iconn->left,iconn->right,iconn_index,\
+                Q_perf,p_perf);
+    segments[iconn_index].left = ibiff_index;
+    segments[iconn_index].dest = middle_point_index;
+    segments.push_back(ibiff);
+
+    // Create inew
+    unsigned int new_point_index = points.size();
+    Point new_point(new_point_index,new_pos[0],new_pos[1],new_pos[2]);
+    points.push_back(new_point);
+    unsigned int inew_index = segments.size();
+    Segment inew(&points[middle_point_index],&points[new_point_index],\
+                NIL,NIL,iconn_index,\
+                Q_perf,p_perf);
+    segments[iconn_index].right = inew_index;
+    segments.push_back(inew);
+
+    //print_segments();
+}
+
 // Construct a new segment from a Segment 'j' of the current tree
 void CCO_Network::build_segment (const unsigned int j)
 {
@@ -481,17 +542,15 @@ void CCO_Network::destroy_segment (const int iconn_index)
 
 void CCO_Network::generate_new_terminal ()
 {
-/*
-    // Calculating the radius of the black-box
-    double radius = sqrt(Q_perf / M_PI);
-    
+/*    
     Point new_point;
-    get_feasible_point(&new_point,radius);
+    generate_point_inside_perfusion_area(&new_point,r_supp);
 
     // Connection search
     unsigned int num_segments = segments.size();
     for (unsigned int j = 0; j < num_segments; j++)
     {
+        int ibiff_index = construct_segment(j,new_point);
         if (!has_collision(new_point,j))
         {
             int ibiff_index = construct_segment(j,new_point);
@@ -612,6 +671,40 @@ double calc_size_segment (const Point *p1, const Point *p2)
 double calc_poisseulle (const double Q, const double p, const double l)
 {
     return pow( (8.0*Q*l*ETA)/(p*M_PI) , 0.25 );
+}
+
+void CCO_Network::test4 ()
+{
+    // Root
+    Point A(0,0,0,0);
+    Point B(1,0,-4,0);
+    points.push_back(A);
+    points.push_back(B);
+
+    Segment s1(&A,&B,NIL,NIL,NIL,Q_perf,p_perf);
+    segments.push_back(s1);
+
+    // First insert
+    double pos1[3] = {-2,-4,0};
+    build_segment(pos1);
+    printf("Segment 1 has been inserted sucessfully!\n");
+
+    // Second insert
+    double pos2[3] = {-1,-4,0};
+    build_segment(pos2);
+    printf("Segment 2 has been inserted sucessfully!\n");
+
+    // Third insert
+    double pos3[3] = {2,-2,0};
+    build_segment(pos3);
+    printf("Segment 3 has been inserted sucessfully!\n");
+
+    // Forth insert
+    double pos4[3] = {-0.5,-5,0};
+    build_segment(pos4);
+    printf("Segment 4 has been inserted sucessfully!\n");
+
+    print_segments();
 }
 
 void CCO_Network::test3 ()

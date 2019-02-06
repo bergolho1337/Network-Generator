@@ -105,6 +105,7 @@ public:
     void build_segment (const unsigned int j, double new_pos[]);
     void destroy_segment (const int iconn_index);
     int connection_search (const double pos[]);
+    int connection_search_closest (const double pos[]);
     void create_bifurcation (const int iconn_index, Point new_point);
 
     void update_points (const unsigned int index);
@@ -113,8 +114,10 @@ public:
 
     void get_feasible_point (Point *p, const double radius);
     void generate_point_inside_perfusion_area (Point *p, const double radius);
+    void generate_point_inside_perfusion_area (double pos[], const double radius);
 
     bool is_inside_perfusion_area (const Point *p, const double radius);
+    bool is_inside_perfusion_area (const double pos[], const double radius);
 
     void print_points ();
     void print_segments ();
@@ -133,5 +136,6 @@ double calc_size_segment (const Point *p1, const Point *p2);
 double calc_poisseulle (const double Q, const double p, const double l);
 void generate_point_inside_circle (Point *p, const double radius);
 void print_point (const Point p);
+double calc_euclidean_dist (const double a[], const double b[]);
 
 #endif

@@ -158,6 +158,13 @@ bool CCO_Network::is_inside_perfusion_area (const Point *p, const double radius)
     return (d <= radius) ? true : false;
 }
 
+bool CCO_Network::is_inside_perfusion_area (const double pos[], const double radius)
+{
+    double d = sqrt(pow(pos[0] - center.x,2) + pow(pos[1] - center.y,2) + pow(pos[2] - center.z,2));
+
+    return (d <= radius) ? true : false;
+}
+
 void CCO_Network::generate_point_inside_perfusion_area (Point *p, const double radius)
 {
     double rand_number;
@@ -174,6 +181,23 @@ void CCO_Network::generate_point_inside_perfusion_area (Point *p, const double r
          
     }while (!is_inside_perfusion_area(p,radius));
     p->id = num_points;
+}
+
+void CCO_Network::generate_point_inside_perfusion_area (double pos[], const double radius)
+{
+    double rand_number;
+    unsigned int num_points = points.size();
+    do
+    {
+        rand_number = (double)rand() / (double)RAND_MAX;
+        pos[0] = -radius + 2.0*rand_number*radius;
+
+        rand_number = (double)rand() / (double)RAND_MAX;
+        pos[1] = -2.0*rand_number*radius;
+
+        pos[2] = 0.0;
+         
+    }while (!is_inside_perfusion_area(pos,radius));
 }
 
 void CCO_Network::make_root ()
@@ -195,7 +219,8 @@ void CCO_Network::make_root ()
     Point distal;
     
     // Calculate the distal position of the root inside the circle with radius r_supp
-    srand(time(NULL));
+    srand(300);
+    //srand(time(NULL));
     generate_point_inside_perfusion_area(&distal,r_supp);
     
     // Insert the point into the array of Points
@@ -216,9 +241,8 @@ void CCO_Network::grow_tree ()
     //test1();
     //test2();
     //test3();
-    test4();
+    //test4();
 
-    /*
     make_root();
 
     // Main iteration loop
@@ -232,7 +256,6 @@ void CCO_Network::grow_tree ()
         num_terminals++;
         printf("%s\n",PRINT_LINE);
     }
-    */
 }
 
 void CCO_Network::draw_perfusion_area (const double radius)
@@ -326,47 +349,6 @@ void CCO_Network::get_feasible_point (Point *p, const double radius)
     p->z = new_point.z;
 }
 
-void CCO_Network::build_segment (const unsigned int j, double new_pos[])
-{
-    Segment *iconn = &segments[j];
-
-    double pos[3];
-    unsigned int middle_point_index = points.size(); 
-    calc_middle_segment(pos,iconn);
-    Point middle_point(middle_point_index,pos[0],pos[1],pos[2]);
-    points.push_back(middle_point);
-
-    // Save iconn data
-    unsigned int iconn_parent = iconn->parent;
-    unsigned int iconn_left = iconn->left;
-    unsigned int iconn_right = iconn->right;
-    unsigned int iconn_src = iconn->src;
-    unsigned int iconn_dest = iconn->dest;
-
-    // Create ibiff
-    unsigned int ibiff_index = segments.size();
-    Segment ibiff(&points[middle_point_index],&points[iconn->dest],\
-                iconn->left,iconn->right,j,\
-                Q_perf,p_perf);
-    segments[j].left = ibiff_index;
-    segments[j].dest = middle_point_index;
-    segments.push_back(ibiff);
-
-    // Create inew
-    unsigned int new_point_index = points.size();
-    Point new_point(new_point_index,new_pos[0],new_pos[1],new_pos[2]);
-    points.push_back(new_point);
-    unsigned int inew_index = segments.size();
-    Segment inew(&points[middle_point_index],&points[new_point_index],\
-                NIL,NIL,j,\
-                Q_perf,p_perf);
-    segments[j].right = inew_index;
-    segments.push_back(inew);
-
-    //print_segments();
-
-}
-
 bool CCO_Network::collision_detect (Point p1, Point p2, Point p3, Point p4)
 {
     double denominator = ((p2.x - p1.x) * (p3.y - p4.y)) - ((p2.y - p1.y) * (p3.x - p4.x));
@@ -430,6 +412,31 @@ int CCO_Network::connection_search (const double pos[])
     return -1;
 }
 
+int CCO_Network::connection_search_closest (const double pos[])
+{
+    int min_index = -1;
+    double min_d = DBL_MAX;
+
+    for (int i = 0; i < (int)segments.size(); i++)
+    {
+        if (!has_collision(pos,i))
+        {
+            double new_pos[3];
+            calc_middle_segment(new_pos,&segments[i]);
+
+            double d = calc_euclidean_dist(pos,new_pos);
+            if (d < min_d)
+            {
+                min_d = d;
+                min_index = i;
+            }
+        }
+    }
+    if (min_index == -1)
+        printf("[!] Collision with all segments!\n");
+    return min_index;
+}
+
 void CCO_Network::build_segment (double new_pos[])
 {
     unsigned int iconn_index = connection_search(new_pos);
@@ -487,6 +494,47 @@ void CCO_Network::build_segment (const unsigned int j)
     points.push_back(new_point);
 }
 
+void CCO_Network::build_segment (const unsigned int j, double new_pos[])
+{
+    Segment *iconn = &segments[j];
+
+    double pos[3];
+    unsigned int middle_point_index = points.size(); 
+    calc_middle_segment(pos,iconn);
+    Point middle_point(middle_point_index,pos[0],pos[1],pos[2]);
+    points.push_back(middle_point);
+
+    // Save iconn data
+    unsigned int iconn_parent = iconn->parent;
+    unsigned int iconn_left = iconn->left;
+    unsigned int iconn_right = iconn->right;
+    unsigned int iconn_src = iconn->src;
+    unsigned int iconn_dest = iconn->dest;
+
+    // Create ibiff
+    unsigned int ibiff_index = segments.size();
+    Segment ibiff(&points[middle_point_index],&points[iconn->dest],\
+                iconn->left,iconn->right,j,\
+                Q_perf,p_perf);
+    segments[j].left = ibiff_index;
+    segments[j].dest = middle_point_index;
+    segments.push_back(ibiff);
+
+    // Create inew
+    unsigned int new_point_index = points.size();
+    Point new_point(new_point_index,new_pos[0],new_pos[1],new_pos[2]);
+    points.push_back(new_point);
+    unsigned int inew_index = segments.size();
+    Segment inew(&points[middle_point_index],&points[new_point_index],\
+                NIL,NIL,j,\
+                Q_perf,p_perf);
+    segments[j].right = inew_index;
+    segments.push_back(inew);
+
+    //print_segments();
+
+}
+
 // Update the numbers of the points
 void CCO_Network::update_points (const unsigned int index)
 {
@@ -540,23 +588,30 @@ void CCO_Network::destroy_segment (const int iconn_index)
     update_segments(iconn_index,distal_point_index); 
 }
 
+// TODO: Add the connection search test from the paper here ...
 void CCO_Network::generate_new_terminal ()
 {
-/*    
-    Point new_point;
-    generate_point_inside_perfusion_area(&new_point,r_supp);
+    // Generate the terminal position inside the perfusion area
+    double pos[3];
+    generate_point_inside_perfusion_area(pos,r_supp);
+
+    // Conection search
+    //int iconn_index = connection_search(pos);
+    int iconn_index = connection_search_closest(pos);
+    build_segment(iconn_index,pos);
 
     // Connection search
+    /*
     unsigned int num_segments = segments.size();
     for (unsigned int j = 0; j < num_segments; j++)
     {
-        int ibiff_index = construct_segment(j,new_point);
-        if (!has_collision(new_point,j))
+        build_segment(j,pos);
+        if (!has_collision(pos,j))
         {
-            int ibiff_index = construct_segment(j,new_point);
+            build_segment(j,pos);
         }
     }
-*/
+    */
 }
 
 void CCO_Network::create_bifurcation (const int iconn_index, Point new_point)
@@ -798,4 +853,9 @@ void CCO_Network::test1 ()
     segments.push_back(s6);
     segments.push_back(s7);
 
+}
+
+double calc_euclidean_dist (const double a[], const double b[])
+{
+    return sqrt(pow(a[0]-b[0],2) + pow(a[1]-b[1],2) + pow(a[2]-b[2],2));
 }

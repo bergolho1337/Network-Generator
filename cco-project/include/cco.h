@@ -66,10 +66,6 @@ public:
             int left, int right, int parent,\
             const double Q, const double p);
 
-    void add_offspring (Segment *new_segment);
-    double calc_dproj (const Point p);
-    double calc_dortho (const Point p);
-    double calc_dend (const Point p);
 private:
     int get_segment_type ();
 };
@@ -100,13 +96,14 @@ public:
     void test4 ();
 
     void generate_new_terminal ();
+    void generate_new_terminal_old ();
     void build_segment (double new_pos[]);
     void build_segment (const unsigned int j);
     void build_segment (const unsigned int j, double new_pos[]);
     void destroy_segment (const int iconn_index);
     int connection_search (const double pos[]);
     int connection_search_closest (const double pos[]);
-    void create_bifurcation (const int iconn_index, Point new_point);
+    int connection_search_paper (const double pos[], const double d_threash);
 
     void update_points (const unsigned int index);
     void update_segments (const int s_index, const unsigned int p_index);
@@ -119,6 +116,10 @@ public:
     bool is_inside_perfusion_area (const Point *p, const double radius);
     bool is_inside_perfusion_area (const double pos[], const double radius);
 
+    double calc_dproj (const double pos[], const int iconn_index);
+    double calc_dortho (const double pos[], const int iconn_index);
+    double calc_dend (const double pos[], const int iconn_index);
+
     void print_points ();
     void print_segments ();
     void write_to_vtk ();
@@ -129,6 +130,7 @@ private:
     double calc_dthreashold (const double radius, const int num_term);
     bool has_collision (const double pos[], const int iconn);
     void calc_bifurcation_ratio (Segment *s);
+    bool distance_criterion (const double pos[], const int iconn_index, const double d_threash);
     bool collision_detect (Point p1, Point p2, Point p3, Point p4);
 };
 

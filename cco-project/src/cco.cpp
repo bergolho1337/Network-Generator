@@ -1,5 +1,7 @@
 #include "../include/cco.h"
 
+double D_CRIT;
+
 Point::Point () { }
 
 Point::Point (const int id, const double x, const double y, const double z)
@@ -36,67 +38,54 @@ Segment::Segment (Point *p1, Point *p2,\
 // Area of the supporting circle
 double CCO_Network::calc_dthreashold (const double radius, const int num_term)
 {
-    return sqrt(M_PI*radius*radius/num_term);
+    return sqrt( (double)(M_PI*radius*radius) / (double)(num_term) );
 }
 
-double Segment::calc_dproj (const Point p)
+double CCO_Network::calc_dproj (const double pos[], const int iconn_index)
 {
-    /*
-    Point *distal = this->p1;
-    Point *proximal = this->p2;
+    int src = segments[iconn_index].src;
+    int dest = segments[iconn_index].dest;
+    double length = segments[iconn_index].length;
 
-    double dot_product = ((proximal->x - distal->x)*(p.x - distal->x)) +\
-                         ((proximal->y - distal->y)*(p.y - distal->y)) +\
-                         ((proximal->z - distal->z)*(p.z - distal->z));
+    Point distal = points[src];
+    Point proximal = points[dest];
 
-    return dot_product*pow(this->length,-2.0);
-    */
-   return 0;
+    double dot_product = ((proximal.x - distal.x)*(pos[0] - distal.x)) +\
+                         ((proximal.y - distal.y)*(pos[1] - distal.y)) +\
+                         ((proximal.z - distal.z)*(pos[2] - distal.z));
+
+    return dot_product*pow(length,-2.0);
 }
 
-double Segment::calc_dortho (const Point p)
+double CCO_Network::calc_dortho (const double pos[], const int iconn_index)
 {
-    /*
-    Point *distal = this->p1;
-    Point *proximal = this->p2;
+    int src = segments[iconn_index].src;
+    int dest = segments[iconn_index].dest;
+    double length = segments[iconn_index].length;
 
-    double dot_product = fabs(((-proximal->y + distal->y)*(p.x - distal->x)) +\
-                         ((proximal->x - distal->x)*(p.y - distal->y)) +\
-                         ((proximal->z - distal->z)*(p.z - distal->z)));
+    Point distal = points[src];
+    Point proximal = points[dest];
 
-    return dot_product*pow(this->length,-1.0);
-    */
-   return 0;
+    double dot_product = ((-proximal.y + distal.y)*(pos[0] - distal.x)) +\
+                         ((proximal.x - distal.x)*(pos[1] - distal.y)) +\
+                         ((proximal.z - distal.z)*(pos[2] - distal.z));
+
+    return fabs(dot_product)*pow(length,-1.0);
 }
 
-double Segment::calc_dend (const Point p)
+double CCO_Network::calc_dend (const double pos[], const int iconn_index)
 {
-    /*
-    Point *distal = this->p1;
-    Point *proximal = this->p2;
+    int src = segments[iconn_index].src;
+    int dest = segments[iconn_index].dest;
 
-    double d_distal = pow( pow(p.x-distal->x,2) + pow(p.y-distal->y,2) + pow(p.z-distal->z,2) ,0.5);
-    double d_proximal = pow( pow(p.x-proximal->x,2) + pow(p.y-proximal->y,2) + pow(p.z-proximal->z,2) ,0.5);
+    Point distal = points[src];
+    Point proximal = points[dest];
 
-    return min(d_distal,d_proximal);
-    */
-   return 0;
+    double d_distal = sqrt( pow(pos[0]-distal.x,2) + pow(pos[1]-distal.y,2) + pow(pos[2]-distal.z,2));
+    double d_proximal = sqrt( pow(pos[0]-proximal.x,2) + pow(pos[1]-proximal.y,2) + pow(pos[2]-proximal.z,2));
+
+    return min(d_distal,d_proximal);    
 }
-
-void Segment::add_offspring (Segment *new_segment)
-{
-    /*
-    this->left = new_segment;
-    if (this->left == NULL)
-        this->left = new_segment;
-    else if (this->right == NULL)
-        this->right = new_segment;
-    else
-    {
-        printf("[-] ERROR! Segment has already 2 offsprings\n");
-    }
-    */
-} 
 
 int Segment::get_segment_type ()
 {
@@ -186,7 +175,6 @@ void CCO_Network::generate_point_inside_perfusion_area (Point *p, const double r
 void CCO_Network::generate_point_inside_perfusion_area (double pos[], const double radius)
 {
     double rand_number;
-    unsigned int num_points = points.size();
     do
     {
         rand_number = (double)rand() / (double)RAND_MAX;
@@ -204,7 +192,7 @@ void CCO_Network::make_root ()
 {
 
     // Calculating the radius of the first microcirculatory black-box (Nterm = 1 -> root)
-    this->r_supp = sqrt(Q_perf / M_PI);
+    this->r_supp = sqrt(Q_perf / (M_PI));
 
     // Set the center point of the perfusion area
     center.x = 0.0;
@@ -232,7 +220,13 @@ void CCO_Network::make_root ()
     segments.push_back(root);
     print_segments();
 
+    // TODO
+    // calculate radius of the root
+
     num_terminals++;
+
+    // TODO
+    // Incremetar o Ndist no segmento apos a insercao
 
 }
 
@@ -254,6 +248,7 @@ void CCO_Network::grow_tree ()
         generate_new_terminal();
 
         num_terminals++;
+
         printf("%s\n",PRINT_LINE);
     }
 }
@@ -287,66 +282,6 @@ void CCO_Network::calc_middle_segment (double pos[], Segment *s)
     pos[0] = (p1->x + p2->x) / 2.0;
     pos[1] = (p1->y + p2->y) / 2.0;
     pos[2] = (p1->z + p2->z) / 2.0;
-}
-
-void CCO_Network::get_feasible_point (Point *p, const double radius)
-{
-
-    // Save the current number of segments
-    unsigned int curr_num_segment = segments.size();
-
-    // Calculate threashold distance
-    double d_threash = calc_dthreashold(radius,num_terminals);
-
-    bool point_is_ok = false;
-    int toss = 0;
-
-    // Until we not found a suitable point we will repeated this loop
-    Point new_point;
-    while (!point_is_ok)
-    {
-        // Generate the position where the new terminal will be
-        generate_point_inside_circle(&new_point,radius);
-
-        // Test if current point will pass the distance criterion
-        for (unsigned int j = 0; j < curr_num_segment; j++)
-        {
-            // Calculate the projections
-            double d_proj = segments[j].calc_dproj(new_point);
-
-            double d_crit;
-            if (d_proj >= 0 && d_proj <= 1)
-                d_crit = segments[j].calc_dortho(new_point);
-            else
-                d_crit = segments[j].calc_dend(new_point);
-
-            // TODO: Perguntar para o Rafael se o teste tem ser validado para todos os segmentos
-            // The point is feasible
-            if (d_crit > d_threash)
-            {
-                printf("[+] Making new segment! Number of tosses = %d || d_threash = %.2lf\n",toss,d_threash);
-                printf("[New Point] ");
-                print_point(new_point);
-                point_is_ok = true;
-                break;
-            }
-            else
-            {
-                if (toss > N_toss)
-                {
-                    printf("[!] Reducing dthreash! Before = %.2lf || Now = %.2lf \n",d_threash,d_threash*0.9);
-                    d_threash *= 0.9;
-                    toss = 0;
-                }
-                toss++;
-            }            
-        }
-
-    }
-
-    p->x = new_point.x;
-    p->y = new_point.y;
-    p->z = new_point.z;
 }
 
 bool CCO_Network::collision_detect (Point p1, Point p2, Point p3, Point p4)
@@ -437,6 +372,40 @@ int CCO_Network::connection_search_closest (const double pos[])
     return min_index;
 }
 
+bool CCO_Network::distance_criterion (const double pos[], const int iconn_index, const double d_threash)
+{
+    double d_proj = calc_dproj(pos,iconn_index);
+    
+    double d_crit;
+    if (d_proj >= 0 && d_proj <= 1)
+        d_crit = calc_dortho(pos,iconn_index);
+    else
+        d_crit = calc_dend(pos,iconn_index);
+    
+    if (d_crit > d_threash)
+        return true;
+    else
+        return false;
+
+}
+
+int CCO_Network::connection_search_paper (const double pos[], const double d_threash)
+{
+    int max_dist_index = -1;
+    double max_dcrit = DBL_MIN;
+
+    for (int i = 0; i < (int)segments.size(); i++)
+    {
+        // The point does NOT attend the distance criterion
+        if (!distance_criterion(pos,i,d_threash))
+        {
+            return -1;    
+        }
+    }
+    // The new point has passed attend the distance criterion for all the segments
+    return 1;
+}
+
 void CCO_Network::build_segment (double new_pos[])
 {
     unsigned int iconn_index = connection_search(new_pos);
@@ -449,11 +418,11 @@ void CCO_Network::build_segment (double new_pos[])
     points.push_back(middle_point);
 
     // Save iconn data
-    unsigned int iconn_parent = iconn->parent;
-    unsigned int iconn_left = iconn->left;
-    unsigned int iconn_right = iconn->right;
-    unsigned int iconn_src = iconn->src;
-    unsigned int iconn_dest = iconn->dest;
+    //unsigned int iconn_parent = iconn->parent;
+    //unsigned int iconn_left = iconn->left;
+    //unsigned int iconn_right = iconn->right;
+    //unsigned int iconn_src = iconn->src;
+    //unsigned int iconn_dest = iconn->dest;
 
     // Create ibiff
     unsigned int ibiff_index = segments.size();
@@ -505,11 +474,11 @@ void CCO_Network::build_segment (const unsigned int j, double new_pos[])
     points.push_back(middle_point);
 
     // Save iconn data
-    unsigned int iconn_parent = iconn->parent;
-    unsigned int iconn_left = iconn->left;
-    unsigned int iconn_right = iconn->right;
-    unsigned int iconn_src = iconn->src;
-    unsigned int iconn_dest = iconn->dest;
+    //unsigned int iconn_parent = iconn->parent;
+    //unsigned int iconn_left = iconn->left;
+    //unsigned int iconn_right = iconn->right;
+    //unsigned int iconn_src = iconn->src;
+    //unsigned int iconn_dest = iconn->dest;
 
     // Create ibiff
     unsigned int ibiff_index = segments.size();
@@ -588,8 +557,7 @@ void CCO_Network::destroy_segment (const int iconn_index)
     update_segments(iconn_index,distal_point_index); 
 }
 
-// TODO: Add the connection search test from the paper here ...
-void CCO_Network::generate_new_terminal ()
+void CCO_Network::generate_new_terminal_old ()
 {
     // Generate the terminal position inside the perfusion area
     double pos[3];
@@ -599,24 +567,51 @@ void CCO_Network::generate_new_terminal ()
     //int iconn_index = connection_search(pos);
     int iconn_index = connection_search_closest(pos);
     build_segment(iconn_index,pos);
-
-    // Connection search
-    /*
-    unsigned int num_segments = segments.size();
-    for (unsigned int j = 0; j < num_segments; j++)
-    {
-        build_segment(j,pos);
-        if (!has_collision(pos,j))
-        {
-            build_segment(j,pos);
-        }
-    }
-    */
 }
 
-void CCO_Network::create_bifurcation (const int iconn_index, Point new_point)
+void CCO_Network::generate_new_terminal ()
 {
-    
+    int iconn_index;
+    int ret;
+    bool point_is_ok = false;
+    int tosses = 0;
+    double pos[3];
+    double d_threash = calc_dthreashold(r_supp,num_terminals);
+
+    while (!point_is_ok)
+    {
+        // Generate the terminal position inside the perfusion area
+        generate_point_inside_perfusion_area(pos,r_supp);
+
+        // Check the distance criterion for this point
+        ret = connection_search_paper(pos,d_threash);
+
+        // Now we need to check collisions with other segments
+        if (ret != NIL)
+        {
+            ret = check_collisions(pos);
+            if (ret != NIL)
+                point_is_ok = true;
+        }
+        // If the point does not attend the distance criterion or generates a collision
+        // we need to choose another point.
+        else
+        {
+            tosses++;
+            if (tosses > N_toss)
+            {
+                printf("[!] Reducing dthreash! Before = %.2lf || Now = %.2lf \n",\
+                        d_threash,d_threash*0.9);
+                d_threash *= 0.9;
+                tosses = 0;
+            }
+        }
+    }
+    // Now, the new point attend the distance criterion and 
+    // does not collide with any segment of the tree
+    iconn_index = find_closest_segment(pos); 
+    build_segment(iconn_index,pos);
+
 }
 
 bool is_inside_circle (Point *p, const Point c, const double radius)

@@ -47,8 +47,8 @@ double CCO_Network::calc_dproj (const double pos[], const int iconn_index)
     int dest = segments[iconn_index].dest;
     double length = segments[iconn_index].length;
 
-    Point distal = points[src];
-    Point proximal = points[dest];
+    Point distal = points[dest];
+    Point proximal = points[src];
 
     double dot_product = ((proximal.x - distal.x)*(pos[0] - distal.x)) +\
                          ((proximal.y - distal.y)*(pos[1] - distal.y)) +\
@@ -63,8 +63,8 @@ double CCO_Network::calc_dortho (const double pos[], const int iconn_index)
     int dest = segments[iconn_index].dest;
     double length = segments[iconn_index].length;
 
-    Point distal = points[src];
-    Point proximal = points[dest];
+    Point distal = points[dest];
+    Point proximal = points[src];
 
     double dot_product = ((-proximal.y + distal.y)*(pos[0] - distal.x)) +\
                          ((proximal.x - distal.x)*(pos[1] - distal.y)) +\
@@ -78,8 +78,8 @@ double CCO_Network::calc_dend (const double pos[], const int iconn_index)
     int src = segments[iconn_index].src;
     int dest = segments[iconn_index].dest;
 
-    Point distal = points[src];
-    Point proximal = points[dest];
+    Point distal = points[dest];
+    Point proximal = points[src];
 
     double d_distal = sqrt( pow(pos[0]-distal.x,2) + pow(pos[1]-distal.y,2) + pow(pos[2]-distal.z,2));
     double d_proximal = sqrt( pow(pos[0]-proximal.x,2) + pow(pos[1]-proximal.y,2) + pow(pos[2]-proximal.z,2));
@@ -230,6 +230,25 @@ void CCO_Network::make_root ()
 
 }
 
+void CCO_Network::read_cloud_points (const char filename[], vector<Point> &cloud_points)
+{
+    FILE *file = fopen(filename,"r");
+
+    unsigned int num_points;
+    fscanf(file,"%u",&num_points);
+
+    for (unsigned int i = 0; i < num_points; i++)
+    {
+        double pos[3];
+        fscanf(file,"%lf %lf %lf",&pos[0],&pos[1],&pos[2]);
+
+        Point p(i,pos[0],pos[1],pos[2]);
+        cloud_points.push_back(p);
+    }
+
+    fclose(file);
+}
+
 void CCO_Network::grow_tree ()
 {
     //test1();
@@ -239,13 +258,17 @@ void CCO_Network::grow_tree ()
 
     make_root();
 
+    vector<Point> cloud_points;
+    read_cloud_points("cloud/cloud_points.txt",cloud_points);
+
     // Main iteration loop
     while (num_terminals <= this->N_term)
     {
         printf("%s\n",PRINT_LINE);
         printf("[!] Working on terminal number %d\n",num_terminals);            
 
-        generate_new_terminal();
+        //generate_new_terminal();
+        generate_new_terminal_using_file(cloud_points);
 
         num_terminals++;
 
@@ -391,8 +414,6 @@ bool CCO_Network::distance_criterion (const double pos[], const int iconn_index,
 
 int CCO_Network::connection_search_paper (const double pos[], const double d_threash)
 {
-    int max_dist_index = -1;
-    double max_dcrit = DBL_MIN;
 
     for (int i = 0; i < (int)segments.size(); i++)
     {
@@ -402,7 +423,7 @@ int CCO_Network::connection_search_paper (const double pos[], const double d_thr
             return -1;    
         }
     }
-    // The new point has passed attend the distance criterion for all the segments
+    // The new point has passed the distance criterion for all the segments
     return 1;
 }
 
@@ -569,6 +590,41 @@ void CCO_Network::generate_new_terminal_old ()
     build_segment(iconn_index,pos);
 }
 
+int CCO_Network::check_collisions (const double pos[])
+{
+    for (int i = 0; i < (int)segments.size(); i++)
+    {
+        if (has_collision(pos,i))
+            return -1;
+    }
+    return 0;
+}
+
+int CCO_Network::find_most_distant_segment (const double pos[])
+{
+    double max_dist = DBL_MIN;
+    int max_dist_index = -1;
+
+    for (int i = 0; i < (int)segments.size(); i++)
+    {
+        double d_proj = calc_dproj(pos,i);
+    
+        double d_crit;
+        if (d_proj >= 0 && d_proj <= 1)
+            d_crit = calc_dortho(pos,i);
+        else
+            d_crit = calc_dend(pos,i);
+        
+
+        if (d_crit > max_dist)
+        {
+            max_dist = d_crit;
+            max_dist_index = i;
+        }
+    }
+    return max_dist_index;
+}
+
 void CCO_Network::generate_new_terminal ()
 {
     int iconn_index;
@@ -586,14 +642,16 @@ void CCO_Network::generate_new_terminal ()
         // Check the distance criterion for this point
         ret = connection_search_paper(pos,d_threash);
 
-        // Now we need to check collisions with other segments
+        // If the point has pass the distance criterion for all the segments then 
+        // we need to check collisions with other segments
         if (ret != NIL)
         {
             ret = check_collisions(pos);
+            // Distance criterion is ok and there are no collisions
             if (ret != NIL)
                 point_is_ok = true;
         }
-        // If the point does not attend the distance criterion or generates a collision
+        // If the point does not attend the distance criterion or if there is a collision
         // we need to choose another point.
         else
         {
@@ -609,7 +667,65 @@ void CCO_Network::generate_new_terminal ()
     }
     // Now, the new point attend the distance criterion and 
     // does not collide with any segment of the tree
-    iconn_index = find_closest_segment(pos); 
+
+    // Find the closest segment to make the connection
+    iconn_index = find_most_distant_segment(pos); 
+    build_segment(iconn_index,pos);
+
+}
+
+void CCO_Network::generate_new_terminal_using_file (vector<Point> &cloud_points)
+{
+    int iconn_index;
+    int ret;
+    bool point_is_ok = false;
+    int tosses = 0;
+    double pos[3];
+    double d_threash = calc_dthreashold(r_supp,num_terminals);
+
+    while (!point_is_ok)
+    {
+        // Get a point from the cloud of points
+        int index = rand() % cloud_points.size();
+        pos[0] = cloud_points[index].x;
+        pos[1] = cloud_points[index].y;
+        pos[2] = cloud_points[index].z;
+
+        // Check the distance criterion for this point
+        ret = connection_search_paper(pos,d_threash);
+
+        // If the point has pass the distance criterion for all the segments then 
+        // we need to check collisions with other segments
+        if (ret != NIL)
+        {
+            ret = check_collisions(pos);
+            // Distance criterion is ok and there are no collisions
+            if (ret != NIL)
+            {
+                point_is_ok = true;
+                cloud_points.erase(cloud_points.begin()+index);
+            }
+                
+        }
+        // If the point does not attend the distance criterion or if there is a collision
+        // we need to choose another point.
+        else
+        {
+            tosses++;
+            if (tosses > N_toss)
+            {
+                printf("[!] Reducing dthreash! Before = %.2lf || Now = %.2lf \n",\
+                        d_threash,d_threash*0.9);
+                d_threash *= 0.9;
+                tosses = 0;
+            }
+        }
+    }
+    // Now, the new point attend the distance criterion and 
+    // does not collide with any segment of the tree
+
+    // Find the closest segment to make the connection
+    iconn_index = find_most_distant_segment(pos); 
     build_segment(iconn_index,pos);
 
 }

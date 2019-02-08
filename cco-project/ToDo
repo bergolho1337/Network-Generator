@@ -1,10 +1,9 @@
 - Refactor the code until now
-- Implement a function to generate the cloud of points
-- fazer connection search do paper (d_threash)
-- geracao dos pontos usar o angulo da coordenada polar do circulo
-- usar ids temporarios 
-- salvar o raio no vtk tambem
-- reescalar a arvore usando o test1() a partir dos terminais (verificar a lei de Murray no final)
-- usar uma lista encadeada ao inves do vector e trabalhar com referencias ao inves de indices
-
-- Implement restore_state()
+- Implement the connection search from the paper (calculate d_threash)
+- Use temporary ids to avoid calling the update_points() and update_segments() functions 
+- Save the radius of each point as POINT_DATA on the VTK output file.
+- Reescale the tree generate by the test1() function
+    - First locate the index of the terminals than call the recursive function reescale using the parent pointer
+    - Verify the correctness of teh function by calculating Murray's law in the end.
+- Try to implement the structure using a linked list instead of a vector
+- Implement the restore_state() function

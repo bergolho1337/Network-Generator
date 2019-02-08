@@ -95,7 +95,10 @@ public:
     void test3 ();
     void test4 ();
 
+    void read_cloud_points (const char filename[], vector<Point> &cloud_points);
+
     void generate_new_terminal ();
+    void generate_new_terminal_using_file (vector<Point> &cloud_points);
     void generate_new_terminal_old ();
     void build_segment (double new_pos[]);
     void build_segment (const unsigned int j);
@@ -132,6 +135,9 @@ private:
     void calc_bifurcation_ratio (Segment *s);
     bool distance_criterion (const double pos[], const int iconn_index, const double d_threash);
     bool collision_detect (Point p1, Point p2, Point p3, Point p4);
+    int check_collisions (const double pos[]);
+    int find_closest_segment (const double pos[]);
+    int find_most_distant_segment (const double pos[]);
 };
 
 double calc_size_segment (const Point *p1, const Point *p2);

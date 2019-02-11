@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/berg/Github/Network-Generator/linked-list/src/linked-list/linked-list.h
+
+/home/berg/Github/Network-Generator/linked-list/src/main.cpp
+iostream
+-
+cstdio
+-
+cstdlib
+-
+linked-list/linked-list.h
+/home/berg/Github/Network-Generator/linked-list/src/linked-list/linked-list.h
+

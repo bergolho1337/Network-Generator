@@ -94,6 +94,8 @@ public:
     void test2 ();
     void test3 ();
     void test4 ();
+    void test5 ();
+    void test6 ();
 
     void read_cloud_points (const char filename[], vector<Point> &cloud_points);
 

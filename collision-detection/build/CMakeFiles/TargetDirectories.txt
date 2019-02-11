@@ -1,3 +1,0 @@
-/home/berg/Github/Network-Generator/collision-detection/build/CMakeFiles/rebuild_cache.dir
-/home/berg/Github/Network-Generator/collision-detection/build/CMakeFiles/Collision.dir
-/home/berg/Github/Network-Generator/collision-detection/build/CMakeFiles/edit_cache.dir

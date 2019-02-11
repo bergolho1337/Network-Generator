@@ -1,4 +1,7 @@
+Priority:
 - Refactor the code until now
+
+
 - Implement the connection search from the paper (calculate d_threash)
 - Use temporary ids to avoid calling the update_points() and update_segments() functions 
 - Save the radius of each point as POINT_DATA on the VTK output file.

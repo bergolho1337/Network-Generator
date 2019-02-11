@@ -1,0 +1,6 @@
+/home/berg/Github/Network-Generator/linked-list/build/CMakeFiles/rebuild_cache.dir
+/home/berg/Github/Network-Generator/linked-list/build/CMakeFiles/LinkedList.dir
+/home/berg/Github/Network-Generator/linked-list/build/CMakeFiles/edit_cache.dir
+/home/berg/Github/Network-Generator/linked-list/build/src/linked-list/CMakeFiles/rebuild_cache.dir
+/home/berg/Github/Network-Generator/linked-list/build/src/linked-list/CMakeFiles/linkedlist.dir
+/home/berg/Github/Network-Generator/linked-list/build/src/linked-list/CMakeFiles/edit_cache.dir

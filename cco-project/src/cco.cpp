@@ -254,26 +254,10 @@ void CCO_Network::grow_tree ()
     //test1();
     //test2();
     //test3();
-    //test4();
+    test4();
+    //test5();
+    //test6();
 
-    make_root();
-
-    vector<Point> cloud_points;
-    read_cloud_points("cloud/cloud_points.txt",cloud_points);
-
-    // Main iteration loop
-    while (num_terminals <= this->N_term)
-    {
-        printf("%s\n",PRINT_LINE);
-        printf("[!] Working on terminal number %d\n",num_terminals);            
-
-        //generate_new_terminal();
-        generate_new_terminal_using_file(cloud_points);
-
-        num_terminals++;
-
-        printf("%s\n",PRINT_LINE);
-    }
 }
 
 void CCO_Network::draw_perfusion_area (const double radius)
@@ -427,6 +411,8 @@ int CCO_Network::connection_search_paper (const double pos[], const double d_thr
     return 1;
 }
 
+
+// OK
 void CCO_Network::build_segment (double new_pos[])
 {
     unsigned int iconn_index = connection_search(new_pos);
@@ -444,6 +430,12 @@ void CCO_Network::build_segment (double new_pos[])
     //unsigned int iconn_right = iconn->right;
     //unsigned int iconn_src = iconn->src;
     //unsigned int iconn_dest = iconn->dest;
+    Segment *iconn_left = NULL;
+    Segment *iconn_right = NULL;
+    if (iconn->left != NIL)
+        iconn_left = &segments[iconn->left];
+    if (iconn->right != NIL)
+        iconn_right = &segments[iconn->right];
 
     // Create ibiff
     unsigned int ibiff_index = segments.size();
@@ -452,7 +444,15 @@ void CCO_Network::build_segment (double new_pos[])
                 Q_perf,p_perf);
     segments[iconn_index].left = ibiff_index;
     segments[iconn_index].dest = middle_point_index;
+
+    if (iconn_left != NULL)
+        iconn_left->parent = ibiff_index;
+
     segments.push_back(ibiff);
+
+    // TODO: Usar lista encadeada
+    Segment *ibiff_aux = &segments[ibiff_index];
+    ibiff_aux->ndist = segments[iconn_index].ndist;
 
     // Create inew
     unsigned int new_point_index = points.size();
@@ -463,9 +463,30 @@ void CCO_Network::build_segment (double new_pos[])
                 NIL,NIL,iconn_index,\
                 Q_perf,p_perf);
     segments[iconn_index].right = inew_index;
+
+    segments[iconn_index].ndist = segments[ibiff_index].ndist + 1;
+    
+    if (iconn_right != NULL)
+        iconn_right->parent = ibiff_index;
+
     segments.push_back(inew);
 
-    //print_segments();
+    // Update ndist until root
+    int curr_index = segments[iconn_index].parent;
+    Segment *icurr = &segments[curr_index];
+    while (curr_index != NIL)
+    {
+        int left_index = segments[curr_index].left;
+        int right_index = segments[curr_index].right;
+
+        icurr->ndist = segments[left_index].ndist + segments[right_index].ndist;
+
+        curr_index = segments[curr_index].parent;
+        icurr = &segments[curr_index];
+    }
+
+    printf("---> Point (%lf,%lf,%lf)\n",new_pos[0],new_pos[1],new_pos[2]);
+    print_segments();
 }
 
 // Construct a new segment from a Segment 'j' of the current tree
@@ -839,6 +860,49 @@ double calc_poisseulle (const double Q, const double p, const double l)
     return pow( (8.0*Q*l*ETA)/(p*M_PI) , 0.25 );
 }
 
+// Generate the CCO tree using a fix cloud of points
+void CCO_Network::test6 ()
+{
+    make_root();
+
+    vector<Point> cloud_points;
+    read_cloud_points("cloud/cloud_points.txt",cloud_points);
+
+    // Main iteration loop
+    while (num_terminals <= this->N_term)
+    {
+        printf("%s\n",PRINT_LINE);
+        printf("[!] Working on terminal number %d\n",num_terminals);            
+
+        //generate_new_terminal();
+        generate_new_terminal_using_file(cloud_points);
+
+        num_terminals++;
+
+        printf("%s\n",PRINT_LINE);
+    }
+}
+
+// Generate the CCO tree by randomly sort the points inside the perfusion area
+void CCO_Network::test5 ()
+{
+    make_root();
+
+    // Main iteration loop
+    while (num_terminals <= this->N_term)
+    {
+        printf("%s\n",PRINT_LINE);
+        printf("[!] Working on terminal number %d\n",num_terminals);            
+
+        generate_new_terminal();
+
+        num_terminals++;
+
+        printf("%s\n",PRINT_LINE);
+    }
+}
+
+// This test the collision detection function
 void CCO_Network::test4 ()
 {
     // Root
@@ -873,6 +937,7 @@ void CCO_Network::test4 ()
     print_segments();
 }
 
+// This test the insert and delete segment functions
 void CCO_Network::test3 ()
 {
     // Root
@@ -901,6 +966,7 @@ void CCO_Network::test3 ()
 
 }
 
+// This test the insert segment function
 void CCO_Network::test2 ()
 {
     // Root
@@ -928,6 +994,7 @@ void CCO_Network::test2 ()
 
 }
 
+// This test the Point and Segment data structure
 void CCO_Network::test1 ()
 {
     Point A(0,0,0,0);

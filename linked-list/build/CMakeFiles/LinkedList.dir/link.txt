@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/LinkedList.dir/src/main.cpp.o  -o ../bin/LinkedList src/linked-list/liblinkedlist.a -ldl -lm 

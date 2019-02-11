@@ -1,1 +1,0 @@
-/usr/bin/c++   -O2 -fno-strict-aliasing -Wall -Wno-unused-function  -rdynamic CMakeFiles/Collision.dir/src/main.cpp.o  -o ../bin/Collision -lm 

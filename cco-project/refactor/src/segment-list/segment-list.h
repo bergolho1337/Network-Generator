@@ -26,14 +26,14 @@ struct segment
     struct point_node *src;
     struct point_node *dest;
 
-    struct segment *left;
-    struct segment *right;
-    struct segment *parent;
+    struct segment_node *left;
+    struct segment_node *right;
+    struct segment_node *parent;
 
 };
 
 struct segment* new_segment (struct point_node *src, struct point_node *dest,\
-                        struct segment *left, struct segment *right, struct segment *parent,\
+                        struct segment_node *left, struct segment_node *right, struct segment_node *parent,\
                         const double Q, const double p);
 void free_segment (struct segment *s);
 
@@ -53,9 +53,9 @@ struct segment_list
 struct segment_list* new_segment_list ();
 void free_segment_list (struct segment_list *l);
 
-void insert_segment_node (struct segment_list *l, struct segment *s);
+struct segment_node* insert_segment_node (struct segment_list *l, struct segment *s);
 void delete_node (struct segment_list *l, const uint32_t index);
-struct segment_node* search_node (struct segment_list *l, const uint32_t index);
+struct segment_node* search_segment_node (struct segment_list *l, const uint32_t index);
 bool is_empty (struct segment_list *l);
 void print_list (struct segment_list *l); 
 

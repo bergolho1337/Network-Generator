@@ -25,36 +25,5 @@ int main (int argc, char *argv[])
     grow_tree(the_network);
     write_to_vtk(the_network);
 
-    /*
-    // Test Point list
-    struct point_list *list1 = new_point_list();
-    double pos1[3] = {0,0,0};
-    double pos2[3] = {1,1,0};
-    double pos3[3] = {2,2,0};
-    double pos4[3] = {3,3,0};
-    
-    insert_node(list1,pos1);
-    insert_node(list1,pos2);
-    insert_node(list1,pos3);
-    insert_node(list1,pos4);
-    
-    print_list(list1);
-
-    free_point_list(list1);
-
-    // Test Segment list
-    struct segment_list *list2 = new_segment_list();
-    struct segment *seg1 = new_segment(0,1,NULL,NULL,NULL,1,1);
-    struct segment *seg2 = new_segment(1,2,NULL,NULL,NULL,1,1);
-    struct segment *seg3 = new_segment(1,3,NULL,NULL,NULL,1,1);
-    insert_node(list2,seg1);
-    insert_node(list2,seg2);
-    insert_node(list2,seg3);
-
-    print_list(list2);
-
-    free_segment_list(list2);
-    */
-
     return 0;
 }

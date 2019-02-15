@@ -22,12 +22,13 @@ void free_segment_list (struct segment_list *s)
     s = NULL;
 }
 
-void insert_segment_node (struct segment_list *l, struct segment *segment)
+struct segment_node* insert_segment_node (struct segment_list *l, struct segment *segment)
 {
+    struct segment_node *node;
     // List is empty
     if (!l->list_nodes)
     {
-        struct segment_node *node = new_segment_node(l->num_nodes,segment);
+        node = new_segment_node(l->num_nodes,segment);
         l->list_nodes = node;
     }
     // List has some values
@@ -40,10 +41,11 @@ void insert_segment_node (struct segment_list *l, struct segment *segment)
             tmp = tmp->next;
         }
 
-        struct segment_node *node = new_segment_node(l->num_nodes,segment);
+        node = new_segment_node(l->num_nodes,segment);
         tmp->next = node;
     }
     l->num_nodes++;
+    return node;
 }
 
 void delete_node (struct segment_list *l, const uint32_t index)
@@ -89,6 +91,19 @@ void delete_node (struct segment_list *l, const uint32_t index)
     l->num_nodes--;
 }
 
+struct segment_node* search_segment_node (struct segment_list *l, const uint32_t index)
+{
+    struct segment_node *tmp = l->list_nodes;
+    while (tmp != NULL)
+    {
+        if (tmp->id == index)
+            return tmp;
+        tmp = tmp->next;
+    }
+    fprintf(stderr,"[-] ERROR! Segment node %u not found!\n",index);
+    return NULL;
+}
+
 bool is_empty (struct segment_list *l)
 {
     return (l->list_nodes == NULL) ? true : false;
@@ -104,7 +119,7 @@ struct segment_node* new_segment_node (uint32_t id, struct segment *s)
 }
 
 struct segment* new_segment (struct point_node *src, struct point_node *dest,\
-                        struct segment *left, struct segment *right, struct segment *parent,\
+                        struct segment_node *left, struct segment_node *right, struct segment_node *parent,\
                         const double Q, const double p)
 {
     struct segment *tmp = (struct segment*)malloc(sizeof(struct segment));
@@ -113,6 +128,9 @@ struct segment* new_segment (struct point_node *src, struct point_node *dest,\
     tmp->left = left;
     tmp->right = right;
     tmp->parent = parent;
+    tmp->Q = Q;
+    tmp->p = p;
+    tmp->ndist = 1;
     return tmp;
 }
 
@@ -137,10 +155,24 @@ void print_list (struct segment_list *l)
     printf("Number of segment_node in list = %u\n",l->num_nodes);
     while (tmp != NULL)
     {
-        printf("Segment %d (%d,%d) -- Source(%g,%g,%g) - Destination(%g,%g,%g)\n",tmp->id,\
+        printf("Segment %d (%d,%d) -- Source(%g,%g,%g) - Destination(%g,%g,%g) -- NDIST = %u\n",tmp->id,\
                                         tmp->value->src->id,tmp->value->dest->id,\
                                         tmp->value->src->value->x,tmp->value->src->value->y,tmp->value->src->value->z,\
-                                        tmp->value->dest->value->x,tmp->value->dest->value->y,tmp->value->dest->value->z);
+                                        tmp->value->dest->value->x,tmp->value->dest->value->y,tmp->value->dest->value->z,\
+                                        tmp->value->ndist);
+        if (tmp->value->parent == NULL)
+            printf("\tPARENT = NIL");
+        else
+            printf("\tPARENT = %u",tmp->value->parent->id);
+        if (tmp->value->left == NULL)
+            printf(" -- LEFT = NIL");
+        else
+            printf(" -- LEFT = %u",tmp->value->left->id);
+        if (tmp->value->right == NULL)
+            printf(" -- RIGHT = NIL\n");
+        else
+            printf(" -- RIGHT = %u\n",tmp->value->right->id);
+
         tmp = tmp->next;
     }
 }

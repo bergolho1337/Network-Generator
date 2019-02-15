@@ -30,10 +30,15 @@ struct cco_network
 
 struct cco_network* new_cco_network (struct user_options *options);
 
+void build_segment (struct cco_network *the_network, const uint32_t index, const double new_pos[]);
+
+void calc_middle_point_segment (struct segment_node *s, double pos[]);
+
 void grow_tree (struct cco_network *the_network);
 void write_to_vtk (struct cco_network *the_network);
 
 void test1 (struct cco_network *the_network);
+void test2 (struct cco_network *the_network); 
 
 
 #endif

@@ -15,7 +15,8 @@ struct cco_network* new_cco_network (struct user_options *options)
 
 void grow_tree (struct cco_network *the_network)
 {
-    test1(the_network);
+    //test1(the_network);
+    test2(the_network);
 }
 
 void test1 (struct cco_network *the_network)
@@ -46,6 +47,7 @@ void test1 (struct cco_network *the_network)
 
     print_list(p_list);
 
+    // Segments
     struct segment_list *s_list = the_network->segment_list;
 
     struct segment *s1 = new_segment(A,C,NULL,NULL,NULL,Q,p);
@@ -56,33 +58,128 @@ void test1 (struct cco_network *the_network)
     struct segment *s6 = new_segment(E,B,NULL,NULL,NULL,Q,p);
     struct segment *s7 = new_segment(E,F,NULL,NULL,NULL,Q,p);
 
-    insert_segment_node(s_list,s1);
-    insert_segment_node(s_list,s2);
-    insert_segment_node(s_list,s3);
-    insert_segment_node(s_list,s4);
-    insert_segment_node(s_list,s5);
-    insert_segment_node(s_list,s6);
-    insert_segment_node(s_list,s7);
+    struct segment_node *s_node1 = insert_segment_node(s_list,s1);
+    struct segment_node *s_node2 = insert_segment_node(s_list,s2);
+    struct segment_node *s_node3 = insert_segment_node(s_list,s3);
+    struct segment_node *s_node4 = insert_segment_node(s_list,s4);
+    struct segment_node *s_node5 = insert_segment_node(s_list,s5);
+    struct segment_node *s_node6 = insert_segment_node(s_list,s6);
+    struct segment_node *s_node7 = insert_segment_node(s_list,s7);
+
+    // Set pointers
+    s1->parent = NULL;
+    s1->left = s_node2;
+    s1->right = s_node3;
+
+    s2->parent = s_node1;
+    s2->left = s_node6;
+    s2->right = s_node7;
+
+    s3->parent = s_node1;
+    s3->left = s_node4;
+    s3->right = s_node5;
+
+    s4->parent = s_node3;
+    s4->left = NULL;
+    s4->right = NULL;
+
+    s5->parent = s_node3;
+    s5->left = NULL;
+    s5->right = NULL;
+    
+    s6->parent = s_node2;
+    s6->left = NULL;
+    s6->right = NULL;
+
+    s7->parent = s_node2;
+    s7->left = NULL;
+    s7->right = NULL;
 
     print_list(s_list);
+}
 
-    /*
-    Segment s1(&A,&C,NIL,NIL,NIL,Q_perf,p_perf);
-    Segment s2(&C,&E,NIL,NIL,NIL,Q_perf,p_perf);
-    Segment s3(&C,&G,NIL,NIL,NIL,Q_perf,p_perf);
-    Segment s4(&G,&H,NIL,NIL,NIL,Q_perf,p_perf);
-    Segment s5(&G,&D,NIL,NIL,NIL,Q_perf,p_perf);
-    Segment s6(&E,&B,NIL,NIL,NIL,Q_perf,p_perf);
-    Segment s7(&E,&F,NIL,NIL,NIL,Q_perf,p_perf);
+void test2 (struct cco_network *the_network)
+{
+    double Q = the_network->Q_perf;
+    double p = the_network->p_perf;
 
-    segments.push_back(s1);
-    segments.push_back(s2);
-    segments.push_back(s3);
-    segments.push_back(s4);
-    segments.push_back(s5);
-    segments.push_back(s6);
-    segments.push_back(s7);
-    */
+    struct point_list *p_list = the_network->point_list;
+    struct segment_list *s_list = the_network->segment_list;
+
+    // Root
+    double pos1[3] = {0,0,0};
+    double pos2[3] = {-3,-3,0};
+    struct point_node *A = insert_point(p_list,pos1);
+    struct point_node *B = insert_point(p_list,pos2);
+    
+    struct segment *iroot = new_segment(A,B,NULL,NULL,NULL,Q,p);
+    struct segment_node *iroot_node = insert_segment_node(s_list,iroot);
+
+    // First segment
+    double pos3[3] = {1,-3,0};
+    build_segment(the_network,0,pos3);
+
+    // Second segment
+    double pos4[3] = {-2,-4,0};
+    build_segment(the_network,1,pos4);
+
+    // Third segment
+    double pos5[3] = {-1,-3,0};
+    build_segment(the_network,2,pos5);
+
+    print_list(p_list);
+    print_list(s_list);
+}
+
+void build_segment (struct cco_network *the_network, const uint32_t index, const double new_pos[])
+{
+    struct point_list *p_list = the_network->point_list;
+    struct segment_list *s_list = the_network->segment_list;
+    double Q = the_network->Q_perf;
+    double p = the_network->p_perf;
+
+    struct segment_node *iconn = search_segment_node(s_list,index);
+
+    // Create the middle point
+    double middle_pos[3];
+    calc_middle_point_segment(iconn,middle_pos);
+    struct point_node *M = insert_point(p_list,middle_pos);
+
+    // Create ibiff
+    struct segment *ibiff = new_segment(M,iconn->value->dest,\
+                            iconn->value->left,iconn->value->right,iconn,Q,p);
+    struct segment_node *ibiff_node = insert_segment_node(s_list,ibiff);
+    ibiff->ndist = iconn->value->ndist;
+
+    // Create inew
+    struct point_node *T = insert_point(p_list,new_pos);
+    struct segment *inew = new_segment(M,T,\
+                            NULL,NULL,iconn,Q,p);
+    struct segment_node *inew_node = insert_segment_node(s_list,inew);
+    
+    // Update iconn pointers
+    iconn->value->dest = M;
+    iconn->value->left = ibiff_node;
+    iconn->value->right = inew_node;
+
+    // Update ndist
+    struct segment_node *tmp = iconn;
+    while (tmp != NULL)
+    {
+        tmp->value->ndist++;
+        tmp = tmp->value->parent;
+    }
+
+}
+
+void calc_middle_point_segment (struct segment_node *s, double pos[])
+{
+    struct point *src = s->value->src->value;
+    struct point *dest = s->value->dest->value;
+
+    pos[0] = (src->x + dest->x) / 2.0;
+    pos[1] = (src->y + dest->y) / 2.0;
+    pos[2] = (src->z + dest->z) / 2.0;
 }
 
 void write_to_vtk (struct cco_network *the_network)

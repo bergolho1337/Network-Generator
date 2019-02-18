@@ -13,9 +13,9 @@ using namespace std;
 
 int main (int argc, char *argv[])
 {   
-    if (argc-1 != 4)
+    if (argc-1 != 5)
     {
-        printf("Usage:> %s <Qperf> <pperf> <rperf> <Nterm>\n",argv[0]);
+        printf("Usage:> %s <Qperf> <pperf> <pterm> <rperf> <Nterm>\n",argv[0]);
         exit(EXIT_FAILURE);   
     }
 

@@ -14,20 +14,19 @@
 
 struct segment
 {
-    double beta_l;
-    double beta_r;
     double Q;
     double p;
     double radius;
-    double resistance;          // Relative resistance
+    double beta;          // Relative radius (ratio between my radius and parent radius = beta)
+    double resistance;    // Relative resistance R*
     double length;
     uint32_t ndist;
 
     struct point_node *src;
     struct point_node *dest;
 
-    struct segment_node *left;
-    struct segment_node *right;
+    struct segment_node *left;      
+    struct segment_node *right;     
     struct segment_node *parent;
 
 };

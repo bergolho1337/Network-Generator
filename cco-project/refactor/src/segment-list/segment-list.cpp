@@ -131,6 +131,7 @@ struct segment* new_segment (struct point_node *src, struct point_node *dest,\
     tmp->Q = Q;
     tmp->p = p;
     tmp->ndist = 1;
+    tmp->beta = -1;
     return tmp;
 }
 
@@ -155,11 +156,13 @@ void print_list (struct segment_list *l)
     printf("Number of segment_node in list = %u\n",l->num_nodes);
     while (tmp != NULL)
     {
-        printf("Segment %d (%d,%d) -- Source(%g,%g,%g) - Destination(%g,%g,%g) -- NDIST = %u\n",tmp->id,\
+        printf("Segment %d (%d,%d) -- Source(%g,%g,%g) - Destination(%g,%g,%g) -- NDIST = %u -- RADIUS = %g\n",tmp->id,\
                                         tmp->value->src->id,tmp->value->dest->id,\
                                         tmp->value->src->value->x,tmp->value->src->value->y,tmp->value->src->value->z,\
                                         tmp->value->dest->value->x,tmp->value->dest->value->y,tmp->value->dest->value->z,\
-                                        tmp->value->ndist);
+                                        tmp->value->ndist,tmp->value->radius);
+        printf("\tBETA = %g\n",tmp->value->beta);
+        
         if (tmp->value->parent == NULL)
             printf("\tPARENT = NIL");
         else

@@ -16,6 +16,7 @@ struct user_options
     int N_term;
     double Q_perf;
     double p_perf;
+    double p_term;
     double r_perf;
 };
 

@@ -49,6 +49,74 @@ void check_bifurcation_rule (struct cco_network *the_network)
     }
 }
 
+bool collision_detection (const double x1, const double y1, const double z1,\
+                          const double x2, const double y2, const double z2,\
+                          const double x3, const double y3, const double z3,\
+                          const double x4, const double y4, const double z4)
+{
+    double denominator = ((x2 - x1) * (y3 - y4)) - ((y2 - y1) * (x3 - x4));
+    double numerator1 = ((y1 - y4) * (x3 - x4)) - ((x1 - x4) * (y3 - y4));
+    double numerator2 = ((y1 - y4) * (x2 - x1)) - ((x1 - x4) * (y2 - y1));
+    
+    // Detect coincident lines (has a problem, read below)
+    if (denominator == 0) return numerator1 == 0 && numerator2 == 0;
+
+    double r = numerator1 / denominator;
+    double s = numerator2 / denominator;
+
+    return (r >= 0 && r <= 1) && (s >= 0 && s <= 1);
+}
+
+bool has_collision (struct segment_list *s_list, struct segment_node *s, const double new_pos[])
+{
+    double middle_pos[3];
+    calc_middle_point_segment(s,middle_pos); 
+
+    printf("[+] Trying connection with segment %u\n",s->id);
+    struct segment_node *tmp = s_list->list_nodes;
+    while (tmp != NULL)
+    {
+        if (tmp->id != s->id)
+        {
+            printf("\t[!] Checking collison between segment %d\n",tmp->id);
+
+            // Get the reference to the points of the current segment
+            struct point *src = tmp->value->src->value;
+            struct point *dest = tmp->value->dest->value;
+
+            bool intersect = collision_detection(middle_pos[0],middle_pos[1],middle_pos[2],\
+                                            new_pos[0],new_pos[1],new_pos[2],\
+                                            src->x,src->y,src->z,\
+                                            dest->x,dest->y,dest->z);  
+
+            if (intersect)
+            {
+                printf("\t[-] ERROR! Intersection with segment %d !\n",tmp->id);
+                return true;
+            }          
+        }
+        tmp = tmp->next;
+    }
+    return false;
+}
+
+bool check_collisions (struct cco_network *the_network, const double new_pos[])
+{
+    printf("[!] Checking collisions!\n");
+
+    struct segment_list *s_list = the_network->segment_list;
+    struct segment_node *tmp = s_list->list_nodes;
+
+    while (tmp != NULL)
+    {
+        if (has_collision(s_list,tmp,new_pos))
+            return false;
+
+        tmp = tmp->next;
+    }
+    return true;
+}
+
 void rescale_root (struct segment_node *iroot, const double Q_perf, const double delta_p)
 {
     // Set the flux and pressure of this segment
@@ -251,7 +319,7 @@ void write_to_vtk (struct cco_network *the_network)
     struct segment_list *s_list = the_network->segment_list;
     struct segment_node *s_tmp = s_list->list_nodes;
 
-    FILE *file = fopen("cco_tree.vtk","w+");
+    FILE *file = fopen("output/cco_tree.vtk","w+");
 
     fprintf(file,"# vtk DataFile Version 3.0\n");
     fprintf(file,"Tree\n");
@@ -294,7 +362,7 @@ void draw_perfusion_area (const double radius)
     polygonSource->SetCenter(0,-radius,0);
 
     vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-    writer->SetFileName("perfusion_area.vtp");
+    writer->SetFileName("output/perfusion_area.vtp");
     writer->SetInputConnection(polygonSource->GetOutputPort());
     writer->Write();
 }
@@ -484,6 +552,43 @@ void make_root (struct cco_network *the_network, const double r_supp)
     the_network->num_terminals = 1;
 }
 
+void generate_terminal (struct cco_network *the_network)
+{
+    int num_terminals = the_network->num_terminals;
+    double r_perf = the_network->r_perf;
+
+    double new_pos[3];
+    bool point_is_ok = false;
+    uint32_t tosses = 0;
+    double d_threash = calc_dthreashold(r_perf,num_terminals);
+    
+    while (!point_is_ok)
+    {
+        // Generate the terminal position inside the perfusion area
+        generate_point_inside_perfusion_area(new_pos,r_perf);
+
+        // Check the distance criterion for this point
+        //ret = connection_search_paper(pos,d_threash);
+
+        // Check collision with other segments
+        point_is_ok = check_collisions(the_network,new_pos);
+
+        // If the point does not attend the distance criterion or if there is a collision
+        // we need to choose another point.
+        if (!point_is_ok)
+        {
+            tosses++;
+            if (tosses > NTOSS)
+            {
+                printf("[!] Reducing dthreash! Before = %.2lf || Now = %.2lf \n",\
+                        d_threash,d_threash*0.9);
+                d_threash *= 0.9;
+                tosses = 0;
+            }
+        }
+    }
+}
+
 void test_cco (struct cco_network *the_network)
 {
     double Q_perf = the_network->Q_perf;
@@ -499,10 +604,26 @@ void test_cco (struct cco_network *the_network)
 
     make_root(the_network,r_perf);
 
-    
+    // Main iteration loop
+    while (the_network->num_terminals <= the_network->N_term)
+    {
+        printf("%s\n",PRINT_LINE);
+        printf("[!] Working on terminal number %d\n",the_network->num_terminals);            
+
+        generate_terminal(the_network);
+
+        the_network->num_terminals++;
+
+        printf("%s\n",PRINT_LINE);
+    }
 
     print_list(p_list);
     print_list(s_list);
 
 
+}
+
+double calc_dthreashold (const double radius, const int num_terminals)
+{
+    return sqrt( (double)(M_PI*radius*radius) / (double)(num_terminals) );
 }

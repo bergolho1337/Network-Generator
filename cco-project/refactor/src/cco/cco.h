@@ -11,9 +11,13 @@
 #include <cstdint>
 #include <cmath>
 
+#include <vtkRegularPolygonSource.h>
+#include <vtkXMLPolyDataWriter.h>
+
 #include "../point-list/point-list.h"
 #include "../segment-list/segment-list.h"
 #include "../options/user_options.h"
+#include "../utils/utils.h"
 
 // CONSTANTS AND MACROS 
 // =================================================================
@@ -53,16 +57,14 @@ double calc_bifurcation_ratio (const double r1, const double r2, bool sign);
 
 void check_bifurcation_rule (struct cco_network *the_network);
 
+void make_root (struct cco_network *the_network, const double r_supp);
 void grow_tree (struct cco_network *the_network);
 void write_to_vtk (struct cco_network *the_network);
 
+// Test functions
 void test1 (struct cco_network *the_network);
 void test2 (struct cco_network *the_network); 
-
-
-// TODO: Move all this to a "utils.h"
-// Auxiliar functions
-double euclidean_norm (const double x1, const double y1, const double z1,\
-                    const double x2, const double y2, const double z2);
+void test3 (struct cco_network *the_network);
+void test_cco (struct cco_network *the_network);
 
 #endif

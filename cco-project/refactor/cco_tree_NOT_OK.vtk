@@ -1,0 +1,31 @@
+# vtk DataFile Version 3.0
+Tree
+ASCII
+DATASET POLYDATA
+POINTS 8 float
+0 0 0
+-3 -3 0
+-1.5 -1.5 0
+1 -3 0
+-2.25 -2.25 0
+-2 -4 0
+-0.25 -2.25 0
+-1 -3 0
+LINES 7 21
+2 0 2
+2 2 4
+2 2 6
+2 4 1
+2 4 5
+2 6 3
+2 6 7
+CELL_DATA 7
+SCALARS radius float
+LOOKUP_TABLE default
+1.69429
+1.37362
+1.2061
+1.44181
+0.880189
+1.10387
+0.720907

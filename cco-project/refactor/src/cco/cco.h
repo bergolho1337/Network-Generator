@@ -11,6 +11,9 @@
 #include <cstdint>
 #include <cmath>
 
+#include <vector>
+#include <algorithm>
+
 #include <vtkRegularPolygonSource.h>
 #include <vtkXMLPolyDataWriter.h>
 
@@ -39,6 +42,8 @@ struct cco_network
     double r_perf;
     double r_supp;
 
+    double A_perf;
+
     struct point_list *point_list;
     struct segment_list *segment_list;
 };
@@ -57,20 +62,17 @@ void calc_relative_resistance_term (struct segment_node *iterm);
 void calc_relative_resistance_subtree (struct segment_node *ibiff, struct segment_node *iconn, struct segment_node *inew);
 void calc_radius_term (struct segment_node *iterm, const double Q_term, const double delta_p);
 double calc_bifurcation_ratio (const double r1, const double r2, bool sign);
-double calc_dthreashold (const double radius, const int num_terminals);
 
 void check_bifurcation_rule (struct cco_network *the_network);
 bool check_collisions (struct cco_network *the_network, const double new_pos[]);
 
 bool has_collision (struct segment_list *s_list, struct segment_node *s, const double new_pos[]);
-bool collision_detection (const double x1, const double y1, const double z1,\
-                          const double x2, const double y2, const double z2,\
-                          const double x3, const double y3, const double z3,\
-                          const double x4, const double y4, const double z4);
+bool connection_search (struct cco_network *the_network, const double pos[], const double d_threash);
+bool distance_criterion (struct segment_node *s, const double pos[], const double d_threash);
 
 struct segment_node* find_closest_segment (struct cco_network *the_network, const double new_pos[]); 
 
-void make_root (struct cco_network *the_network, const double r_supp);
+void make_root (struct cco_network *the_network);
 void grow_tree (struct cco_network *the_network);
 void generate_terminal (struct cco_network *the_network);
 void write_to_vtk (struct cco_network *the_network);

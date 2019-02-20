@@ -18,4 +18,3 @@ ADD_EXECUTABLE(Cco src/main.cpp)
 ADD_DEPENDENCIES(Cco pointlist segmentlist options utils cco)
 
 TARGET_LINK_LIBRARIES(Cco ${VTK_LIBRARIES} pointlist segmentlist options utils cco dl m)
-

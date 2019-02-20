@@ -1,5 +1,8 @@
 #include "cco.h"
 
+// TODO: Remove this from global memory
+std::vector<struct segment_node*> feasible_segments;
+
 struct cco_network* new_cco_network (struct user_options *options)
 {
     struct cco_network *result = (struct cco_network*)malloc(sizeof(struct cco_network));
@@ -11,6 +14,7 @@ struct cco_network* new_cco_network (struct user_options *options)
     result->p_term = options->p_term;
     result->r_perf = options->r_perf;
     result->N_term = options->N_term;
+    result->A_perf = M_PI * result->r_perf * result->r_perf;
     return result;
 }
 
@@ -47,24 +51,6 @@ void check_bifurcation_rule (struct cco_network *the_network)
         }
         tmp = tmp->next;
     }
-}
-
-bool collision_detection (const double x1, const double y1, const double z1,\
-                          const double x2, const double y2, const double z2,\
-                          const double x3, const double y3, const double z3,\
-                          const double x4, const double y4, const double z4)
-{
-    double denominator = ((x2 - x1) * (y3 - y4)) - ((y2 - y1) * (x3 - x4));
-    double numerator1 = ((y1 - y4) * (x3 - x4)) - ((x1 - x4) * (y3 - y4));
-    double numerator2 = ((y1 - y4) * (x2 - x1)) - ((x1 - x4) * (y2 - y1));
-    
-    // Detect coincident lines (has a problem, read below)
-    if (denominator == 0) return numerator1 == 0 && numerator2 == 0;
-
-    double r = numerator1 / denominator;
-    double s = numerator2 / denominator;
-
-    return (r >= 0 && r <= 1) && (s >= 0 && s <= 1);
 }
 
 bool has_collision (struct segment_list *s_list, struct segment_node *s, const double new_pos[])
@@ -109,12 +95,47 @@ bool check_collisions (struct cco_network *the_network, const double new_pos[])
 
     while (tmp != NULL)
     {
-        if (has_collision(s_list,tmp,new_pos))
+        if (!has_collision(s_list,tmp,new_pos))
+        {
+            feasible_segments.push_back(tmp);
+        }
+
+        tmp = tmp->next;
+    }
+
+    if (feasible_segments.size() == 0)
+        return false;
+    else
+        return true;
+}
+
+bool connection_search (struct cco_network *the_network, const double pos[], const double d_threash)
+{
+    struct segment_list *s_list = the_network->segment_list;
+    struct segment_node *tmp = s_list->list_nodes;
+
+    while (tmp != NULL)
+    {
+        if (!distance_criterion(tmp,pos,d_threash))
             return false;
 
         tmp = tmp->next;
     }
+
     return true;
+}
+
+bool distance_criterion (struct segment_node *s, const double pos[], const double d_threash)
+{
+    double d_proj = calc_dproj(s,pos);
+    
+    double d_crit;
+    if (d_proj >= 0 && d_proj <= 1)
+        d_crit = calc_dortho(s,pos);
+    else
+        d_crit = calc_dend(s,pos);
+    
+    return (d_crit > d_threash) ? true : false;
 }
 
 void rescale_root (struct segment_node *iroot, const double Q_perf, const double delta_p)
@@ -173,14 +194,11 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
         struct segment_node *ipar_right = ipar->value->right;
         rescale_until_root(ipar,ipar_left,ipar_right,Q_perf,delta_p,num_terminals);
     }
-    
-
 }
 
 void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_left, struct segment_node *ipar_right,\
                         const double Q_perf, const double delta_p, const int num_terminals)
 {
-    printf("On rescale_until_root()\n");
 
     // Reach the root
     if (ipar == NULL) return;
@@ -300,8 +318,7 @@ void calc_middle_point_segment (struct segment_node *s, double pos[])
 
 double calc_bifurcation_ratio (const double r_left, const double r_right, const bool sign)
 {
-    // TODO: Calcular uma unica vez
-    double expoent = -1.0/GAMMA;
+    static const double expoent = -1.0/GAMMA;
     double base = r_right / r_left;
 
     if (sign)
@@ -348,23 +365,6 @@ void write_to_vtk (struct cco_network *the_network)
         s_tmp = s_tmp->next;
     }
     fclose(file);
-}
-
-void draw_perfusion_area (const double radius)
-{
-    // Create a circle
-    vtkSmartPointer<vtkRegularPolygonSource> polygonSource =
-      vtkSmartPointer<vtkRegularPolygonSource>::New();
-    
-    polygonSource->GeneratePolygonOff(); // Outline of the circle
-    polygonSource->SetNumberOfSides(50);
-    polygonSource->SetRadius(radius);
-    polygonSource->SetCenter(0,-radius,0);
-
-    vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-    writer->SetFileName("output/perfusion_area.vtp");
-    writer->SetInputConnection(polygonSource->GetOutputPort());
-    writer->Write();
 }
 
 // --------------------------------------------------------------------------------------------
@@ -523,13 +523,19 @@ void test3 (struct cco_network *the_network)
     print_list(s_list);
 }
 
-void make_root (struct cco_network *the_network, const double r_supp)
+void make_root (struct cco_network *the_network)
 {
+    int N_term = the_network->N_term;
     double Q_perf = the_network->Q_perf;
     double p_perf = the_network->p_perf;
     double p_term = the_network->p_term;
     double r_perf = the_network->r_perf;
+    double A_perf = the_network->A_perf;
     double delta_p = p_perf - p_term;
+
+    int K_term = 1;
+    double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term; 
+    double r_supp = sqrt(A_supp/M_PI);
 
     struct point_list *p_list = the_network->point_list;
     struct segment_list *s_list = the_network->segment_list;
@@ -539,7 +545,7 @@ void make_root (struct cco_network *the_network, const double r_supp)
     double x_prox[3] = {0,0,0};
 
     // Sort the distal position of the root until its size is larger than the perfusion radius  
-    while (euclidean_norm(x_prox[0],x_prox[1],x_prox[2],x_inew[0],x_inew[1],x_inew[2]) < r_perf)
+    while (euclidean_norm(x_prox[0],x_prox[1],x_prox[2],x_inew[0],x_inew[1],x_inew[2]) < r_supp)
         generate_point_inside_perfusion_area(x_inew,r_supp);
 
     // Insert points and create the root segment
@@ -554,24 +560,36 @@ void make_root (struct cco_network *the_network, const double r_supp)
 
 void generate_terminal (struct cco_network *the_network)
 {
-    int num_terminals = the_network->num_terminals;
+    int K_term = the_network->num_terminals;
+    int N_term = the_network->N_term;
     double r_perf = the_network->r_perf;
+    double A_perf = the_network->A_perf;
+
+    // Increase support domain
+    double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term; 
+    double r_supp = sqrt(A_supp/M_PI);
+    printf("[!] Support domain radius = %g\n",r_supp);
 
     double new_pos[3];
     bool point_is_ok = false;
     uint32_t tosses = 0;
-    double d_threash = calc_dthreashold(r_perf,num_terminals);
+    double d_threash = calc_dthreashold(r_perf,K_term);
     
     while (!point_is_ok)
     {
-        // Generate the terminal position inside the perfusion area
-        generate_point_inside_perfusion_area(new_pos,r_perf);
+        // Reset the feasible segments list
+        feasible_segments.clear();
 
+        // Generate the terminal position inside the perfusion area
+        generate_point_inside_perfusion_area(new_pos,r_supp);
+
+        // RESTRICTION AREA 
         // Check the distance criterion for this point
-        //ret = connection_search_paper(pos,d_threash);
+        point_is_ok = connection_search(the_network,new_pos,d_threash);
 
         // Check collision with other segments
-        point_is_ok = check_collisions(the_network,new_pos);
+        if (point_is_ok)
+            point_is_ok = check_collisions(the_network,new_pos);
 
         // If the point does not attend the distance criterion or if there is a collision
         // we need to choose another point.
@@ -588,6 +606,11 @@ void generate_terminal (struct cco_network *the_network)
         }
     }
 
+    printf("Feasible segments: ");
+    for (unsigned int i = 0; i < feasible_segments.size(); i++)
+        printf("%d ",feasible_segments[i]->id);
+    printf("\n");
+
     struct segment_node *iconn = find_closest_segment(the_network,new_pos);
     build_segment(the_network,iconn->id,new_pos);
 }
@@ -597,11 +620,12 @@ struct segment_node* find_closest_segment (struct cco_network *the_network, cons
     struct segment_node *closest = NULL;
     double closest_dist = DBL_MAX;
 
-    struct segment_list *s_list = the_network->segment_list;
-    struct segment_node *tmp = s_list->list_nodes;
-
-    while (tmp != NULL)
+    // Pass through the list of feasible segments
+    struct segment_node *tmp;
+    for (unsigned int i = 0; i < feasible_segments.size(); i++)
     {
+        tmp = feasible_segments[i];
+        
         double middle_pos[3];
         calc_middle_point_segment(tmp,middle_pos);
 
@@ -612,8 +636,6 @@ struct segment_node* find_closest_segment (struct cco_network *the_network, cons
             closest_dist = dist;
             closest = tmp;
         }
-
-        tmp = tmp->next;
     }
     
     return closest;
@@ -630,9 +652,7 @@ void test_cco (struct cco_network *the_network)
     struct point_list *p_list = the_network->point_list;
     struct segment_list *s_list = the_network->segment_list;
 
-    draw_perfusion_area(r_perf);
-
-    make_root(the_network,r_perf);
+    make_root(the_network);
 
     // Main iteration loop
     while (the_network->num_terminals <= the_network->N_term)
@@ -642,18 +662,12 @@ void test_cco (struct cco_network *the_network)
 
         generate_terminal(the_network);
 
-        the_network->num_terminals++;
-
         printf("%s\n",PRINT_LINE);
     }
+
+    draw_perfusion_area(the_network);
 
     print_list(p_list);
     print_list(s_list);
 
-
-}
-
-double calc_dthreashold (const double radius, const int num_terminals)
-{
-    return sqrt( (double)(M_PI*radius*radius) / (double)(num_terminals) );
 }

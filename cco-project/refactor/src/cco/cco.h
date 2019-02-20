@@ -66,7 +66,9 @@ bool has_collision (struct segment_list *s_list, struct segment_node *s, const d
 bool collision_detection (const double x1, const double y1, const double z1,\
                           const double x2, const double y2, const double z2,\
                           const double x3, const double y3, const double z3,\
-                          const double x4, const double y4, const double z4); 
+                          const double x4, const double y4, const double z4);
+
+struct segment_node* find_closest_segment (struct cco_network *the_network, const double new_pos[]); 
 
 void make_root (struct cco_network *the_network, const double r_supp);
 void grow_tree (struct cco_network *the_network);

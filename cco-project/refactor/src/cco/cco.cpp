@@ -587,6 +587,36 @@ void generate_terminal (struct cco_network *the_network)
             }
         }
     }
+
+    struct segment_node *iconn = find_closest_segment(the_network,new_pos);
+    build_segment(the_network,iconn->id,new_pos);
+}
+
+struct segment_node* find_closest_segment (struct cco_network *the_network, const double new_pos[])
+{
+    struct segment_node *closest = NULL;
+    double closest_dist = DBL_MAX;
+
+    struct segment_list *s_list = the_network->segment_list;
+    struct segment_node *tmp = s_list->list_nodes;
+
+    while (tmp != NULL)
+    {
+        double middle_pos[3];
+        calc_middle_point_segment(tmp,middle_pos);
+
+        double dist = euclidean_norm(new_pos[0],new_pos[1],new_pos[2],\
+                                    middle_pos[0],middle_pos[1],middle_pos[2]);
+        if (dist < closest_dist)
+        {
+            closest_dist = dist;
+            closest = tmp;
+        }
+
+        tmp = tmp->next;
+    }
+    
+    return closest;
 }
 
 void test_cco (struct cco_network *the_network)

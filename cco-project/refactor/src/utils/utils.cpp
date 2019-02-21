@@ -17,7 +17,7 @@ double generate_random_number ()
 void generate_point_inside_perfusion_area (double pos[], const double radius)
 {
     double teta = generate_random_number()*2.0*M_PI;
-    double r = generate_random_number();
+    double r = fabs(generate_random_number())*radius;
 
     // Center of perfusion area = (0,-radius,0)
     pos[0] = 0 + r*cos(teta);

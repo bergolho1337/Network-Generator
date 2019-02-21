@@ -573,7 +573,7 @@ void generate_terminal (struct cco_network *the_network)
     double new_pos[3];
     bool point_is_ok = false;
     uint32_t tosses = 0;
-    double d_threash = calc_dthreashold(r_perf,K_term);
+    double d_threash = calc_dthreashold(r_supp,K_term);
     
     while (!point_is_ok)
     {
@@ -611,6 +611,7 @@ void generate_terminal (struct cco_network *the_network)
         printf("%d ",feasible_segments[i]->id);
     printf("\n");
 
+    // Cost function: Closest segment --> min: sum( l_i )
     struct segment_node *iconn = find_closest_segment(the_network,new_pos);
     build_segment(the_network,iconn->id,new_pos);
 }
@@ -667,7 +668,7 @@ void test_cco (struct cco_network *the_network)
 
     draw_perfusion_area(the_network);
 
-    print_list(p_list);
-    print_list(s_list);
+    //print_list(p_list);
+    //print_list(s_list);
 
 }

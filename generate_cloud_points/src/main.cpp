@@ -14,7 +14,8 @@
 using namespace std;
 
 const unsigned int NUM_POINTS = 200;        // Total number of points to be generated
-const double TOLERANCE = 0.1;               // Distance tolerance of the points
+const double TOLERANCE = 0.05;               // Distance tolerance of the points
+const unsigned int KTERM = 10;
 
 class Point
 {
@@ -53,20 +54,19 @@ void draw_perfusion_area (const double radius)
 double generate_random_number ()
 {
     double number = (double)rand() / (double)RAND_MAX;
-    double sign = rand() % 2;
     
-    return (sign) ? number : -number;
+    return number;
     
 }
 
-void generate_point_inside_circle (double pos[], const double radius, const double center[])
+void generate_point_inside_circle (double pos[], const double radius)
 {
     double teta = generate_random_number()*2.0*M_PI;
-    double r = generate_random_number();
+    double r = generate_random_number()*radius;
 
-    pos[0] = center[0] + r*cos(teta);
-    pos[1] = center[1] + r*sin(teta);
-    pos[2] = center[2] + 0;
+    pos[0] = 0 + r*cos(teta);
+    pos[1] = -radius + r*sin(teta);
+    pos[2] = 0 + 0;
 }
 
 double calc_euclidean_dist (const double a[], const double b[])
@@ -90,19 +90,21 @@ bool check_point (const double new_pos[], vector<Point> points)
     return true;
 }
 
-void generate_cloud_points (const double radius, const double center[], vector<Point> &points)
+void generate_cloud_points (vector<Point> &points, const double radius)
 {
-    
+    double pos[3];
+
     for (unsigned int i = 0; i < NUM_POINTS; i++)
     {
-        double pos[3];
         do
         {
-            generate_point_inside_circle(pos,radius,center);
+            generate_point_inside_circle(pos,radius);
         }while (!check_point(pos,points));
         
         Point p(pos[0],pos[1],pos[2]);
         points.push_back(p);
+        
+        printf("[!] Number of points = %u\n",i);
     }    
 }
 
@@ -143,17 +145,22 @@ void write_to_vtp (const vector<Point> points)
 
 int main (int argc, char *argv[])
 {
-    if (argc-1 != 1)
+    if (argc-1 != 2)
     {
-        printf("Usage:> %s <radius>\n",argv[0]);
+        printf("Usage:> %s <A_perf> <N_term>\n",argv[0]);
         exit(EXIT_FAILURE);   
     }
-    double radius = atof(argv[1]);
-    double center[3] = {0,-radius,0};
-    draw_perfusion_area(radius);
+    double A_perf = atof(argv[1]);
+    int N_term = atoi(argv[2]);
+
+    double A_sup = (double)((KTERM + 1) * A_perf) / (double)N_term;
+    double r_sup = sqrt(A_sup / M_PI);
+
+    printf("Radius = %g\n",r_sup);
+    draw_perfusion_area(r_sup);
 
     vector<Point> points;
-    generate_cloud_points(radius,center,points);
+    generate_cloud_points(points,r_sup);
 
     write_to_vtp(points);
     write_to_txt(points);

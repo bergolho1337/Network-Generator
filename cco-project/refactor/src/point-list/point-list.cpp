@@ -133,6 +133,26 @@ void print_list (struct point_list *l)
     }
 }
 
+void write_list (struct point_list *l, FILE *log_file)
+{
+    if (l->num_nodes == 0)
+    {
+        fprintf(log_file,"[!] The list is empty!\n");
+        return;
+    }
+
+    struct point_node *tmp = l->list_nodes;
+    fprintf(log_file,"Number of node in list = %u\n",l->num_nodes);
+    while (tmp != NULL)
+    {
+        fprintf(log_file,"Node %d -- Point(%g,%g,%g)\n",tmp->id,\
+                                        tmp->value->x,\
+                                        tmp->value->y,\
+                                        tmp->value->z);
+        tmp = tmp->next;
+    }
+}
+
 void order_list (struct point_list *l)
 {
     uint32_t cont = 0;

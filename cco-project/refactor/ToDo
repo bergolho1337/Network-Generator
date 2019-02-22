@@ -1,3 +1,4 @@
+- Add the option to use the terminals from a input file 
+- Receive the input arguments as a configuration file
 - "feasible_segments" variable should be stored in global memory
-- Implement a function to store a logfile
 - Implement the restore_state() function

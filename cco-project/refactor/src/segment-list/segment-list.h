@@ -56,7 +56,8 @@ struct segment_node* insert_segment_node (struct segment_list *l, struct segment
 void delete_node (struct segment_list *l, const uint32_t index);
 struct segment_node* search_segment_node (struct segment_list *l, const uint32_t index);
 bool is_empty (struct segment_list *l);
-void print_list (struct segment_list *l); 
+void print_list (struct segment_list *l);
+void write_list (struct segment_list *l, FILE *log_file); 
 
 void order_list (struct segment_list *l);
 

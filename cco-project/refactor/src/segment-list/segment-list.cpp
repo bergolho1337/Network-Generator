@@ -140,6 +140,8 @@ void free_segment (struct segment *s)
     s->parent = NULL;
     s->left = NULL;
     s->right = NULL;
+    s->src = NULL;
+    s->dest = NULL;
     free(s);
     s = NULL;
 }
@@ -175,6 +177,42 @@ void print_list (struct segment_list *l)
             printf(" -- RIGHT = NIL\n");
         else
             printf(" -- RIGHT = %u\n",tmp->value->right->id);
+
+        tmp = tmp->next;
+    }
+}
+
+void write_list (struct segment_list *l, FILE *log_file)
+{
+    if (l->num_nodes == 0)
+    {
+        fprintf(log_file,"[!] The list is empty!\n");
+        return;
+    }
+
+    struct segment_node *tmp = l->list_nodes;
+    fprintf(log_file,"Number of segment_node in list = %u\n",l->num_nodes);
+    while (tmp != NULL)
+    {
+        fprintf(log_file,"Segment %d (%d,%d) -- Source(%g,%g,%g) - Destination(%g,%g,%g) -- NDIST = %u -- RADIUS = %g\n",tmp->id,\
+                                        tmp->value->src->id,tmp->value->dest->id,\
+                                        tmp->value->src->value->x,tmp->value->src->value->y,tmp->value->src->value->z,\
+                                        tmp->value->dest->value->x,tmp->value->dest->value->y,tmp->value->dest->value->z,\
+                                        tmp->value->ndist,tmp->value->radius);
+        fprintf(log_file,"\tBETA = %g\n",tmp->value->beta);
+        
+        if (tmp->value->parent == NULL)
+            fprintf(log_file,"\tPARENT = NIL");
+        else
+            fprintf(log_file,"\tPARENT = %u",tmp->value->parent->id);
+        if (tmp->value->left == NULL)
+            fprintf(log_file," -- LEFT = NIL");
+        else
+            fprintf(log_file," -- LEFT = %u",tmp->value->left->id);
+        if (tmp->value->right == NULL)
+            fprintf(log_file," -- RIGHT = NIL\n");
+        else
+            fprintf(log_file," -- RIGHT = %u\n",tmp->value->right->id);
 
         tmp = tmp->next;
     }

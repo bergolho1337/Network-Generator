@@ -15,7 +15,18 @@ struct cco_network* new_cco_network (struct user_options *options)
     result->r_perf = options->r_perf;
     result->N_term = options->N_term;
     result->A_perf = M_PI * result->r_perf * result->r_perf;
+    result->log_file = fopen("output.log","w+");
+
     return result;
+}
+
+void free_cco_network (struct cco_network *the_network)
+{
+    free_point_list(the_network->point_list);
+    free_segment_list(the_network->segment_list);
+    fclose(the_network->log_file);
+
+    free(the_network);
 }
 
 void grow_tree (struct cco_network *the_network)
@@ -30,7 +41,10 @@ void grow_tree (struct cco_network *the_network)
 
 void check_bifurcation_rule (struct cco_network *the_network)
 {
-    printf("[!] Checking bifurcation rule!\n");
+    FILE *log_file = the_network->log_file;
+
+    //printf("[!] Checking bifurcation rule!\n");
+    fprintf(log_file,"[!] Checking bifurcation rule!\n");
 
     struct segment_list *s_list = the_network->segment_list;
     struct segment_node *tmp, *tmp_left, *tmp_right;
@@ -47,24 +61,28 @@ void check_bifurcation_rule (struct cco_network *the_network)
             double r_left = pow(tmp_left->value->radius,GAMMA);
             double r_right = pow(tmp_right->value->radius,GAMMA);
 
-            printf("%g = %g + %g --> %g = %g\n",r,r_left,r_right,r,r_left + r_right);
+            //printf("%g = %g + %g --> %g = %g\n",r,r_left,r_right,r,r_left + r_right);
+            fprintf(log_file,"%g = %g + %g --> %g = %g\n",r,r_left,r_right,r,r_left + r_right);
         }
         tmp = tmp->next;
     }
 }
 
-bool has_collision (struct segment_list *s_list, struct segment_node *s, const double new_pos[])
+bool has_collision (struct segment_list *s_list, struct segment_node *s, const double new_pos[], FILE *log_file)
 {
     double middle_pos[3];
     calc_middle_point_segment(s,middle_pos); 
 
-    printf("[+] Trying connection with segment %u\n",s->id);
+    //printf("[+] Trying connection with segment %u\n",s->id);
+    fprintf(log_file,"[+] Trying connection with segment %u\n",s->id);
+
     struct segment_node *tmp = s_list->list_nodes;
     while (tmp != NULL)
     {
         if (tmp->id != s->id)
         {
-            printf("\t[!] Checking collison between segment %d\n",tmp->id);
+            //printf("\t[!] Checking collison between segment %d\n",tmp->id);
+            fprintf(log_file,"\t[!] Checking collison between segment %d\n",tmp->id);
 
             // Get the reference to the points of the current segment
             struct point *src = tmp->value->src->value;
@@ -77,7 +95,8 @@ bool has_collision (struct segment_list *s_list, struct segment_node *s, const d
 
             if (intersect)
             {
-                printf("\t[-] ERROR! Intersection with segment %d !\n",tmp->id);
+                //printf("\t[-] ERROR! Intersection with segment %d !\n",tmp->id);
+                fprintf(log_file,"\t[-] ERROR! Intersection with segment %d !\n",tmp->id);
                 return true;
             }          
         }
@@ -88,14 +107,17 @@ bool has_collision (struct segment_list *s_list, struct segment_node *s, const d
 
 bool check_collisions (struct cco_network *the_network, const double new_pos[])
 {
-    printf("[!] Checking collisions!\n");
+    FILE *log_file = the_network->log_file;
+
+    //printf("[!] Checking collisions!\n");
+    fprintf(log_file,"[!] Checking collisions!\n");
 
     struct segment_list *s_list = the_network->segment_list;
     struct segment_node *tmp = s_list->list_nodes;
 
     while (tmp != NULL)
     {
-        if (!has_collision(s_list,tmp,new_pos))
+        if (!has_collision(s_list,tmp,new_pos,log_file))
         {
             feasible_segments.push_back(tmp);
         }
@@ -560,6 +582,8 @@ void make_root (struct cco_network *the_network)
 
 void generate_terminal (struct cco_network *the_network)
 {
+    FILE *log_file = the_network->log_file;
+
     int K_term = the_network->num_terminals;
     int N_term = the_network->N_term;
     double r_perf = the_network->r_perf;
@@ -568,7 +592,8 @@ void generate_terminal (struct cco_network *the_network)
     // Increase support domain
     double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term; 
     double r_supp = sqrt(A_supp/M_PI);
-    printf("[!] Support domain radius = %g\n",r_supp);
+    //printf("[!] Support domain radius = %g\n",r_supp);
+    fprintf(log_file,"[!] Support domain radius = %g\n",r_supp);
 
     double new_pos[3];
     bool point_is_ok = false;
@@ -598,7 +623,9 @@ void generate_terminal (struct cco_network *the_network)
             tosses++;
             if (tosses > NTOSS)
             {
-                printf("[!] Reducing dthreash! Before = %.2lf || Now = %.2lf \n",\
+                //printf("[!] Reducing dthreash! Before = %.2lf || Now = %.2lf \n",\
+                        d_threash,d_threash*0.9);
+                fprintf(log_file,"[!] Reducing dthreash! Before = %.2lf || Now = %.2lf \n",\
                         d_threash,d_threash*0.9);
                 d_threash *= 0.9;
                 tosses = 0;
@@ -606,10 +633,10 @@ void generate_terminal (struct cco_network *the_network)
         }
     }
 
-    printf("Feasible segments: ");
+    fprintf(log_file,"Feasible segments: ");
     for (unsigned int i = 0; i < feasible_segments.size(); i++)
-        printf("%d ",feasible_segments[i]->id);
-    printf("\n");
+        fprintf(log_file,"%d ",feasible_segments[i]->id);
+    fprintf(log_file,"\n");
 
     // Cost function: Closest segment --> min: sum( l_i )
     struct segment_node *iconn = find_closest_segment(the_network,new_pos);
@@ -644,6 +671,8 @@ struct segment_node* find_closest_segment (struct cco_network *the_network, cons
 
 void test_cco (struct cco_network *the_network)
 {
+    FILE *log_file = the_network->log_file;
+
     double Q_perf = the_network->Q_perf;
     double p_perf = the_network->p_perf;
     double p_term = the_network->p_term;
@@ -660,10 +689,13 @@ void test_cco (struct cco_network *the_network)
     {
         printf("%s\n",PRINT_LINE);
         printf("[!] Working on terminal number %d\n",the_network->num_terminals);            
+        fprintf(log_file,"%s\n",PRINT_LINE);
+        fprintf(log_file,"[!] Working on terminal number %d\n",the_network->num_terminals);
 
         generate_terminal(the_network);
 
         printf("%s\n",PRINT_LINE);
+        fprintf(log_file,"%s\n",PRINT_LINE);
     }
 
     draw_perfusion_area(the_network);
@@ -671,4 +703,26 @@ void test_cco (struct cco_network *the_network)
     //print_list(p_list);
     //print_list(s_list);
 
+    // Write to the logfile
+    fprintf(log_file,"%s\n",PRINT_LINE);
+    write_list(p_list,log_file);
+    fprintf(log_file,"%s\n",PRINT_LINE);
+
+    fprintf(log_file,"%s\n",PRINT_LINE);
+    write_list(s_list,log_file);
+    fprintf(log_file,"%s\n",PRINT_LINE);
+}
+
+
+void usage (const char pname[])
+{
+    printf("%s\n",PRINT_LINE);
+    printf("Usage:> %s <Qperf> <pperf> <pterm> <rperf> <Nterm>\n",pname);
+    printf("%s\n",PRINT_LINE);
+    printf("\t<Qperf> = Input flow\n");
+    printf("\t<pperf> = Perfusion pressure\n");
+    printf("\t<pterm> = Terminal pressure\n");
+    printf("\t<rperf> = Perfusion radius\n");
+    printf("\t<Nterm> = Number of terminals\n");
+    printf("%s\n",PRINT_LINE);
 }

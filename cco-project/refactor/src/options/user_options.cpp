@@ -8,5 +8,11 @@ struct user_options* new_user_options (int argc, char *argv[])
     result->p_term = atof(argv[3]);
     result->r_perf = atof(argv[4]);
     result->N_term = atoi(argv[5]);
+    
     return result;
+}
+
+void free_user_options (struct user_options *options)
+{
+    free(options);
 }

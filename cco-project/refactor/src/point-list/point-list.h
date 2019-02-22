@@ -38,7 +38,8 @@ struct point_node* insert_point (struct point_list *l, const double pos[]);
 void delete_node (struct point_list *l, const uint32_t index);
 struct point_node* search_node (struct point_list *l, const uint32_t index);
 bool is_empty (struct point_list *l);
-void print_list (struct point_list *l); 
+void print_list (struct point_list *l);
+void write_list (struct point_list *l, FILE *log_file); 
 
 void order_list (struct point_list *l);
 

@@ -24,7 +24,7 @@
 
 // CONSTANTS AND MACROS 
 // =================================================================
-#define PRINT_LINE "=============================================="
+#define PRINT_LINE "============================================================================"
 
 static const double ETA = 3.6;          // Blood viscosity
 static const double GAMMA = 3.0;        // Bifurcation expoent
@@ -46,9 +46,14 @@ struct cco_network
 
     struct point_list *point_list;
     struct segment_list *segment_list;
+
+    FILE *log_file;
 };
 
+void usage (const char pname[]);
+
 struct cco_network* new_cco_network (struct user_options *options);
+void free_cco_network (struct cco_network *the_network);
 
 void build_segment (struct cco_network *the_network, const uint32_t index, const double new_pos[]);
 
@@ -66,7 +71,7 @@ double calc_bifurcation_ratio (const double r1, const double r2, bool sign);
 void check_bifurcation_rule (struct cco_network *the_network);
 bool check_collisions (struct cco_network *the_network, const double new_pos[]);
 
-bool has_collision (struct segment_list *s_list, struct segment_node *s, const double new_pos[]);
+bool has_collision (struct segment_list *s_list, struct segment_node *s, const double new_pos[], FILE *log_file);
 bool connection_search (struct cco_network *the_network, const double pos[], const double d_threash);
 bool distance_criterion (struct segment_node *s, const double pos[], const double d_threash);
 

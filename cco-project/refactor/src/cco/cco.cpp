@@ -187,26 +187,30 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
 
     double Q_term = Q_perf / num_terminals;
     
-    // inew: Calculate resistance, flux and radius using (2.4) from Rafael's thesis
+    // inew: Calculate resistance, flux and radius using (2.32) and (2.22) from Rafael's thesis
     calc_relative_resistance_term(inew);
-    calc_radius_term(inew,Q_term,delta_p);
+    double radius_ratio = calc_radius_ratio(iconn,inew,Q_term);
+    //calc_radius_term(inew,Q_term,delta_p);
     
     // iconn + inew: Calculate bifurcation ratio using (2.31)
-    inew->value->beta = calc_bifurcation_ratio(iconn->value->radius,inew->value->radius,true);
-    iconn->value->beta = calc_bifurcation_ratio(iconn->value->radius,inew->value->radius,false);
+    inew->value->beta = calc_bifurcation_ratio(radius_ratio,true);
+    iconn->value->beta = calc_bifurcation_ratio(radius_ratio,false);
 
     // TODO: Need to revise this ...
     // Preciso recalcular tudo do iconn ????
     // iconn: Recalculate resistance with the new bifurcation ratio
+    /*
     if (iconn->value->left == NULL && iconn->value->right == NULL)
     {
         calc_relative_resistance_term(iconn);
         calc_radius_term(iconn,Q_term,delta_p);
     }
+    */
 
-    // ibiff: Calculate resistance using (2.5), flux and radius using (2.4) from Rafael's thesis
+    // ibiff: Calculate resistance using (2.5)
     calc_relative_resistance_subtree(ibiff,iconn,inew);
-    calc_radius_term(ibiff,Q_term,delta_p);
+
+    //calc_radius_term(ibiff,Q_term,delta_p);
 
     // Rescale the until we reach the root by using the "parent" pointer
     struct segment_node *ipar = ibiff->value->parent;
@@ -226,18 +230,19 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
     if (ipar == NULL) return;
 
     double Q_term = Q_perf / num_terminals;
+    // TODO: Revise if this will always happen ... 
     if (ipar_left != NULL && ipar_right != NULL)
     {
-        
+
+        // Calculate radius ratio between left and right subtree
+        double radius_ratio = calc_radius_ratio(ipar_right,ipar_left,Q_term);
+
         // Recalculate bifurcation ratios for the offsprings using (2.31)
-        ipar_right->value->beta = calc_bifurcation_ratio(ipar_left->value->radius,ipar_right->value->radius,true);
-        ipar_left->value->beta = calc_bifurcation_ratio(ipar_left->value->radius,ipar_right->value->radius,false);
+        ipar_right->value->beta = calc_bifurcation_ratio(radius_ratio,true);
+        ipar_left->value->beta = calc_bifurcation_ratio(radius_ratio,false);
 
         // Recalculate resistance using (2.5)
         calc_relative_resistance_subtree(ipar,ipar_left,ipar_right);
-
-        // Recalculate radius using (2.4)
-        calc_radius_term(ipar,Q_term,delta_p);
 
         // Call the function recursively until we reach the root
         if (ipar->value->parent != NULL) 
@@ -268,26 +273,34 @@ void build_segment (struct cco_network *the_network, const uint32_t index, const
     struct point_node *M = insert_point(p_list,middle_pos);
 
     // Create ibiff
-    struct segment *ibiff = new_segment(M,iconn_node->value->dest,\
-                            iconn_node->value->left,iconn_node->value->right,iconn_node,Q_perf,p_perf);
+    struct segment *ibiff = new_segment(iconn_node->value->src,M,\
+                            NULL,NULL,iconn_node->value->parent,Q_perf,p_perf);
     struct segment_node *ibiff_node = insert_segment_node(s_list,ibiff);
     ibiff->ndist = iconn_node->value->ndist;
-    ibiff->radius = iconn->radius;          // Copy from iconn !!!
-    ibiff->resistance = iconn->resistance;  // Copy from iconn !!!
+    // We need to calculate the resistance and radius of this segment 
+    // (this is done on the rescale_tree())
 
     // Create inew
     struct point_node *T = insert_point(p_list,new_pos);
     struct segment *inew = new_segment(M,T,\
-                            NULL,NULL,iconn_node,Q_perf,p_perf);
+                            NULL,NULL,ibiff_node,Q_perf,p_perf);
     struct segment_node *inew_node = insert_segment_node(s_list,inew);
     
-    // Update iconn pointers
-    iconn_node->value->dest = M;
-    iconn_node->value->left = ibiff_node;   // CONVENTION: Left will point to subtree
-    iconn_node->value->right = inew_node;   // CONVENTION: Right will point to terminal
+    // Update pointers
+    //  iconn:
+    iconn_node->value->parent = ibiff_node;
+    iconn_node->value->src = M; 
+    //  ibiff:
+    ibiff_node->value->left = inew_node;   // CONVENTION: Right will point to subtree
+    ibiff_node->value->right = iconn_node;   // CONVENTION: Left will point to terminal
+    if (ibiff_node->value->parent != NULL)
+    {
+        struct segment_node *ibiff_par_node = ibiff_node->value->parent;
+        ibiff_par_node->value->left = ibiff_node;
+    }
 
-    // Update ndist
-    struct segment_node *tmp = iconn_node;
+    // Update ndist from ibiff until the root
+    struct segment_node *tmp = ibiff_node;
     while (tmp->value->parent != NULL)
     {
         tmp->value->ndist++;
@@ -296,9 +309,30 @@ void build_segment (struct cco_network *the_network, const uint32_t index, const
     tmp->value->ndist++;
     the_network->num_terminals = tmp->value->ndist;
 
-    // "iconn" is equivalent to "ibiff" on Rafael's thesis and
-    // "ibiff" is equivalent to "iconn"
-    rescale_tree(iconn_node,ibiff_node,inew_node,Q_perf,delta_p,the_network->num_terminals);
+    rescale_tree(ibiff_node,iconn_node,inew_node,Q_perf,delta_p,the_network->num_terminals);
+
+    recalculate_radius(the_network);
+}
+
+double calc_radius (struct cco_network *the_network, struct segment_node *s)
+{
+    if (s->value->parent == NULL)
+        return the_network->root_radius;
+    else
+        return s->value->beta * calc_radius(the_network,s->value->parent);
+}
+
+void recalculate_radius (struct cco_network *the_network)
+{
+    struct segment_list *s_list = the_network->segment_list;
+    struct segment_node *tmp = s_list->list_nodes;
+
+    while (tmp != NULL)
+    {
+        tmp->value->radius = calc_radius(the_network,tmp);
+
+        tmp = tmp->next;
+    }
 }
 
 void calc_relative_resistance_subtree (struct segment_node *ibiff, struct segment_node *iconn, struct segment_node *inew)
@@ -338,10 +372,23 @@ void calc_middle_point_segment (struct segment_node *s, double pos[])
     pos[2] = (src->z + dest->z) / 2.0;
 }
 
-double calc_bifurcation_ratio (const double r_left, const double r_right, const bool sign)
+double calc_radius_ratio (struct segment_node *iconn, struct segment_node *inew, const double Q_term)
+{
+    double Q_inew = inew->value->ndist*Q_term;
+    double R_inew = inew->value->resistance;
+
+    double Q_iconn = iconn->value->ndist*Q_term;
+    double R_iconn = iconn->value->resistance;
+    
+    double ratio = pow( (Q_iconn * R_iconn) / (Q_inew * R_inew), 0.25 );
+    
+    return ratio;
+}
+
+double calc_bifurcation_ratio (const double radius_ratio, const bool sign)
 {
     static const double expoent = -1.0/GAMMA;
-    double base = r_right / r_left;
+    double base = radius_ratio;
 
     if (sign)
         return pow( 1.0 + ( pow( base, -GAMMA) ) , expoent);
@@ -578,6 +625,7 @@ void make_root (struct cco_network *the_network)
     struct segment_node *iroot_node = insert_segment_node(s_list,iroot);
     rescale_root(iroot_node,Q_perf,delta_p);
     the_network->num_terminals = 1;
+    the_network->root_radius = iroot_node->value->radius;
 }
 
 void generate_terminal (struct cco_network *the_network)
@@ -683,9 +731,10 @@ void test_cco (struct cco_network *the_network)
     struct segment_list *s_list = the_network->segment_list;
 
     make_root(the_network);
+    // OK
 
     // Main iteration loop
-    while (the_network->num_terminals <= the_network->N_term)
+    while (the_network->num_terminals < the_network->N_term)
     {
         printf("%s\n",PRINT_LINE);
         printf("[!] Working on terminal number %d\n",the_network->num_terminals);            

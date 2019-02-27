@@ -1,3 +1,7 @@
+- Review the radius calculation. 
+    - Use ibiff, iconn and inew as in Rafael's work
+    - The radius calculation must be done using equations (2.32) and (2.22). 
+    
 - Add the option to use the terminals from a input file 
 - Receive the input arguments as a configuration file
 - "feasible_segments" variable should be stored in global memory

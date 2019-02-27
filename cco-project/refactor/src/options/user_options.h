@@ -21,7 +21,7 @@ struct user_options
     double p_perf;
     double p_term;
     double r_perf;
-    //char cloud_filename[MAX_FILENAME_SIZE];
+    char cloud_filename[MAX_FILENAME_SIZE];
 };
 
 struct user_options* new_user_options (int argc, char *argv[]);

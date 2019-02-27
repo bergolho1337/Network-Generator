@@ -11,7 +11,7 @@ using namespace std;
 
 int main (int argc, char *argv[])
 {   
-    if (argc-1 != 5)
+    if (argc-1 < 5)
     {
         usage(argv[0]);
         exit(EXIT_FAILURE);   

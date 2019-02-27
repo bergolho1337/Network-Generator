@@ -8,6 +8,10 @@ struct user_options* new_user_options (int argc, char *argv[])
     result->p_term = atof(argv[3]);
     result->r_perf = atof(argv[4]);
     result->N_term = atoi(argv[5]);
+    if (argc-1 == 6)
+        strcpy(result->cloud_filename,argv[6]);
+    else
+        strcpy(result->cloud_filename,"");
     
     return result;
 }

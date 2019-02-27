@@ -33,6 +33,9 @@ static const uint32_t NTOSS = 200;      // Number of tosses for a new terminal
 
 struct cco_network
 {
+    bool using_cloud_points;
+    char *cloud_points_filename;
+
     int num_terminals;
 
     int N_term;
@@ -41,7 +44,6 @@ struct cco_network
     double p_term;
     double r_perf;
     double r_supp;
-    double root_radius;
 
     double A_perf;
 
@@ -87,10 +89,17 @@ void grow_tree (struct cco_network *the_network);
 void generate_terminal (struct cco_network *the_network);
 void write_to_vtk (struct cco_network *the_network);
 
+void make_root_using_cloud_points (struct cco_network *the_network, std::vector<struct point> cloud_points);
+uint32_t sort_point_from_cloud (double pos[], std::vector<struct point> cloud_points);
+void read_cloud_points (const char filename[], std::vector<struct point> &cloud_points);
+void generate_terminal_using_cloud_points(struct cco_network *the_network, std::vector<struct point> cloud_points);
+
+
 // Test functions
 void test1 (struct cco_network *the_network);
 void test2 (struct cco_network *the_network); 
 void test3 (struct cco_network *the_network);
 void test_cco (struct cco_network *the_network);
+void test_cco_using_cloud (struct cco_network *the_network);
 
 #endif

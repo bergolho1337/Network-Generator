@@ -1,4 +1,5 @@
 - Add the option to use the terminals from a input file 
 - Receive the input arguments as a configuration file
+    - Add the possibility to use different cost functions (create a library ?)
 - "feasible_segments" variable should be stored in global memory
 - Implement the restore_state() function

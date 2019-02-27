@@ -194,12 +194,13 @@ void write_list (struct segment_list *l, FILE *log_file)
     fprintf(log_file,"Number of segment_node in list = %u\n",l->num_nodes);
     while (tmp != NULL)
     {
-        fprintf(log_file,"Segment %d (%d,%d) -- Source(%g,%g,%g) - Destination(%g,%g,%g) -- NDIST = %u -- RADIUS = %g\n",tmp->id,\
+        fprintf(log_file,"Segment %d (%d,%d) -- Source(%g,%g,%g) - Destination(%g,%g,%g) -- NDIST = %u\n",tmp->id,\
                                         tmp->value->src->id,tmp->value->dest->id,\
                                         tmp->value->src->value->x,tmp->value->src->value->y,tmp->value->src->value->z,\
                                         tmp->value->dest->value->x,tmp->value->dest->value->y,tmp->value->dest->value->z,\
-                                        tmp->value->ndist,tmp->value->radius);
+                                        tmp->value->ndist);
         fprintf(log_file,"\tBETA = %g\n",tmp->value->beta);
+        fprintf(log_file,"\tRESISTANCE = %g -- RADIUS = %g\n",tmp->value->resistance,tmp->value->radius);
         
         if (tmp->value->parent == NULL)
             fprintf(log_file,"\tPARENT = NIL");

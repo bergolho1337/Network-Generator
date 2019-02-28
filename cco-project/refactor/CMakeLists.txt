@@ -11,10 +11,11 @@ ADD_SUBDIRECTORY(src/point-list)
 ADD_SUBDIRECTORY(src/segment-list)
 ADD_SUBDIRECTORY(src/options)
 ADD_SUBDIRECTORY(src/utils)
+ADD_SUBDIRECTORY(src/test)
 ADD_SUBDIRECTORY(src/cco)
 
 ADD_EXECUTABLE(Cco src/main.cpp)
 
-ADD_DEPENDENCIES(Cco pointlist segmentlist options utils cco)
+ADD_DEPENDENCIES(Cco pointlist segmentlist options utils cco test)
 
-TARGET_LINK_LIBRARIES(Cco ${VTK_LIBRARIES} pointlist segmentlist options utils cco dl m)
+TARGET_LINK_LIBRARIES(Cco ${VTK_LIBRARIES} pointlist segmentlist options utils cco test dl m)

@@ -1,13 +1,9 @@
 #!/bin/bash
 PNAME="./bin/Cco"
-QPERF="1"
-PPERF="10"
-PTERM="1"
-RPERF="1"
-NTERM="10"
+CONFIG_FILE="inputs/simple_cco.ini"
 
 if [ ! -f $PNAME ]; then
 	./recompile_project.sh
 fi
 
-valgrind --leak-check=full --show-leak-kinds=all ./$PNAME $QPERF $PPERF $PTERM $RPERF $NTERM
+valgrind --leak-check=full --show-leak-kinds=all ./$PNAME $CONFIG_FILE

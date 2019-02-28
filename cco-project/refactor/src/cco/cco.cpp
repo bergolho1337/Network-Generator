@@ -17,20 +17,27 @@ struct cco_network* new_cco_network (struct user_options *options)
     result->A_perf = M_PI * result->r_perf * result->r_perf;
     result->log_file = fopen("output.log","w+");
 
-    if (strlen(options->cloud_filename) > 0)
+    uint32_t size = strlen(options->cost_function_name) + 1;
+    result->cost_function_name = (char*)malloc(sizeof(char)*size);
+    strcpy(result->cost_function_name,options->cost_function_name);
+    printf("[cco] Cost function name = %s\n",result->cost_function_name);
+
+    if (options->use_cloud_points)
     {
         result->using_cloud_points = true;
-        result->cloud_points_filename = (char*)malloc(sizeof(char)*strlen(options->cloud_filename));
-        strcpy(result->cloud_points_filename,options->cloud_filename);
-        
-        printf("[!] Using cloud of points\n");
-        printf("[!] Cloud points filename = %s\n",result->cloud_points_filename);
+        size = strlen(options->cloud_points_filename) + 1;
+        result->cloud_points_filename = (char*)malloc(sizeof(char)*size);
+        strcpy(result->cloud_points_filename,options->cloud_points_filename);
+
+        printf("[cco] Using cloud of points\n");
+        printf("[cco] Cloud points filename :> \"%s\"\n",result->cloud_points_filename);
     }
     else
     {
         result->using_cloud_points = false;
         
-        printf("[!] Generating a cloud of points\n");
+        printf("[cco] No cloud of points provided\n");
+        printf("[cco] Generating cloud of points based on value of \"r_perf\"\n");    
     }
 
     return result;
@@ -40,6 +47,9 @@ void free_cco_network (struct cco_network *the_network)
 {
     free_point_list(the_network->point_list);
     free_segment_list(the_network->segment_list);
+    free(the_network->cost_function_name);
+    if (the_network->using_cloud_points)
+        free(the_network->cloud_points_filename);
     fclose(the_network->log_file);
 
     free(the_network);
@@ -47,42 +57,107 @@ void free_cco_network (struct cco_network *the_network)
 
 void grow_tree (struct cco_network *the_network)
 {
-    //test1(the_network);
-    //test2(the_network);
-    //test3(the_network);
-    //test_cco(the_network);
-    test_cco_using_cloud(the_network);
+    printf("\n[cco] Growing CCO network !\n");
 
+    if (!the_network->using_cloud_points)
+        grow_tree_default(the_network);
+    else
+        grow_tree_using_cloud_points(the_network);
+    
+    // Unitary test
     check_bifurcation_rule(the_network);
 }
 
-void check_bifurcation_rule (struct cco_network *the_network)
+void grow_tree_default (struct cco_network *the_network)
 {
     FILE *log_file = the_network->log_file;
 
-    //printf("[!] Checking bifurcation rule!\n");
-    fprintf(log_file,"[!] Checking bifurcation rule!\n");
+    double Q_perf = the_network->Q_perf;
+    double p_perf = the_network->p_perf;
+    double p_term = the_network->p_term;
+    double r_perf = the_network->r_perf;
+    double delta_p = p_perf - p_term;        
 
+    struct point_list *p_list = the_network->point_list;
     struct segment_list *s_list = the_network->segment_list;
-    struct segment_node *tmp, *tmp_left, *tmp_right;
-    
-    tmp = s_list->list_nodes;
-    while (tmp != NULL)
+
+    make_root(the_network);
+
+    // Main iteration loop
+    while (the_network->num_terminals < the_network->N_term)
     {
-        tmp_left = tmp->value->left;
-        tmp_right = tmp->value->right;
+        printf("%s\n",PRINT_LINE);
+        printf("[cco] Working on terminal number %d\n",the_network->num_terminals);            
+        fprintf(log_file,"%s\n",PRINT_LINE);
+        fprintf(log_file,"[cco] Working on terminal number %d\n",the_network->num_terminals);
 
-        if (tmp_left && tmp_right)
-        {
-            double r = pow(tmp->value->radius,GAMMA);
-            double r_left = pow(tmp_left->value->radius,GAMMA);
-            double r_right = pow(tmp_right->value->radius,GAMMA);
+        generate_terminal(the_network);
 
-            //printf("%g = %g + %g --> %g = %g\n",r,r_left,r_right,r,r_left + r_right);
-            fprintf(log_file,"%g = %g + %g --> %g = %g\n",r,r_left,r_right,r,r_left + r_right);
-        }
-        tmp = tmp->next;
+        printf("%s\n",PRINT_LINE);
+        fprintf(log_file,"%s\n",PRINT_LINE);
     }
+
+    draw_perfusion_area(the_network);
+
+    //print_list(p_list);
+    //print_list(s_list);
+
+    // Write to the logfile
+    fprintf(log_file,"%s\n",PRINT_LINE);
+    write_list(p_list,log_file);
+    fprintf(log_file,"%s\n",PRINT_LINE);
+
+    fprintf(log_file,"%s\n",PRINT_LINE);
+    write_list(s_list,log_file);
+    fprintf(log_file,"%s\n",PRINT_LINE);
+}
+
+void grow_tree_using_cloud_points (struct cco_network *the_network)
+{
+    FILE *log_file = the_network->log_file;
+
+    double Q_perf = the_network->Q_perf;
+    double p_perf = the_network->p_perf;
+    double p_term = the_network->p_term;
+    double r_perf = the_network->r_perf;
+    double delta_p = p_perf - p_term;        
+
+    struct point_list *p_list = the_network->point_list;
+    struct segment_list *s_list = the_network->segment_list;
+
+    if (the_network->using_cloud_points)
+    {
+        std::vector<struct point> cloud_points; 
+        read_cloud_points(the_network->cloud_points_filename,cloud_points);
+
+        make_root_using_cloud_points(the_network,cloud_points);
+
+        // Main iteration loop
+        while (the_network->num_terminals < the_network->N_term)
+        {
+            printf("%s\n",PRINT_LINE);
+            printf("[cco] Working on terminal number %d\n",the_network->num_terminals);            
+            fprintf(log_file,"%s\n",PRINT_LINE);
+            fprintf(log_file,"[cco] Working on terminal number %d\n",the_network->num_terminals);
+
+            generate_terminal_using_cloud_points(the_network,cloud_points);
+
+            printf("%s\n",PRINT_LINE);
+            fprintf(log_file,"%s\n",PRINT_LINE);
+        }
+    }
+
+    //print_list(p_list);
+    //print_list(s_list);
+
+    // Write to the logfile
+    fprintf(log_file,"%s\n",PRINT_LINE);
+    write_list(p_list,log_file);
+    fprintf(log_file,"%s\n",PRINT_LINE);
+
+    fprintf(log_file,"%s\n",PRINT_LINE);
+    write_list(s_list,log_file);
+    fprintf(log_file,"%s\n",PRINT_LINE);
 }
 
 bool has_collision (struct segment_list *s_list, struct segment_node *s, const double new_pos[], FILE *log_file)
@@ -419,214 +494,6 @@ double calc_bifurcation_ratio (const double radius_ratio, const bool sign)
         return pow( 1.0 + ( pow( base, GAMMA) ) , expoent);
 }
 
-void write_to_vtk (struct cco_network *the_network)
-{
-    uint32_t num_points = the_network->point_list->num_nodes;
-    struct point_list *p_list = the_network->point_list;
-    struct point_node *p_tmp = p_list->list_nodes;
-    uint32_t num_segments = the_network->segment_list->num_nodes;
-    struct segment_list *s_list = the_network->segment_list;
-    struct segment_node *s_tmp = s_list->list_nodes;
-
-    FILE *file = fopen("output/cco_tree.vtk","w+");
-
-    fprintf(file,"# vtk DataFile Version 3.0\n");
-    fprintf(file,"Tree\n");
-    fprintf(file,"ASCII\n");
-    fprintf(file,"DATASET POLYDATA\n");
-    fprintf(file,"POINTS %u float\n",num_points);
-    while (p_tmp != NULL)
-    {
-        fprintf(file,"%g %g %g\n",p_tmp->value->x,p_tmp->value->y,p_tmp->value->z);
-        p_tmp = p_tmp->next;
-    }
-        
-    fprintf(file,"LINES %u %u\n",num_segments,num_segments*3);
-    while (s_tmp != NULL)
-    {
-        fprintf(file,"2 %u %u\n",s_tmp->value->src->id,s_tmp->value->dest->id);
-        s_tmp = s_tmp->next;
-    }
-    fprintf(file,"CELL_DATA %u\n",num_segments);
-    fprintf(file,"SCALARS radius float\n");
-    fprintf(file,"LOOKUP_TABLE default\n");
-    s_tmp = s_list->list_nodes;
-    while (s_tmp != NULL)
-    {
-        fprintf(file,"%g\n",s_tmp->value->radius);
-        s_tmp = s_tmp->next;
-    }
-    fclose(file);
-}
-
-// --------------------------------------------------------------------------------------------
-// TEST FUNCTIONS
-void test1 (struct cco_network *the_network)
-{
-    double Q = the_network->Q_perf;
-    double p = the_network->p_perf;
-
-    struct point_list *p_list = the_network->point_list;
-
-    // Positions
-    double pos1[3] = {0,0,0};
-    double pos2[3] = {-3,-3,0};
-    double pos3[3] = {-1,-1,0};
-    double pos4[3] = {1,-3,0};
-    double pos5[3] = {-2,-2,0};
-    double pos6[3] = {-2,-4,0};
-    double pos7[3] = {0,-2,0};
-    double pos8[3] = {-1,-3,0};
-
-    struct point_node *A = insert_point(p_list,pos1);
-    struct point_node *B = insert_point(p_list,pos2);
-    struct point_node *C = insert_point(p_list,pos3);
-    struct point_node *D = insert_point(p_list,pos4);
-    struct point_node *E = insert_point(p_list,pos5);
-    struct point_node *F = insert_point(p_list,pos6);
-    struct point_node *G = insert_point(p_list,pos7);
-    struct point_node *H = insert_point(p_list,pos8);
-
-    print_list(p_list);
-
-    // Segments
-    struct segment_list *s_list = the_network->segment_list;
-
-    struct segment *s1 = new_segment(A,C,NULL,NULL,NULL,Q,p);
-    struct segment *s2 = new_segment(C,E,NULL,NULL,NULL,Q,p);
-    struct segment *s3 = new_segment(C,G,NULL,NULL,NULL,Q,p);
-    struct segment *s4 = new_segment(G,H,NULL,NULL,NULL,Q,p);
-    struct segment *s5 = new_segment(G,D,NULL,NULL,NULL,Q,p);
-    struct segment *s6 = new_segment(E,B,NULL,NULL,NULL,Q,p);
-    struct segment *s7 = new_segment(E,F,NULL,NULL,NULL,Q,p);
-
-    struct segment_node *s_node1 = insert_segment_node(s_list,s1);
-    struct segment_node *s_node2 = insert_segment_node(s_list,s2);
-    struct segment_node *s_node3 = insert_segment_node(s_list,s3);
-    struct segment_node *s_node4 = insert_segment_node(s_list,s4);
-    struct segment_node *s_node5 = insert_segment_node(s_list,s5);
-    struct segment_node *s_node6 = insert_segment_node(s_list,s6);
-    struct segment_node *s_node7 = insert_segment_node(s_list,s7);
-
-    // Set pointers
-    s1->parent = NULL;
-    s1->left = s_node2;
-    s1->right = s_node3;
-
-    s2->parent = s_node1;
-    s2->left = s_node6;
-    s2->right = s_node7;
-
-    s3->parent = s_node1;
-    s3->left = s_node4;
-    s3->right = s_node5;
-
-    s4->parent = s_node3;
-    s4->left = NULL;
-    s4->right = NULL;
-
-    s5->parent = s_node3;
-    s5->left = NULL;
-    s5->right = NULL;
-    
-    s6->parent = s_node2;
-    s6->left = NULL;
-    s6->right = NULL;
-
-    s7->parent = s_node2;
-    s7->left = NULL;
-    s7->right = NULL;
-
-    print_list(s_list);
-}
-
-void test2 (struct cco_network *the_network)
-{
-    double Q_perf = the_network->Q_perf;
-    double p_perf = the_network->p_perf;
-    double p_term = the_network->p_term;
-    double delta_p = p_perf - p_term;
-
-    struct point_list *p_list = the_network->point_list;
-    struct segment_list *s_list = the_network->segment_list;
-
-    // Root
-    double pos1[3] = {0,0,0};
-    double pos2[3] = {-3,-3,0};
-    struct point_node *A = insert_point(p_list,pos1);
-    struct point_node *B = insert_point(p_list,pos2);
-    
-    struct segment *iroot = new_segment(A,B,NULL,NULL,NULL,Q_perf,p_perf);
-    struct segment_node *iroot_node = insert_segment_node(s_list,iroot);
-    rescale_root(iroot_node,Q_perf,delta_p);
-    the_network->num_terminals = 1;
-
-    // First segment
-    double pos3[3] = {1,-3,0};
-    build_segment(the_network,0,pos3);
-
-    // Second segment
-    double pos4[3] = {-2,-4,0};
-    build_segment(the_network,1,pos4);
-
-    // Third segment
-    double pos5[3] = {-1,-3,0};
-    build_segment(the_network,2,pos5);
-
-    print_list(p_list);
-    print_list(s_list);
-}
-
-// Build the example network from Rafael's thesis
-void test3 (struct cco_network *the_network)
-{
-    double Q_perf = the_network->Q_perf;
-    double p_perf = the_network->p_perf;
-    double p_term = the_network->p_term;
-    double delta_p = p_perf - p_term;
-
-    struct point_list *p_list = the_network->point_list;
-    struct segment_list *s_list = the_network->segment_list;
-
-    // Root
-    double pos1[3] = {0,0,0};
-    double pos2[3] = {0,-4,0};
-    struct point_node *A = insert_point(p_list,pos1);
-    struct point_node *B = insert_point(p_list,pos2);
-    
-    struct segment *iroot = new_segment(A,B,NULL,NULL,NULL,Q_perf,p_perf);
-    struct segment_node *iroot_node = insert_segment_node(s_list,iroot);
-    rescale_root(iroot_node,Q_perf,delta_p);
-    the_network->num_terminals = 1;
-
-    // First segment
-    double pos3[3] = {2,-2.5,0};
-    build_segment(the_network,0,pos3);
-
-    // Second segment
-    double pos4[3] = {-2,-1.5,0};
-    build_segment(the_network,0,pos4);
-
-    // Third segment
-    double pos5[3] = {1,-5,0};
-    build_segment(the_network,1,pos5);
-
-    print_list(p_list);
-    print_list(s_list);
-}
-
-uint32_t sort_point_from_cloud (double pos[], std::vector<struct point> cloud_points)
-{
-    uint32_t num_points = cloud_points.size();
-    uint32_t index = rand() % num_points;
-
-    pos[0] = cloud_points[index].x;
-    pos[1] = cloud_points[index].y;
-    pos[2] = cloud_points[index].z;
-
-    return index;
-}
-
 void make_root_using_cloud_points (struct cco_network *the_network, std::vector<struct point> cloud_points)
 {
     int N_term = the_network->N_term;
@@ -858,102 +725,9 @@ struct segment_node* find_closest_segment (struct cco_network *the_network, cons
     return closest;
 }
 
-void test_cco (struct cco_network *the_network)
-{
-    FILE *log_file = the_network->log_file;
-
-    double Q_perf = the_network->Q_perf;
-    double p_perf = the_network->p_perf;
-    double p_term = the_network->p_term;
-    double r_perf = the_network->r_perf;
-    double delta_p = p_perf - p_term;        
-
-    struct point_list *p_list = the_network->point_list;
-    struct segment_list *s_list = the_network->segment_list;
-
-    make_root(the_network);
-    // OK
-
-    // Main iteration loop
-    while (the_network->num_terminals < the_network->N_term)
-    {
-        printf("%s\n",PRINT_LINE);
-        printf("[!] Working on terminal number %d\n",the_network->num_terminals);            
-        fprintf(log_file,"%s\n",PRINT_LINE);
-        fprintf(log_file,"[!] Working on terminal number %d\n",the_network->num_terminals);
-
-        generate_terminal(the_network);
-
-        printf("%s\n",PRINT_LINE);
-        fprintf(log_file,"%s\n",PRINT_LINE);
-    }
-
-    draw_perfusion_area(the_network);
-
-    //print_list(p_list);
-    //print_list(s_list);
-
-    // Write to the logfile
-    fprintf(log_file,"%s\n",PRINT_LINE);
-    write_list(p_list,log_file);
-    fprintf(log_file,"%s\n",PRINT_LINE);
-
-    fprintf(log_file,"%s\n",PRINT_LINE);
-    write_list(s_list,log_file);
-    fprintf(log_file,"%s\n",PRINT_LINE);
-}
-
-void test_cco_using_cloud (struct cco_network *the_network)
-{
-    FILE *log_file = the_network->log_file;
-
-    double Q_perf = the_network->Q_perf;
-    double p_perf = the_network->p_perf;
-    double p_term = the_network->p_term;
-    double r_perf = the_network->r_perf;
-    double delta_p = p_perf - p_term;        
-
-    struct point_list *p_list = the_network->point_list;
-    struct segment_list *s_list = the_network->segment_list;
-
-    if (the_network->using_cloud_points)
-    {
-        std::vector<struct point> cloud_points; 
-        read_cloud_points(the_network->cloud_points_filename,cloud_points);
-
-        make_root_using_cloud_points(the_network,cloud_points);
-
-        // Main iteration loop
-        while (the_network->num_terminals < the_network->N_term)
-        {
-            printf("%s\n",PRINT_LINE);
-            printf("[!] Working on terminal number %d\n",the_network->num_terminals);            
-            fprintf(log_file,"%s\n",PRINT_LINE);
-            fprintf(log_file,"[!] Working on terminal number %d\n",the_network->num_terminals);
-
-            generate_terminal_using_cloud_points(the_network,cloud_points);
-
-            printf("%s\n",PRINT_LINE);
-            fprintf(log_file,"%s\n",PRINT_LINE);
-        }
-    }
-
-    //print_list(p_list);
-    //print_list(s_list);
-
-    // Write to the logfile
-    fprintf(log_file,"%s\n",PRINT_LINE);
-    write_list(p_list,log_file);
-    fprintf(log_file,"%s\n",PRINT_LINE);
-
-    fprintf(log_file,"%s\n",PRINT_LINE);
-    write_list(s_list,log_file);
-    fprintf(log_file,"%s\n",PRINT_LINE);
-}
-
 void read_cloud_points (const char filename[], std::vector<struct point> &cloud_points)
 {
-    printf("[!] Reading cloud of points !\n");
+    printf("[cco] Reading cloud of points !\n");
 
     uint32_t num_points;
     FILE *file = fopen(filename,"r");
@@ -970,16 +744,26 @@ void read_cloud_points (const char filename[], std::vector<struct point> &cloud_
     fclose(file);
 }
 
+uint32_t sort_point_from_cloud (double pos[], std::vector<struct point> cloud_points)
+{
+    uint32_t num_points = cloud_points.size();
+    uint32_t index = rand() % num_points;
+
+    pos[0] = cloud_points[index].x;
+    pos[1] = cloud_points[index].y;
+    pos[2] = cloud_points[index].z;
+
+    return index;
+}
+
 void usage (const char pname[])
 {
     printf("%s\n",PRINT_LINE);
-    printf("Usage:> %s <Qperf> <pperf> <pterm> <rperf> <Nterm> <cloud_points_filename>\n",pname);
+    printf("Usage:> %s <configuration_file>\n",pname);
     printf("%s\n",PRINT_LINE);
-    printf("\t<Qperf> = Input flow\n");
-    printf("\t<pperf> = Perfusion pressure\n");
-    printf("\t<pterm> = Terminal pressure\n");
-    printf("\t<rperf> = Perfusion radius\n");
-    printf("\t<Nterm> = Number of terminals\n");
-    printf("\t<cloud_points_filename> = File with the cloud of points\n");
+    printf("\t<configuration_file> = Configuration file with the parameter values from the network\n");
+    printf("%s\n",PRINT_LINE);
+    printf("Example:\n");
+    printf("\t%s inputs/simple_cco.ini\n",pname);
     printf("%s\n",PRINT_LINE);
 }

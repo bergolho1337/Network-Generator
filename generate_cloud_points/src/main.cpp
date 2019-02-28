@@ -46,7 +46,7 @@ void draw_perfusion_area (const double radius)
     polygonSource->SetCenter(0,-radius,0);
 
     vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-    writer->SetFileName("output/perfusion_area.vtp");
+    writer->SetFileName("output/perfusion_area_cloud.vtp");
     writer->SetInputConnection(polygonSource->GetOutputPort());
     writer->Write();
 }

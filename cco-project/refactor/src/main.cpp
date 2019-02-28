@@ -6,12 +6,13 @@
 
 #include "cco/cco.h"
 #include "options/user_options.h"
+#include "test/test.h"
 
 using namespace std;
 
 int main (int argc, char *argv[])
 {   
-    if (argc-1 < 5)
+    if (argc-1 != 1)
     {
         usage(argv[0]);
         exit(EXIT_FAILURE);   

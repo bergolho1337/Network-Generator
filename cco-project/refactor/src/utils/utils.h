@@ -32,4 +32,6 @@ double calc_dend (struct segment_node *s, const double pos[]);
 
 void draw_perfusion_area (struct cco_network *the_network);
 
+void write_to_vtk (struct cco_network *the_network);
+
 #endif

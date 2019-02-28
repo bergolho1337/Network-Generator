@@ -115,3 +115,43 @@ bool collision_detection (const double x1, const double y1, const double z1,\
 
     return (r >= 0 && r <= 1) && (s >= 0 && s <= 1);
 }
+
+void write_to_vtk (struct cco_network *the_network)
+{
+    uint32_t num_points = the_network->point_list->num_nodes;
+    struct point_list *p_list = the_network->point_list;
+    struct point_node *p_tmp = p_list->list_nodes;
+    uint32_t num_segments = the_network->segment_list->num_nodes;
+    struct segment_list *s_list = the_network->segment_list;
+    struct segment_node *s_tmp = s_list->list_nodes;
+
+    FILE *file = fopen("output/cco_tree.vtk","w+");
+
+    fprintf(file,"# vtk DataFile Version 3.0\n");
+    fprintf(file,"Tree\n");
+    fprintf(file,"ASCII\n");
+    fprintf(file,"DATASET POLYDATA\n");
+    fprintf(file,"POINTS %u float\n",num_points);
+    while (p_tmp != NULL)
+    {
+        fprintf(file,"%g %g %g\n",p_tmp->value->x,p_tmp->value->y,p_tmp->value->z);
+        p_tmp = p_tmp->next;
+    }
+        
+    fprintf(file,"LINES %u %u\n",num_segments,num_segments*3);
+    while (s_tmp != NULL)
+    {
+        fprintf(file,"2 %u %u\n",s_tmp->value->src->id,s_tmp->value->dest->id);
+        s_tmp = s_tmp->next;
+    }
+    fprintf(file,"CELL_DATA %u\n",num_segments);
+    fprintf(file,"SCALARS radius float\n");
+    fprintf(file,"LOOKUP_TABLE default\n");
+    s_tmp = s_list->list_nodes;
+    while (s_tmp != NULL)
+    {
+        fprintf(file,"%g\n",s_tmp->value->radius);
+        s_tmp = s_tmp->next;
+    }
+    fclose(file);
+}

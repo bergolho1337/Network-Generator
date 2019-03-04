@@ -34,6 +34,16 @@ extern "C" struct segment_node* closest_segment (struct cco_network *the_network
                     const double new_pos[],\
                     const std::vector<struct segment_node*> feasible_segments);
 
+extern "C" struct segment_node* closest_segment_with_limit_size (struct cco_network *the_network,\
+                    struct cost_function_config *config,\
+                    const double new_pos[],\
+                    const std::vector<struct segment_node*> feasible_segments);
+                
+extern "C" struct segment_node* closest_segment_with_angle_restriction (struct cco_network *the_network,\
+                    struct cost_function_config *config,\
+                    const double new_pos[],\
+                    const std::vector<struct segment_node*> feasible_segments);
+
 
 // Auxiliary functions
 

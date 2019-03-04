@@ -642,11 +642,18 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network, struc
 
     // COST FUNCTION
     struct segment_node *iconn = cost_function_fn(the_network,config,new_pos,feasible_segments);
-    
+    if (iconn == NULL)
+    {
+        fprintf(stderr,"[cco] Error! No feasible segment found!\n");
+        exit(EXIT_FAILURE);
+    }
+
     // Build a new segment with the best connection given by the cost function
     build_segment(the_network,iconn->id,new_pos);
 }
 
+// TODO: Rewrite this function, so that when no feasible segments attend the cost function we sort
+//       a new point ...
 void generate_terminal (struct cco_network *the_network, struct cost_function_config *config)
 {
     FILE *log_file = the_network->log_file;
@@ -713,6 +720,11 @@ void generate_terminal (struct cco_network *the_network, struct cost_function_co
 
     // COST FUNCTION
     struct segment_node *iconn = cost_function_fn(the_network,config,new_pos,feasible_segments);
+    if (iconn == NULL)
+    {
+        fprintf(stderr,"[cco] Error! No feasible segment found!\n");
+        exit(EXIT_FAILURE);
+    }
 
     // Build a new segment with the best connection given by the cost function
     build_segment(the_network,iconn->id,new_pos);

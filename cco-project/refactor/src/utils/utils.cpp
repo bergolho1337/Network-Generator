@@ -116,6 +116,27 @@ bool collision_detection (const double x1, const double y1, const double z1,\
     return (r >= 0 && r <= 1) && (s >= 0 && s <= 1);
 }
 
+void build_unitary_vector (double u[], const double x1, const double y1, const double z1,\
+                                       const double x2, const double y2, const double z2)
+{
+    double norm = euclidean_norm(x1,y1,z1,x2,y2,z2);
+
+    u[0] = (x2 - x1) / norm;
+    u[1] = (y2 - y1) / norm;
+    u[2] = (z2 - z1) / norm;
+}
+
+double calc_angle_between_vectors (const double u[], const double v[])
+{   
+    double dot_product = u[0]*v[0] + u[1]*v[1] + u[2]*v[2];
+    
+    double angle_radians = acos(dot_product); 
+
+    // Return the angle in degrees
+    return angle_radians * 180.0 / M_PI;
+
+}
+
 void write_to_vtk (struct cco_network *the_network)
 {
     uint32_t num_points = the_network->point_list->num_nodes;

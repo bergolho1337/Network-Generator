@@ -22,6 +22,11 @@ bool collision_detection (const double x1, const double y1, const double z1,\
                           const double x3, const double y3, const double z3,\
                           const double x4, const double y4, const double z4);
 
+void build_unitary_vector (double u[], const double x1, const double y1, const double z1,\
+                                       const double x2, const double y2, const double z2);
+
+double calc_angle_between_vectors (const double u[], const double v[]);
+
 double euclidean_norm (const double x1, const double y1, const double z1,\
                     const double x2, const double y2, const double z2);
 

@@ -1,5 +1,6 @@
-- Add the option to use the terminals from a input file 
-- Receive the input arguments as a configuration file
-    - Add the possibility to use different cost functions (create a library ?)
-- "feasible_segments" variable should be stored in global memory
+- Implement new cost functions
+    - closest_segment_with_angle_restriction
+    - closest_segment_with_length_restriction
+    - minimize_tree_volume (ORIGINAL) --> We will need the restore_state() function here ...
+
 - Implement the restore_state() function

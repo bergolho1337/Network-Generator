@@ -1,8 +1,5 @@
 #include "cco.h"
 
-// TODO: Remove this from global memory
-std::vector<struct segment_node*> feasible_segments;
-
 struct cco_network* new_cco_network (struct user_options *options)
 {
     struct cco_network *result = (struct cco_network*)malloc(sizeof(struct cco_network));
@@ -17,9 +14,9 @@ struct cco_network* new_cco_network (struct user_options *options)
     result->A_perf = M_PI * result->r_perf * result->r_perf;
     result->log_file = fopen("output.log","w+");
 
-    uint32_t size = strlen(options->cost_function_name) + 1;
+    uint32_t size = strlen(options->config->name) + 1;
     result->cost_function_name = (char*)malloc(sizeof(char)*size);
-    strcpy(result->cost_function_name,options->cost_function_name);
+    strcpy(result->cost_function_name,options->config->name);
     printf("[cco] Cost function name = %s\n",result->cost_function_name);
 
     if (options->use_cloud_points)
@@ -55,22 +52,24 @@ void free_cco_network (struct cco_network *the_network)
     free(the_network);
 }
 
-void grow_tree (struct cco_network *the_network)
+void grow_tree (struct cco_network *the_network, struct user_options *options)
 {
     printf("\n[cco] Growing CCO network !\n");
 
     if (!the_network->using_cloud_points)
-        grow_tree_default(the_network);
+        grow_tree_default(the_network,options);
     else
-        grow_tree_using_cloud_points(the_network);
+        grow_tree_using_cloud_points(the_network,options);
     
     // Unitary test
     check_bifurcation_rule(the_network);
 }
 
-void grow_tree_default (struct cco_network *the_network)
+void grow_tree_default (struct cco_network *the_network, struct user_options *options)
 {
     FILE *log_file = the_network->log_file;
+
+    struct cost_function_config *config = options->config;
 
     double Q_perf = the_network->Q_perf;
     double p_perf = the_network->p_perf;
@@ -91,7 +90,7 @@ void grow_tree_default (struct cco_network *the_network)
         fprintf(log_file,"%s\n",PRINT_LINE);
         fprintf(log_file,"[cco] Working on terminal number %d\n",the_network->num_terminals);
 
-        generate_terminal(the_network);
+        generate_terminal(the_network,config);
 
         printf("%s\n",PRINT_LINE);
         fprintf(log_file,"%s\n",PRINT_LINE);
@@ -112,9 +111,11 @@ void grow_tree_default (struct cco_network *the_network)
     fprintf(log_file,"%s\n",PRINT_LINE);
 }
 
-void grow_tree_using_cloud_points (struct cco_network *the_network)
+void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_options *options)
 {
     FILE *log_file = the_network->log_file;
+
+    struct cost_function_config *config = options->config;
 
     double Q_perf = the_network->Q_perf;
     double p_perf = the_network->p_perf;
@@ -140,7 +141,7 @@ void grow_tree_using_cloud_points (struct cco_network *the_network)
             fprintf(log_file,"%s\n",PRINT_LINE);
             fprintf(log_file,"[cco] Working on terminal number %d\n",the_network->num_terminals);
 
-            generate_terminal_using_cloud_points(the_network,cloud_points);
+            generate_terminal_using_cloud_points(the_network,config,cloud_points);
 
             printf("%s\n",PRINT_LINE);
             fprintf(log_file,"%s\n",PRINT_LINE);
@@ -197,7 +198,8 @@ bool has_collision (struct segment_list *s_list, struct segment_node *s, const d
     return false;
 }
 
-bool check_collisions (struct cco_network *the_network, const double new_pos[])
+bool check_collisions (struct cco_network *the_network, const double new_pos[],\
+                    std::vector<struct segment_node*> &feasible_segments)
 {
     FILE *log_file = the_network->log_file;
 
@@ -568,14 +570,19 @@ void make_root (struct cco_network *the_network)
     the_network->num_terminals = 1;
 }
 
-void generate_terminal_using_cloud_points(struct cco_network *the_network, std::vector<struct point> cloud_points)
+void generate_terminal_using_cloud_points(struct cco_network *the_network, struct cost_function_config *config,\
+                                         std::vector<struct point> cloud_points)
 {
+
     FILE *log_file = the_network->log_file;
 
     int K_term = the_network->num_terminals;
     int N_term = the_network->N_term;
     double r_perf = the_network->r_perf;
     double A_perf = the_network->A_perf;
+
+    // Cost function reference
+    set_cost_function_fn *cost_function_fn = config->function;
 
     // Increase support domain
     double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term; 
@@ -587,6 +594,8 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network, std::
     bool point_is_ok = false;
     uint32_t tosses = 0;
     double d_threash = calc_dthreashold(r_supp,K_term);
+
+    std::vector<struct segment_node*> feasible_segments;
     
     while (!point_is_ok)
     {
@@ -602,7 +611,7 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network, std::
 
         // Check collision with other segments
         if (point_is_ok)
-            point_is_ok = check_collisions(the_network,new_pos);
+            point_is_ok = check_collisions(the_network,new_pos,feasible_segments);
 
         // If the point does not attend the distance criterion or if there is a collision
         // we need to choose another point.
@@ -631,12 +640,14 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network, std::
         fprintf(log_file,"%d ",feasible_segments[i]->id);
     fprintf(log_file,"\n");
 
-    // Cost function: Closest segment --> min: sum( l_i )
-    struct segment_node *iconn = find_closest_segment(the_network,new_pos);
+    // COST FUNCTION
+    struct segment_node *iconn = cost_function_fn(the_network,config,new_pos,feasible_segments);
+    
+    // Build a new segment with the best connection given by the cost function
     build_segment(the_network,iconn->id,new_pos);
 }
 
-void generate_terminal (struct cco_network *the_network)
+void generate_terminal (struct cco_network *the_network, struct cost_function_config *config)
 {
     FILE *log_file = the_network->log_file;
 
@@ -644,6 +655,9 @@ void generate_terminal (struct cco_network *the_network)
     int N_term = the_network->N_term;
     double r_perf = the_network->r_perf;
     double A_perf = the_network->A_perf;
+
+    // Cost function reference
+    set_cost_function_fn *cost_function_fn = config->function;
 
     // Increase support domain
     double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term; 
@@ -656,6 +670,9 @@ void generate_terminal (struct cco_network *the_network)
     uint32_t tosses = 0;
     double d_threash = calc_dthreashold(r_supp,K_term);
     
+    // Array with the reference to the feasible segments for a new connection
+    std::vector<struct segment_node*> feasible_segments;
+
     while (!point_is_ok)
     {
         // Reset the feasible segments list
@@ -670,7 +687,7 @@ void generate_terminal (struct cco_network *the_network)
 
         // Check collision with other segments
         if (point_is_ok)
-            point_is_ok = check_collisions(the_network,new_pos);
+            point_is_ok = check_collisions(the_network,new_pos,feasible_segments);
 
         // If the point does not attend the distance criterion or if there is a collision
         // we need to choose another point.
@@ -694,35 +711,11 @@ void generate_terminal (struct cco_network *the_network)
         fprintf(log_file,"%d ",feasible_segments[i]->id);
     fprintf(log_file,"\n");
 
-    // Cost function: Closest segment --> min: sum( l_i )
-    struct segment_node *iconn = find_closest_segment(the_network,new_pos);
+    // COST FUNCTION
+    struct segment_node *iconn = cost_function_fn(the_network,config,new_pos,feasible_segments);
+
+    // Build a new segment with the best connection given by the cost function
     build_segment(the_network,iconn->id,new_pos);
-}
-
-struct segment_node* find_closest_segment (struct cco_network *the_network, const double new_pos[])
-{
-    struct segment_node *closest = NULL;
-    double closest_dist = DBL_MAX;
-
-    // Pass through the list of feasible segments
-    struct segment_node *tmp;
-    for (unsigned int i = 0; i < feasible_segments.size(); i++)
-    {
-        tmp = feasible_segments[i];
-        
-        double middle_pos[3];
-        calc_middle_point_segment(tmp,middle_pos);
-
-        double dist = euclidean_norm(new_pos[0],new_pos[1],new_pos[2],\
-                                    middle_pos[0],middle_pos[1],middle_pos[2]);
-        if (dist < closest_dist)
-        {
-            closest_dist = dist;
-            closest = tmp;
-        }
-    }
-    
-    return closest;
 }
 
 void read_cloud_points (const char filename[], std::vector<struct point> &cloud_points)

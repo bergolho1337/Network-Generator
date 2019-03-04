@@ -14,6 +14,8 @@ ADD_SUBDIRECTORY(src/utils)
 ADD_SUBDIRECTORY(src/test)
 ADD_SUBDIRECTORY(src/cco)
 
+ADD_SUBDIRECTORY(src/cost_function_library)
+
 ADD_EXECUTABLE(Cco src/main.cpp)
 
 ADD_DEPENDENCIES(Cco pointlist segmentlist options utils cco test)

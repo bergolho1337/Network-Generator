@@ -78,31 +78,27 @@ double calc_radius_ratio (struct segment_node *iconn, struct segment_node *inew,
 double calc_radius (struct cco_network *the_network, struct segment_node *s);
 
 void check_bifurcation_rule (struct cco_network *the_network);
-bool check_collisions (struct cco_network *the_network, const double new_pos[]);
+bool check_collisions (struct cco_network *the_network, const double new_pos[],\
+                    std::vector<struct segment_node*> &feasible_segments);
 
 bool has_collision (struct segment_list *s_list, struct segment_node *s, const double new_pos[], FILE *log_file);
 bool connection_search (struct cco_network *the_network, const double pos[], const double d_threash);
 bool distance_criterion (struct segment_node *s, const double pos[], const double d_threash);
 
-void grow_tree (struct cco_network *the_network);
-void grow_tree_default (struct cco_network *the_network);
-void grow_tree_using_cloud_points (struct cco_network *the_network);
+void grow_tree (struct cco_network *the_network, struct user_options *options);
+void grow_tree_default (struct cco_network *the_network, struct user_options *options);
+void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_options *options);
 
 void make_root (struct cco_network *the_network);
 void make_root_using_cloud_points (struct cco_network *the_network, std::vector<struct point> cloud_points);
 
-void generate_terminal (struct cco_network *the_network);
+void generate_terminal (struct cco_network *the_network, struct cost_function_config *config);
 
 uint32_t sort_point_from_cloud (double pos[], std::vector<struct point> cloud_points);
 void read_cloud_points (const char filename[], std::vector<struct point> &cloud_points);
-void generate_terminal_using_cloud_points(struct cco_network *the_network, std::vector<struct point> cloud_points);
+void generate_terminal_using_cloud_points(struct cco_network *the_network, struct cost_function_config *config,\
+                                         std::vector<struct point> cloud_points);
 
 void write_to_vtk (struct cco_network *the_network);
-
-// ------------------------------------------------------------------------------------------------------
-// COST FUNCTIONS
-struct segment_node* find_closest_segment (struct cco_network *the_network, const double new_pos[]); 
-
-// ------------------------------------------------------------------------------------------------------
 
 #endif

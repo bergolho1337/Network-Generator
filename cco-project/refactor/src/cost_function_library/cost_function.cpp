@@ -36,7 +36,7 @@ SET_COST_FUNCTION(closest_segment)
 {
     
     struct segment_node *closest = NULL;
-    double closest_dist = DBL_MAX;
+    double closest_dist = __DBL_MAX__;
 
     // Pass through the list of feasible segments
     struct segment_node *tmp;
@@ -63,7 +63,7 @@ SET_COST_FUNCTION(closest_segment_with_limit_size)
 {
 
     struct segment_node *closest = NULL;
-    double closest_dist = DBL_MAX;
+    double closest_dist = __DBL_MAX__;
 
     // Get parameters for the cost function
     double size_limit;
@@ -95,7 +95,7 @@ SET_COST_FUNCTION(closest_segment_with_angle_restriction)
 {
 
     struct segment_node *closest = NULL;
-    double closest_dist = DBL_MAX;
+    double closest_dist = __DBL_MAX__;
 
     // Get parameters for the cost function
     double degrees_limit;
@@ -132,4 +132,42 @@ SET_COST_FUNCTION(closest_segment_with_angle_restriction)
     }
     
     return closest;
+}
+
+SET_COST_FUNCTION (minimize_tree_volume)
+{
+    struct segment_node *best = NULL;
+    double minimum_volume = __DBL_MAX__;
+
+    for (uint32_t i = 0; i < feasible_segments.size(); i++)
+    {
+        struct segment_node *iconn = feasible_segments[i];
+
+        //printf("\nBefore\n");
+        //print_list(the_network->segment_list);
+        //printf("\n");
+
+        build_segment(the_network,iconn->id,new_pos);
+
+        double volume = calc_tree_volume(the_network);
+        if (volume < minimum_volume)
+        {
+            minimum_volume = volume;
+            best = iconn;
+
+            printf("[cost_function] Best segment = %d -- Volume = %g\n",best->id,minimum_volume);
+        }
+
+        //printf("\nProcessing\n");
+        //print_list(the_network->segment_list);
+        //printf("\n");
+
+        restore_state_tree(the_network,iconn);
+
+        //printf("\nAfter\n");
+        //print_list(the_network->segment_list);
+        //printf("\n");
+    }
+
+    return best;
 }

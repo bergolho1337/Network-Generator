@@ -63,6 +63,7 @@ void grow_tree (struct cco_network *the_network, struct user_options *options)
     
     // Unitary test
     check_bifurcation_rule(the_network);
+
 }
 
 void grow_tree_default (struct cco_network *the_network, struct user_options *options)
@@ -435,6 +436,94 @@ void recalculate_radius (struct cco_network *the_network)
     }
 }
 
+void restore_state_tree (struct cco_network *the_network,\
+                        struct segment_node *iconn)
+{
+
+    double Q_perf = the_network->Q_perf;
+    double p_perf = the_network->p_perf;
+    double p_term = the_network->p_term;
+    double delta_p = p_perf - p_term;
+
+    struct segment_node *ibiff = iconn->value->parent;
+    struct segment_node *inew = ibiff->value->left;
+    struct segment_node *ibiff_par = ibiff->value->parent;
+
+    // Update "iconn" pointers and values
+    iconn->value->parent = ibiff->value->parent;
+    iconn->value->src = ibiff->value->src;
+    iconn->value->beta = ibiff->value->beta;
+
+    // Update "ibiff" parent subtree pointer
+    if (ibiff_par != NULL)
+    {
+        if (ibiff_par->value->right == ibiff)
+            ibiff_par->value->right = iconn;
+        else if (ibiff_par->value->left == ibiff)
+            ibiff_par->value->left = iconn;
+    }   
+
+    // Recalculate R* for "iconn" because we change its length
+    if (iconn->value->left == NULL && iconn->value->right == NULL)
+        calc_relative_resistance_term(iconn);
+    else
+        calc_relative_resistance_subtree(iconn,iconn->value->right,iconn->value->left);
+
+    // Eliminate "ibiff" and "inew"
+    struct point_list *p_list = the_network->point_list;
+    struct segment_list *s_list = the_network->segment_list;
+
+    struct point_node *M = inew->value->src;
+    struct point_node *T = inew->value->dest;
+
+    delete_node(p_list,T->id);
+    delete_node(p_list,M->id);
+    delete_node(s_list,inew->id);
+    delete_node(s_list,ibiff->id);
+
+    // Update "ndist" from "iconn" until we reach the root
+    struct segment_node *tmp = iconn->value->parent;
+
+    if (tmp != NULL)
+    {
+        while (tmp->value->parent != NULL)
+        {
+            tmp->value->ndist--;
+            tmp = tmp->value->parent;
+        }
+        // At the root ...
+        tmp->value->ndist--;
+        the_network->num_terminals = tmp->value->ndist;
+    }
+    // Already the root ...
+    else
+    {
+        the_network->num_terminals = iconn->value->ndist;
+    }
+
+    // Update R* and betas until we reach the root
+    struct segment_node *ipar = iconn->value->parent;
+
+    // Call the function recursively until we reach the root
+    if (ipar != NULL)
+    {
+        struct segment_node *ipar_left = ipar->value->left;
+        struct segment_node *ipar_right = ipar->value->right;
+
+        rescale_until_root(ipar,ipar_left,ipar_right,\
+                        Q_perf,delta_p,the_network->num_terminals);
+    }
+    // Recalculate the root radius when we reach this segment using (2.19)
+    else
+    {
+        iconn->value->radius = pow(iconn->value->resistance * Q_perf / delta_p , 0.25);
+    }
+
+    // Update the segments radius
+    recalculate_radius(the_network);
+
+}
+
 void calc_relative_resistance_subtree (struct segment_node *ibiff, struct segment_node *iconn, struct segment_node *inew)
 {
     calc_relative_resistance_term(ibiff);
@@ -494,6 +583,35 @@ double calc_bifurcation_ratio (const double radius_ratio, const bool sign)
         return pow( 1.0 + ( pow( base, -GAMMA) ) , expoent);
     else
         return pow( 1.0 + ( pow( base, GAMMA) ) , expoent);
+}
+
+double calc_segment_volume (struct segment_node *s)
+{
+    struct point *src = s->value->src->value;
+    struct point *dest = s->value->dest->value;
+
+    double l = euclidean_norm(src->x,src->y,src->z,\
+                              dest->x,dest->y,dest->z);
+    double r = s->value->radius;
+
+    return M_PI * r * r * l;
+}
+
+double calc_tree_volume (struct cco_network *the_network)
+{
+    struct segment_list *s_list = the_network->segment_list;
+    struct segment_node *tmp = s_list->list_nodes;
+    
+    double total_volume = 0.0;
+
+    while (tmp != NULL)
+    {
+        total_volume += calc_segment_volume(tmp);
+
+        tmp = tmp->next;
+    }
+
+    return total_volume;
 }
 
 void make_root_using_cloud_points (struct cco_network *the_network, std::vector<struct point> cloud_points)
@@ -647,6 +765,10 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network, struc
         fprintf(stderr,"[cco] Error! No feasible segment found!\n");
         exit(EXIT_FAILURE);
     }
+    else
+    {
+        printf("[cco] Best segment = %d\n",iconn->id);
+    }
 
     // Build a new segment with the best connection given by the cost function
     build_segment(the_network,iconn->id,new_pos);
@@ -724,6 +846,10 @@ void generate_terminal (struct cco_network *the_network, struct cost_function_co
     {
         fprintf(stderr,"[cco] Error! No feasible segment found!\n");
         exit(EXIT_FAILURE);
+    }
+    else
+    {
+        printf("[cco] Best segment = %d\n",iconn->id);
     }
 
     // Build a new segment with the best connection given by the cost function

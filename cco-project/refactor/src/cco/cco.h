@@ -69,6 +69,9 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
 
 void recalculate_radius (struct cco_network *the_network);
 
+void restore_state_tree (struct cco_network *the_network,\
+                        struct segment_node *iconn);
+
 void calc_middle_point_segment (struct segment_node *s, double pos[]);
 void calc_relative_resistance_term (struct segment_node *iterm);
 void calc_relative_resistance_subtree (struct segment_node *ibiff, struct segment_node *iconn, struct segment_node *inew);
@@ -76,6 +79,9 @@ void calc_radius_term (struct segment_node *iterm, const double Q_term, const do
 double calc_bifurcation_ratio (const double radius_ratio, bool sign);
 double calc_radius_ratio (struct segment_node *iconn, struct segment_node *inew, const double Q_term);
 double calc_radius (struct cco_network *the_network, struct segment_node *s);
+
+double calc_tree_volume (struct cco_network *the_network);
+double calc_segment_volume (struct segment_node *s);
 
 void check_bifurcation_rule (struct cco_network *the_network);
 bool check_collisions (struct cco_network *the_network, const double new_pos[],\

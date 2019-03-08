@@ -171,3 +171,70 @@ SET_COST_FUNCTION (minimize_tree_volume)
 
     return best;
 }
+
+SET_COST_FUNCTION (maximize_tree_volume)
+{
+    struct segment_node *best = NULL;
+    double maximum_volume = __DBL_MIN__;
+
+    for (uint32_t i = 0; i < feasible_segments.size(); i++)
+    {
+        struct segment_node *iconn = feasible_segments[i];
+
+        build_segment(the_network,iconn->id,new_pos);
+
+        double volume = calc_tree_volume(the_network);
+        if (volume > maximum_volume)
+        {
+            maximum_volume = volume;
+            best = iconn;
+
+            printf("[cost_function] Best segment = %d -- Volume = %g\n",best->id,maximum_volume);
+        }
+
+        restore_state_tree(the_network,iconn);
+
+    }
+
+    return best;
+}
+
+SET_COST_FUNCTION (minimize_tree_activation_time)
+{
+    struct segment_node *best = NULL;
+    double minimum_at = __DBL_MAX__;
+
+    // Get cost function parameters
+    double c;
+    get_parameter_value_from_map(config->params,"c",&c);
+    double cm;
+    get_parameter_value_from_map(config->params,"cm",&cm);
+    double sigma;
+    get_parameter_value_from_map(config->params,"sigma",&sigma);
+    double rm;
+    get_parameter_value_from_map(config->params,"rm",&rm);
+    double deviation_limit;
+    get_parameter_value_from_map(config->params,"deviation_limit",&deviation_limit);
+
+    for (uint32_t i = 0; i < feasible_segments.size(); i++)
+    {
+        struct segment_node *iconn = feasible_segments[i];
+
+        // TODO: Change build_segment() to return the "inew" segment
+        /*
+        struct segment_node *inew = build_segment(the_network,iconn->id,new_pos);
+
+        double at = calc_terminal_activation_time(inew,c,cm,sigma,rm);
+        if (at < minimum_at && \
+            !has_deviation(the_network->segment_list,inew,at,deviation_limit,c,cm,sigma,rm))
+        {
+            best = iconn;
+            minimum_at = at;
+        }
+
+        restore_state_tree(the_network,iconn);
+        */
+    }
+
+    return best;
+}

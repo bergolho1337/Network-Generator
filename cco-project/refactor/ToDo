@@ -1,6 +1,3 @@
-- Implement new cost functions
-    - closest_segment_with_angle_restriction
-    - closest_segment_with_length_restriction
-    - minimize_tree_volume (ORIGINAL) --> We will need the restore_state() function here ...
-
-- Implement the restore_state() function
+- Test the cost functions
+- Implement assymetric ratio calculus to avoid segment with 
+  a small radius linking to a segment with a larger radius

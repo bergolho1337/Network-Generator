@@ -83,6 +83,11 @@ double calc_radius (struct cco_network *the_network, struct segment_node *s);
 double calc_tree_volume (struct cco_network *the_network);
 double calc_segment_volume (struct segment_node *s);
 
+double calc_terminal_activation_time (struct segment_node *s,\
+                        const double c, const double cm, const double sigma, const double rm);
+double calc_segment_activation_time (struct segment_node *s,\
+                        const double c, const double cm, const double sigma, const double rm);
+
 void check_bifurcation_rule (struct cco_network *the_network);
 bool check_collisions (struct cco_network *the_network, const double new_pos[],\
                     std::vector<struct segment_node*> &feasible_segments);
@@ -90,6 +95,11 @@ bool check_collisions (struct cco_network *the_network, const double new_pos[],\
 bool has_collision (struct segment_list *s_list, struct segment_node *s, const double new_pos[], FILE *log_file);
 bool connection_search (struct cco_network *the_network, const double pos[], const double d_threash);
 bool distance_criterion (struct segment_node *s, const double pos[], const double d_threash);
+
+bool has_deviation (struct segment_list *s_list, struct segment_node *inew,\
+                    const double new_at, const double limit,\
+                    const double c, const double cm, const double sigma, const double rm);
+bool is_terminal (struct segment_node *s);
 
 void grow_tree (struct cco_network *the_network, struct user_options *options);
 void grow_tree_default (struct cco_network *the_network, struct user_options *options);

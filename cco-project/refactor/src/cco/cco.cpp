@@ -255,6 +255,34 @@ bool distance_criterion (struct segment_node *s, const double pos[], const doubl
     return (d_crit > d_threash) ? true : false;
 }
 
+bool has_deviation (struct segment_list *s_list, struct segment_node *inew,\
+                    const double new_at, const double limit,\
+                    const double c, const double cm, const double sigma, const double rm)
+{
+    struct segment_node *tmp = s_list->list_nodes;
+
+    while (tmp != NULL)
+    {
+        if (tmp != inew && is_terminal(tmp))
+        {
+            double at = calc_terminal_activation_time(tmp,c,cm,sigma,rm);
+            if (fabs(new_at - at) > limit)
+                return true;
+        }
+        tmp = tmp->next;
+    }
+
+    return false;
+}
+
+bool is_terminal (struct segment_node *s)
+{
+    if (s->value->left == NULL && s->value->right == NULL)
+        return true;
+    else
+        return false;
+}
+
 void rescale_root (struct segment_node *iroot, const double Q_perf, const double delta_p)
 {
     // Set the flux and pressure of this segment
@@ -454,7 +482,7 @@ void restore_state_tree (struct cco_network *the_network,\
     iconn->value->src = ibiff->value->src;
     iconn->value->beta = ibiff->value->beta;
 
-    // Update "ibiff" parent subtree pointer
+    // Update "ibiff" parent subtree pointer if exists
     if (ibiff_par != NULL)
     {
         if (ibiff_par->value->right == ibiff)
@@ -495,7 +523,7 @@ void restore_state_tree (struct cco_network *the_network,\
         tmp->value->ndist--;
         the_network->num_terminals = tmp->value->ndist;
     }
-    // Already the root ...
+    // Already at the root ...
     else
     {
         the_network->num_terminals = iconn->value->ndist;
@@ -612,6 +640,36 @@ double calc_tree_volume (struct cco_network *the_network)
     }
 
     return total_volume;
+}
+
+double calc_terminal_activation_time (struct segment_node *s,\
+                        const double c, const double cm, const double sigma, const double rm)
+{
+    struct segment_node *tmp = s;
+    double at = 0.0;
+
+    while (tmp != NULL)
+    {
+        at += calc_segment_activation_time(tmp,c,cm,sigma,rm);
+
+        tmp = tmp->next;
+    }
+
+    return at;
+}
+
+double calc_segment_activation_time (struct segment_node *s,\
+                        const double c, const double cm, const double sigma, const double rm)
+{
+    struct point *src = s->value->src->value;
+    struct point *dest = s->value->dest->value;
+    double length = euclidean_norm(src->x,src->y,src->z,\
+                                  dest->x,dest->y,dest->z);
+
+    double delta_s = length;
+    double r = s->value->radius;
+
+    return (delta_s) / ( (c / (2.0*cm)) * (sqrt(sigma * 2.0 * r / rm)) );
 }
 
 void make_root_using_cloud_points (struct cco_network *the_network, std::vector<struct point> cloud_points)

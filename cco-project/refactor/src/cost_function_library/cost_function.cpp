@@ -220,20 +220,18 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
     {
         struct segment_node *iconn = feasible_segments[i];
 
-        // TODO: Change build_segment() to return the "inew" segment
-        /*
         struct segment_node *inew = build_segment(the_network,iconn->id,new_pos);
 
         double at = calc_terminal_activation_time(inew,c,cm,sigma,rm);
-        if (at < minimum_at && \
+        //if (at < minimum_at && \
             !has_deviation(the_network->segment_list,inew,at,deviation_limit,c,cm,sigma,rm))
+        if (at < minimum_at)
         {
             best = iconn;
             minimum_at = at;
         }
 
         restore_state_tree(the_network,iconn);
-        */
     }
 
     return best;

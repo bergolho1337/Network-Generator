@@ -379,7 +379,7 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
 
 }
 
-void build_segment (struct cco_network *the_network, const uint32_t index, const double new_pos[])
+struct segment_node* build_segment (struct cco_network *the_network, const uint32_t index, const double new_pos[])
 {
     
     struct point_list *p_list = the_network->point_list;
@@ -441,6 +441,8 @@ void build_segment (struct cco_network *the_network, const uint32_t index, const
     rescale_tree(ibiff_node,iconn_node,inew_node,Q_perf,delta_p,the_network->num_terminals);
 
     recalculate_radius(the_network);
+
+    return inew_node;
 }
 
 double calc_radius (struct cco_network *the_network, struct segment_node *s)

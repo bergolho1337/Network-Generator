@@ -60,7 +60,7 @@ void usage (const char pname[]);
 struct cco_network* new_cco_network (struct user_options *options);
 void free_cco_network (struct cco_network *the_network);
 
-void build_segment (struct cco_network *the_network, const uint32_t index, const double new_pos[]);
+struct segment_node* build_segment (struct cco_network *the_network, const uint32_t index, const double new_pos[]);
 
 void rescale_root (struct segment_node *iroot, const double Q_perf, const double delta_p);
 void rescale_tree (struct segment_node *ibiff, const double Q_perf, const double delta_p, const int num_terminals);

@@ -137,6 +137,24 @@ double calc_angle_between_vectors (const double u[], const double v[])
 
 }
 
+void print_terminal_activation_time (struct cco_network *the_network,\
+                            const double c, const double cm, const double rc, const double rm)
+{
+    struct segment_list *s_list = the_network->segment_list;
+    struct segment_node *tmp = s_list->list_nodes;
+
+    while (tmp != NULL)
+    {
+        if (is_terminal(tmp))
+        {
+            double at = calc_terminal_activation_time(tmp,c,cm,rc,rm);
+
+            printf("Terminal %d -- AT = %g ms\n",tmp->id,at);
+        }
+        tmp = tmp->next;
+    }
+}
+
 void write_to_vtk (struct cco_network *the_network)
 {
     uint32_t num_points = the_network->point_list->num_nodes;

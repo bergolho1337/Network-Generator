@@ -209,8 +209,8 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
     get_parameter_value_from_map(config->params,"c",&c);
     double cm;
     get_parameter_value_from_map(config->params,"cm",&cm);
-    double sigma;
-    get_parameter_value_from_map(config->params,"sigma",&sigma);
+    double rc;
+    get_parameter_value_from_map(config->params,"rc",&rc);
     double rm;
     get_parameter_value_from_map(config->params,"rm",&rm);
     double deviation_limit;
@@ -222,10 +222,10 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
 
         struct segment_node *inew = build_segment(the_network,iconn->id,new_pos);
 
-        double at = calc_terminal_activation_time(inew,c,cm,sigma,rm);
-        //if (at < minimum_at && \
-            !has_deviation(the_network->segment_list,inew,at,deviation_limit,c,cm,sigma,rm))
-        if (at < minimum_at)
+        double at = calc_terminal_activation_time(inew,c,cm,rc,rm);
+        
+        if (at < minimum_at && \
+            !has_deviation(the_network->segment_list,inew,at,deviation_limit,c,cm,rc,rm))
         {
             best = iconn;
             minimum_at = at;
@@ -233,6 +233,71 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
 
         restore_state_tree(the_network,iconn);
     }
+
+    // DEBUG
+    printf("[cost_function] Best AT = %g\n",minimum_at);
+    print_terminal_activation_time(the_network,c,cm,rc,rm);
+
+    return best;
+}
+
+SET_COST_FUNCTION (minimize_tree_activation_time_with_angle_restriction)
+{
+    struct segment_node *best = NULL;
+    double minimum_at = __DBL_MAX__;
+
+    // Get cost function parameters
+    double c;
+    get_parameter_value_from_map(config->params,"c",&c);
+    double cm;
+    get_parameter_value_from_map(config->params,"cm",&cm);
+    double rc;
+    get_parameter_value_from_map(config->params,"rc",&rc);
+    double rm;
+    get_parameter_value_from_map(config->params,"rm",&rm);
+    double deviation_limit;
+    get_parameter_value_from_map(config->params,"deviation_limit",&deviation_limit);
+    double degrees_limit;
+    get_parameter_value_from_map(config->params,"degrees",&degrees_limit);
+
+    for (uint32_t i = 0; i < feasible_segments.size(); i++)
+    {
+        struct segment_node *iconn = feasible_segments[i];
+
+        struct segment_node *inew = build_segment(the_network,iconn->id,new_pos);
+
+        // Calculate activation time
+        double at = calc_terminal_activation_time(inew,c,cm,rc,rm);
+
+        // Calculate bifurcation angle
+        struct point *src = iconn->value->src->value;
+        struct point *dest = iconn->value->dest->value;
+
+        double middle_pos[3];
+        calc_middle_point_segment(iconn,middle_pos);
+
+        double u[3], v[3];
+        build_unitary_vector(u,middle_pos[0],middle_pos[1],middle_pos[2],\
+                              dest->x,dest->y,dest->z);
+        build_unitary_vector(v,middle_pos[0],middle_pos[1],middle_pos[2],\
+                              new_pos[0],new_pos[1],new_pos[2]);
+
+        double degrees = calc_angle_between_vectors(u,v);
+
+        if (at < minimum_at && \
+            !has_deviation(the_network->segment_list,inew,at,deviation_limit,c,cm,rc,rm) && \
+            degrees >= degrees_limit)
+        {
+            best = iconn;
+            minimum_at = at;
+        }
+
+        restore_state_tree(the_network,iconn);
+    }
+
+    // DEBUG
+    printf("[cost_function] Best AT = %g\n",minimum_at);
+    print_terminal_activation_time(the_network,c,cm,rc,rm);
 
     return best;
 }

@@ -13,6 +13,16 @@
 
 #include "../cco/cco.h"
 
+// =================================================================
+// CONSTANTS AND MACROS 
+
+#define UM_TO_CM 0.0001
+#define MS_TO_S 0.001
+#define S_TO_MS 1000.0
+#define CM_S_TO_M_S 0.01
+
+// =================================================================
+
 void generate_point_inside_perfusion_area (double pos[], const double radius);
 
 double generate_random_number ();
@@ -36,6 +46,9 @@ double calc_dortho (struct segment_node *s, const double pos[]);
 double calc_dend (struct segment_node *s, const double pos[]);
 
 void draw_perfusion_area (struct cco_network *the_network);
+
+void print_terminal_activation_time (struct cco_network *the_network,\
+                            const double c, const double cm, const double rc, const double rm);
 
 void write_to_vtk (struct cco_network *the_network);
 

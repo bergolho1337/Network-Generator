@@ -1,20 +1,20 @@
 ========================================================================================================
 [cco] Working on terminal number 1
-[!] Support domain radius = 0.447214
-[!] Reducing dthreash! Before = 0.79 || Now = 0.71 
+[!] Support domain radius = 0.4
 [!] Reducing dthreash! Before = 0.71 || Now = 0.64 
-[!] Reducing dthreash! Before = 0.64 || Now = 0.58 
-[!] Reducing dthreash! Before = 0.58 || Now = 0.52 
+[!] Reducing dthreash! Before = 0.64 || Now = 0.57 
+[!] Reducing dthreash! Before = 0.57 || Now = 0.52 
 [!] Reducing dthreash! Before = 0.52 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.42 
 [!] Checking collisions!
 [+] Trying connection with segment 0
 Feasible segments: 0 
 ========================================================================================================
 ========================================================================================================
 [cco] Working on terminal number 2
-[!] Support domain radius = 0.547723
-[!] Reducing dthreash! Before = 0.69 || Now = 0.62 
-[!] Reducing dthreash! Before = 0.62 || Now = 0.56 
+[!] Support domain radius = 0.489898
+[!] Reducing dthreash! Before = 0.61 || Now = 0.55 
+[!] Reducing dthreash! Before = 0.55 || Now = 0.50 
 [!] Checking collisions!
 [+] Trying connection with segment 0
 	[!] Checking collison between segment 1
@@ -30,8 +30,8 @@ Feasible segments: 0 2
 ========================================================================================================
 ========================================================================================================
 [cco] Working on terminal number 3
-[!] Support domain radius = 0.632456
-[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Support domain radius = 0.565685
+[!] Reducing dthreash! Before = 0.58 || Now = 0.52 
 [!] Checking collisions!
 [+] Trying connection with segment 0
 	[!] Checking collison between segment 1
@@ -63,32 +63,36 @@ Feasible segments: 0 1 3 4
 ========================================================================================================
 ========================================================================================================
 [cco] Working on terminal number 4
-[!] Support domain radius = 0.707107
-[!] Reducing dthreash! Before = 0.63 || Now = 0.56 
-[!] Reducing dthreash! Before = 0.56 || Now = 0.51 
-[!] Reducing dthreash! Before = 0.51 || Now = 0.46 
-[!] Reducing dthreash! Before = 0.46 || Now = 0.41 
+[!] Support domain radius = 0.632456
+[!] Reducing dthreash! Before = 0.56 || Now = 0.50 
+[!] Reducing dthreash! Before = 0.50 || Now = 0.45 
+[!] Reducing dthreash! Before = 0.45 || Now = 0.41 
+[!] Reducing dthreash! Before = 0.41 || Now = 0.37 
 [!] Checking collisions!
 [+] Trying connection with segment 0
 	[!] Checking collison between segment 1
 	[!] Checking collison between segment 2
 	[!] Checking collison between segment 3
 	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
+	[-] ERROR! Intersection with segment 4 !
 [+] Trying connection with segment 1
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 2
+	[-] ERROR! Intersection with segment 2 !
+[+] Trying connection with segment 2
+	[!] Checking collison between segment 0
+	[!] Checking collison between segment 1
 	[!] Checking collison between segment 3
 	[!] Checking collison between segment 4
 	[!] Checking collison between segment 5
 	[!] Checking collison between segment 6
-[+] Trying connection with segment 2
-	[!] Checking collison between segment 0
-	[-] ERROR! Intersection with segment 0 !
 [+] Trying connection with segment 3
 	[!] Checking collison between segment 0
-	[-] ERROR! Intersection with segment 0 !
+	[!] Checking collison between segment 1
+	[!] Checking collison between segment 2
+	[!] Checking collison between segment 4
+	[!] Checking collison between segment 5
+	[!] Checking collison between segment 6
 [+] Trying connection with segment 4
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -96,7 +100,6 @@ Feasible segments: 0 1 3 4
 	[!] Checking collison between segment 3
 	[!] Checking collison between segment 5
 	[!] Checking collison between segment 6
-	[-] ERROR! Intersection with segment 6 !
 [+] Trying connection with segment 5
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -110,14 +113,14 @@ Feasible segments: 0 1 3 4
 	[!] Checking collison between segment 2
 	[!] Checking collison between segment 3
 	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-Feasible segments: 0 1 5 6 
+	[-] ERROR! Intersection with segment 4 !
+Feasible segments: 2 3 4 5 
 ========================================================================================================
 ========================================================================================================
 [cco] Working on terminal number 5
-[!] Support domain radius = 0.774597
-[!] Reducing dthreash! Before = 0.61 || Now = 0.55 
-[!] Reducing dthreash! Before = 0.55 || Now = 0.50 
+[!] Support domain radius = 0.69282
+[!] Reducing dthreash! Before = 0.55 || Now = 0.49 
+[!] Reducing dthreash! Before = 0.49 || Now = 0.44 
 [!] Checking collisions!
 [+] Trying connection with segment 0
 	[!] Checking collison between segment 1
@@ -126,12 +129,12 @@ Feasible segments: 0 1 5 6
 	[!] Checking collison between segment 4
 	[!] Checking collison between segment 5
 	[!] Checking collison between segment 6
-	[-] ERROR! Intersection with segment 6 !
+	[!] Checking collison between segment 7
+	[!] Checking collison between segment 8
 [+] Trying connection with segment 1
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[-] ERROR! Intersection with segment 3 !
+	[-] ERROR! Intersection with segment 2 !
 [+] Trying connection with segment 2
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -143,9 +146,7 @@ Feasible segments: 0 1 5 6
 	[!] Checking collison between segment 1
 	[!] Checking collison between segment 2
 	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[-] ERROR! Intersection with segment 6 !
+	[-] ERROR! Intersection with segment 4 !
 [+] Trying connection with segment 4
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -161,8 +162,7 @@ Feasible segments: 0 1 5 6
 	[!] Checking collison between segment 2
 	[!] Checking collison between segment 3
 	[!] Checking collison between segment 4
-	[!] Checking collison between segment 6
-	[-] ERROR! Intersection with segment 6 !
+	[-] ERROR! Intersection with segment 4 !
 [+] Trying connection with segment 6
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -178,127 +178,19 @@ Feasible segments: 0 1 5 6
 	[!] Checking collison between segment 2
 	[!] Checking collison between segment 3
 	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[-] ERROR! Intersection with segment 6 !
+	[-] ERROR! Intersection with segment 4 !
 [+] Trying connection with segment 8
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
 	[!] Checking collison between segment 2
 	[!] Checking collison between segment 3
 	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[-] ERROR! Intersection with segment 6 !
-Feasible segments: 4 6 
+	[-] ERROR! Intersection with segment 4 !
+Feasible segments: 0 4 6 
 ========================================================================================================
 ========================================================================================================
 [cco] Working on terminal number 6
-[!] Support domain radius = 0.83666
-[!] Reducing dthreash! Before = 0.61 || Now = 0.54 
-[!] Checking collisions!
-[+] Trying connection with segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[-] ERROR! Intersection with segment 4 !
-[+] Trying connection with segment 1
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[-] ERROR! Intersection with segment 3 !
-[+] Trying connection with segment 2
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-[+] Trying connection with segment 3
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[-] ERROR! Intersection with segment 5 !
-[+] Trying connection with segment 4
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-[+] Trying connection with segment 5
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-[+] Trying connection with segment 6
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[-] ERROR! Intersection with segment 10 !
-[+] Trying connection with segment 7
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[-] ERROR! Intersection with segment 5 !
-[+] Trying connection with segment 8
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[-] ERROR! Intersection with segment 4 !
-[+] Trying connection with segment 9
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[-] ERROR! Intersection with segment 4 !
-[+] Trying connection with segment 10
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-Feasible segments: 2 4 5 10 
-========================================================================================================
-========================================================================================================
-[cco] Working on terminal number 7
-[!] Support domain radius = 0.894427
-[!] Reducing dthreash! Before = 0.60 || Now = 0.54 
+[!] Support domain radius = 0.748331
 [!] Reducing dthreash! Before = 0.54 || Now = 0.49 
 [!] Checking collisions!
 [+] Trying connection with segment 0
@@ -306,8 +198,125 @@ Feasible segments: 2 4 5 10
 	[!] Checking collison between segment 2
 	[!] Checking collison between segment 3
 	[!] Checking collison between segment 4
+	[-] ERROR! Intersection with segment 4 !
+[+] Trying connection with segment 1
+	[!] Checking collison between segment 0
+	[!] Checking collison between segment 2
+	[-] ERROR! Intersection with segment 2 !
+[+] Trying connection with segment 2
+	[!] Checking collison between segment 0
+	[!] Checking collison between segment 1
+	[!] Checking collison between segment 3
+	[!] Checking collison between segment 4
 	[!] Checking collison between segment 5
-	[-] ERROR! Intersection with segment 5 !
+	[!] Checking collison between segment 6
+	[!] Checking collison between segment 7
+	[!] Checking collison between segment 8
+	[-] ERROR! Intersection with segment 8 !
+[+] Trying connection with segment 3
+	[!] Checking collison between segment 0
+	[!] Checking collison between segment 1
+	[!] Checking collison between segment 2
+	[!] Checking collison between segment 4
+	[!] Checking collison between segment 5
+	[!] Checking collison between segment 6
+	[!] Checking collison between segment 7
+	[!] Checking collison between segment 8
+	[!] Checking collison between segment 9
+	[!] Checking collison between segment 10
+[+] Trying connection with segment 4
+	[!] Checking collison between segment 0
+	[!] Checking collison between segment 1
+	[!] Checking collison between segment 2
+	[!] Checking collison between segment 3
+	[!] Checking collison between segment 5
+	[!] Checking collison between segment 6
+	[!] Checking collison between segment 7
+	[!] Checking collison between segment 8
+	[!] Checking collison between segment 9
+	[!] Checking collison between segment 10
+[+] Trying connection with segment 5
+	[!] Checking collison between segment 0
+	[!] Checking collison between segment 1
+	[!] Checking collison between segment 2
+	[!] Checking collison between segment 3
+	[!] Checking collison between segment 4
+	[!] Checking collison between segment 6
+	[!] Checking collison between segment 7
+	[!] Checking collison between segment 8
+	[!] Checking collison between segment 9
+	[!] Checking collison between segment 10
+[+] Trying connection with segment 6
+	[!] Checking collison between segment 0
+	[!] Checking collison between segment 1
+	[!] Checking collison between segment 2
+	[!] Checking collison between segment 3
+	[!] Checking collison between segment 4
+	[!] Checking collison between segment 5
+	[!] Checking collison between segment 7
+	[!] Checking collison between segment 8
+	[!] Checking collison between segment 9
+	[!] Checking collison between segment 10
+	[-] ERROR! Intersection with segment 10 !
+[+] Trying connection with segment 7
+	[!] Checking collison between segment 0
+	[!] Checking collison between segment 1
+	[!] Checking collison between segment 2
+	[!] Checking collison between segment 3
+	[!] Checking collison between segment 4
+	[!] Checking collison between segment 5
+	[!] Checking collison between segment 6
+	[!] Checking collison between segment 8
+	[-] ERROR! Intersection with segment 8 !
+[+] Trying connection with segment 8
+	[!] Checking collison between segment 0
+	[!] Checking collison between segment 1
+	[!] Checking collison between segment 2
+	[!] Checking collison between segment 3
+	[!] Checking collison between segment 4
+	[!] Checking collison between segment 5
+	[!] Checking collison between segment 6
+	[!] Checking collison between segment 7
+	[!] Checking collison between segment 9
+	[!] Checking collison between segment 10
+[+] Trying connection with segment 9
+	[!] Checking collison between segment 0
+	[!] Checking collison between segment 1
+	[!] Checking collison between segment 2
+	[!] Checking collison between segment 3
+	[!] Checking collison between segment 4
+	[-] ERROR! Intersection with segment 4 !
+[+] Trying connection with segment 10
+	[!] Checking collison between segment 0
+	[!] Checking collison between segment 1
+	[!] Checking collison between segment 2
+	[!] Checking collison between segment 3
+	[!] Checking collison between segment 4
+	[!] Checking collison between segment 5
+	[!] Checking collison between segment 6
+	[!] Checking collison between segment 7
+	[!] Checking collison between segment 8
+	[!] Checking collison between segment 9
+Feasible segments: 3 4 5 8 10 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 7
+[!] Support domain radius = 0.8
+[!] Reducing dthreash! Before = 0.54 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Checking collisions!
+[+] Trying connection with segment 0
+	[!] Checking collison between segment 1
+	[!] Checking collison between segment 2
+	[!] Checking collison between segment 3
+	[!] Checking collison between segment 4
+	[!] Checking collison between segment 5
+	[!] Checking collison between segment 6
+	[!] Checking collison between segment 7
+	[!] Checking collison between segment 8
+	[!] Checking collison between segment 9
+	[-] ERROR! Intersection with segment 9 !
 [+] Trying connection with segment 1
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 2
@@ -323,24 +332,18 @@ Feasible segments: 2 4 5 10
 	[!] Checking collison between segment 12
 [+] Trying connection with segment 2
 	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[!] Checking collison between segment 11
-	[!] Checking collison between segment 12
+	[-] ERROR! Intersection with segment 0 !
 [+] Trying connection with segment 3
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
 	[!] Checking collison between segment 2
 	[!] Checking collison between segment 4
 	[!] Checking collison between segment 5
-	[-] ERROR! Intersection with segment 5 !
+	[!] Checking collison between segment 6
+	[!] Checking collison between segment 7
+	[!] Checking collison between segment 8
+	[!] Checking collison between segment 9
+	[-] ERROR! Intersection with segment 9 !
 [+] Trying connection with segment 4
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -351,10 +354,7 @@ Feasible segments: 2 4 5 10
 	[!] Checking collison between segment 7
 	[!] Checking collison between segment 8
 	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[!] Checking collison between segment 11
-	[!] Checking collison between segment 12
-	[-] ERROR! Intersection with segment 12 !
+	[-] ERROR! Intersection with segment 9 !
 [+] Trying connection with segment 5
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -374,7 +374,13 @@ Feasible segments: 2 4 5 10
 	[!] Checking collison between segment 2
 	[!] Checking collison between segment 3
 	[!] Checking collison between segment 4
-	[-] ERROR! Intersection with segment 4 !
+	[!] Checking collison between segment 5
+	[!] Checking collison between segment 7
+	[!] Checking collison between segment 8
+	[!] Checking collison between segment 9
+	[!] Checking collison between segment 10
+	[!] Checking collison between segment 11
+	[!] Checking collison between segment 12
 [+] Trying connection with segment 7
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -382,15 +388,19 @@ Feasible segments: 2 4 5 10
 	[!] Checking collison between segment 3
 	[!] Checking collison between segment 4
 	[!] Checking collison between segment 5
-	[-] ERROR! Intersection with segment 5 !
+	[!] Checking collison between segment 6
+	[!] Checking collison between segment 8
+	[!] Checking collison between segment 9
+	[!] Checking collison between segment 10
+	[!] Checking collison between segment 11
+	[!] Checking collison between segment 12
 [+] Trying connection with segment 8
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
 	[!] Checking collison between segment 2
 	[!] Checking collison between segment 3
 	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[-] ERROR! Intersection with segment 5 !
+	[-] ERROR! Intersection with segment 4 !
 [+] Trying connection with segment 9
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -403,7 +413,7 @@ Feasible segments: 2 4 5 10
 	[!] Checking collison between segment 8
 	[!] Checking collison between segment 10
 	[!] Checking collison between segment 11
-	[-] ERROR! Intersection with segment 11 !
+	[!] Checking collison between segment 12
 [+] Trying connection with segment 10
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -412,224 +422,23 @@ Feasible segments: 2 4 5 10
 	[!] Checking collison between segment 4
 	[!] Checking collison between segment 5
 	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 11
-	[!] Checking collison between segment 12
-	[-] ERROR! Intersection with segment 12 !
+	[-] ERROR! Intersection with segment 6 !
 [+] Trying connection with segment 11
 	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[!] Checking collison between segment 12
+	[-] ERROR! Intersection with segment 0 !
 [+] Trying connection with segment 12
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
 	[!] Checking collison between segment 2
 	[!] Checking collison between segment 3
 	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[!] Checking collison between segment 11
-Feasible segments: 1 2 5 11 12 
+	[-] ERROR! Intersection with segment 4 !
+Feasible segments: 1 5 6 7 9 
 ========================================================================================================
 ========================================================================================================
 [cco] Working on terminal number 8
-[!] Support domain radius = 0.948683
-[!] Reducing dthreash! Before = 0.59 || Now = 0.54 
-[!] Reducing dthreash! Before = 0.54 || Now = 0.48 
-[!] Checking collisions!
-[+] Trying connection with segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[-] ERROR! Intersection with segment 6 !
-[+] Trying connection with segment 1
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[-] ERROR! Intersection with segment 6 !
-[+] Trying connection with segment 2
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[-] ERROR! Intersection with segment 5 !
-[+] Trying connection with segment 3
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[-] ERROR! Intersection with segment 6 !
-[+] Trying connection with segment 4
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[-] ERROR! Intersection with segment 10 !
-[+] Trying connection with segment 5
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[-] ERROR! Intersection with segment 9 !
-[+] Trying connection with segment 6
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[!] Checking collison between segment 11
-	[!] Checking collison between segment 12
-	[!] Checking collison between segment 13
-	[!] Checking collison between segment 14
-[+] Trying connection with segment 7
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[-] ERROR! Intersection with segment 6 !
-[+] Trying connection with segment 8
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[!] Checking collison between segment 11
-	[!] Checking collison between segment 12
-	[!] Checking collison between segment 13
-	[!] Checking collison between segment 14
-[+] Trying connection with segment 9
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 10
-	[-] ERROR! Intersection with segment 10 !
-[+] Trying connection with segment 10
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 11
-	[!] Checking collison between segment 12
-	[!] Checking collison between segment 13
-	[!] Checking collison between segment 14
-[+] Trying connection with segment 11
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[-] ERROR! Intersection with segment 10 !
-[+] Trying connection with segment 12
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[-] ERROR! Intersection with segment 10 !
-[+] Trying connection with segment 13
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[-] ERROR! Intersection with segment 10 !
-[+] Trying connection with segment 14
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[-] ERROR! Intersection with segment 10 !
-Feasible segments: 6 8 10 
-========================================================================================================
-========================================================================================================
-[cco] Working on terminal number 9
-[!] Support domain radius = 1
-[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Support domain radius = 0.848528
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
 [!] Checking collisions!
 [+] Trying connection with segment 0
 	[!] Checking collison between segment 1
@@ -641,15 +450,11 @@ Feasible segments: 6 8 10
 	[!] Checking collison between segment 7
 	[!] Checking collison between segment 8
 	[!] Checking collison between segment 9
-	[-] ERROR! Intersection with segment 9 !
+	[!] Checking collison between segment 10
+	[-] ERROR! Intersection with segment 10 !
 [+] Trying connection with segment 1
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[-] ERROR! Intersection with segment 3 !
-[+] Trying connection with segment 2
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
 	[!] Checking collison between segment 3
 	[!] Checking collison between segment 4
 	[!] Checking collison between segment 5
@@ -657,17 +462,25 @@ Feasible segments: 6 8 10
 	[!] Checking collison between segment 7
 	[!] Checking collison between segment 8
 	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[!] Checking collison between segment 11
-	[!] Checking collison between segment 12
-	[!] Checking collison between segment 13
-	[-] ERROR! Intersection with segment 13 !
-[+] Trying connection with segment 3
+	[-] ERROR! Intersection with segment 9 !
+[+] Trying connection with segment 2
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
+	[!] Checking collison between segment 3
 	[!] Checking collison between segment 4
 	[-] ERROR! Intersection with segment 4 !
+[+] Trying connection with segment 3
+	[!] Checking collison between segment 0
+	[!] Checking collison between segment 1
+	[!] Checking collison between segment 2
+	[!] Checking collison between segment 4
+	[!] Checking collison between segment 5
+	[!] Checking collison between segment 6
+	[!] Checking collison between segment 7
+	[!] Checking collison between segment 8
+	[!] Checking collison between segment 9
+	[!] Checking collison between segment 10
+	[-] ERROR! Intersection with segment 10 !
 [+] Trying connection with segment 4
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -679,12 +492,7 @@ Feasible segments: 6 8 10
 	[!] Checking collison between segment 8
 	[!] Checking collison between segment 9
 	[!] Checking collison between segment 10
-	[!] Checking collison between segment 11
-	[!] Checking collison between segment 12
-	[!] Checking collison between segment 13
-	[!] Checking collison between segment 14
-	[!] Checking collison between segment 15
-	[!] Checking collison between segment 16
+	[-] ERROR! Intersection with segment 10 !
 [+] Trying connection with segment 5
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -695,11 +503,7 @@ Feasible segments: 6 8 10
 	[!] Checking collison between segment 7
 	[!] Checking collison between segment 8
 	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[!] Checking collison between segment 11
-	[!] Checking collison between segment 12
-	[!] Checking collison between segment 13
-	[-] ERROR! Intersection with segment 13 !
+	[-] ERROR! Intersection with segment 9 !
 [+] Trying connection with segment 6
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -711,7 +515,10 @@ Feasible segments: 6 8 10
 	[!] Checking collison between segment 8
 	[!] Checking collison between segment 9
 	[!] Checking collison between segment 10
-	[-] ERROR! Intersection with segment 10 !
+	[!] Checking collison between segment 11
+	[!] Checking collison between segment 12
+	[!] Checking collison between segment 13
+	[!] Checking collison between segment 14
 [+] Trying connection with segment 7
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -729,11 +536,7 @@ Feasible segments: 6 8 10
 	[!] Checking collison between segment 2
 	[!] Checking collison between segment 3
 	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 9
-	[-] ERROR! Intersection with segment 9 !
+	[-] ERROR! Intersection with segment 4 !
 [+] Trying connection with segment 9
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -745,12 +548,7 @@ Feasible segments: 6 8 10
 	[!] Checking collison between segment 7
 	[!] Checking collison between segment 8
 	[!] Checking collison between segment 10
-	[!] Checking collison between segment 11
-	[!] Checking collison between segment 12
-	[!] Checking collison between segment 13
-	[!] Checking collison between segment 14
-	[!] Checking collison between segment 15
-	[!] Checking collison between segment 16
+	[-] ERROR! Intersection with segment 10 !
 [+] Trying connection with segment 10
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -766,23 +564,13 @@ Feasible segments: 6 8 10
 	[!] Checking collison between segment 12
 	[!] Checking collison between segment 13
 	[!] Checking collison between segment 14
-	[!] Checking collison between segment 15
-	[!] Checking collison between segment 16
 [+] Trying connection with segment 11
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
 	[!] Checking collison between segment 2
 	[!] Checking collison between segment 3
 	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[!] Checking collison between segment 12
-	[!] Checking collison between segment 13
-	[-] ERROR! Intersection with segment 13 !
+	[-] ERROR! Intersection with segment 4 !
 [+] Trying connection with segment 12
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -795,11 +583,7 @@ Feasible segments: 6 8 10
 	[!] Checking collison between segment 8
 	[!] Checking collison between segment 9
 	[!] Checking collison between segment 10
-	[!] Checking collison between segment 11
-	[!] Checking collison between segment 13
-	[!] Checking collison between segment 14
-	[!] Checking collison between segment 15
-	[!] Checking collison between segment 16
+	[-] ERROR! Intersection with segment 10 !
 [+] Trying connection with segment 13
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -811,12 +595,7 @@ Feasible segments: 6 8 10
 	[!] Checking collison between segment 7
 	[!] Checking collison between segment 8
 	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[!] Checking collison between segment 11
-	[!] Checking collison between segment 12
-	[!] Checking collison between segment 14
-	[!] Checking collison between segment 15
-	[!] Checking collison between segment 16
+	[-] ERROR! Intersection with segment 9 !
 [+] Trying connection with segment 14
 	[!] Checking collison between segment 0
 	[!] Checking collison between segment 1
@@ -831,152 +610,5 @@ Feasible segments: 6 8 10
 	[!] Checking collison between segment 10
 	[!] Checking collison between segment 11
 	[!] Checking collison between segment 12
-	[-] ERROR! Intersection with segment 12 !
-[+] Trying connection with segment 15
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[!] Checking collison between segment 11
-	[!] Checking collison between segment 12
 	[!] Checking collison between segment 13
-	[!] Checking collison between segment 14
-	[!] Checking collison between segment 16
-[+] Trying connection with segment 16
-	[!] Checking collison between segment 0
-	[!] Checking collison between segment 1
-	[!] Checking collison between segment 2
-	[!] Checking collison between segment 3
-	[!] Checking collison between segment 4
-	[!] Checking collison between segment 5
-	[!] Checking collison between segment 6
-	[!] Checking collison between segment 7
-	[!] Checking collison between segment 8
-	[!] Checking collison between segment 9
-	[!] Checking collison between segment 10
-	[!] Checking collison between segment 11
-	[!] Checking collison between segment 12
-	[!] Checking collison between segment 13
-	[!] Checking collison between segment 14
-	[!] Checking collison between segment 15
-Feasible segments: 4 9 10 12 13 15 16 
-========================================================================================================
-========================================================================================================
-Number of node in list = 20
-Node 0 -- Point(0,0,0)
-Node 1 -- Point(0.127403,-0.526228,0)
-Node 2 -- Point(0.0637015,-0.263114,0)
-Node 3 -- Point(-0.377202,-0.555467,0)
-Node 4 -- Point(-0.15675,-0.409291,0)
-Node 5 -- Point(-0.122106,-1.08108,0)
-Node 6 -- Point(-0.139428,-0.745184,0)
-Node 7 -- Point(0.52413,-0.985784,0)
-Node 8 -- Point(0.0955523,-0.394671,0)
-Node 9 -- Point(0.605508,-0.46519,0)
-Node 10 -- Point(0.192351,-0.865484,0)
-Node 11 -- Point(0.156298,-1.52951,0)
-Node 12 -- Point(-0.130767,-0.913131,0)
-Node 13 -- Point(-0.526962,-1.47683,0)
-Node 14 -- Point(-0.328864,-1.19498,0)
-Node 15 -- Point(-0.803908,-0.950728,0)
-Node 16 -- Point(0.174324,-1.1975,0)
-Node 17 -- Point(0.719155,-1.51984,0)
-Node 18 -- Point(-0.427913,-1.3359,0)
-Node 19 -- Point(-0.215284,-1.92617,0)
-========================================================================================================
-========================================================================================================
-Number of segment_node in list = 19
-Segment 0 (8,1) -- Source(0.0955523,-0.394671,0) - Destination(0.127403,-0.526228,0) -- NDIST = 1
-	BETA = 0.901
-	RESISTANCE = 1.24087 -- RADIUS = 0.763207
-	PARENT = 7 -- LEFT = NIL -- RIGHT = NIL
-Segment 1 (0,2) -- Source(0,0,0) - Destination(0.0637015,-0.263114,0) -- NDIST = 10
-	BETA = -1
-	RESISTANCE = 6.15217 -- RADIUS = 0.909278
-	PARENT = NIL -- LEFT = 3 -- RIGHT = 7
-Segment 2 (4,3) -- Source(-0.15675,-0.409291,0) - Destination(-0.377202,-0.555467,0) -- NDIST = 1
-	BETA = 0.971005
-	RESISTANCE = 2.42487 -- RADIUS = 0.508937
-	PARENT = 3 -- LEFT = NIL -- RIGHT = NIL
-Segment 3 (2,4) -- Source(0.0637015,-0.263114,0) - Destination(-0.15675,-0.409291,0) -- NDIST = 8
-	BETA = 0.57643
-	RESISTANCE = 5.1198 -- RADIUS = 0.524134
-	PARENT = 1 -- LEFT = 5 -- RIGHT = 2
-Segment 4 (12,5) -- Source(-0.130767,-0.913131,0) - Destination(-0.122106,-1.08108,0) -- NDIST = 1
-	BETA = 0.962957
-	RESISTANCE = 1.54167 -- RADIUS = 0.186573
-	PARENT = 11 -- LEFT = NIL -- RIGHT = NIL
-Segment 5 (4,6) -- Source(-0.15675,-0.409291,0) - Destination(-0.139428,-0.745184,0) -- NDIST = 7
-	BETA = 0.438797
-	RESISTANCE = 8.30657 -- RADIUS = 0.229989
-	PARENT = 3 -- LEFT = 9 -- RIGHT = 11
-Segment 6 (10,7) -- Source(0.192351,-0.865484,0) - Destination(0.52413,-0.985784,0) -- NDIST = 1
-	BETA = 0.913015
-	RESISTANCE = 3.23529 -- RADIUS = 0.15499
-	PARENT = 9 -- LEFT = NIL -- RIGHT = NIL
-Segment 7 (2,8) -- Source(0.0637015,-0.263114,0) - Destination(0.0955523,-0.394671,0) -- NDIST = 2
-	BETA = 0.931582
-	RESISTANCE = 3.00202 -- RADIUS = 0.847067
-	PARENT = 1 -- LEFT = 8 -- RIGHT = 0
-Segment 8 (8,9) -- Source(0.0955523,-0.394671,0) - Destination(0.605508,-0.46519,0) -- NDIST = 1
-	BETA = 0.645185
-	RESISTANCE = 4.71942 -- RADIUS = 0.546515
-	PARENT = 7 -- LEFT = NIL -- RIGHT = NIL
-Segment 9 (6,10) -- Source(-0.139428,-0.745184,0) - Destination(0.192351,-0.865484,0) -- NDIST = 3
-	BETA = 0.738109
-	RESISTANCE = 7.50271 -- RADIUS = 0.169757
-	PARENT = 5 -- LEFT = 15 -- RIGHT = 6
-Segment 10 (16,11) -- Source(0.174324,-1.1975,0) - Destination(0.156298,-1.52951,0) -- NDIST = 1
-	BETA = 0.851985
-	RESISTANCE = 3.04815 -- RADIUS = 0.0897442
-	PARENT = 15 -- LEFT = NIL -- RIGHT = NIL
-Segment 11 (6,12) -- Source(-0.139428,-0.745184,0) - Destination(-0.130767,-0.913131,0) -- NDIST = 4
-	BETA = 0.842436
-	RESISTANCE = 3.31599 -- RADIUS = 0.193751
-	PARENT = 5 -- LEFT = 13 -- RIGHT = 4
-Segment 12 (18,13) -- Source(-0.427913,-1.3359,0) - Destination(-0.526962,-1.47683,0) -- NDIST = 1
-	BETA = 0.898356
-	RESISTANCE = 1.57908 -- RADIUS = 0.0617333
-	PARENT = 17 -- LEFT = NIL -- RIGHT = NIL
-Segment 13 (12,14) -- Source(-0.130767,-0.913131,0) - Destination(-0.328864,-1.19498,0) -- NDIST = 3
-	BETA = 0.474841
-	RESISTANCE = 8.69169 -- RADIUS = 0.0920007
-	PARENT = 11 -- LEFT = 14 -- RIGHT = 17
-Segment 14 (14,15) -- Source(-0.328864,-1.19498,0) - Destination(-0.803908,-0.950728,0) -- NDIST = 1
-	BETA = 0.835526
-	RESISTANCE = 4.8968 -- RADIUS = 0.076869
-	PARENT = 13 -- LEFT = NIL -- RIGHT = NIL
-Segment 15 (10,16) -- Source(0.192351,-0.865484,0) - Destination(0.174324,-1.1975,0) -- NDIST = 2
-	BETA = 0.620509
-	RESISTANCE = 7.58233 -- RADIUS = 0.105335
-	PARENT = 9 -- LEFT = 16 -- RIGHT = 10
-Segment 16 (16,17) -- Source(0.174324,-1.1975,0) - Destination(0.719155,-1.51984,0) -- NDIST = 1
-	BETA = 0.725307
-	RESISTANCE = 5.80333 -- RADIUS = 0.0764005
-	PARENT = 15 -- LEFT = NIL -- RIGHT = NIL
-Segment 17 (14,18) -- Source(-0.328864,-1.19498,0) - Destination(-0.427913,-1.3359,0) -- NDIST = 2
-	BETA = 0.74693
-	RESISTANCE = 3.83357 -- RADIUS = 0.0687181
-	PARENT = 13 -- LEFT = 18 -- RIGHT = 12
-Segment 18 (18,19) -- Source(-0.427913,-1.3359,0) - Destination(-0.215284,-1.92617,0) -- NDIST = 1
-	BETA = 0.650285
-	RESISTANCE = 5.75153 -- RADIUS = 0.0446864
-	PARENT = 17 -- LEFT = NIL -- RIGHT = NIL
-========================================================================================================
-[!] Checking bifurcation rule!
-0.751778 = 0.143989 + 0.607789 --> 0.751778 = 0.751778
-0.143989 = 0.0121652 + 0.131823 --> 0.143989 = 0.143989
-0.0121652 = 0.00489192 + 0.00727326 --> 0.0121652 = 0.0121652
-0.607789 = 0.163232 + 0.444557 --> 0.607789 = 0.607789
-0.00489192 = 0.00116875 + 0.00372317 --> 0.00489192 = 0.00489192
-0.00727326 = 0.000778706 + 0.00649455 --> 0.00727326 = 0.00727326
-0.000778706 = 0.000454207 + 0.000324499 --> 0.000778706 = 0.000778706
-0.00116875 = 0.000445952 + 0.000722802 --> 0.00116875 = 0.00116875
-0.000324499 = 8.92328e-05 + 0.000235266 --> 0.000324499 = 0.000324499
+Feasible segments: 6 10 14 

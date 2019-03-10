@@ -84,9 +84,13 @@ double calc_tree_volume (struct cco_network *the_network);
 double calc_segment_volume (struct segment_node *s);
 
 double calc_terminal_activation_time (struct segment_node *s,\
-                        const double c, const double cm, const double sigma, const double rm);
+                        const double c, const double cm, const double rc, const double rm);
 double calc_segment_activation_time (struct segment_node *s,\
-                        const double c, const double cm, const double sigma, const double rm);
+                        const double c, const double cm, const double rc, const double rm);
+double calc_propagation_velocity (const double r,\
+                        const double c, const double cm, const double rc, const double rm);
+double calc_lambda_m (const double r, const double rc, const double rm);
+double calc_tau_m (const double cm, const double rm);
 
 void check_bifurcation_rule (struct cco_network *the_network);
 bool check_collisions (struct cco_network *the_network, const double new_pos[],\
@@ -98,7 +102,7 @@ bool distance_criterion (struct segment_node *s, const double pos[], const doubl
 
 bool has_deviation (struct segment_list *s_list, struct segment_node *inew,\
                     const double new_at, const double limit,\
-                    const double c, const double cm, const double sigma, const double rm);
+                    const double c, const double cm, const double rc, const double rm);
 bool is_terminal (struct segment_node *s);
 
 void grow_tree (struct cco_network *the_network, struct user_options *options);

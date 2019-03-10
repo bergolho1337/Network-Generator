@@ -257,7 +257,7 @@ bool distance_criterion (struct segment_node *s, const double pos[], const doubl
 
 bool has_deviation (struct segment_list *s_list, struct segment_node *inew,\
                     const double new_at, const double limit,\
-                    const double c, const double cm, const double sigma, const double rm)
+                    const double c, const double cm, const double rc, const double rm)
 {
     struct segment_node *tmp = s_list->list_nodes;
 
@@ -265,7 +265,7 @@ bool has_deviation (struct segment_list *s_list, struct segment_node *inew,\
     {
         if (tmp != inew && is_terminal(tmp))
         {
-            double at = calc_terminal_activation_time(tmp,c,cm,sigma,rm);
+            double at = calc_terminal_activation_time(tmp,c,cm,rc,rm);
             if (fabs(new_at - at) > limit)
                 return true;
         }
@@ -644,24 +644,50 @@ double calc_tree_volume (struct cco_network *the_network)
     return total_volume;
 }
 
+// Output will be given in (s)
+double calc_tau_m (const double cm, const double rm)
+{
+    // Equation (4.16) from Keener's book 
+    return rm * cm * MS_TO_S;
+}
+
+// Output will be given in (cm)
+double calc_lambda_m (const double r, const double rc, const double rm)
+{
+    double d = 2.0 * r;
+
+    // Equation (4.17) from Keener's book
+    double num = rm * d * UM_TO_CM;
+    double den = 4.0 * rc;
+
+    return sqrt(num / den);
+}
+
+// Calculate the propagation velocity using the cable equation (6.21) from Kenner's book
+double calc_propagation_velocity (const double r,\
+                        const double c, const double cm, const double rc, const double rm)
+{
+    return c * calc_lambda_m(r,rc,rm) / calc_tau_m(cm,rm);
+}
+
 double calc_terminal_activation_time (struct segment_node *s,\
-                        const double c, const double cm, const double sigma, const double rm)
+                        const double c, const double cm, const double rc, const double rm)
 {
     struct segment_node *tmp = s;
     double at = 0.0;
 
     while (tmp != NULL)
     {
-        at += calc_segment_activation_time(tmp,c,cm,sigma,rm);
+        at += calc_segment_activation_time(tmp,c,cm,rc,rm);
 
-        tmp = tmp->next;
+        tmp = tmp->value->parent;
     }
 
     return at;
 }
 
 double calc_segment_activation_time (struct segment_node *s,\
-                        const double c, const double cm, const double sigma, const double rm)
+                        const double c, const double cm, const double rc, const double rm)
 {
     struct point *src = s->value->src->value;
     struct point *dest = s->value->dest->value;
@@ -671,7 +697,9 @@ double calc_segment_activation_time (struct segment_node *s,\
     double delta_s = length;
     double r = s->value->radius;
 
-    return (delta_s) / ( (c / (2.0*cm)) * (sqrt(sigma * 2.0 * r / rm)) );
+    double velocity = calc_propagation_velocity(r,c,cm,rc,rm);
+
+    return delta_s / velocity;
 }
 
 void make_root_using_cloud_points (struct cco_network *the_network, std::vector<struct point> cloud_points)
@@ -823,6 +851,9 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network, struc
     if (iconn == NULL)
     {
         fprintf(stderr,"[cco] Error! No feasible segment found!\n");
+
+        write_to_vtk(the_network);
+
         exit(EXIT_FAILURE);
     }
     else
@@ -905,6 +936,9 @@ void generate_terminal (struct cco_network *the_network, struct cost_function_co
     if (iconn == NULL)
     {
         fprintf(stderr,"[cco] Error! No feasible segment found!\n");
+
+        write_to_vtk(the_network);
+
         exit(EXIT_FAILURE);
     }
     else

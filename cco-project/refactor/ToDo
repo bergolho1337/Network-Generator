@@ -1,3 +1,2 @@
-- Test the cost functions
-- Implement assymetric ratio calculus to avoid segment with 
-  a small radius linking to a segment with a larger radius
+- Fix minimize volume cost function (ask Rafael)
+- Fix minimize activation time cost function (ask Rafael)

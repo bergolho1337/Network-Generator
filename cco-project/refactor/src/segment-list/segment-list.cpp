@@ -129,7 +129,7 @@ struct segment* new_segment (struct point_node *src, struct point_node *dest,\
     tmp->right = right;
     tmp->parent = parent;
     tmp->Q = Q;
-    tmp->p = p;
+    tmp->delta_p = p;
     tmp->ndist = 1;
     tmp->beta = -1;
     return tmp;
@@ -200,7 +200,8 @@ void write_list (struct segment_list *l, FILE *log_file)
                                         tmp->value->dest->value->x,tmp->value->dest->value->y,tmp->value->dest->value->z,\
                                         tmp->value->ndist);
         fprintf(log_file,"\tBETA = %g\n",tmp->value->beta);
-        fprintf(log_file,"\tRESISTANCE = %g -- RADIUS = %g\n",tmp->value->resistance,tmp->value->radius);
+        fprintf(log_file,"\tRESISTANCE = %g -- RADIUS = %g -- DELTA_P = %g\n",\
+                tmp->value->resistance,tmp->value->radius,tmp->value->delta_p);
         
         if (tmp->value->parent == NULL)
             fprintf(log_file,"\tPARENT = NIL");

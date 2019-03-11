@@ -287,7 +287,7 @@ void rescale_root (struct segment_node *iroot, const double Q_perf, const double
 {
     // Set the flux and pressure of this segment
     iroot->value->Q = Q_perf;
-    iroot->value->p = delta_p;
+    iroot->value->delta_p = delta_p;
 
     // Calculate the segment size
     struct point *prox = iroot->value->src->value;
@@ -310,15 +310,23 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
 
     double Q_term = Q_perf / num_terminals;
     
-    // inew: Calculate resistance, flux and radius using (2.32) and (2.22) from Rafael's thesis
+    // inew: Calculate resistance, pressure, flux and radius 
+    // using (2.32) and (2.22) from Rafael's thesis
     calc_relative_resistance_term(inew);
+    calc_pressure_drop_term(inew,Q_term);
 
-    // iconn: Recalculate resistance using (2.5)
+    // iconn: Recalculate resistance using (2.5) and pressure drop (2.7)
     if (iconn->value->left == NULL && iconn->value->right == NULL)
+    {
         calc_relative_resistance_term(iconn);
+        calc_pressure_drop_term(iconn,Q_term);
+    }
     else
+    {
         calc_relative_resistance_subtree(iconn,iconn->value->right,iconn->value->left);
-
+        calc_pressure_drop_subtree(iconn,Q_term);
+    }
+        
     // Compute the radius ratio between left and right subtree from ibiff (2.32)
     double radius_ratio = calc_radius_ratio(iconn,inew,Q_term);
 
@@ -326,8 +334,9 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
     inew->value->beta = calc_bifurcation_ratio(radius_ratio,true);
     iconn->value->beta = calc_bifurcation_ratio(radius_ratio,false);
 
-    // ibiff: Calculate resistance using (2.5)
+    // ibiff: Calculate resistance using (2.5) and pressure drop using (2.7)
     calc_relative_resistance_subtree(ibiff,iconn,inew);
+    calc_pressure_drop_subtree(ibiff,Q_term);
 
     // Rescale the until we reach the root by using the "parent" pointer
     struct segment_node *ipar = ibiff->value->parent;
@@ -340,7 +349,7 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
     // We are already at the root, so recalculate the radius using (2.19)
     else
     {
-        ibiff->value->radius = pow(ibiff->value->resistance * Q_perf / delta_p , 0.25);
+        ibiff->value->radius = pow(ibiff->value->resistance * Q_perf / ibiff->value->delta_p , 0.25);
     }
 }
 
@@ -363,8 +372,9 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
         ipar_left->value->beta = calc_bifurcation_ratio(radius_ratio,true);
         ipar_right->value->beta = calc_bifurcation_ratio(radius_ratio,false);
 
-        // Recalculate resistance using (2.5)
+        // Recalculate resistance using (2.5) and pressure drop using (2.7)
         calc_relative_resistance_subtree(ipar,ipar_left,ipar_right);
+        calc_pressure_drop_subtree(ipar,Q_term);
 
         // Call the function recursively until we reach the root
         if (ipar->value->parent != NULL) 
@@ -374,7 +384,7 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
                                Q_perf,delta_p,num_terminals);
         // Recalculate the root radius when we reach this segment using (2.19)
         else
-            ipar->value->radius = pow(ipar->value->resistance * Q_perf / delta_p , 0.25); 
+            ipar->value->radius = pow(ipar->value->resistance * Q_perf / ipar->value->delta_p , 0.25); 
     }
 
 }
@@ -402,8 +412,6 @@ struct segment_node* build_segment (struct cco_network *the_network, const uint3
                             NULL,NULL,iconn_node->value->parent,Q_perf,p_perf);
     struct segment_node *ibiff_node = insert_segment_node(s_list,ibiff);
     ibiff->ndist = iconn_node->value->ndist;
-    // We need to calculate the resistance and radius of this segment
-    // (this is done on the rescale_tree())
 
     // Create inew
     struct point_node *T = insert_point(p_list,new_pos);
@@ -573,6 +581,18 @@ void calc_relative_resistance_term (struct segment_node *iterm)
     iterm->value->resistance = 8.0 * ETA * length / M_PI;
 }
 
+void calc_pressure_drop_term (struct segment_node *iterm, const double Q_term)
+{
+    iterm->value->delta_p = iterm->value->resistance * Q_term;
+}
+
+void calc_pressure_drop_subtree (struct segment_node *iconn, const double Q_term)
+{
+    double Q_iconn = iconn->value->ndist * Q_term;
+
+    iconn->value->delta_p = iconn->value->resistance * Q_iconn;
+}
+
 void calc_radius_term (struct segment_node *iterm, const double Q_term, const double delta_p)
 {
     double R = iterm->value->resistance;
@@ -642,6 +662,17 @@ double calc_tree_volume (struct cco_network *the_network)
     }
 
     return total_volume;
+}
+
+double calc_assymetric_ratio (struct segment_node *right, struct segment_node *left)
+{
+    // Calculate assymetric ratio using equation (2.12) from Rafael's thesis
+    double r_right = right->value->radius;
+    double r_left = left->value->radius;
+
+    double epsilon = std::min(r_right,r_left) / std::max(r_right,r_left);
+    
+    return epsilon;
 }
 
 // Output will be given in (s)
@@ -802,6 +833,9 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network, struc
     double d_threash = calc_dthreashold(r_supp,K_term);
 
     std::vector<struct segment_node*> feasible_segments;
+
+    // Reference to segment we are going to make the connection
+    struct segment_node *iconn = NULL;
     
     while (!point_is_ok)
     {
@@ -818,6 +852,24 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network, struc
         // Check collision with other segments
         if (point_is_ok)
             point_is_ok = check_collisions(the_network,new_pos,feasible_segments);
+
+        // Test the cost function
+        if (point_is_ok)
+        {
+            fprintf(log_file,"Feasible segments: ");
+            for (unsigned int i = 0; i < feasible_segments.size(); i++)
+                fprintf(log_file,"%d ",feasible_segments[i]->id);
+            fprintf(log_file,"\n");
+
+            // COST FUNCTION
+            iconn = cost_function_fn(the_network,config,new_pos,feasible_segments);
+            if (iconn == NULL)
+            {
+                fprintf(stderr,"[cco] Error! No feasible segment found!\n");
+
+                point_is_ok = false;
+            }
+        }
 
         // If the point does not attend the distance criterion or if there is a collision
         // we need to choose another point.
@@ -841,32 +893,10 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network, struc
         }
     }
 
-    fprintf(log_file,"Feasible segments: ");
-    for (unsigned int i = 0; i < feasible_segments.size(); i++)
-        fprintf(log_file,"%d ",feasible_segments[i]->id);
-    fprintf(log_file,"\n");
-
-    // COST FUNCTION
-    struct segment_node *iconn = cost_function_fn(the_network,config,new_pos,feasible_segments);
-    if (iconn == NULL)
-    {
-        fprintf(stderr,"[cco] Error! No feasible segment found!\n");
-
-        write_to_vtk(the_network);
-
-        exit(EXIT_FAILURE);
-    }
-    else
-    {
-        printf("[cco] Best segment = %d\n",iconn->id);
-    }
-
     // Build a new segment with the best connection given by the cost function
     build_segment(the_network,iconn->id,new_pos);
 }
 
-// TODO: Rewrite this function, so that when no feasible segments attend the cost function we sort
-//       a new point ...
 void generate_terminal (struct cco_network *the_network, struct cost_function_config *config)
 {
     FILE *log_file = the_network->log_file;
@@ -893,6 +923,9 @@ void generate_terminal (struct cco_network *the_network, struct cost_function_co
     // Array with the reference to the feasible segments for a new connection
     std::vector<struct segment_node*> feasible_segments;
 
+    // Reference to segment we are going to make the connection
+    struct segment_node *iconn = NULL;
+
     while (!point_is_ok)
     {
         // Reset the feasible segments list
@@ -909,8 +942,27 @@ void generate_terminal (struct cco_network *the_network, struct cost_function_co
         if (point_is_ok)
             point_is_ok = check_collisions(the_network,new_pos,feasible_segments);
 
+        // Test the cost function
+        if (point_is_ok)
+        {
+            fprintf(log_file,"Feasible segments: ");
+            for (unsigned int i = 0; i < feasible_segments.size(); i++)
+                fprintf(log_file,"%d ",feasible_segments[i]->id);
+            fprintf(log_file,"\n");
+
+            // COST FUNCTION
+            iconn = cost_function_fn(the_network,config,new_pos,feasible_segments);
+            if (iconn == NULL)
+            {
+                fprintf(stderr,"[cco] Error! No feasible segment found!\n");
+
+                point_is_ok = false;
+            }
+        }
+
         // If the point does not attend the distance criterion or if there is a collision
-        // we need to choose another point.
+        // or if there is no feasible segment for the cost function we need to choose 
+        // another point.
         if (!point_is_ok)
         {
             tosses++;
@@ -924,26 +976,6 @@ void generate_terminal (struct cco_network *the_network, struct cost_function_co
                 tosses = 0;
             }
         }
-    }
-
-    fprintf(log_file,"Feasible segments: ");
-    for (unsigned int i = 0; i < feasible_segments.size(); i++)
-        fprintf(log_file,"%d ",feasible_segments[i]->id);
-    fprintf(log_file,"\n");
-
-    // COST FUNCTION
-    struct segment_node *iconn = cost_function_fn(the_network,config,new_pos,feasible_segments);
-    if (iconn == NULL)
-    {
-        fprintf(stderr,"[cco] Error! No feasible segment found!\n");
-
-        write_to_vtk(the_network);
-
-        exit(EXIT_FAILURE);
-    }
-    else
-    {
-        printf("[cco] Best segment = %d\n",iconn->id);
     }
 
     // Build a new segment with the best connection given by the cost function

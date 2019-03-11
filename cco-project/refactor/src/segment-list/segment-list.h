@@ -15,8 +15,8 @@
 struct segment
 {
     double Q;
-    double p;
-    double radius;
+    double delta_p;       // Pressure drop of the segment 
+    double radius;        // Radius of the segment
     double beta;          // Relative radius (ratio between my radius and parent radius = beta)
     double resistance;    // Relative resistance R*
     double length;

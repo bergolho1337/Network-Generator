@@ -75,6 +75,8 @@ void restore_state_tree (struct cco_network *the_network,\
 void calc_middle_point_segment (struct segment_node *s, double pos[]);
 void calc_relative_resistance_term (struct segment_node *iterm);
 void calc_relative_resistance_subtree (struct segment_node *ibiff, struct segment_node *iconn, struct segment_node *inew);
+void calc_pressure_drop_term (struct segment_node *iterm, const double Q_term);
+void calc_pressure_drop_subtree (struct segment_node *iconn, const double Q_term);
 void calc_radius_term (struct segment_node *iterm, const double Q_term, const double delta_p);
 double calc_bifurcation_ratio (const double radius_ratio, bool sign);
 double calc_radius_ratio (struct segment_node *iconn, struct segment_node *inew, const double Q_term);
@@ -82,6 +84,7 @@ double calc_radius (struct cco_network *the_network, struct segment_node *s);
 
 double calc_tree_volume (struct cco_network *the_network);
 double calc_segment_volume (struct segment_node *s);
+double calc_assymetric_ratio (struct segment_node *right, struct segment_node *left);
 
 double calc_terminal_activation_time (struct segment_node *s,\
                         const double c, const double cm, const double rc, const double rm);

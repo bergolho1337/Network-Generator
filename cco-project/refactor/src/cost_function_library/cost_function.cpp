@@ -139,18 +139,19 @@ SET_COST_FUNCTION (minimize_tree_volume)
     struct segment_node *best = NULL;
     double minimum_volume = __DBL_MAX__;
 
+    double epsilon_lim;
+    get_parameter_value_from_map(config->params,"epsilon_lim",&epsilon_lim);
+
     for (uint32_t i = 0; i < feasible_segments.size(); i++)
     {
         struct segment_node *iconn = feasible_segments[i];
 
-        //printf("\nBefore\n");
-        //print_list(the_network->segment_list);
-        //printf("\n");
+        struct segment_node *inew = build_segment(the_network,iconn->id,new_pos);
 
-        build_segment(the_network,iconn->id,new_pos);
+        double epsilon_rad = calc_assymetric_ratio(iconn,inew);
 
         double volume = calc_tree_volume(the_network);
-        if (volume < minimum_volume)
+        if (volume < minimum_volume && epsilon_rad > epsilon_lim)
         {
             minimum_volume = volume;
             best = iconn;
@@ -158,15 +159,8 @@ SET_COST_FUNCTION (minimize_tree_volume)
             printf("[cost_function] Best segment = %d -- Volume = %g\n",best->id,minimum_volume);
         }
 
-        //printf("\nProcessing\n");
-        //print_list(the_network->segment_list);
-        //printf("\n");
-
         restore_state_tree(the_network,iconn);
 
-        //printf("\nAfter\n");
-        //print_list(the_network->segment_list);
-        //printf("\n");
     }
 
     return best;

@@ -10,11 +10,20 @@
 #include <vtkXMLPolyDataWriter.h>
 #include <vtkSphereSource.h>
 #include <vtkAppendPolyData.h>
+#include <vtkPoints.h>
+#include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
+#include <vtkDoubleArray.h>
+#include <vtkAppendPolyData.h>
+#include <vtkSphereSource.h>
+#include <vtkCylinderSource.h>
+#include <vtkMath.h>
+#include <vtkLine.h>
 
 using namespace std;
 
-const unsigned int NUM_POINTS = 200;        // Total number of points to be generated
-const double TOLERANCE = 0.05;               // Distance tolerance of the points
+const unsigned int NUM_POINTS = 400;        // Total number of points to be generated
+const double TOLERANCE = 0.3;               // Distance tolerance of the points
 const unsigned int KTERM = 10;
 
 class Point
@@ -51,12 +60,60 @@ void draw_perfusion_area (const double radius)
     writer->Write();
 }
 
+void draw_square_perfusion_area (const double length)
+{
+
+    // Insert the points
+    double l = length;
+    double l2 = length / 2.0;
+
+    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+    points->InsertNextPoint(-l2,l2,0);
+    points->InsertNextPoint(l2,l2,0);
+    points->InsertNextPoint(-l2,-l2,0);
+    points->InsertNextPoint(l2,-l2,0);
+    
+    vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
+    polydata->SetPoints(points);
+
+    // Insert the lines using the edges of the graph
+    vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
+    vtkSmartPointer<vtkLine> line1 = vtkSmartPointer<vtkLine>::New();
+    line1->GetPointIds()->SetId(0,0);
+    line1->GetPointIds()->SetId(1,1);
+
+    vtkSmartPointer<vtkLine> line2 = vtkSmartPointer<vtkLine>::New();
+    line2->GetPointIds()->SetId(0,1);
+    line2->GetPointIds()->SetId(1,3);
+
+    vtkSmartPointer<vtkLine> line3 = vtkSmartPointer<vtkLine>::New();
+    line3->GetPointIds()->SetId(0,3);
+    line3->GetPointIds()->SetId(1,2);
+
+    vtkSmartPointer<vtkLine> line4 = vtkSmartPointer<vtkLine>::New();
+    line4->GetPointIds()->SetId(0,2);
+    line4->GetPointIds()->SetId(1,0);
+
+    lines->InsertNextCell(line1);
+    lines->InsertNextCell(line2);
+    lines->InsertNextCell(line3);
+    lines->InsertNextCell(line4);
+
+    polydata->SetLines(lines);
+
+    // Write the polydata to a file
+    vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+    writer->SetFileName("output/perfusion_area_cloud.vtp");
+    writer->SetInputData(polydata);
+    writer->Write();
+}
+
 double generate_random_number ()
 {
+    // Between 0 and 1
     double number = (double)rand() / (double)RAND_MAX;
     
     return number;
-    
 }
 
 void generate_point_inside_circle (double pos[], const double radius)
@@ -67,6 +124,26 @@ void generate_point_inside_circle (double pos[], const double radius)
     pos[0] = 0 + r*cos(teta);
     pos[1] = -radius + r*sin(teta);
     pos[2] = 0 + 0;
+}
+
+void generate_point_inside_square (double pos[], const double length)
+{
+    int sign;
+    double size = length / 2.0;
+
+    double x = generate_random_number()*size;
+    sign = rand() % 2;
+    if (sign) 
+        x *= -1.0;
+
+    double y = generate_random_number()*size;
+    sign = rand() % 2;
+    if (sign) 
+        y *= -1.0;
+
+    pos[0] = x;
+    pos[1] = y;
+    pos[2] = 0.0;
 }
 
 double calc_euclidean_dist (const double a[], const double b[])
@@ -108,6 +185,24 @@ void generate_cloud_points (vector<Point> &points, const double radius)
     }    
 }
 
+void generate_square_cloud_points (vector<Point> &points, const double length)
+{
+    double pos[3];
+
+    for (unsigned int i = 0; i < NUM_POINTS; i++)
+    {
+        do
+        {
+            generate_point_inside_square(pos,length);
+        }while (!check_point(pos,points));
+        
+        Point p(pos[0],pos[1],pos[2]);
+        points.push_back(p);
+        
+        printf("[!] Number of points = %u\n",i);
+    }    
+}
+
 void write_to_txt (const vector<Point> points)
 {
     FILE *file = fopen("output/cloud_points.txt","w+");
@@ -119,7 +214,7 @@ void write_to_txt (const vector<Point> points)
     fclose(file);
 }
 
-void write_to_vtp (const vector<Point> points)
+void write_to_vtp (const vector<Point> points, const double radius)
 {
     vtkSmartPointer<vtkAppendPolyData> appendFilter = vtkSmartPointer<vtkAppendPolyData>::New();
     
@@ -128,7 +223,7 @@ void write_to_vtp (const vector<Point> points)
     {
         vtkSmartPointer<vtkSphereSource> sphereSource = vtkSmartPointer<vtkSphereSource>::New();
         sphereSource->SetCenter(points[i].x,points[i].y,points[i].z);
-        sphereSource->SetRadius(0.01);
+        sphereSource->SetRadius(0.01*radius);
         sphereSource->Update();
 
         // Append the sphere to the filter
@@ -143,27 +238,82 @@ void write_to_vtp (const vector<Point> points)
     writer->Write();
 }
 
+void generate_circle_cloud (const double A_perf)
+{
+    printf("[generate_cloud] Generating circle cloud of points\n");
+
+    double r_perf = sqrt(A_perf / M_PI);
+
+    printf("Radius = %g\n",r_perf);
+    draw_perfusion_area(r_perf);
+
+    vector<Point> points;
+    generate_cloud_points(points,r_perf);
+
+    write_to_vtp(points,r_perf);
+    write_to_txt(points);
+}
+
+void generate_square_cloud (const double A_perf)
+{
+    printf("[generate_cloud] Generating square cloud of points\n");
+    
+    double l = sqrt(A_perf);
+    printf("Square side = %g\n",l);
+
+    draw_square_perfusion_area(l);
+
+    vector<Point> points;
+    generate_square_cloud_points(points,l);    
+
+    write_to_vtp(points,l);
+    write_to_txt(points);
+}
+
+void generate_triangle_cloud (const double A_perf)
+{
+    printf("[generate_cloud] Generating triangle cloud of points\n");
+    
+    printf("Need to implement !\n");
+}
+
+void generate_double_circle_cloud (const double A_perf)
+{
+    printf("[generate_cloud] Generating double circle cloud of points\n");
+    
+    printf("Need to implement !\n");
+}
+
 int main (int argc, char *argv[])
 {
-    if (argc-1 != 2)
+    if (argc-1 != 3)
     {
-        printf("Usage:> %s <A_perf> <N_term>\n",argv[0]);
+        printf("Usage:> %s <A_perf> <N_term> <type_cloud>\n",argv[0]);
         exit(EXIT_FAILURE);   
     }
     double A_perf = atof(argv[1]);
     int N_term = atoi(argv[2]);
+    int type_cloud = atoi(argv[3]);
 
-    double A_sup = (double)((KTERM + 1) * A_perf) / (double)N_term;
-    double r_sup = sqrt(A_sup / M_PI);
+    switch (type_cloud)
+    {
+        case 0:
+            generate_circle_cloud(A_perf);
+            break;
+        case 1:
+            generate_square_cloud(A_perf);
+            break;
+        case 2:
+            generate_triangle_cloud(A_perf);
+            break;
+        case 4:
+            generate_double_circle_cloud(A_perf);
+            break;
 
-    printf("Radius = %g\n",r_sup);
-    draw_perfusion_area(r_sup);
-
-    vector<Point> points;
-    generate_cloud_points(points,r_sup);
-
-    write_to_vtp(points);
-    write_to_txt(points);
+        default:
+            fprintf(stderr,"[generate_cloud] Error! Invalid option !\n");
+            exit(EXIT_FAILURE);
+    }
 
     return 0;
 }

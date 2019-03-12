@@ -24,7 +24,7 @@
 
 // CONSTANTS AND MACROS 
 // =================================================================
-static const double ETA = 3.6;          // Blood viscosity
+static const double ETA = 3.6;          // Blood viscosity (cP)
 static const double GAMMA = 3.0;        // Bifurcation expoent
 static const uint32_t NTOSS = 200;      // Number of tosses for a new terminal
 

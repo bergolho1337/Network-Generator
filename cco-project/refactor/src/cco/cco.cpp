@@ -349,7 +349,7 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
     // We are already at the root, so recalculate the radius using (2.19)
     else
     {
-        ibiff->value->radius = pow(ibiff->value->resistance * Q_perf / ibiff->value->delta_p , 0.25);
+        ibiff->value->radius = pow(ibiff->value->resistance * Q_perf / delta_p , 0.25);
     }
 }
 
@@ -384,7 +384,7 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
                                Q_perf,delta_p,num_terminals);
         // Recalculate the root radius when we reach this segment using (2.19)
         else
-            ipar->value->radius = pow(ipar->value->resistance * Q_perf / ipar->value->delta_p , 0.25); 
+            ipar->value->radius = pow(ipar->value->resistance * Q_perf / delta_p , 0.25); 
     }
 
 }
@@ -954,7 +954,8 @@ void generate_terminal (struct cco_network *the_network, struct cost_function_co
             iconn = cost_function_fn(the_network,config,new_pos,feasible_segments);
             if (iconn == NULL)
             {
-                fprintf(stderr,"[cco] Error! No feasible segment found!\n");
+                //fprintf(stderr,"[cco] Error! No feasible segment found!\n");
+                printf("[cco] Error! No feasible segment found!\n");
 
                 point_is_ok = false;
             }
@@ -994,7 +995,7 @@ void read_cloud_points (const char filename[], std::vector<struct point> &cloud_
     {
         struct point point;
         fscanf(file,"%lf %lf %lf",&point.x,&point.y,&point.z);
-
+    
         cloud_points.push_back(point);
     }
 

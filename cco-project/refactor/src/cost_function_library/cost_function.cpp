@@ -134,7 +134,40 @@ SET_COST_FUNCTION(closest_segment_with_angle_restriction)
     return closest;
 }
 
-SET_COST_FUNCTION (minimize_tree_volume)
+SET_COST_FUNCTION (minimize_tree_volume_default)
+{
+    struct segment_node *best = NULL;
+    double minimum_volume = __DBL_MAX__;
+
+    //double epsilon_lim;
+    //get_parameter_value_from_map(config->params,"epsilon_lim",&epsilon_lim);
+
+    for (uint32_t i = 0; i < feasible_segments.size(); i++)
+    {
+        struct segment_node *iconn = feasible_segments[i];
+
+        struct segment_node *inew = build_segment(the_network,iconn->id,new_pos);
+
+        //double epsilon_rad = calc_assymetric_ratio(iconn,inew);
+
+        double volume = calc_tree_volume(the_network);
+        //if (volume < minimum_volume && epsilon_rad > epsilon_lim)
+        if (volume < minimum_volume)
+        {
+            minimum_volume = volume;
+            best = iconn;
+
+            printf("[cost_function] Best segment = %d -- Volume = %g\n",best->id,minimum_volume);
+        }
+
+        restore_state_tree(the_network,iconn);
+
+    }
+
+    return best;
+}
+
+SET_COST_FUNCTION (minimize_tree_volume_with_assymetric_restriction)
 {
     struct segment_node *best = NULL;
     double minimum_volume = __DBL_MAX__;
@@ -151,7 +184,58 @@ SET_COST_FUNCTION (minimize_tree_volume)
         double epsilon_rad = calc_assymetric_ratio(iconn,inew);
 
         double volume = calc_tree_volume(the_network);
+        
         if (volume < minimum_volume && epsilon_rad > epsilon_lim)
+        {
+            minimum_volume = volume;
+            best = iconn;
+
+            printf("[cost_function] Best segment = %d -- Volume = %g\n",best->id,minimum_volume);
+        }
+
+        restore_state_tree(the_network,iconn);
+
+    }
+
+    return best;
+}
+
+SET_COST_FUNCTION (minimize_tree_volume_with_angle_restriction)
+{
+    struct segment_node *best = NULL;
+    double minimum_volume = __DBL_MAX__;
+
+    double degrees_limit;
+    get_parameter_value_from_map(config->params,"degrees",&degrees_limit);
+
+    for (uint32_t i = 0; i < feasible_segments.size(); i++)
+    {
+        struct segment_node *iconn = feasible_segments[i];
+
+        // Calculate bifurcation angle
+        struct point *src = iconn->value->src->value;
+        struct point *dest = iconn->value->dest->value;
+
+        double middle_pos[3];
+        calc_middle_point_segment(iconn,middle_pos);
+
+        double u[3], v[3];
+        build_unitary_vector(u,middle_pos[0],middle_pos[1],middle_pos[2],\
+                              dest->x,dest->y,dest->z);
+        build_unitary_vector(v,middle_pos[0],middle_pos[1],middle_pos[2],\
+                              new_pos[0],new_pos[1],new_pos[2]);
+
+        double dist = euclidean_norm(new_pos[0],new_pos[1],new_pos[2],\
+                                    middle_pos[0],middle_pos[1],middle_pos[2]);
+
+        double degrees = calc_angle_between_vectors(u,v);
+
+        // Calculate tree volume
+        struct segment_node *inew = build_segment(the_network,iconn->id,new_pos);
+
+        double volume = calc_tree_volume(the_network);
+
+        if (volume < minimum_volume && degrees > degrees_limit)
         {
             minimum_volume = volume;
             best = iconn;

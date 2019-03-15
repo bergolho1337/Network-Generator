@@ -168,7 +168,7 @@ bool has_collision (struct segment_list *s_list, struct segment_node *s, const d
     calc_middle_point_segment(s,middle_pos); 
 
     //printf("[+] Trying connection with segment %u\n",s->id);
-    fprintf(log_file,"[+] Trying connection with segment %u\n",s->id);
+    //fprintf(log_file,"[+] Trying connection with segment %u\n",s->id);
 
     struct segment_node *tmp = s_list->list_nodes;
     while (tmp != NULL)
@@ -176,7 +176,7 @@ bool has_collision (struct segment_list *s_list, struct segment_node *s, const d
         if (tmp->id != s->id)
         {
             //printf("\t[!] Checking collison between segment %d\n",tmp->id);
-            fprintf(log_file,"\t[!] Checking collison between segment %d\n",tmp->id);
+            //fprintf(log_file,"\t[!] Checking collison between segment %d\n",tmp->id);
 
             // Get the reference to the points of the current segment
             struct point *src = tmp->value->src->value;
@@ -190,7 +190,7 @@ bool has_collision (struct segment_list *s_list, struct segment_node *s, const d
             if (intersect)
             {
                 //printf("\t[-] ERROR! Intersection with segment %d !\n",tmp->id);
-                fprintf(log_file,"\t[-] ERROR! Intersection with segment %d !\n",tmp->id);
+                //fprintf(log_file,"\t[-] ERROR! Intersection with segment %d !\n",tmp->id);
                 return true;
             }          
         }
@@ -331,8 +331,8 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
     double radius_ratio = calc_radius_ratio(iconn,inew,Q_term);
 
     // iconn + inew: Calculate bifurcation ratio using (2.31)
-    inew->value->beta = calc_bifurcation_ratio(radius_ratio,true);
-    iconn->value->beta = calc_bifurcation_ratio(radius_ratio,false);
+    inew->value->beta = calc_bifurcation_ratio(radius_ratio,false);
+    iconn->value->beta = calc_bifurcation_ratio(radius_ratio,true);
 
     // ibiff: Calculate resistance using (2.5) and pressure drop using (2.7)
     calc_relative_resistance_subtree(ibiff,iconn,inew);
@@ -369,8 +369,8 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
         double radius_ratio = calc_radius_ratio(ipar_right,ipar_left,Q_term);
 
         // Recalculate bifurcation ratios for the offsprings using (2.31)
-        ipar_left->value->beta = calc_bifurcation_ratio(radius_ratio,true);
-        ipar_right->value->beta = calc_bifurcation_ratio(radius_ratio,false);
+        ipar_left->value->beta = calc_bifurcation_ratio(radius_ratio,false);
+        ipar_right->value->beta = calc_bifurcation_ratio(radius_ratio,true);
 
         // Recalculate resistance using (2.5) and pressure drop using (2.7)
         calc_relative_resistance_subtree(ipar,ipar_left,ipar_right);
@@ -425,8 +425,8 @@ struct segment_node* build_segment (struct cco_network *the_network, const uint3
     iconn_node->value->src = M;
 
     //  ibiff:
-    ibiff_node->value->left = inew_node;     // CONVENTION: Right will point to subtree
-    ibiff_node->value->right = iconn_node;   // CONVENTION: Left will point to terminal
+    ibiff_node->value->left = inew_node;     // CONVENTION: Left will point to terminal
+    ibiff_node->value->right = iconn_node;   // CONVENTION: Right will point to subtree
     if (ibiff_node->value->parent != NULL)
     {
         struct segment_node *ibiff_par_node = ibiff_node->value->parent;
@@ -726,9 +726,10 @@ double calc_segment_activation_time (struct segment_node *s,\
                                   dest->x,dest->y,dest->z);
 
     double delta_s = length;
-    double r = s->value->radius;
+    double r = s->value->radius * UM_TO_CM;
 
     double velocity = calc_propagation_velocity(r,c,cm,rc,rm);
+    //printf("Propagation velocity = %g cm/s \n");
 
     return delta_s / velocity;
 }

@@ -149,7 +149,7 @@ void print_terminal_activation_time (struct cco_network *the_network,\
         {
             double at = calc_terminal_activation_time(tmp,c,cm,rc,rm);
 
-            printf("Terminal %d -- AT = %g ms\n",tmp->id,at);
+            //printf("Terminal %d -- AT = %g ms\n",tmp->id,at);
         }
         tmp = tmp->next;
     }

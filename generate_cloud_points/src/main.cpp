@@ -1,5 +1,4 @@
 // Author: Lucas Berg
-// Program that generates a cloud of points around a circle
 
 #include <iostream>
 #include <cstdio>
@@ -22,6 +21,7 @@
 
 using namespace std;
 
+/*
 const unsigned int NUM_POINTS = 400;        // Total number of points to be generated
 const double TOLERANCE = 0.3;               // Distance tolerance of the points
 const unsigned int KTERM = 10;
@@ -283,14 +283,18 @@ void generate_double_circle_cloud (const double A_perf)
     
     printf("Need to implement !\n");
 }
+*/
 
 int main (int argc, char *argv[])
 {
-    if (argc-1 != 3)
+    if (argc-1 != 1)
     {
-        printf("Usage:> %s <A_perf> <N_term> <type_cloud>\n",argv[0]);
-        exit(EXIT_FAILURE);   
+        usage(argv[0]);
+        exit (EXIT_FAILURE);
     }
+
+    
+    /*
     double A_perf = atof(argv[1]);
     int N_term = atoi(argv[2]);
     int type_cloud = atoi(argv[3]);
@@ -314,6 +318,7 @@ int main (int argc, char *argv[])
             fprintf(stderr,"[generate_cloud] Error! Invalid option !\n");
             exit(EXIT_FAILURE);
     }
+    */
 
     return 0;
 }

@@ -18,12 +18,13 @@ FIND_PACKAGE(VTK REQUIRED)
 INCLUDE(${VTK_USE_FILE})
 
 ADD_SUBDIRECTORY(src/generator)
+ADD_SUBDIRECTORY(src/config)
 ADD_SUBDIRECTORY(src/utils)
 
 ADD_SUBDIRECTORY(src/cloud_library)
 
 ADD_EXECUTABLE(CloudGenerator src/main.cpp)
 
-ADD_DEPENDENCIES(CloudGenerator generator)
+ADD_DEPENDENCIES(CloudGenerator generator config utils)
 
-TARGET_LINK_LIBRARIES(CloudGenerator ${VTK_LIBRARIES} generator dl m)
+TARGET_LINK_LIBRARIES(CloudGenerator ${VTK_LIBRARIES} generator config utils dl m)

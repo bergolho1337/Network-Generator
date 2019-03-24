@@ -1,10 +1,19 @@
+#ifndef UTILS_H
+#define UTILS_H
+
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
+#include <cmath>
 #include <vector>
+#include <map>
 
+// *********************************************************************************************
+// CONSTANTS AND MACROS
 #define PRINT_LINE "================================================================="
 #define PRINT_LINE_2 "------------------------------------------------------------------"
+
+// *********************************************************************************************
 
 class Point
 {
@@ -25,3 +34,10 @@ public:
 };
 
 void usage (const char pname[]);
+double generate_random_number (); 
+double calc_euclidean_dist (const double a[], const double b[]);
+bool check_point (const double new_pos[], std::vector<Point> points, const double tolerance);
+bool get_parameter_value_from_map (std::map<std::string,double> *params,\
+                                const std::string key, double *value);
+
+#endif

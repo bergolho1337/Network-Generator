@@ -1,6 +1,6 @@
 {
     "files.associations": {
-        "deque": "cpp",
-        "vector": "cpp"
+        "type_traits": "cpp",
+        "cmath": "cpp"
     }
 }

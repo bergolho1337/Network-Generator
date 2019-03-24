@@ -1,3 +1,0 @@
-/home/berg/Github/Network-Generator/cco-project/backup/build/CMakeFiles/rebuild_cache.dir
-/home/berg/Github/Network-Generator/cco-project/backup/build/CMakeFiles/Cco.dir
-/home/berg/Github/Network-Generator/cco-project/backup/build/CMakeFiles/edit_cache.dir

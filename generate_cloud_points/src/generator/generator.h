@@ -9,13 +9,11 @@
 #include <vtkRegularPolygonSource.h>
 #include <vtkXMLPolyDataWriter.h>
 #include <vtkSphereSource.h>
-#include <vtkAppendPolyData.h>
 #include <vtkPoints.h>
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 #include <vtkDoubleArray.h>
 #include <vtkAppendPolyData.h>
-#include <vtkSphereSource.h>
 #include <vtkCylinderSource.h>
 #include <vtkMath.h>
 #include <vtkLine.h>

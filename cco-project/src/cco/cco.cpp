@@ -675,11 +675,11 @@ double calc_assymetric_ratio (struct segment_node *right, struct segment_node *l
     return epsilon;
 }
 
-// Output will be given in (s)
+// Output will be given in (ms)
 double calc_tau_m (const double cm, const double rm)
 {
     // Equation (4.16) from Keener's book 
-    return rm * cm * MS_TO_S;
+    return rm * cm;
 }
 
 // Output will be given in (cm)
@@ -688,7 +688,7 @@ double calc_lambda_m (const double r, const double rc, const double rm)
     double d = 2.0 * r;
 
     // Equation (4.17) from Keener's book
-    double num = rm * d * UM_TO_CM;
+    double num = rm * d;
     double den = 4.0 * rc;
 
     return sqrt(num / den);
@@ -726,12 +726,36 @@ double calc_segment_activation_time (struct segment_node *s,\
                                   dest->x,dest->y,dest->z);
 
     double delta_s = length;
-    double r = s->value->radius * UM_TO_CM;
+    double r = s->value->radius;
 
     double velocity = calc_propagation_velocity(r,c,cm,rc,rm);
-    //printf("Propagation velocity = %g cm/s \n");
+    //printf("Propagation velocity = %g cm/ms \n",velocity);
+    //printf("Distance = %g cm \n",delta_s);
 
     return delta_s / velocity;
+}
+
+// The activation time is already in microseconds
+double calc_segment_activation_time_using_level (const double at, struct segment_node *iconn)
+{
+    double level = calc_segment_level(iconn);
+
+    return pow( at, 1.0/level );
+}
+
+double calc_segment_level (struct segment_node *iconn)
+{
+    struct segment_node *tmp = iconn;
+
+    double level = 1.0;
+    while (tmp != NULL)
+    {
+        level++;
+
+        tmp = tmp->value->parent;
+    }
+    
+    return level;
 }
 
 void make_root_using_cloud_points (struct cco_network *the_network, std::vector<struct point> cloud_points)

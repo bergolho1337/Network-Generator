@@ -95,6 +95,9 @@ double calc_propagation_velocity (const double r,\
 double calc_lambda_m (const double r, const double rc, const double rm);
 double calc_tau_m (const double cm, const double rm);
 
+double calc_segment_activation_time_using_level (const double at, struct segment_node *iconn);
+double calc_segment_level (struct segment_node *iconn);
+
 void check_bifurcation_rule (struct cco_network *the_network);
 bool check_collisions (struct cco_network *the_network, const double new_pos[],\
                     std::vector<struct segment_node*> &feasible_segments);

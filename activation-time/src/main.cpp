@@ -90,6 +90,25 @@ void write_datafile ()
     fclose(file_at);
 }
 
+void write_function ()
+{
+    FILE *file_new_at = fopen("output/new_cost_function.dat","w+");
+
+    double dx = 0.1;
+    double base = 2.0;
+
+    for (int i = 0; i < 100; i++)
+    {
+        double x = i*dx;
+
+        double y = pow(base,-1/x); 
+
+        fprintf(file_new_at,"%g %g\n",x,y);
+    }
+
+    fclose(file_new_at);
+}
+
 int main (int argc, char *argv[])
 {
     if (argc-1 != 0)
@@ -101,6 +120,7 @@ int main (int argc, char *argv[])
     }
 
     write_datafile();
+    write_function();
 
     return 0;
 }

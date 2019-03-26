@@ -73,6 +73,10 @@ extern "C" struct segment_node* minimize_tree_activation_time_with_angle_restric
                     struct cost_function_config *config,\
                     const double new_pos[],\
                     const std::vector<struct segment_node*> feasible_segments);
+extern "C" struct segment_node* minimize_tree_activation_time_with_angle_restriction_and_level_restriction (struct cco_network *the_network,\
+                    struct cost_function_config *config,\
+                    const double new_pos[],\
+                    const std::vector<struct segment_node*> feasible_segments);
 
 
 // Auxiliary functions

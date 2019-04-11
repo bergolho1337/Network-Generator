@@ -1,5 +1,7 @@
 #include "cco.h"
 
+std::vector<double> random_numbers;
+
 struct cco_network* new_cco_network (struct user_options *options)
 {
     struct cco_network *result = (struct cco_network*)malloc(sizeof(struct cco_network));
@@ -58,6 +60,8 @@ void free_cco_network (struct cco_network *the_network)
 void grow_tree (struct cco_network *the_network, struct user_options *options)
 {
     printf("\n[cco] Growing CCO network !\n");
+
+    generate_normal_distribution(random_numbers,MEAN,STDDEV);
 
     if (!the_network->using_cloud_points)
         grow_tree_default(the_network,options);
@@ -317,38 +321,22 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
 {
 
     double Q_term = Q_perf / num_terminals;
-    
-    // inew: Calculate resistance, pressure, flux and radius 
-    // using (2.32) and (2.22) from Rafael's thesis
-    calc_relative_resistance_term(inew);
-    calc_pressure_drop_term(inew,Q_term);
-
-    // iconn: Recalculate resistance using (2.5) and pressure drop (2.7)
-    if (iconn->value->left == NULL && iconn->value->right == NULL)
-    {
-        calc_relative_resistance_term(iconn);
-        calc_pressure_drop_term(iconn,Q_term);
-    }
-    else
-    {
-        calc_relative_resistance_subtree(iconn,iconn->value->right,iconn->value->left);
-        calc_pressure_drop_subtree(iconn,Q_term);
-    }
         
     // Compute the radius ratio between left and right subtree from ibiff (2.32)
     //double radius_ratio = calc_radius_ratio(iconn,inew,Q_term);
     
     // [FRACTAL]
-    // Compute the radius using the symmetric case
-    double radius_ratio = 1.0;
+    // Compute the radius of the offsprings using the assymetric relation
+    double N = get_number_from_normal_distribution(random_numbers);
+    double r_par = iconn->value->radius;
+    double r_left = N * pow( 0.5*pow(r_par,GAMMA), 1.0/GAMMA );
+    double r_right = pow( pow(r_par, GAMMA) - pow(r_left, GAMMA), 1.0/GAMMA );
+    // Compute the radius ratio
+    double radius_ratio = r_left / r_right;
 
     // iconn + inew: Calculate bifurcation ratio using (2.31)
     inew->value->beta = calc_bifurcation_ratio(radius_ratio,false);
     iconn->value->beta = calc_bifurcation_ratio(radius_ratio,true);
-
-    // ibiff: Calculate resistance using (2.5) and pressure drop using (2.7)
-    calc_relative_resistance_subtree(ibiff,iconn,inew);
-    calc_pressure_drop_subtree(ibiff,Q_term);
 
     // Rescale the until we reach the root by using the "parent" pointer
     struct segment_node *ipar = ibiff->value->parent;
@@ -380,20 +368,18 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
     if (ipar_left != NULL && ipar_right != NULL)
     {
 
-        // Calculate radius ratio between left and right subtree
-        //double radius_ratio = calc_radius_ratio(ipar_right,ipar_left,Q_term);
-
         // [FRACTAL]
-        // Compute the radius ratio using the symmetric case
-        double radius_ratio = 1.0;
+        // Compute the radius of the offsprings using the assymetric relation
+        double r_par = ipar->value->radius;
+        double N = get_number_from_normal_distribution(random_numbers);
+        double r_left = N * pow( 0.5*pow(r_par,GAMMA), 1.0/GAMMA );
+        double r_right = pow( pow(r_par, GAMMA) - pow(r_left, GAMMA), 1.0/GAMMA );
+        // Compute the radius ratio
+        double radius_ratio = r_left / r_right;
 
         // Recalculate bifurcation ratios for the offsprings using (2.31)
         ipar_left->value->beta = calc_bifurcation_ratio(radius_ratio,false);
         ipar_right->value->beta = calc_bifurcation_ratio(radius_ratio,true);
-
-        // Recalculate resistance using (2.5) and pressure drop using (2.7)
-        calc_relative_resistance_subtree(ipar,ipar_left,ipar_right);
-        calc_pressure_drop_subtree(ipar,Q_term);
 
         // Call the function recursively until we reach the root
         if (ipar->value->parent != NULL) 
@@ -526,12 +512,6 @@ void restore_state_tree (struct cco_network *the_network,\
         else if (ibiff_par->value->left == ibiff)
             ibiff_par->value->left = iconn;
     }   
-
-    // Recalculate R* for "iconn" because we change its length
-    if (iconn->value->left == NULL && iconn->value->right == NULL)
-        calc_relative_resistance_term(iconn);
-    else
-        calc_relative_resistance_subtree(iconn,iconn->value->right,iconn->value->left);
 
     // Eliminate "ibiff" and "inew"
     struct point_list *p_list = the_network->point_list;
@@ -743,6 +723,7 @@ double calc_terminal_activation_time (struct segment_node *s,\
         tmp = tmp->value->parent;
     }
 
+    //printf("Activation time = %g ms\n",at);
     return at;
 }
 
@@ -756,6 +737,7 @@ double calc_segment_activation_time (struct segment_node *s,\
 
     double delta_s = length;
     double r = s->value->radius;
+    //double r = FIXED_RADIUS;
 
     double velocity = calc_propagation_velocity(r,c,cm,rc,rm);
     //printf("Propagation velocity = %g cm/ms \n",velocity);

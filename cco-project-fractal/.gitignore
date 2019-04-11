@@ -35,4 +35,5 @@ build/
 *~
 .vs/
 *.json
+*.log
 output/

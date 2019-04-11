@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/berg/Github/Network-Generator/normal-distribution/src/main.cpp
+iostream
+-
+vector
+-
+random
+-
+algorithm
+-
+cstdio
+-
+cstdlib
+-
+cmath
+-
+

@@ -11,6 +11,9 @@
 #include <cstdint>
 #include <cmath>
 
+#include <vector>
+#include <random>
+
 #include "../cco/cco.h"
 
 // =================================================================
@@ -23,11 +26,16 @@
 #define CM_S_TO_M_S 0.01
 #define MS_TO_US 1000.0
 
+#define NUMBER_OF_POINTS_IN_DISTRIBUTION 1000
+
 // =================================================================
 
 void generate_point_inside_perfusion_area (double pos[], const double radius);
 
 double generate_random_number ();
+
+void generate_normal_distribution (std::vector<double> &arr, const double mean, const double stddev);
+double get_number_from_normal_distribution (std::vector<double> arr);
 
 bool collision_detection (const double x1, const double y1, const double z1,\
                           const double x2, const double y2, const double z2,\

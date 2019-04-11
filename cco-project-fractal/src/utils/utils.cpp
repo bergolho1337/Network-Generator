@@ -6,6 +6,26 @@ double euclidean_norm (const double x1, const double y1, const double z1,\
     return sqrt( pow(x2-x1,2) + pow(y2-y1,2) + pow(z2-z1,2) );
 }
 
+void generate_normal_distribution (std::vector<double> &arr, const double mean, const double stddev)
+{
+    std::default_random_engine generator;
+    std::normal_distribution<double> distribution(mean,stddev);
+
+    for (uint32_t i = 0; i < NUMBER_OF_POINTS_IN_DISTRIBUTION; i++)
+    {
+        double number = fabs(distribution(generator));
+        
+        arr.push_back(number);
+    }
+}
+
+double get_number_from_normal_distribution (std::vector<double> arr)
+{
+    uint32_t index = rand() % arr.size();
+
+    return arr[index];
+}
+
 double generate_random_number ()
 {
     double number = (double)rand() / (double)RAND_MAX;

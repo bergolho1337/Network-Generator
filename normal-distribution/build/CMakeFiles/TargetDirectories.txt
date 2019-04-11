@@ -1,3 +1,0 @@
-/home/berg/Github/Network-Generator/normal-distribution/build/CMakeFiles/rebuild_cache.dir
-/home/berg/Github/Network-Generator/normal-distribution/build/CMakeFiles/RandomDistribution.dir
-/home/berg/Github/Network-Generator/normal-distribution/build/CMakeFiles/edit_cache.dir

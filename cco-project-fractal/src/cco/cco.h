@@ -25,7 +25,7 @@
 // CONSTANTS AND MACROS 
 // =================================================================
 static const double ETA = 3.6;          // Blood viscosity (cP)
-static const double GAMMA = 3.0;        // Bifurcation expoent
+static const double GAMMA = 2.7;        // Bifurcation expoent
 static const uint32_t NTOSS = 200;      // Number of tosses for a new terminal
 static const double MEAN = 1.0;         // Mean value for the normal distribution
 static const double STDDEV = 0.0;       // Standart deviation for the normal distribution
@@ -102,6 +102,9 @@ double calc_tau_m (const double cm, const double rm);
 
 double calc_segment_activation_time_using_level (const double at, struct segment_node *iconn);
 double calc_segment_level (struct segment_node *iconn);
+
+double calc_segment_custom_function (struct segment_node *s, const double beta, const double alpha);
+double calc_custom_function (struct cco_network *the_network, const double beta, const double alpha);
 
 void check_bifurcation_rule (struct cco_network *the_network);
 bool check_collisions (struct cco_network *the_network, const double new_pos[],\

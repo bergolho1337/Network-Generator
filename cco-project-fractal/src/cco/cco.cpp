@@ -769,6 +769,35 @@ double calc_segment_level (struct segment_node *iconn)
     return level;
 }
 
+double calc_segment_custom_function (struct segment_node *s, const double beta, const double alpha)
+{
+    struct point *src = s->value->src->value;
+    struct point *dest = s->value->dest->value;
+
+    double l = euclidean_norm(src->x,src->y,src->z,\
+                              dest->x,dest->y,dest->z);
+    double r = s->value->radius;
+
+    return pow(l,beta) * pow(r,alpha);
+}
+
+double calc_custom_function (struct cco_network *the_network, const double beta, const double alpha)
+{
+    struct segment_list *s_list = the_network->segment_list;
+    struct segment_node *tmp = s_list->list_nodes;
+    
+    double total_eval = 0.0;
+
+    while (tmp != NULL)
+    {
+        total_eval += calc_segment_custom_function(tmp,beta,alpha);
+
+        tmp = tmp->next;
+    }
+
+    return total_eval;
+}
+
 void make_root_using_cloud_points (struct cco_network *the_network, std::vector<struct point> cloud_points)
 {
     int N_term = the_network->N_term;

@@ -450,3 +450,37 @@ SET_COST_FUNCTION (minimize_tree_activation_time_with_angle_restriction_and_leve
 
     return best;
 }
+
+SET_COST_FUNCTION (minimize_custom_function)
+{
+    struct segment_node *best = NULL;
+    double minimum_eval = __DBL_MAX__;
+
+    double beta;
+    get_parameter_value_from_map(config->params,"beta",&beta);
+
+    double alpha;
+    get_parameter_value_from_map(config->params,"alpha",&alpha);
+
+    for (uint32_t i = 0; i < feasible_segments.size(); i++)
+    {
+        struct segment_node *iconn = feasible_segments[i];
+
+        struct segment_node *inew = build_segment(the_network,iconn->id,new_pos);
+
+        double eval = calc_custom_function(the_network,beta,alpha);
+        //if (volume < minimum_volume && epsilon_rad > epsilon_lim)
+        if (eval < minimum_eval)
+        {
+            minimum_eval = eval;
+            best = iconn;
+
+            printf("[cost_function] Best segment = %d -- Eval = %g\n",best->id,minimum_eval);
+        }
+
+        restore_state_tree(the_network,iconn);
+
+    }
+
+    return best;
+}

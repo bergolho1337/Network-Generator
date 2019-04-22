@@ -758,6 +758,13 @@ double calc_segment_level (struct segment_node *iconn)
     return level;
 }
 
+double calc_segment_custom_function_with_level_penalty (const double eval, struct segment_node *iconn)
+{
+    double level = calc_segment_level(iconn);
+
+    return pow( eval, 1.0/level );
+}
+
 double calc_segment_custom_function (struct segment_node *s, const double beta, const double alpha)
 {
     struct point *src = s->value->src->value;

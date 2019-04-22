@@ -64,6 +64,11 @@ extern "C" struct segment_node* maximize_tree_volume (struct cco_network *the_ne
                     const double new_pos[],\
                     const std::vector<struct segment_node*> feasible_segments);
 
+extern "C" struct segment_node* minimize_tree_volume_with_level_penalty (struct cco_network *the_network,\
+                    struct cost_function_config *config,\
+                    const double new_pos[],\
+                    const std::vector<struct segment_node*> feasible_segments);
+
 extern "C" struct segment_node* minimize_tree_activation_time (struct cco_network *the_network,\
                     struct cost_function_config *config,\
                     const double new_pos[],\
@@ -80,6 +85,11 @@ extern "C" struct segment_node* minimize_tree_activation_time_with_angle_restric
                     const std::vector<struct segment_node*> feasible_segments);
 
 extern "C" struct segment_node* minimize_custom_function (struct cco_network *the_network,\
+                    struct cost_function_config *config,\
+                    const double new_pos[],\
+                    const std::vector<struct segment_node*> feasible_segments);
+
+extern "C" struct segment_node* minimize_custom_function_with_level_penalty (struct cco_network *the_network,\
                     struct cost_function_config *config,\
                     const double new_pos[],\
                     const std::vector<struct segment_node*> feasible_segments);

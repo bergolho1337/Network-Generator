@@ -100,6 +100,7 @@ double calc_segment_level (struct segment_node *iconn);
 
 double calc_custom_function (struct cco_network *the_network, const double beta, const double alpha);
 double calc_segment_custom_function (struct segment_node *s, const double beta, const double alpha);
+double calc_segment_custom_function_with_level_penalty (const double eval, struct segment_node *iconn);
 
 void check_bifurcation_rule (struct cco_network *the_network);
 bool check_collisions (struct cco_network *the_network, const double new_pos[],\

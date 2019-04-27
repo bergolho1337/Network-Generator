@@ -148,6 +148,34 @@ void write_points_to_vtu (vector<Point> main_points, vector<Point> mapped_points
 
 }
 
+void write_points_to_txt (vector<Point> main_points, vector<Point> mapped_points)
+{
+    FILE *file = fopen("output/points.txt","w+");
+
+    for (uint32_t i = 0; i < main_points.size(); i++)
+    {
+        double pos[3];
+        pos[0] = main_points[i].x;
+        pos[1] = main_points[i].y;
+        pos[2] = main_points[i].z;
+
+        fprintf(file,"%g %g %g\n",pos[0],pos[1],pos[2]);
+    }
+
+    for (uint32_t i = 0; i < mapped_points.size(); i++)
+    {
+        double pos[3];
+        pos[0] = mapped_points[i].x;
+        pos[1] = mapped_points[i].y;
+        pos[2] = mapped_points[i].z;
+
+        fprintf(file,"%g %g %g\n",pos[0],pos[1],pos[2]);
+    }
+
+    fclose(file);
+
+}
+
 int main (int argc, char *argv[])
 {
     if (argc-1 != 1)
@@ -170,6 +198,7 @@ int main (int argc, char *argv[])
     //print_points(mapped_points);
 
     write_points_to_vtu(main_points,mapped_points);
+    write_points_to_txt(main_points,mapped_points);
 
     return 0;
 }

@@ -76,11 +76,6 @@ extern "C" struct segment_node* minimize_tree_volume_with_angle_restriction (str
                                         const double new_pos[],\
                                         const std::vector<struct segment_node*> feasible_segments);
 
-extern "C" struct segment_node* maximize_tree_volume (struct cco_network *the_network,\
-                                        struct cost_function_config *config,\
-                                        struct local_optimization_config *local_opt_config,\
-                                        const double new_pos[],\
-                                        const std::vector<struct segment_node*> feasible_segments);
 
 extern "C" struct segment_node* minimize_tree_volume_with_level_penalty (struct cco_network *the_network,\
                                         struct cost_function_config *config,\

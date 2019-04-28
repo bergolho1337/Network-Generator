@@ -152,6 +152,7 @@ SET_COST_FUNCTION (minimize_tree_volume_default)
     {
         struct segment_node *iconn = feasible_segments[i];
 
+        // First we set the bifurcation point on the middle of the segment
         struct segment_node *inew = build_segment(the_network,iconn->id,new_pos);
 
         struct segment_node *ibiff = iconn->value->parent;
@@ -163,14 +164,37 @@ SET_COST_FUNCTION (minimize_tree_volume_default)
             save_original_bifurcation_position(ibiff,ori_pos);
 
             // Initialize the best position as middle point of the segment
-            initialize_best_position_as_middle_point(local_opt_config->best_pos,ori_pos);
+            double best_pos[3];
+            initialize_best_position_as_middle_point(best_pos,ori_pos);
 
             printf("[cost_function] Original bifurcation position = (%g,%g,%g)\n",\
-                                                        local_opt_config->best_pos[0],\
-                                                        local_opt_config->best_pos[1],\
-                                                        local_opt_config->best_pos[2]);
+                                                        best_pos[0],\
+                                                        best_pos[1],\
+                                                        best_pos[2]);
 
-            // Call the local optimization function and fill the 'test_positions' array
+            // 1) Check the cost function of the first configuration
+            double volume = calc_tree_volume(the_network);
+            if (volume < minimum_volume)
+            {
+                minimum_volume = volume;
+                best = iconn;
+
+                // The best position of the best segment will be stored inside the 
+                // 'local_optimization' structure
+                local_opt_config->best_pos[0] = best_pos[0];
+                local_opt_config->best_pos[1] = best_pos[1];
+                local_opt_config->best_pos[2] = best_pos[2];
+
+                printf("[cost_function] Best segment = %d -- Volume = %g -- Best position = (%g,%g,%g)\n",\
+                                best->id,\
+                                minimum_volume,\
+                                local_opt_config->best_pos[0],\
+                                local_opt_config->best_pos[1],\
+                                local_opt_config->best_pos[2]);
+
+            }
+
+            // 2) Now, call the local optimization function and fill the 'test_positions' array
             std::vector<struct point*> test_positions;
             local_optimization_fn(iconn,ibiff,inew,test_positions);
 
@@ -193,6 +217,7 @@ SET_COST_FUNCTION (minimize_tree_volume_default)
                     minimum_volume = volume;
                     best = iconn;
 
+                    // The best position of the best segment will be stored inside the 'local_optimization' structure
                     local_opt_config->best_pos[0] = new_pos[0];
                     local_opt_config->best_pos[1] = new_pos[1];
                     local_opt_config->best_pos[2] = new_pos[2];
@@ -217,7 +242,7 @@ SET_COST_FUNCTION (minimize_tree_volume_default)
         else
         {
             double volume = calc_tree_volume(the_network);
-            if (volume > minimum_volume)
+            if (volume < minimum_volume)
             {
                 minimum_volume = volume;
                 best = iconn;
@@ -229,12 +254,6 @@ SET_COST_FUNCTION (minimize_tree_volume_default)
         }
 
     }
-
-    printf("Leaving program\n");
-    exit(EXIT_FAILURE);
-
-    // TODO: Implement another 'build_segment()' considering the location of the 'best_pos'
-    //      inside the 'local_optimization' struct
 
     return best;
 }

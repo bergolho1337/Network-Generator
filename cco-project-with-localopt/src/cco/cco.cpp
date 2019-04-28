@@ -472,6 +472,73 @@ struct segment_node* build_segment (struct cco_network *the_network, const uint3
     return inew_node;
 }
 
+struct segment_node* build_segment_using_local_optimization (struct cco_network *the_network,\
+                            const uint32_t index, const double new_pos[], const double best_pos[])
+{
+    //printf("Best position = (%g,%g,%g)\n",best_pos[0],best_pos[1],best_pos[2]);
+
+    struct point_list *p_list = the_network->point_list;
+    struct segment_list *s_list = the_network->segment_list;
+    double Q_perf = the_network->Q_perf;
+    double p_perf = the_network->p_perf;
+    double p_term = the_network->p_term;
+    double delta_p = p_perf - p_term;
+
+    struct segment_node *iconn_node = search_segment_node(s_list,index);
+    struct segment *iconn = iconn_node->value;
+
+    // Create the bifurcation using the best point given by the local optimization
+    struct point_node *M = insert_point(p_list,best_pos);
+    //double middle_pos[3];
+    //calc_middle_point_segment(iconn_node,middle_pos);
+    //struct point_node *M = insert_point(p_list,middle_pos);
+
+    // Create ibiff
+    struct segment *ibiff = new_segment(iconn_node->value->src,M,\
+                            NULL,NULL,iconn_node->value->parent,Q_perf,p_perf);
+    struct segment_node *ibiff_node = insert_segment_node(s_list,ibiff);
+    ibiff->ndist = iconn_node->value->ndist;
+
+    // Create inew
+    struct point_node *T = insert_point(p_list,new_pos);
+    struct segment *inew = new_segment(M,T,\
+                            NULL,NULL,ibiff_node,Q_perf,p_perf);
+    struct segment_node *inew_node = insert_segment_node(s_list,inew);
+    
+    // Update pointers
+    //  iconn:
+    iconn_node->value->parent = ibiff_node;
+    iconn_node->value->src = M;
+
+    //  ibiff:
+    ibiff_node->value->left = inew_node;     // CONVENTION: Left will point to terminal
+    ibiff_node->value->right = iconn_node;   // CONVENTION: Right will point to subtree
+    if (ibiff_node->value->parent != NULL)
+    {
+        struct segment_node *ibiff_par_node = ibiff_node->value->parent;
+        if (ibiff_par_node->value->left->id == iconn_node->id)
+            ibiff_par_node->value->left = ibiff_node;
+        if (ibiff_par_node->value->right->id == iconn_node->id)
+            ibiff_par_node->value->right = ibiff_node;
+    }
+
+    // Update ndist from ibiff until the root
+    struct segment_node *tmp = ibiff_node;
+    while (tmp->value->parent != NULL)
+    {
+        tmp->value->ndist++;
+        tmp = tmp->value->parent;
+    }
+    tmp->value->ndist++;
+    the_network->num_terminals = tmp->value->ndist;
+
+    rescale_tree(ibiff_node,iconn_node,inew_node,Q_perf,delta_p,the_network->num_terminals);
+
+    recalculate_radius(the_network);
+
+    return inew_node;
+}
+
 double calc_radius (struct cco_network *the_network, struct segment_node *s)
 {
     if (s->value->parent == NULL)
@@ -895,6 +962,7 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
 
     FILE *log_file = the_network->log_file;
 
+    bool using_local_optimization = the_network->using_local_optimization;
     int K_term = the_network->num_terminals;
     int N_term = the_network->N_term;
     double r_perf = the_network->r_perf;
@@ -978,11 +1046,18 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
         }
     }
 
-    // Build a new segment with the best connection given by the cost function
-    build_segment(the_network,iconn->id,new_pos);
-
-    // Build a new segment with the best connection given by the cost function
-    //build_segment_using_local_optimization(the_network,iconn->id,new_pos,best_pos);
+    // TODO: Try to reduce this to one function
+    if (!using_local_optimization)
+    {
+        // Build a new segment with the best connection given by the cost function
+        build_segment(the_network,iconn->id,new_pos);
+    }
+    else
+    {
+        // Build a new segment with the best connection given by the cost function and local optimization
+        build_segment_using_local_optimization(the_network,\
+                        iconn->id,new_pos,local_opt_config->best_pos);
+    }
 }
 
 void generate_terminal (struct cco_network *the_network,\

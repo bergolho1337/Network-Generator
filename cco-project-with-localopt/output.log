@@ -1,8 +1,2611 @@
 ========================================================================================================
 [cco] Working on terminal number 1
-[!] Support domain radius = 2.23607
-[!] Reducing dthreash! Before = 3.96 || Now = 3.57 
-[!] Reducing dthreash! Before = 3.57 || Now = 3.21 
-[!] Reducing dthreash! Before = 3.21 || Now = 2.89 
+[!] Support domain radius = 0.707107
 [!] Checking collisions!
 Feasible segments: 0 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 2
+[!] Support domain radius = 0.866025
+[!] Checking collisions!
+Feasible segments: 1 2 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 3
+[!] Support domain radius = 1
+[!] Checking collisions!
+Feasible segments: 0 1 3 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 4
+[!] Support domain radius = 1.11803
+[!] Checking collisions!
+Feasible segments: 1 3 5 6 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 5
+[!] Support domain radius = 1.22474
+[!] Checking collisions!
+Feasible segments: 0 2 5 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 6
+[!] Support domain radius = 1.32288
+[!] Checking collisions!
+Feasible segments: 2 5 9 10 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 7
+[!] Support domain radius = 1.41421
+[!] Checking collisions!
+Feasible segments: 1 2 4 11 12 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 8
+[!] Support domain radius = 1.5
+[!] Checking collisions!
+Feasible segments: 1 2 12 13 14 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 9
+[!] Support domain radius = 1.58114
+[!] Reducing dthreash! Before = 0.93 || Now = 0.84 
+[!] Checking collisions!
+Feasible segments: 3 4 7 13 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 10
+[!] Support domain radius = 1.65831
+[!] Reducing dthreash! Before = 0.93 || Now = 0.84 
+[!] Checking collisions!
+Feasible segments: 0 6 9 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 11
+[!] Support domain radius = 1.73205
+[!] Reducing dthreash! Before = 0.93 || Now = 0.83 
+[!] Reducing dthreash! Before = 0.83 || Now = 0.75 
+[!] Checking collisions!
+Feasible segments: 1 3 5 6 8 19 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 12
+[!] Support domain radius = 1.80278
+[!] Reducing dthreash! Before = 0.92 || Now = 0.83 
+[!] Reducing dthreash! Before = 0.83 || Now = 0.75 
+[!] Checking collisions!
+Feasible segments: 5 9 10 11 12 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 13
+[!] Support domain radius = 1.87083
+[!] Reducing dthreash! Before = 0.92 || Now = 0.83 
+[!] Reducing dthreash! Before = 0.83 || Now = 0.74 
+[!] Reducing dthreash! Before = 0.74 || Now = 0.67 
+[!] Checking collisions!
+Feasible segments: 5 9 10 11 12 24 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 14
+[!] Support domain radius = 1.93649
+[!] Reducing dthreash! Before = 0.92 || Now = 0.83 
+[!] Reducing dthreash! Before = 0.83 || Now = 0.74 
+[!] Reducing dthreash! Before = 0.74 || Now = 0.67 
+[!] Checking collisions!
+Feasible segments: 1 2 11 13 14 15 16 17 23 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 15
+[!] Support domain radius = 2
+[!] Reducing dthreash! Before = 0.92 || Now = 0.82 
+[!] Reducing dthreash! Before = 0.82 || Now = 0.74 
+[!] Reducing dthreash! Before = 0.74 || Now = 0.67 
+[!] Checking collisions!
+Feasible segments: 0 6 9 19 20 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 16
+[!] Support domain radius = 2.06155
+[!] Reducing dthreash! Before = 0.91 || Now = 0.82 
+[!] Reducing dthreash! Before = 0.82 || Now = 0.74 
+[!] Reducing dthreash! Before = 0.74 || Now = 0.67 
+[!] Checking collisions!
+Feasible segments: 3 7 17 18 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 17
+[!] Support domain radius = 2.12132
+[!] Reducing dthreash! Before = 0.91 || Now = 0.82 
+[!] Reducing dthreash! Before = 0.82 || Now = 0.74 
+[!] Reducing dthreash! Before = 0.74 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.60 
+[!] Reducing dthreash! Before = 0.60 || Now = 0.54 
+[!] Checking collisions!
+Feasible segments: 1 2 11 13 14 15 16 17 28 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 18
+[!] Support domain radius = 2.17945
+[!] Reducing dthreash! Before = 0.91 || Now = 0.82 
+[!] Reducing dthreash! Before = 0.82 || Now = 0.74 
+[!] Reducing dthreash! Before = 0.74 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.60 
+[!] Checking collisions!
+Feasible segments: 12 15 16 25 33 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 19
+[!] Support domain radius = 2.23607
+[!] Reducing dthreash! Before = 0.91 || Now = 0.82 
+[!] Reducing dthreash! Before = 0.82 || Now = 0.74 
+[!] Reducing dthreash! Before = 0.74 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.60 
+[!] Reducing dthreash! Before = 0.60 || Now = 0.54 
+[!] Checking collisions!
+Feasible segments: 5 9 10 12 26 35 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 20
+[!] Support domain radius = 2.29129
+[!] Reducing dthreash! Before = 0.91 || Now = 0.82 
+[!] Reducing dthreash! Before = 0.82 || Now = 0.74 
+[!] Reducing dthreash! Before = 0.74 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.60 
+[!] Reducing dthreash! Before = 0.60 || Now = 0.54 
+[!] Checking collisions!
+Feasible segments: 1 3 5 6 19 21 22 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 21
+[!] Support domain radius = 2.34521
+[!] Reducing dthreash! Before = 0.91 || Now = 0.82 
+[!] Reducing dthreash! Before = 0.82 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.60 
+[!] Reducing dthreash! Before = 0.60 || Now = 0.54 
+[!] Reducing dthreash! Before = 0.54 || Now = 0.48 
+[!] Checking collisions!
+Feasible segments: 1 2 11 13 14 15 17 28 33 34 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 22
+[!] Support domain radius = 2.39792
+[!] Reducing dthreash! Before = 0.91 || Now = 0.82 
+[!] Reducing dthreash! Before = 0.82 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.54 
+[!] Checking collisions!
+Feasible segments: 5 9 10 11 23 24 25 26 27 39 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 23
+[!] Support domain radius = 2.44949
+[!] Reducing dthreash! Before = 0.91 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Checking collisions!
+Feasible segments: 7 8 21 31 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 24
+[!] Support domain radius = 2.5
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Checking collisions!
+Feasible segments: 0 10 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 25
+[!] Support domain radius = 2.54951
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Checking collisions!
+Feasible segments: 3 5 6 19 21 22 40 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 26
+[!] Support domain radius = 2.59808
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Checking collisions!
+Feasible segments: 1 13 14 17 23 27 28 41 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 27
+[!] Support domain radius = 2.64575
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Checking collisions!
+Feasible segments: 15 16 25 33 35 36 37 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 28
+[!] Support domain radius = 2.69258
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Checking collisions!
+Feasible segments: 1 3 21 22 39 40 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 29
+[!] Support domain radius = 2.73861
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Checking collisions!
+Feasible segments: 2 11 13 14 15 33 34 41 42 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 30
+[!] Support domain radius = 2.78388
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Checking collisions!
+Feasible segments: 4 13 18 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 31
+[!] Support domain radius = 2.82843
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Checking collisions!
+Feasible segments: 5 9 10 23 24 39 43 44 47 51 55 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 32
+[!] Support domain radius = 2.87228
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Checking collisions!
+Feasible segments: 1 3 21 22 39 40 56 61 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 33
+[!] Support domain radius = 2.91548
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Checking collisions!
+Feasible segments: 5 9 10 11 25 26 27 38 39 43 44 47 61 62 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 34
+[!] Support domain radius = 2.95804
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Checking collisions!
+Feasible segments: 9 10 11 26 27 37 38 43 47 65 66 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 35
+[!] Support domain radius = 3
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.66 
+[!] Reducing dthreash! Before = 0.66 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Checking collisions!
+Feasible segments: 0 9 19 29 30 49 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 36
+[!] Support domain radius = 3.04138
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Checking collisions!
+Feasible segments: 0 9 19 29 49 69 70 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 37
+[!] Support domain radius = 3.08221
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Checking collisions!
+Feasible segments: 6 20 29 30 69 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 38
+[!] Support domain radius = 3.1225
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Checking collisions!
+Feasible segments: 1 13 14 17 28 41 42 51 52 59 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 39
+[!] Support domain radius = 3.16228
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Checking collisions!
+Feasible segments: 15 25 33 35 36 37 53 54 57 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 40
+[!] Support domain radius = 3.20156
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Checking collisions!
+Feasible segments: 4 14 60 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 41
+[!] Support domain radius = 3.24037
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Checking collisions!
+Feasible segments: 1 2 11 13 14 15 17 28 33 34 42 52 58 59 76 79 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 42
+[!] Support domain radius = 3.27872
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Checking collisions!
+Feasible segments: 1 13 17 23 27 28 34 42 51 52 58 59 76 81 82 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 43
+[!] Support domain radius = 3.31662
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Checking collisions!
+Feasible segments: 13 17 23 27 28 34 41 42 51 52 59 76 83 84 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 44
+[!] Support domain radius = 3.3541
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Checking collisions!
+Feasible segments: 3 7 17 18 32 75 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 45
+[!] Support domain radius = 3.39116
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Checking collisions!
+Feasible segments: 1 11 14 33 34 41 42 58 76 79 82 84 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 46
+[!] Support domain radius = 3.42783
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Checking collisions!
+Feasible segments: 15 25 33 35 36 37 53 54 57 77 78 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 47
+[!] Support domain radius = 3.4641
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Checking collisions!
+Feasible segments: 1 28 42 51 52 75 76 84 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 48
+[!] Support domain radius = 3.5
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Checking collisions!
+Feasible segments: 7 8 21 31 46 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 49
+[!] Support domain radius = 3.53553
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.73 
+[!] Reducing dthreash! Before = 0.73 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Checking collisions!
+Feasible segments: 6 20 29 69 73 74 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 50
+[!] Support domain radius = 3.57071
+[!] Reducing dthreash! Before = 0.90 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Checking collisions!
+Feasible segments: 16 34 53 89 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 51
+[!] Support domain radius = 3.60555
+[!] Reducing dthreash! Before = 0.89 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Checking collisions!
+Feasible segments: 1 3 21 22 55 56 63 64 93 95 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 52
+[!] Support domain radius = 3.64005
+[!] Reducing dthreash! Before = 0.89 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Checking collisions!
+Feasible segments: 2 11 14 15 41 42 58 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 53
+[!] Support domain radius = 3.67423
+[!] Reducing dthreash! Before = 0.89 || Now = 0.81 
+[!] Reducing dthreash! Before = 0.81 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Checking collisions!
+Feasible segments: 5 9 10 23 24 39 43 44 47 51 55 62 65 66 71 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 54
+[!] Support domain radius = 3.7081
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.39 
+[!] Reducing dthreash! Before = 0.39 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Checking collisions!
+Feasible segments: 0 9 30 70 72 73 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 55
+[!] Support domain radius = 3.74166
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Checking collisions!
+Feasible segments: 8 21 22 96 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 56
+[!] Support domain radius = 3.77492
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Checking collisions!
+Feasible segments: 10 11 25 26 27 43 65 66 67 68 77 103 105 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 57
+[!] Support domain radius = 3.80789
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Checking collisions!
+Feasible segments: 5 9 10 24 39 43 44 47 62 65 66 68 71 106 111 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 58
+[!] Support domain radius = 3.84057
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.48 
+[!] Reducing dthreash! Before = 0.48 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Checking collisions!
+Feasible segments: 7 31 46 95 96 101 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 59
+[!] Support domain radius = 3.87298
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Checking collisions!
+Feasible segments: 6 29 97 98 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 60
+[!] Support domain radius = 3.90512
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Checking collisions!
+Feasible segments: 9 10 37 38 47 66 67 68 113 114 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 61
+[!] Support domain radius = 3.937
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Checking collisions!
+Feasible segments: 1 3 22 55 56 63 64 93 101 102 109 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 62
+[!] Support domain radius = 3.96863
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Checking collisions!
+Feasible segments: 4 18 59 60 79 80 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 63
+[!] Support domain radius = 4
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Checking collisions!
+Feasible segments: 28 42 75 76 90 93 94 121 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 64
+[!] Support domain radius = 4.03113
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Checking collisions!
+Feasible segments: 5 9 10 23 24 39 43 44 47 62 65 71 106 111 113 114 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 65
+[!] Support domain radius = 4.06202
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Checking collisions!
+Feasible segments: 1 11 14 15 28 33 34 41 42 52 58 79 82 89 90 93 94 99 103 104 126 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 66
+[!] Support domain radius = 4.09268
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Checking collisions!
+Feasible segments: 9 10 11 25 26 47 66 67 68 71 77 112 114 119 120 128 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 67
+[!] Support domain radius = 4.12311
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Checking collisions!
+Feasible segments: 16 25 35 36 37 54 92 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 68
+[!] Support domain radius = 4.15331
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Checking collisions!
+Feasible segments: 2 11 13 15 41 42 58 81 82 84 90 104 129 130 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 69
+[!] Support domain radius = 4.1833
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Checking collisions!
+Feasible segments: 1 6 21 22 40 55 56 64 93 95 102 109 115 121 122 125 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 70
+[!] Support domain radius = 4.21307
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Checking collisions!
+Feasible segments: 15 25 35 36 37 53 54 78 91 92 133 134 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 71
+[!] Support domain radius = 4.24264
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Checking collisions!
+Feasible segments: 8 21 96 110 137 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 72
+[!] Support domain radius = 4.272
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Checking collisions!
+Feasible segments: 9 10 11 25 26 65 66 67 68 77 103 112 113 114 119 131 132 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 73
+[!] Support domain radius = 4.30116
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Checking collisions!
+Feasible segments: 3 6 19 21 22 50 102 109 115 117 138 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 74
+[!] Support domain radius = 4.33013
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Checking collisions!
+Feasible segments: 23 51 55 61 62 105 106 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 75
+[!] Support domain radius = 4.3589
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Checking collisions!
+Feasible segments: 12 35 38 139 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 76
+[!] Support domain radius = 4.38748
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Checking collisions!
+Feasible segments: 28 42 52 75 76 90 93 94 121 125 126 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 77
+[!] Support domain radius = 4.41588
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Checking collisions!
+Feasible segments: 1 13 17 23 27 28 42 52 59 76 82 83 84 86 89 90 94 121 126 129 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 78
+[!] Support domain radius = 4.4441
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Checking collisions!
+Feasible segments: 11 15 17 41 42 58 76 81 82 84 86 89 90 99 103 104 129 130 136 153 154 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 79
+[!] Support domain radius = 4.47214
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Checking collisions!
+Feasible segments: 1 17 27 28 41 51 52 59 76 82 83 84 85 86 93 94 121 126 154 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 80
+[!] Support domain radius = 4.5
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Checking collisions!
+Feasible segments: 5 6 19 21 22 40 49 50 63 64 109 117 121 122 125 138 145 146 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 81
+[!] Support domain radius = 4.52769
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.59 
+[!] Reducing dthreash! Before = 0.59 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Checking collisions!
+Feasible segments: 7 31 46 101 115 116 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 82
+[!] Support domain radius = 4.55522
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Checking collisions!
+Feasible segments: 11 25 27 43 65 66 67 77 103 105 111 112 113 132 143 144 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 83
+[!] Support domain radius = 4.58258
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Checking collisions!
+Feasible segments: 23 51 55 61 62 105 106 128 147 148 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 84
+[!] Support domain radius = 4.60977
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Checking collisions!
+Feasible segments: 1 6 21 39 40 50 56 61 64 93 109 138 146 147 159 160 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 85
+[!] Support domain radius = 4.63681
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Checking collisions!
+Feasible segments: 1 55 56 63 64 93 102 122 125 137 138 141 159 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 86
+[!] Support domain radius = 4.66369
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Checking collisions!
+Feasible segments: 9 10 26 47 65 66 68 71 112 113 114 119 120 132 144 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 87
+[!] Support domain radius = 4.69042
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Checking collisions!
+Feasible segments: 4 13 60 79 80 81 85 123 124 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 88
+[!] Support domain radius = 4.71699
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Checking collisions!
+Feasible segments: 39 40 61 63 64 147 159 160 167 168 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 89
+[!] Support domain radius = 4.74342
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Checking collisions!
+Feasible segments: 9 66 67 71 114 131 132 143 144 164 171 172 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 90
+[!] Support domain radius = 4.7697
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Checking collisions!
+Feasible segments: 1 3 55 56 63 64 95 102 115 122 125 137 138 141 159 160 169 170 175 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 91
+[!] Support domain radius = 4.79583
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Checking collisions!
+Feasible segments: 11 25 27 43 77 103 105 111 112 144 163 164 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 92
+[!] Support domain radius = 4.82183
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Checking collisions!
+Feasible segments: 5 40 49 50 159 160 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 93
+[!] Support domain radius = 4.84768
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Checking collisions!
+Feasible segments: 10 11 25 27 43 77 103 111 112 132 144 163 164 181 182 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 94
+[!] Support domain radius = 4.8734
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Checking collisions!
+Feasible segments: 1 2 17 42 81 82 84 86 90 94 126 129 136 154 155 156 157 158 169 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 95
+[!] Support domain radius = 4.89898
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Reducing dthreash! Before = 0.20 || Now = 0.18 
+[!] Checking collisions!
+Feasible segments: 37 38 67 119 120 149 163 171 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 96
+[!] Support domain radius = 4.92443
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Reducing dthreash! Before = 0.20 || Now = 0.18 
+[!] Checking collisions!
+Feasible segments: 9 24 43 44 65 106 111 114 127 128 131 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 97
+[!] Support domain radius = 4.94975
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Reducing dthreash! Before = 0.20 || Now = 0.18 
+[!] Checking collisions!
+Feasible segments: 5 9 39 44 62 65 71 106 111 113 114 127 128 131 192 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 98
+[!] Support domain radius = 4.97494
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Checking collisions!
+Feasible segments: 12 36 150 
+========================================================================================================
+========================================================================================================
+[cco] Working on terminal number 99
+[!] Support domain radius = 5
+[!] Reducing dthreash! Before = 0.89 || Now = 0.80 
+[!] Reducing dthreash! Before = 0.80 || Now = 0.72 
+[!] Reducing dthreash! Before = 0.72 || Now = 0.65 
+[!] Reducing dthreash! Before = 0.65 || Now = 0.58 
+[!] Reducing dthreash! Before = 0.58 || Now = 0.53 
+[!] Reducing dthreash! Before = 0.53 || Now = 0.47 
+[!] Reducing dthreash! Before = 0.47 || Now = 0.43 
+[!] Reducing dthreash! Before = 0.43 || Now = 0.38 
+[!] Reducing dthreash! Before = 0.38 || Now = 0.35 
+[!] Reducing dthreash! Before = 0.35 || Now = 0.31 
+[!] Reducing dthreash! Before = 0.31 || Now = 0.28 
+[!] Reducing dthreash! Before = 0.28 || Now = 0.25 
+[!] Reducing dthreash! Before = 0.25 || Now = 0.23 
+[!] Reducing dthreash! Before = 0.23 || Now = 0.20 
+[!] Reducing dthreash! Before = 0.20 || Now = 0.18 
+[!] Checking collisions!
+Feasible segments: 11 27 103 111 112 144 164 181 182 185 186 
+========================================================================================================
+========================================================================================================
+Number of node in list = 200
+Node 0 -- Point(0,0,0)
+Node 1 -- Point(1.42722,-4.32014,0)
+Node 2 -- Point(0.02018,-1.50738,0)
+Node 3 -- Point(-1.32632,-3.21677,0)
+Node 4 -- Point(0.008072,-0.602953,0)
+Node 5 -- Point(-1.98821,-1.71509,0)
+Node 6 -- Point(0.763198,-2.26091,0)
+Node 7 -- Point(2.32823,-2.46224,0)
+Node 8 -- Point(0.0048432,-0.361772,0)
+Node 9 -- Point(1.67179,-1.05932,0)
+Node 10 -- Point(0.960219,-3.60202,0)
+Node 11 -- Point(0.420259,-4.84799,0)
+Node 12 -- Point(-0.666261,-2.8195,0)
+Node 13 -- Point(-0.719025,-4.64919,0)
+Node 14 -- Point(-1.68043,-1.68716,0)
+Node 15 -- Point(-2.44561,-2.68758,0)
+Node 16 -- Point(-1.19136,-3.20717,0)
+Node 17 -- Point(-1.97165,-3.96331,0)
+Node 18 -- Point(-0.981053,-1.02545,0)
+Node 19 -- Point(-1.56054,-0.547,0)
+Node 20 -- Point(1.51966,-2.70726,0)
+Node 21 -- Point(1.87184,-3.27612,0)
+Node 22 -- Point(1.44231,-1.0516,0)
+Node 23 -- Point(2.19132,-1.71827,0)
+Node 24 -- Point(-0.237224,-2.32196,0)
+Node 25 -- Point(0.106044,-2.95606,0)
+Node 26 -- Point(-0.419046,-3.70156,0)
+Node 27 -- Point(-0.0218413,-4.10981,0)
+Node 28 -- Point(-0.323031,-2.42147,0)
+Node 29 -- Point(-1.05539,-2.22737,0)
+Node 30 -- Point(1.76423,-3.18117,0)
+Node 31 -- Point(2.03817,-3.93907,0)
+Node 32 -- Point(0.00096864,-0.0723543,0)
+Node 33 -- Point(-0.837598,-0.163882,0)
+Node 34 -- Point(-1.54835,-3.3714,0)
+Node 35 -- Point(-2.19602,-3.27217,0)
+Node 36 -- Point(-0.725644,-4.25137,0)
+Node 37 -- Point(-1.35208,-4.55533,0)
+Node 38 -- Point(-0.603005,-4.03144,0)
+Node 39 -- Point(-0.163082,-4.87026,0)
+Node 40 -- Point(0.614594,-2.1102,0)
+Node 41 -- Point(1.42703,-1.80548,0)
+Node 42 -- Point(-0.988586,-2.32195,0)
+Node 43 -- Point(-1.45373,-2.50618,0)
+Node 44 -- Point(0.0655498,-2.89452,0)
+Node 45 -- Point(0.348076,-3.43631,0)
+Node 46 -- Point(0.000193728,-0.0144709,0)
+Node 47 -- Point(0.665621,-0.104566,0)
+Node 48 -- Point(0.889411,-4.30156,0)
+Node 49 -- Point(1.05318,-4.72789,0)
+Node 50 -- Point(1.21708,-2.52872,0)
+Node 51 -- Point(1.84027,-2.10667,0)
+Node 52 -- Point(-0.0827814,-1.83321,0)
+Node 53 -- Point(-0.703804,-1.864,0)
+Node 54 -- Point(-1.61987,-3.62027,0)
+Node 55 -- Point(-1.48265,-4.02385,0)
+Node 56 -- Point(0.139063,-1.62795,0)
+Node 57 -- Point(0.699828,-1.46299,0)
+Node 58 -- Point(-1.26276,-3.24002,0)
+Node 59 -- Point(-1.64202,-2.90226,0)
+Node 60 -- Point(-1.42894,-1.32575,0)
+Node 61 -- Point(-1.82174,-1.20356,0)
+Node 62 -- Point(0.519488,-2.01375,0)
+Node 63 -- Point(0.364469,-2.49292,0)
+Node 64 -- Point(0.665745,-1.50554,0)
+Node 65 -- Point(1.09018,-1.51078,0)
+Node 66 -- Point(0.296868,-3.41153,0)
+Node 67 -- Point(0.374564,-3.85422,0)
+Node 68 -- Point(-0.133894,-4.03233,0)
+Node 69 -- Point(0.212306,-4.53889,0)
+Node 70 -- Point(1.778,-3.43044,0)
+Node 71 -- Point(1.55911,-3.66963,0)
+Node 72 -- Point(0.992213,-3.28874,0)
+Node 73 -- Point(1.31721,-3.37676,0)
+Node 74 -- Point(1.9261,-3.5539,0)
+Node 75 -- Point(2.25832,-3.53911,0)
+Node 76 -- Point(-0.783228,-0.940947,0)
+Node 77 -- Point(-0.855333,-1.5503,0)
+Node 78 -- Point(-0.542653,-3.26053,0)
+Node 79 -- Point(-0.858789,-3.52931,0)
+Node 80 -- Point(-2.31655,-2.17525,0)
+Node 81 -- Point(-2.48557,-2.16717,0)
+Node 82 -- Point(-1.98239,-2.03861,0)
+Node 83 -- Point(-1.91799,-2.46821,0)
+Node 84 -- Point(-1.74083,-1.75745,0)
+Node 85 -- Point(-1.55777,-2.09424,0)
+Node 86 -- Point(-1.47924,-1.39804,0)
+Node 87 -- Point(-1.31648,-1.71619,0)
+Node 88 -- Point(-0.715349,-0.198164,0)
+Node 89 -- Point(-1.06492,-0.42682,0)
+Node 90 -- Point(-1.91451,-3.24962,0)
+Node 91 -- Point(-2.0838,-2.96095,0)
+Node 92 -- Point(-1.22706,-3.22359,0)
+Node 93 -- Point(-1.19078,-3.88605,0)
+Node 94 -- Point(0.0177584,-1.3265,0)
+Node 95 -- Point(-0.439053,-1.51994,0)
+Node 96 -- Point(0.800298,-0.669525,0)
+Node 97 -- Point(1.10719,-0.520882,0)
+Node 98 -- Point(1.78576,-3.20016,0)
+Node 99 -- Point(2.20833,-3.20661,0)
+Node 100 -- Point(-1.77722,-3.35896,0)
+Node 101 -- Point(-1.96039,-3.55278,0)
+Node 102 -- Point(0.440921,-0.604282,0)
+Node 103 -- Point(0.594322,-0.958818,0)
+Node 104 -- Point(-0.597615,-2.73989,0)
+Node 105 -- Point(-1.00421,-2.64048,0)
+Node 106 -- Point(0.00499509,-2.78001,0)
+Node 107 -- Point(0.423596,-2.78584,0)
+Node 108 -- Point(1.95046,-3.82618,0)
+Node 109 -- Point(1.82376,-4.14494,0)
+Node 110 -- Point(1.8251,-1.23891,0)
+Node 111 -- Point(2.02479,-1.18655,0)
+Node 112 -- Point(0.144699,-3.21309,0)
+Node 113 -- Point(-0.00133909,-3.45332,0)
+Node 114 -- Point(0.381962,-3.54807,0)
+Node 115 -- Point(0.644641,-3.65151,0)
+Node 116 -- Point(0.620609,-0.636904,0)
+Node 117 -- Point(0.831708,-0.35217,0)
+Node 118 -- Point(2.17455,-2.62587,0)
+Node 119 -- Point(2.34832,-2.74881,0)
+Node 120 -- Point(0.136049,-4.51934,0)
+Node 121 -- Point(0.17722,-4.94771,0)
+Node 122 -- Point(0.0119466,-0.89237,0)
+Node 123 -- Point(0.270694,-0.902694,0)
+Node 124 -- Point(-1.66551,-1.2011,0)
+Node 125 -- Point(-1.8262,-0.946854,0)
+Node 126 -- Point(0.0142713,-1.06602,0)
+Node 127 -- Point(-0.242688,-1.14662,0)
+Node 128 -- Point(0.837985,-2.83651,0)
+Node 129 -- Point(0.679105,-3.08327,0)
+Node 130 -- Point(-1.98219,-2.34172,0)
+Node 131 -- Point(-2.11021,-2.69498,0)
+Node 132 -- Point(0.835064,-4.15914,0)
+Node 133 -- Point(0.546866,-4.28898,0)
+Node 134 -- Point(-1.53206,-3.9832,0)
+Node 135 -- Point(-1.5925,-4.22417,0)
+Node 136 -- Point(-1.45166,-3.01027,0)
+Node 137 -- Point(-1.44874,-2.76682,0)
+Node 138 -- Point(1.27601,-1.03079,0)
+Node 139 -- Point(1.25281,-1.32961,0)
+Node 140 -- Point(-0.664325,-4.14141,0)
+Node 141 -- Point(-1.04264,-4.13783,0)
+Node 142 -- Point(1.09712,-0.828938,0)
+Node 143 -- Point(1.33297,-0.744063,0)
+Node 144 -- Point(-0.05135,-4.03978,0)
+Node 145 -- Point(0.278825,-4.06958,0)
+Node 146 -- Point(2.03293,-2.57833,0)
+Node 147 -- Point(2.12135,-2.30676,0)
+Node 148 -- Point(0.367318,-1.85943,0)
+Node 149 -- Point(0.254678,-2.07881,0)
+Node 150 -- Point(-0.368353,-4.67872,0)
+Node 151 -- Point(-0.456297,-4.81081,0)
+Node 152 -- Point(-0.624968,-0.873348,0)
+Node 153 -- Point(-0.566312,-1.19257,0)
+Node 154 -- Point(-1.14219,-2.32521,0)
+Node 155 -- Point(-1.29145,-2.154,0)
+Node 156 -- Point(-1.57338,-2.89615,0)
+Node 157 -- Point(-1.67953,-2.65569,0)
+Node 158 -- Point(-0.892234,-1.50737,0)
+Node 159 -- Point(-0.983638,-1.74766,0)
+Node 160 -- Point(2.14596,-1.7116,0)
+Node 161 -- Point(2.26103,-1.94128,0)
+Node 162 -- Point(0.00290592,-0.217063,0)
+Node 163 -- Point(0.297006,-0.288688,0)
+Node 164 -- Point(-0.362015,-3.76771,0)
+Node 165 -- Point(-0.0884194,-3.68762,0)
+Node 166 -- Point(-0.175447,-2.12646,0)
+Node 167 -- Point(0.188198,-2.32325,0)
+Node 168 -- Point(1.63372,-1.19453,0)
+Node 169 -- Point(1.63376,-1.39163,0)
+Node 170 -- Point(0.017061,-1.2744,0)
+Node 171 -- Point(0.232202,-1.34079,0)
+Node 172 -- Point(0.138041,-4.41693,0)
+Node 173 -- Point(0.415954,-4.49429,0)
+Node 174 -- Point(-1.9636,-1.69154,0)
+Node 175 -- Point(-2.17295,-1.62527,0)
+Node 176 -- Point(0.859936,-1.59223,0)
+Node 177 -- Point(0.939005,-1.71964,0)
+Node 178 -- Point(0.420263,-3.74151,0)
+Node 179 -- Point(0.588262,-3.90296,0)
+Node 180 -- Point(0.704584,-1.52288,0)
+Node 181 -- Point(0.96426,-1.33335,0)
+Node 182 -- Point(-0.0434486,-2.6884,0)
+Node 183 -- Point(-0.159379,-2.91039,0)
+Node 184 -- Point(1.15529,-2.04112,0)
+Node 185 -- Point(1.24494,-2.09664,0)
+Node 186 -- Point(-0.604457,-3.04001,0)
+Node 187 -- Point(-0.371138,-3.05568,0)
+Node 188 -- Point(-1.59698,-2.06774,0)
+Node 189 -- Point(-1.57075,-2.29854,0)
+Node 190 -- Point(-0.247955,-3.90002,0)
+Node 191 -- Point(-0.355202,-4.08598,0)
+Node 192 -- Point(0.0972096,-3.02195,0)
+Node 193 -- Point(0.294781,-3.03438,0)
+Node 194 -- Point(0.30711,-3.41649,0)
+Node 195 -- Point(0.534181,-3.36268,0)
+Node 196 -- Point(-0.762506,-4.48584,0)
+Node 197 -- Point(-0.923192,-4.62809,0)
+Node 198 -- Point(-0.487781,-2.61252,0)
+Node 199 -- Point(-0.378178,-2.77631,0)
+========================================================================================================
+========================================================================================================
+Number of segment_node in list = 199
+Segment 0 (10,1) -- Source(0.960219,-3.60202,0) - Destination(1.42722,-4.32014,0) -- NDIST = 1
+	BETA = 0.616089
+	RESISTANCE = 7.85288 -- RADIUS = 1.39677 -- DELTA_P = 7.22584
+	PARENT = 9 -- LEFT = NIL -- RIGHT = NIL
+Segment 1 (94,2) -- Source(0.0177584,-1.3265,0) - Destination(0.02018,-1.50738,0) -- NDIST = 67
+	BETA = 0.997593
+	RESISTANCE = 48.3292 -- RADIUS = 4.83891 -- DELTA_P = 16190.3
+	PARENT = 93 -- LEFT = 51 -- RIGHT = 55
+Segment 2 (16,3) -- Source(-1.19136,-3.20717,0) - Destination(-1.32632,-3.21677,0) -- NDIST = 1
+	BETA = 0.304701
+	RESISTANCE = 1.24033 -- RADIUS = 0.8355 -- DELTA_P = 9.16932
+	PARENT = 15 -- LEFT = NIL -- RIGHT = NIL
+Segment 3 (8,4) -- Source(0.0048432,-0.361772,0) - Destination(0.008072,-0.602953,0) -- NDIST = 86
+	BETA = 0.970913
+	RESISTANCE = 58.1027 -- RADIUS = 5.16857 -- DELTA_P = 24984.2
+	PARENT = 7 -- LEFT = 151 -- RIGHT = 121
+Segment 4 (174,5) -- Source(-1.9636,-1.69154,0) - Destination(-1.98821,-1.71509,0) -- NDIST = 1
+	BETA = 0.583025
+	RESISTANCE = 0.312243 -- RADIUS = 0.782984 -- DELTA_P = 1.77411
+	PARENT = 173 -- LEFT = NIL -- RIGHT = NIL
+Segment 5 (40,6) -- Source(0.614594,-2.1102,0) - Destination(0.763198,-2.26091,0) -- NDIST = 16
+	BETA = 0.976571
+	RESISTANCE = 30.6364 -- RADIUS = 3.23271 -- DELTA_P = 2526.72
+	PARENT = 39 -- LEFT = 49 -- RIGHT = 127
+Segment 6 (118,7) -- Source(2.17455,-2.62587,0) - Destination(2.32823,-2.46224,0) -- NDIST = 1
+	BETA = 0.79894
+	RESISTANCE = 2.0579 -- RADIUS = 1.25808 -- DELTA_P = 13.7631
+	PARENT = 117 -- LEFT = NIL -- RIGHT = NIL
+Segment 7 (162,8) -- Source(0.00290592,-0.217063,0) - Destination(0.0048432,-0.361772,0) -- NDIST = 96
+	BETA = 0.998917
+	RESISTANCE = 59.9004 -- RADIUS = 5.32341 -- DELTA_P = 28752.2
+	PARENT = 161 -- LEFT = 101 -- RIGHT = 3
+Segment 8 (22,9) -- Source(1.44231,-1.0516,0) - Destination(1.67179,-1.05932,0) -- NDIST = 1
+	BETA = 0.471164
+	RESISTANCE = 2.10494 -- RADIUS = 0.973754 -- DELTA_P = 5.89258
+	PARENT = 21 -- LEFT = NIL -- RIGHT = NIL
+Segment 9 (72,10) -- Source(0.992213,-3.28874,0) - Destination(0.960219,-3.60202,0) -- NDIST = 4
+	BETA = 0.968581
+	RESISTANCE = 16.5137 -- RADIUS = 2.26715 -- DELTA_P = 340.488
+	PARENT = 71 -- LEFT = 131 -- RIGHT = 0
+Segment 10 (48,11) -- Source(0.889411,-4.30156,0) - Destination(0.420259,-4.84799,0) -- NDIST = 1
+	BETA = 0.836147
+	RESISTANCE = 6.60231 -- RADIUS = 1.6002 -- DELTA_P = 19.1076
+	PARENT = 47 -- LEFT = NIL -- RIGHT = NIL
+Segment 11 (104,12) -- Source(-0.597615,-2.73989,0) - Destination(-0.666261,-2.8195,0) -- NDIST = 26
+	BETA = 0.993472
+	RESISTANCE = 27.4749 -- RADIUS = 3.69205 -- DELTA_P = 3607.81
+	PARENT = 103 -- LEFT = 185 -- RIGHT = 15
+Segment 12 (196,13) -- Source(-0.762506,-4.48584,0) - Destination(-0.719025,-4.64919,0) -- NDIST = 1
+	BETA = 0.769344
+	RESISTANCE = 1.54962 -- RADIUS = 1.23309 -- DELTA_P = 7.82636
+	PARENT = 195 -- LEFT = NIL -- RIGHT = NIL
+Segment 13 (86,14) -- Source(-1.47924,-1.39804,0) - Destination(-1.68043,-1.68716,0) -- NDIST = 8
+	BETA = 0.977908
+	RESISTANCE = 14.3823 -- RADIUS = 2.46237 -- DELTA_P = 605.571
+	PARENT = 85 -- LEFT = 83 -- RIGHT = 173
+Segment 14 (80,15) -- Source(-2.31655,-2.17525,0) - Destination(-2.44561,-2.68758,0) -- NDIST = 1
+	BETA = 0.888492
+	RESISTANCE = 4.84342 -- RADIUS = 1.54201 -- DELTA_P = 4.6598
+	PARENT = 79 -- LEFT = NIL -- RIGHT = NIL
+Segment 15 (12,16) -- Source(-0.666261,-2.8195,0) - Destination(-1.19136,-3.20717,0) -- NDIST = 11
+	BETA = 0.742685
+	RESISTANCE = 19.0647 -- RADIUS = 2.74203 -- DELTA_P = 1115.49
+	PARENT = 11 -- LEFT = 91 -- RIGHT = 2
+Segment 16 (54,17) -- Source(-1.61987,-3.62027,0) - Destination(-1.97165,-3.96331,0) -- NDIST = 1
+	BETA = 0.704723
+	RESISTANCE = 4.50436 -- RADIUS = 1.35357 -- DELTA_P = 6.20439
+	PARENT = 53 -- LEFT = NIL -- RIGHT = NIL
+Segment 17 (76,18) -- Source(-0.783228,-0.940947,0) - Destination(-0.981053,-1.02545,0) -- NDIST = 12
+	BETA = 0.965247
+	RESISTANCE = 21.6129 -- RADIUS = 2.69922 -- DELTA_P = 1365.02
+	PARENT = 75 -- LEFT = 18 -- RIGHT = 59
+Segment 18 (18,19) -- Source(-0.981053,-1.02545,0) - Destination(-1.56054,-0.547,0) -- NDIST = 1
+	BETA = 0.41348
+	RESISTANCE = 6.88902 -- RADIUS = 1.11607 -- DELTA_P = 6.98551
+	PARENT = 17 -- LEFT = NIL -- RIGHT = NIL
+Segment 19 (50,20) -- Source(1.21708,-2.52872,0) - Destination(1.51966,-2.70726,0) -- NDIST = 9
+	BETA = 0.970405
+	RESISTANCE = 17.8584 -- RADIUS = 2.6379 -- DELTA_P = 956.701
+	PARENT = 49 -- LEFT = 29 -- RIGHT = 145
+Segment 20 (98,21) -- Source(1.78576,-3.20016,0) - Destination(1.87184,-3.27612,0) -- NDIST = 1
+	BETA = 0.649037
+	RESISTANCE = 1.05249 -- RADIUS = 0.901669 -- DELTA_P = 10.5249
+	PARENT = 97 -- LEFT = NIL -- RIGHT = NIL
+Segment 21 (138,22) -- Source(1.27601,-1.03079,0) - Destination(1.44231,-1.0516,0) -- NDIST = 5
+	BETA = 0.964991
+	RESISTANCE = 10.0788 -- RADIUS = 2.0667 -- DELTA_P = 273.881
+	PARENT = 137 -- LEFT = 167 -- RIGHT = 8
+Segment 22 (160,23) -- Source(2.14596,-1.7116,0) - Destination(2.19132,-1.71827,0) -- NDIST = 1
+	BETA = 0.599471
+	RESISTANCE = 0.420293 -- RADIUS = 1.06599 -- DELTA_P = 2.5944
+	PARENT = 159 -- LEFT = NIL -- RIGHT = NIL
+Segment 23 (166,24) -- Source(-0.175447,-2.12646,0) - Destination(-0.237224,-2.32196,0) -- NDIST = 41
+	BETA = 0.99604
+	RESISTANCE = 33.7416 -- RADIUS = 4.11157 -- DELTA_P = 6917.03
+	PARENT = 165 -- LEFT = 181 -- RIGHT = 27
+Segment 24 (44,25) -- Source(0.0655498,-2.89452,0) - Destination(0.106044,-2.95606,0) -- NDIST = 1
+	BETA = 0.313693
+	RESISTANCE = 0.675324 -- RADIUS = 0.706488 -- DELTA_P = 1.93121
+	PARENT = 43 -- LEFT = NIL -- RIGHT = NIL
+Segment 25 (78,26) -- Source(-0.542653,-3.26053,0) - Destination(-0.419046,-3.70156,0) -- NDIST = 13
+	BETA = 0.986202
+	RESISTANCE = 19.6907 -- RADIUS = 3.02985 -- DELTA_P = 1292.82
+	PARENT = 77 -- LEFT = 163 -- RIGHT = 37
+Segment 26 (144,27) -- Source(-0.05135,-4.03978,0) - Destination(-0.0218413,-4.10981,0) -- NDIST = 1
+	BETA = 0.628993
+	RESISTANCE = 0.696677 -- RADIUS = 0.884094 -- DELTA_P = 6.13955
+	PARENT = 143 -- LEFT = NIL -- RIGHT = NIL
+Segment 27 (24,28) -- Source(-0.237224,-2.32196,0) - Destination(-0.323031,-2.42147,0) -- NDIST = 31
+	BETA = 0.931362
+	RESISTANCE = 31.708 -- RADIUS = 3.82936 -- DELTA_P = 4914.75
+	PARENT = 23 -- LEFT = 41 -- RIGHT = 197
+Segment 28 (42,29) -- Source(-0.988586,-2.32195,0) - Destination(-1.05539,-2.22737,0) -- NDIST = 1
+	BETA = 0.544406
+	RESISTANCE = 1.06153 -- RADIUS = 0.884148 -- DELTA_P = 5.55822
+	PARENT = 41 -- LEFT = NIL -- RIGHT = NIL
+Segment 29 (20,30) -- Source(1.51966,-2.70726,0) - Destination(1.76423,-3.18117,0) -- NDIST = 6
+	BETA = 0.885096
+	RESISTANCE = 13.4749 -- RADIUS = 2.33479 -- DELTA_P = 685.162
+	PARENT = 19 -- LEFT = 69 -- RIGHT = 97
+Segment 30 (108,31) -- Source(1.95046,-3.82618,0) - Destination(2.03817,-3.93907,0) -- NDIST = 1
+	BETA = 0.699011
+	RESISTANCE = 1.31059 -- RADIUS = 1.26133 -- DELTA_P = 11.9144
+	PARENT = 107 -- LEFT = NIL -- RIGHT = NIL
+Segment 31 (46,32) -- Source(0.000193728,-0.0144709,0) - Destination(0.00096864,-0.0723543,0) -- NDIST = 99
+	BETA = 0.998112
+	RESISTANCE = 61.2613 -- RADIUS = 5.35344 -- DELTA_P = 30324.3
+	PARENT = 45 -- LEFT = 87 -- RIGHT = 161
+Segment 32 (88,33) -- Source(-0.715349,-0.198164,0) - Destination(-0.837598,-0.163882,0) -- NDIST = 1
+	BETA = 0.662259
+	RESISTANCE = 1.16393 -- RADIUS = 0.844827 -- DELTA_P = 12.9325
+	PARENT = 87 -- LEFT = NIL -- RIGHT = NIL
+Segment 33 (58,34) -- Source(-1.26276,-3.24002,0) - Destination(-1.54835,-3.3714,0) -- NDIST = 6
+	BETA = 0.904088
+	RESISTANCE = 12.732 -- RADIUS = 2.37258 -- DELTA_P = 406.341
+	PARENT = 57 -- LEFT = 99 -- RIGHT = 53
+Segment 34 (90,35) -- Source(-1.91451,-3.24962,0) - Destination(-2.19602,-3.27217,0) -- NDIST = 1
+	BETA = 0.776517
+	RESISTANCE = 2.58898 -- RADIUS = 1.29907 -- DELTA_P = 8.10522
+	PARENT = 89 -- LEFT = NIL -- RIGHT = NIL
+Segment 35 (140,36) -- Source(-0.664325,-4.14141,0) - Destination(-0.725644,-4.25137,0) -- NDIST = 3
+	BETA = 0.92931
+	RESISTANCE = 7.50029 -- RADIUS = 1.94522 -- DELTA_P = 113.641
+	PARENT = 139 -- LEFT = 36 -- RIGHT = 195
+Segment 36 (36,37) -- Source(-0.725644,-4.25137,0) - Destination(-1.35208,-4.55533,0) -- NDIST = 1
+	BETA = 0.76094
+	RESISTANCE = 6.38309 -- RADIUS = 1.48019 -- DELTA_P = 4.02822
+	PARENT = 35 -- LEFT = NIL -- RIGHT = NIL
+Segment 37 (26,38) -- Source(-0.419046,-3.70156,0) - Destination(-0.603005,-4.03144,0) -- NDIST = 6
+	BETA = 0.808224
+	RESISTANCE = 14.3226 -- RADIUS = 2.4488 -- DELTA_P = 434.017
+	PARENT = 25 -- LEFT = 149 -- RIGHT = 139
+Segment 38 (150,39) -- Source(-0.368353,-4.67872,0) - Destination(-0.163082,-4.87026,0) -- NDIST = 1
+	BETA = 0.845942
+	RESISTANCE = 2.5738 -- RADIUS = 1.49444 -- DELTA_P = 7.71076
+	PARENT = 149 -- LEFT = NIL -- RIGHT = NIL
+Segment 39 (62,40) -- Source(0.519488,-2.01375,0) - Destination(0.614594,-2.1102,0) -- NDIST = 18
+	BETA = 0.991058
+	RESISTANCE = 31.1831 -- RADIUS = 3.31027 -- DELTA_P = 2893.27
+	PARENT = 61 -- LEFT = 183 -- RIGHT = 5
+Segment 40 (184,41) -- Source(1.15529,-2.04112,0) - Destination(1.42703,-1.80548,0) -- NDIST = 1
+	BETA = 0.894239
+	RESISTANCE = 3.2973 -- RADIUS = 1.2121 -- DELTA_P = 17.7274
+	PARENT = 183 -- LEFT = NIL -- RIGHT = NIL
+Segment 41 (28,42) -- Source(-0.323031,-2.42147,0) - Destination(-0.988586,-2.32195,0) -- NDIST = 3
+	BETA = 0.424107
+	RESISTANCE = 10.1975 -- RADIUS = 1.62406 -- DELTA_P = 162.726
+	PARENT = 27 -- LEFT = 153 -- RIGHT = 28
+Segment 42 (154,43) -- Source(-1.14219,-2.32521,0) - Destination(-1.45373,-2.50618,0) -- NDIST = 1
+	BETA = 0.836655
+	RESISTANCE = 3.30291 -- RADIUS = 1.28137 -- DELTA_P = 2.29998
+	PARENT = 153 -- LEFT = NIL -- RIGHT = NIL
+Segment 43 (106,44) -- Source(0.00499509,-2.78001,0) - Destination(0.0655498,-2.89452,0) -- NDIST = 8
+	BETA = 0.96778
+	RESISTANCE = 9.9052 -- RADIUS = 2.25216 -- DELTA_P = 400.21
+	PARENT = 105 -- LEFT = 191 -- RIGHT = 24
+Segment 44 (194,45) -- Source(0.30711,-3.41649,0) - Destination(0.348076,-3.43631,0) -- NDIST = 1
+	BETA = 0.609911
+	RESISTANCE = 0.417196 -- RADIUS = 0.769929 -- DELTA_P = 2.12855
+	PARENT = 193 -- LEFT = NIL -- RIGHT = NIL
+Segment 45 (0,46) -- Source(0,0,0) - Destination(0.000193728,-0.0144709,0) -- NDIST = 100
+	BETA = -1
+	RESISTANCE = 61.2416 -- RADIUS = 5.36357 -- DELTA_P = 30620.8
+	PARENT = NIL -- LEFT = 46 -- RIGHT = 31
+Segment 46 (46,47) -- Source(0.000193728,-0.0144709,0) - Destination(0.665621,-0.104566,0) -- NDIST = 1
+	BETA = 0.178154
+	RESISTANCE = 6.15585 -- RADIUS = 0.955541 -- DELTA_P = 4.60648
+	PARENT = 45 -- LEFT = NIL -- RIGHT = NIL
+Segment 47 (132,48) -- Source(0.835064,-4.15914,0) - Destination(0.889411,-4.30156,0) -- NDIST = 2
+	BETA = 0.92251
+	RESISTANCE = 8.1511 -- RADIUS = 1.91377 -- DELTA_P = 87.6462
+	PARENT = 131 -- LEFT = 48 -- RIGHT = 10
+Segment 48 (48,49) -- Source(0.889411,-4.30156,0) - Destination(1.05318,-4.72789,0) -- NDIST = 1
+	BETA = 0.746152
+	RESISTANCE = 4.18674 -- RADIUS = 1.42797 -- DELTA_P = 83.7348
+	PARENT = 47 -- LEFT = NIL -- RIGHT = NIL
+Segment 49 (6,50) -- Source(0.763198,-2.26091,0) - Destination(1.21708,-2.52872,0) -- NDIST = 10
+	BETA = 0.840888
+	RESISTANCE = 22.956 -- RADIUS = 2.71835 -- DELTA_P = 1247.61
+	PARENT = 5 -- LEFT = 50 -- RIGHT = 19
+Segment 50 (50,51) -- Source(1.21708,-2.52872,0) - Destination(1.84027,-2.10667,0) -- NDIST = 1
+	BETA = 0.441715
+	RESISTANCE = 6.89986 -- RADIUS = 1.20073 -- DELTA_P = 5.8692
+	PARENT = 49 -- LEFT = NIL -- RIGHT = NIL
+Segment 51 (2,52) -- Source(0.02018,-1.50738,0) - Destination(-0.0827814,-1.83321,0) -- NDIST = 43
+	BETA = 0.857348
+	RESISTANCE = 39.2898 -- RADIUS = 4.14863 -- DELTA_P = 8447.32
+	PARENT = 1 -- LEFT = 52 -- RIGHT = 165
+Segment 52 (52,53) -- Source(-0.0827814,-1.83321,0) - Destination(-0.703804,-1.864,0) -- NDIST = 1
+	BETA = 0.246068
+	RESISTANCE = 5.70011 -- RADIUS = 1.02084 -- DELTA_P = 3.47275
+	PARENT = 51 -- LEFT = NIL -- RIGHT = NIL
+Segment 53 (34,54) -- Source(-1.54835,-3.3714,0) - Destination(-1.61987,-3.62027,0) -- NDIST = 3
+	BETA = 0.809546
+	RESISTANCE = 8.46133 -- RADIUS = 1.92072 -- DELTA_P = 181.314
+	PARENT = 33 -- LEFT = 133 -- RIGHT = 16
+Segment 54 (134,55) -- Source(-1.53206,-3.9832,0) - Destination(-1.48265,-4.02385,0) -- NDIST = 1
+	BETA = 0.642751
+	RESISTANCE = 0.58659 -- RADIUS = 1.06941 -- DELTA_P = 5.8688
+	PARENT = 133 -- LEFT = NIL -- RIGHT = NIL
+Segment 55 (2,56) -- Source(0.02018,-1.50738,0) - Destination(0.139063,-1.62795,0) -- NDIST = 24
+	BETA = 0.717782
+	RESISTANCE = 34.5843 -- RADIUS = 3.47328 -- DELTA_P = 4278.47
+	PARENT = 1 -- LEFT = 63 -- RIGHT = 147
+Segment 56 (64,57) -- Source(0.665745,-1.50554,0) - Destination(0.699828,-1.46299,0) -- NDIST = 1
+	BETA = 0.422243
+	RESISTANCE = 0.499771 -- RADIUS = 0.674879 -- DELTA_P = 2.9668
+	PARENT = 63 -- LEFT = NIL -- RIGHT = NIL
+Segment 57 (92,58) -- Source(-1.22706,-3.22359,0) - Destination(-1.26276,-3.24002,0) -- NDIST = 9
+	BETA = 0.966258
+	RESISTANCE = 13.0649 -- RADIUS = 2.62428 -- DELTA_P = 625.448
+	PARENT = 91 -- LEFT = 135 -- RIGHT = 33
+Segment 58 (156,59) -- Source(-1.57338,-2.89615,0) - Destination(-1.64202,-2.90226,0) -- NDIST = 1
+	BETA = 0.644847
+	RESISTANCE = 0.63175 -- RADIUS = 0.958194 -- DELTA_P = 3.99842
+	PARENT = 155 -- LEFT = NIL -- RIGHT = NIL
+Segment 59 (18,60) -- Source(-0.981053,-1.02545,0) - Destination(-1.42894,-1.32575,0) -- NDIST = 11
+	BETA = 0.975858
+	RESISTANCE = 19.431 -- RADIUS = 2.63406 -- DELTA_P = 1124.95
+	PARENT = 17 -- LEFT = 123 -- RIGHT = 85
+Segment 60 (124,61) -- Source(-1.66551,-1.2011,0) - Destination(-1.82174,-1.20356,0) -- NDIST = 1
+	BETA = 0.724073
+	RESISTANCE = 1.43236 -- RADIUS = 0.95728 -- DELTA_P = 5.71714
+	PARENT = 123 -- LEFT = NIL -- RIGHT = NIL
+Segment 61 (148,62) -- Source(0.367318,-1.85943,0) - Destination(0.519488,-2.01375,0) -- NDIST = 19
+	BETA = 0.9951
+	RESISTANCE = 32.6094 -- RADIUS = 3.34014 -- DELTA_P = 3193.7
+	PARENT = 147 -- LEFT = 62 -- RIGHT = 39
+Segment 62 (62,63) -- Source(0.519488,-2.01375,0) - Destination(0.364469,-2.49292,0) -- NDIST = 1
+	BETA = 0.298461
+	RESISTANCE = 4.61687 -- RADIUS = 0.996901 -- DELTA_P = 8.28953
+	PARENT = 61 -- LEFT = NIL -- RIGHT = NIL
+Segment 63 (56,64) -- Source(0.139063,-1.62795,0) - Destination(0.665745,-1.50554,0) -- NDIST = 4
+	BETA = 0.460176
+	RESISTANCE = 8.88759 -- RADIUS = 1.59832 -- DELTA_P = 195.332
+	PARENT = 55 -- LEFT = 179 -- RIGHT = 56
+Segment 64 (176,65) -- Source(0.859936,-1.59223,0) - Destination(1.09018,-1.51078,0) -- NDIST = 1
+	BETA = 0.838934
+	RESISTANCE = 2.23889 -- RADIUS = 1.14388 -- DELTA_P = 2.19181
+	PARENT = 175 -- LEFT = NIL -- RIGHT = NIL
+Segment 65 (112,66) -- Source(0.144699,-3.21309,0) - Destination(0.296868,-3.41153,0) -- NDIST = 5
+	BETA = 0.957035
+	RESISTANCE = 7.03587 -- RADIUS = 2.07905 -- DELTA_P = 179.486
+	PARENT = 111 -- LEFT = 113 -- RIGHT = 193
+Segment 66 (178,67) -- Source(0.420263,-3.74151,0) - Destination(0.374564,-3.85422,0) -- NDIST = 1
+	BETA = 0.72461
+	RESISTANCE = 1.11498 -- RADIUS = 1.22512 -- DELTA_P = 6.19432
+	PARENT = 177 -- LEFT = NIL -- RIGHT = NIL
+Segment 67 (190,68) -- Source(-0.247955,-3.90002,0) - Destination(-0.133894,-4.03233,0) -- NDIST = 5
+	BETA = 0.970113
+	RESISTANCE = 9.04166 -- RADIUS = 2.2207 -- DELTA_P = 228.325
+	PARENT = 189 -- LEFT = 171 -- RIGHT = 143
+Segment 68 (120,69) -- Source(0.136049,-4.51934,0) - Destination(0.212306,-4.53889,0) -- NDIST = 1
+	BETA = 0.602376
+	RESISTANCE = 0.721679 -- RADIUS = 1.06863 -- DELTA_P = 2.19673
+	PARENT = 119 -- LEFT = NIL -- RIGHT = NIL
+Segment 69 (30,70) -- Source(1.76423,-3.18117,0) - Destination(1.778,-3.43044,0) -- NDIST = 4
+	BETA = 0.924175
+	RESISTANCE = 9.395 -- RADIUS = 2.15776 -- DELTA_P = 341.636
+	PARENT = 29 -- LEFT = 70 -- RIGHT = 73
+Segment 70 (70,71) -- Source(1.778,-3.43044,0) - Destination(1.55911,-3.66963,0) -- NDIST = 1
+	BETA = 0.568652
+	RESISTANCE = 2.9723 -- RADIUS = 1.22701 -- DELTA_P = 9.06767
+	PARENT = 69 -- LEFT = NIL -- RIGHT = NIL
+Segment 71 (128,72) -- Source(0.837985,-2.83651,0) - Destination(0.992213,-3.28874,0) -- NDIST = 5
+	BETA = 0.978312
+	RESISTANCE = 19.3905 -- RADIUS = 2.34069 -- DELTA_P = 499.756
+	PARENT = 127 -- LEFT = 72 -- RIGHT = 9
+Segment 72 (72,73) -- Source(0.992213,-3.28874,0) - Destination(1.31721,-3.37676,0) -- NDIST = 1
+	BETA = 0.450332
+	RESISTANCE = 3.08668 -- RADIUS = 1.05409 -- DELTA_P = 15.3371
+	PARENT = 71 -- LEFT = NIL -- RIGHT = NIL
+Segment 73 (70,74) -- Source(1.778,-3.43044,0) - Destination(1.9261,-3.5539,0) -- NDIST = 3
+	BETA = 0.934511
+	RESISTANCE = 7.2264 -- RADIUS = 2.01645 -- DELTA_P = 197.084
+	PARENT = 69 -- LEFT = 74 -- RIGHT = 107
+Segment 74 (74,75) -- Source(1.9261,-3.5539,0) - Destination(2.25832,-3.53911,0) -- NDIST = 1
+	BETA = 0.656856
+	RESISTANCE = 3.04862 -- RADIUS = 1.32452 -- DELTA_P = 6.16479
+	PARENT = 73 -- LEFT = NIL -- RIGHT = NIL
+Segment 75 (152,76) -- Source(-0.624968,-0.873348,0) - Destination(-0.783228,-0.940947,0) -- NDIST = 14
+	BETA = 0.990233
+	RESISTANCE = 22.9185 -- RADIUS = 2.7964 -- DELTA_P = 1688.73
+	PARENT = 151 -- LEFT = 157 -- RIGHT = 17
+Segment 76 (158,77) -- Source(-0.892234,-1.50737,0) - Destination(-0.855333,-1.5503,0) -- NDIST = 1
+	BETA = 0.624238
+	RESISTANCE = 0.518937 -- RADIUS = 0.812073 -- DELTA_P = 3.24335
+	PARENT = 157 -- LEFT = NIL -- RIGHT = NIL
+Segment 77 (186,78) -- Source(-0.604457,-3.04001,0) - Destination(-0.542653,-3.26053,0) -- NDIST = 14
+	BETA = 0.991939
+	RESISTANCE = 21.4285 -- RADIUS = 3.07224 -- DELTA_P = 1515.15
+	PARENT = 185 -- LEFT = 78 -- RIGHT = 25
+Segment 78 (78,79) -- Source(-0.542653,-3.26053,0) - Destination(-0.858789,-3.52931,0) -- NDIST = 1
+	BETA = 0.34433
+	RESISTANCE = 3.80399 -- RADIUS = 1.05786 -- DELTA_P = 8.20781
+	PARENT = 77 -- LEFT = NIL -- RIGHT = NIL
+Segment 79 (82,80) -- Source(-1.98239,-2.03861,0) - Destination(-2.31655,-2.17525,0) -- NDIST = 2
+	BETA = 0.816319
+	RESISTANCE = 7.19562 -- RADIUS = 1.73554 -- DELTA_P = 82.7082
+	PARENT = 81 -- LEFT = 80 -- RIGHT = 14
+Segment 80 (80,81) -- Source(-2.31655,-2.17525,0) - Destination(-2.48557,-2.16717,0) -- NDIST = 1
+	BETA = 0.668396
+	RESISTANCE = 1.55122 -- RADIUS = 1.16003 -- DELTA_P = 6.51723
+	PARENT = 79 -- LEFT = NIL -- RIGHT = NIL
+Segment 81 (84,82) -- Source(-1.74083,-1.75745,0) - Destination(-1.98239,-2.03861,0) -- NDIST = 4
+	BETA = 0.915897
+	RESISTANCE = 11.5002 -- RADIUS = 2.12606 -- DELTA_P = 244.686
+	PARENT = 83 -- LEFT = 129 -- RIGHT = 79
+Segment 82 (130,83) -- Source(-1.98219,-2.34172,0) - Destination(-1.91799,-2.46821,0) -- NDIST = 1
+	BETA = 0.68758
+	RESISTANCE = 1.30038 -- RADIUS = 1.12519 -- DELTA_P = 3.72942
+	PARENT = 129 -- LEFT = NIL -- RIGHT = NIL
+Segment 83 (14,84) -- Source(-1.68043,-1.68716,0) - Destination(-1.74083,-1.75745,0) -- NDIST = 6
+	BETA = 0.942702
+	RESISTANCE = 11.7446 -- RADIUS = 2.32128 -- DELTA_P = 370.882
+	PARENT = 13 -- LEFT = 187 -- RIGHT = 81
+Segment 84 (188,85) -- Source(-1.59698,-2.06774,0) - Destination(-1.55777,-2.09424,0) -- NDIST = 1
+	BETA = 0.615063
+	RESISTANCE = 0.433813 -- RADIUS = 0.876892 -- DELTA_P = 2.28323
+	PARENT = 187 -- LEFT = NIL -- RIGHT = NIL
+Segment 85 (60,86) -- Source(-1.42894,-1.32575,0) - Destination(-1.47924,-1.39804,0) -- NDIST = 9
+	BETA = 0.955939
+	RESISTANCE = 14.7865 -- RADIUS = 2.518 -- DELTA_P = 700.415
+	PARENT = 59 -- LEFT = 86 -- RIGHT = 13
+Segment 86 (86,87) -- Source(-1.47924,-1.39804,0) - Destination(-1.31648,-1.71619,0) -- NDIST = 1
+	BETA = 0.401706
+	RESISTANCE = 3.27613 -- RADIUS = 1.0115 -- DELTA_P = 6.13188
+	PARENT = 85 -- LEFT = NIL -- RIGHT = NIL
+Segment 87 (32,88) -- Source(0.00096864,-0.0723543,0) - Destination(-0.715349,-0.198164,0) -- NDIST = 2
+	BETA = 0.238291
+	RESISTANCE = 9.69265 -- RADIUS = 1.27568 -- DELTA_P = 215.392
+	PARENT = 31 -- LEFT = 88 -- RIGHT = 32
+Segment 88 (88,89) -- Source(-0.715349,-0.198164,0) - Destination(-1.06492,-0.42682,0) -- NDIST = 1
+	BETA = 0.89192
+	RESISTANCE = 3.8293 -- RADIUS = 1.1378 -- DELTA_P = 42.5478
+	PARENT = 87 -- LEFT = NIL -- RIGHT = NIL
+Segment 89 (100,90) -- Source(-1.77722,-3.35896,0) - Destination(-1.91451,-3.24962,0) -- NDIST = 2
+	BETA = 0.907255
+	RESISTANCE = 5.16932 -- RADIUS = 1.67294 -- DELTA_P = 54.9927
+	PARENT = 99 -- LEFT = 90 -- RIGHT = 34
+Segment 90 (90,91) -- Source(-1.91451,-3.24962,0) - Destination(-2.0838,-2.96095,0) -- NDIST = 1
+	BETA = 0.81017
+	RESISTANCE = 3.06781 -- RADIUS = 1.35537 -- DELTA_P = 8.08518
+	PARENT = 89 -- LEFT = NIL -- RIGHT = NIL
+Segment 91 (16,92) -- Source(-1.19136,-3.20717,0) - Destination(-1.22706,-3.22359,0) -- NDIST = 10
+	BETA = 0.99048
+	RESISTANCE = 13.8491 -- RADIUS = 2.71593 -- DELTA_P = 736.656
+	PARENT = 15 -- LEFT = 92 -- RIGHT = 57
+Segment 92 (92,93) -- Source(-1.22706,-3.22359,0) - Destination(-1.19078,-3.88605,0) -- NDIST = 1
+	BETA = 0.460807
+	RESISTANCE = 6.08207 -- RADIUS = 1.25152 -- DELTA_P = 3.77187
+	PARENT = 91 -- LEFT = NIL -- RIGHT = NIL
+Segment 93 (170,94) -- Source(0.017061,-1.2744,0) - Destination(0.0177584,-1.3265,0) -- NDIST = 68
+	BETA = 0.998686
+	RESISTANCE = 48.5572 -- RADIUS = 4.85058 -- DELTA_P = 16509.5
+	PARENT = 169 -- LEFT = 94 -- RIGHT = 1
+Segment 94 (94,95) -- Source(0.0177584,-1.3265,0) - Destination(-0.439053,-1.51994,0) -- NDIST = 1
+	BETA = 0.193122
+	RESISTANCE = 4.54774 -- RADIUS = 0.936753 -- DELTA_P = 13.2556
+	PARENT = 93 -- LEFT = NIL -- RIGHT = NIL
+Segment 95 (116,96) -- Source(0.620609,-0.636904,0) - Destination(0.800298,-0.669525,0) -- NDIST = 8
+	BETA = 0.979355
+	RESISTANCE = 15.6757 -- RADIUS = 2.24611 -- DELTA_P = 681.551
+	PARENT = 115 -- LEFT = 96 -- RIGHT = 141
+Segment 96 (96,97) -- Source(0.800298,-0.669525,0) - Destination(1.10719,-0.520882,0) -- NDIST = 1
+	BETA = 0.408725
+	RESISTANCE = 3.12601 -- RADIUS = 0.918041 -- DELTA_P = 4.04214
+	PARENT = 95 -- LEFT = NIL -- RIGHT = NIL
+Segment 97 (30,98) -- Source(1.76423,-3.18117,0) - Destination(1.78576,-3.20016,0) -- NDIST = 2
+	BETA = 0.595017
+	RESISTANCE = 3.22871 -- RADIUS = 1.38924 -- DELTA_P = 54.7239
+	PARENT = 29 -- LEFT = 98 -- RIGHT = 20
+Segment 98 (98,99) -- Source(1.78576,-3.20016,0) - Destination(2.20833,-3.20661,0) -- NDIST = 1
+	BETA = 0.899009
+	RESISTANCE = 3.87433 -- RADIUS = 1.24894 -- DELTA_P = 7.31439
+	PARENT = 97 -- LEFT = NIL -- RIGHT = NIL
+Segment 99 (34,100) -- Source(-1.54835,-3.3714,0) - Destination(-1.77722,-3.35896,0) -- NDIST = 3
+	BETA = 0.777196
+	RESISTANCE = 7.18778 -- RADIUS = 1.84396 -- DELTA_P = 114.699
+	PARENT = 33 -- LEFT = 100 -- RIGHT = 89
+Segment 100 (100,101) -- Source(-1.77722,-3.35896,0) - Destination(-1.96039,-3.55278,0) -- NDIST = 1
+	BETA = 0.63266
+	RESISTANCE = 2.4447 -- RADIUS = 1.1666 -- DELTA_P = 23.9677
+	PARENT = 99 -- LEFT = NIL -- RIGHT = NIL
+Segment 101 (8,102) -- Source(0.0048432,-0.361772,0) - Destination(0.440921,-0.604282,0) -- NDIST = 10
+	BETA = 0.439248
+	RESISTANCE = 20.9321 -- RADIUS = 2.3383 -- DELTA_P = 1137.62
+	PARENT = 7 -- LEFT = 102 -- RIGHT = 115
+Segment 102 (102,103) -- Source(0.440921,-0.604282,0) - Destination(0.594322,-0.958818,0) -- NDIST = 1
+	BETA = 0.383584
+	RESISTANCE = 3.54133 -- RADIUS = 0.896933 -- DELTA_P = 5.30325
+	PARENT = 101 -- LEFT = NIL -- RIGHT = NIL
+Segment 103 (198,104) -- Source(-0.487781,-2.61252,0) - Destination(-0.597615,-2.73989,0) -- NDIST = 27
+	BETA = 0.996488
+	RESISTANCE = 28.7014 -- RADIUS = 3.71631 -- DELTA_P = 3874.68
+	PARENT = 197 -- LEFT = 104 -- RIGHT = 11
+Segment 104 (104,105) -- Source(-0.597615,-2.73989,0) - Destination(-1.00421,-2.64048,0) -- NDIST = 1
+	BETA = 0.268956
+	RESISTANCE = 3.83719 -- RADIUS = 0.999524 -- DELTA_P = 7.83854
+	PARENT = 103 -- LEFT = NIL -- RIGHT = NIL
+Segment 105 (182,106) -- Source(-0.0434486,-2.6884,0) - Destination(0.00499509,-2.78001,0) -- NDIST = 9
+	BETA = 0.980925
+	RESISTANCE = 10.987 -- RADIUS = 2.32714 -- DELTA_P = 499.41
+	PARENT = 181 -- LEFT = 106 -- RIGHT = 43
+Segment 106 (106,107) -- Source(0.00499509,-2.78001,0) - Destination(0.423596,-2.78584,0) -- NDIST = 1
+	BETA = 0.454004
+	RESISTANCE = 3.83782 -- RADIUS = 1.05653 -- DELTA_P = 5.49426
+	PARENT = 105 -- LEFT = NIL -- RIGHT = NIL
+Segment 107 (74,108) -- Source(1.9261,-3.5539,0) - Destination(1.95046,-3.82618,0) -- NDIST = 2
+	BETA = 0.894865
+	RESISTANCE = 5.25075 -- RADIUS = 1.80445 -- DELTA_P = 95.4682
+	PARENT = 73 -- LEFT = 108 -- RIGHT = 30
+Segment 108 (108,109) -- Source(1.95046,-3.82618,0) - Destination(1.82376,-4.14494,0) -- NDIST = 1
+	BETA = 0.869978
+	RESISTANCE = 3.14458 -- RADIUS = 1.56983 -- DELTA_P = 28.5871
+	PARENT = 107 -- LEFT = NIL -- RIGHT = NIL
+Segment 109 (168,110) -- Source(1.63372,-1.19453,0) - Destination(1.8251,-1.23891,0) -- NDIST = 3
+	BETA = 0.955486
+	RESISTANCE = 7.80747 -- RADIUS = 1.9033 -- DELTA_P = 127.296
+	PARENT = 167 -- LEFT = 110 -- RIGHT = 159
+Segment 110 (110,111) -- Source(1.8251,-1.23891,0) - Destination(2.02479,-1.18655,0) -- NDIST = 1
+	BETA = 0.569278
+	RESISTANCE = 1.89249 -- RADIUS = 1.08351 -- DELTA_P = 10.4562
+	PARENT = 109 -- LEFT = NIL -- RIGHT = NIL
+Segment 111 (192,112) -- Source(0.0972096,-3.02195,0) - Destination(0.144699,-3.21309,0) -- NDIST = 6
+	BETA = 0.974714
+	RESISTANCE = 8.79466 -- RADIUS = 2.17239 -- DELTA_P = 266.505
+	PARENT = 191 -- LEFT = 112 -- RIGHT = 65
+Segment 112 (112,113) -- Source(0.144699,-3.21309,0) - Destination(-0.00133909,-3.45332,0) -- NDIST = 1
+	BETA = 0.497906
+	RESISTANCE = 2.5773 -- RADIUS = 1.08165 -- DELTA_P = 7.10305
+	PARENT = 111 -- LEFT = NIL -- RIGHT = NIL
+Segment 113 (66,114) -- Source(0.296868,-3.41153,0) - Destination(0.381962,-3.54807,0) -- NDIST = 3
+	BETA = 0.919
+	RESISTANCE = 5.63893 -- RADIUS = 1.91065 -- DELTA_P = 87.1999
+	PARENT = 65 -- LEFT = 114 -- RIGHT = 177
+Segment 114 (114,115) -- Source(0.381962,-3.54807,0) - Destination(0.644641,-3.65151,0) -- NDIST = 1
+	BETA = 0.674657
+	RESISTANCE = 2.58806 -- RADIUS = 1.28903 -- DELTA_P = 2.89268
+	PARENT = 113 -- LEFT = NIL -- RIGHT = NIL
+Segment 115 (102,116) -- Source(0.440921,-0.604282,0) - Destination(0.620609,-0.636904,0) -- NDIST = 9
+	BETA = 0.980822
+	RESISTANCE = 16.8207 -- RADIUS = 2.29345 -- DELTA_P = 822.752
+	PARENT = 101 -- LEFT = 116 -- RIGHT = 95
+Segment 116 (116,117) -- Source(0.620609,-0.636904,0) - Destination(0.831708,-0.35217,0) -- NDIST = 1
+	BETA = 0.392926
+	RESISTANCE = 3.24937 -- RADIUS = 0.901158 -- DELTA_P = 6.01977
+	PARENT = 115 -- LEFT = NIL -- RIGHT = NIL
+Segment 117 (146,118) -- Source(2.03293,-2.57833,0) - Destination(2.17455,-2.62587,0) -- NDIST = 2
+	BETA = 0.885258
+	RESISTANCE = 3.89492 -- RADIUS = 1.57469 -- DELTA_P = 46.3681
+	PARENT = 145 -- LEFT = 118 -- RIGHT = 6
+Segment 118 (118,119) -- Source(2.17455,-2.62587,0) - Destination(2.34832,-2.74881,0) -- NDIST = 1
+	BETA = 0.788391
+	RESISTANCE = 1.95135 -- RADIUS = 1.24147 -- DELTA_P = 16.2613
+	PARENT = 117 -- LEFT = NIL -- RIGHT = NIL
+Segment 119 (172,120) -- Source(0.138041,-4.41693,0) - Destination(0.136049,-4.51934,0) -- NDIST = 2
+	BETA = 0.880656
+	RESISTANCE = 3.67963 -- RADIUS = 1.77403 -- DELTA_P = 38.7329
+	PARENT = 171 -- LEFT = 120 -- RIGHT = 68
+Segment 120 (120,121) -- Source(0.136049,-4.51934,0) - Destination(0.17722,-4.94771,0) -- NDIST = 1
+	BETA = 0.921076
+	RESISTANCE = 3.94509 -- RADIUS = 1.63402 -- DELTA_P = 9.67288
+	PARENT = 119 -- LEFT = NIL -- RIGHT = NIL
+Segment 121 (4,122) -- Source(0.008072,-0.602953,0) - Destination(0.0119466,-0.89237,0) -- NDIST = 71
+	BETA = 0.942373
+	RESISTANCE = 53.3923 -- RADIUS = 4.87072 -- DELTA_P = 18954.3
+	PARENT = 3 -- LEFT = 122 -- RIGHT = 125
+Segment 122 (122,123) -- Source(0.0119466,-0.89237,0) - Destination(0.270694,-0.902694,0) -- NDIST = 1
+	BETA = 0.16022
+	RESISTANCE = 2.37391 -- RADIUS = 0.780387 -- DELTA_P = 8.22433
+	PARENT = 121 -- LEFT = NIL -- RIGHT = NIL
+Segment 123 (60,124) -- Source(-1.42894,-1.32575,0) - Destination(-1.66551,-1.2011,0) -- NDIST = 2
+	BETA = 0.501917
+	RESISTANCE = 5.0569 -- RADIUS = 1.32208 -- DELTA_P = 58.1253
+	PARENT = 59 -- LEFT = 124 -- RIGHT = 60
+Segment 124 (124,125) -- Source(-1.66551,-1.2011,0) - Destination(-1.8262,-0.946854,0) -- NDIST = 1
+	BETA = 0.852877
+	RESISTANCE = 2.75721 -- RADIUS = 1.12757 -- DELTA_P = 7.93697
+	PARENT = 123 -- LEFT = NIL -- RIGHT = NIL
+Segment 125 (122,126) -- Source(0.0119466,-0.89237,0) - Destination(0.0142713,-1.06602,0) -- NDIST = 70
+	BETA = 0.998627
+	RESISTANCE = 51.1817 -- RADIUS = 4.86404 -- DELTA_P = 17913.6
+	PARENT = 121 -- LEFT = 126 -- RIGHT = 169
+Segment 126 (126,127) -- Source(0.0142713,-1.06602,0) - Destination(-0.242688,-1.14662,0) -- NDIST = 1
+	BETA = 0.163305
+	RESISTANCE = 2.46879 -- RADIUS = 0.794321 -- DELTA_P = 16.9647
+	PARENT = 125 -- LEFT = NIL -- RIGHT = NIL
+Segment 127 (6,128) -- Source(0.763198,-2.26091,0) - Destination(0.837985,-2.83651,0) -- NDIST = 6
+	BETA = 0.740116
+	RESISTANCE = 22.9611 -- RADIUS = 2.39258 -- DELTA_P = 710.138
+	PARENT = 5 -- LEFT = 128 -- RIGHT = 71
+Segment 128 (128,129) -- Source(0.837985,-2.83651,0) - Destination(0.679105,-3.08327,0) -- NDIST = 1
+	BETA = 0.399295
+	RESISTANCE = 2.69045 -- RADIUS = 0.955346 -- DELTA_P = 2.94438
+	PARENT = 127 -- LEFT = NIL -- RIGHT = NIL
+Segment 129 (82,130) -- Source(-1.98239,-2.03861,0) - Destination(-1.98219,-2.34172,0) -- NDIST = 2
+	BETA = 0.769713
+	RESISTANCE = 5.68779 -- RADIUS = 1.63645 -- DELTA_P = 38.6057
+	PARENT = 81 -- LEFT = 130 -- RIGHT = 82
+Segment 130 (130,131) -- Source(-1.98219,-2.34172,0) - Destination(-2.11021,-2.69498,0) -- NDIST = 1
+	BETA = 0.877177
+	RESISTANCE = 3.44451 -- RADIUS = 1.43546 -- DELTA_P = 5.01845
+	PARENT = 129 -- LEFT = NIL -- RIGHT = NIL
+Segment 131 (10,132) -- Source(0.960219,-3.60202,0) - Destination(0.835064,-4.15914,0) -- NDIST = 3
+	BETA = 0.915037
+	RESISTANCE = 12.7377 -- RADIUS = 2.07453 -- DELTA_P = 138.736
+	PARENT = 9 -- LEFT = 132 -- RIGHT = 47
+Segment 132 (132,133) -- Source(0.835064,-4.15914,0) - Destination(0.546866,-4.28898,0) -- NDIST = 1
+	BETA = 0.598998
+	RESISTANCE = 2.89777 -- RADIUS = 1.24264 -- DELTA_P = 14.994
+	PARENT = 131 -- LEFT = NIL -- RIGHT = NIL
+Segment 133 (54,134) -- Source(-1.61987,-3.62027,0) - Destination(-1.53206,-3.9832,0) -- NDIST = 2
+	BETA = 0.866244
+	RESISTANCE = 5.1415 -- RADIUS = 1.66381 -- DELTA_P = 73.45
+	PARENT = 53 -- LEFT = 134 -- RIGHT = 54
+Segment 134 (134,135) -- Source(-1.53206,-3.9832,0) - Destination(-1.5925,-4.22417,0) -- NDIST = 1
+	BETA = 0.902242
+	RESISTANCE = 2.27748 -- RADIUS = 1.50116 -- DELTA_P = 7.18663
+	PARENT = 133 -- LEFT = NIL -- RIGHT = NIL
+Segment 135 (58,136) -- Source(-1.26276,-3.24002,0) - Destination(-1.45166,-3.01027,0) -- NDIST = 3
+	BETA = 0.639085
+	RESISTANCE = 6.35799 -- RADIUS = 1.67714 -- DELTA_P = 101.457
+	PARENT = 57 -- LEFT = 136 -- RIGHT = 155
+Segment 136 (136,137) -- Source(-1.45166,-3.01027,0) - Destination(-1.44874,-2.76682,0) -- NDIST = 1
+	BETA = 0.672783
+	RESISTANCE = 2.23198 -- RADIUS = 1.12835 -- DELTA_P = 4.66968
+	PARENT = 135 -- LEFT = NIL -- RIGHT = NIL
+Segment 137 (142,138) -- Source(1.09712,-0.828938,0) - Destination(1.27601,-1.03079,0) -- NDIST = 6
+	BETA = 0.976251
+	RESISTANCE = 12.1583 -- RADIUS = 2.14167 -- DELTA_P = 396.467
+	PARENT = 141 -- LEFT = 138 -- RIGHT = 21
+Segment 138 (138,139) -- Source(1.27601,-1.03079,0) - Destination(1.25281,-1.32961,0) -- NDIST = 1
+	BETA = 0.466303
+	RESISTANCE = 2.74765 -- RADIUS = 0.99867 -- DELTA_P = 2.90709
+	PARENT = 137 -- LEFT = NIL -- RIGHT = NIL
+Segment 139 (38,140) -- Source(-0.603005,-4.03144,0) - Destination(-0.664325,-4.14141,0) -- NDIST = 4
+	BETA = 0.85478
+	RESISTANCE = 8.69638 -- RADIUS = 2.09318 -- DELTA_P = 175.684
+	PARENT = 37 -- LEFT = 140 -- RIGHT = 35
+Segment 140 (140,141) -- Source(-0.664325,-4.14141,0) - Destination(-1.04264,-4.13783,0) -- NDIST = 1
+	BETA = 0.58229
+	RESISTANCE = 3.46829 -- RADIUS = 1.21884 -- DELTA_P = 24.4246
+	PARENT = 139 -- LEFT = NIL -- RIGHT = NIL
+Segment 141 (96,142) -- Source(0.800298,-0.669525,0) - Destination(1.09712,-0.828938,0) -- NDIST = 7
+	BETA = 0.976701
+	RESISTANCE = 14.5617 -- RADIUS = 2.19377 -- DELTA_P = 553.979
+	PARENT = 95 -- LEFT = 142 -- RIGHT = 137
+Segment 142 (142,143) -- Source(1.09712,-0.828938,0) - Destination(1.33297,-0.744063,0) -- NDIST = 1
+	BETA = 0.41128
+	RESISTANCE = 2.29789 -- RADIUS = 0.902256 -- DELTA_P = 15.9576
+	PARENT = 141 -- LEFT = NIL -- RIGHT = NIL
+Segment 143 (68,144) -- Source(-0.133894,-4.03233,0) - Destination(-0.05135,-4.03978,0) -- NDIST = 2
+	BETA = 0.632939
+	RESISTANCE = 2.98523 -- RADIUS = 1.40557 -- DELTA_P = 30.1538
+	PARENT = 67 -- LEFT = 144 -- RIGHT = 26
+Segment 144 (144,145) -- Source(-0.05135,-4.03978,0) - Destination(0.278825,-4.06958,0) -- NDIST = 1
+	BETA = 0.909024
+	RESISTANCE = 3.03913 -- RADIUS = 1.2777 -- DELTA_P = 13.298
+	PARENT = 143 -- LEFT = NIL -- RIGHT = NIL
+Segment 145 (20,146) -- Source(1.51966,-2.70726,0) - Destination(2.03293,-2.57833,0) -- NDIST = 3
+	BETA = 0.674321
+	RESISTANCE = 9.07945 -- RADIUS = 1.77879 -- DELTA_P = 162.133
+	PARENT = 19 -- LEFT = 146 -- RIGHT = 117
+Segment 146 (146,147) -- Source(2.03293,-2.57833,0) - Destination(2.12135,-2.30676,0) -- NDIST = 1
+	BETA = 0.674042
+	RESISTANCE = 2.61816 -- RADIUS = 1.19898 -- DELTA_P = 11.1833
+	PARENT = 145 -- LEFT = NIL -- RIGHT = NIL
+Segment 147 (56,148) -- Source(0.139063,-1.62795,0) - Destination(0.367318,-1.85943,0) -- NDIST = 20
+	BETA = 0.966401
+	RESISTANCE = 34.5738 -- RADIUS = 3.35658 -- DELTA_P = 3564.31
+	PARENT = 55 -- LEFT = 148 -- RIGHT = 61
+Segment 148 (148,149) -- Source(0.367318,-1.85943,0) - Destination(0.254678,-2.07881,0) -- NDIST = 1
+	BETA = 0.244571
+	RESISTANCE = 2.26075 -- RADIUS = 0.820924 -- DELTA_P = 2.76459
+	PARENT = 147 -- LEFT = NIL -- RIGHT = NIL
+Segment 149 (38,150) -- Source(-0.603005,-4.03144,0) - Destination(-0.368353,-4.67872,0) -- NDIST = 2
+	BETA = 0.721416
+	RESISTANCE = 8.82458 -- RADIUS = 1.7666 -- DELTA_P = 90.0467
+	PARENT = 37 -- LEFT = 150 -- RIGHT = 38
+Segment 150 (150,151) -- Source(-0.368353,-4.67872,0) - Destination(-0.456297,-4.81081,0) -- NDIST = 1
+	BETA = 0.733493
+	RESISTANCE = 1.45477 -- RADIUS = 1.29579 -- DELTA_P = 4.6427
+	PARENT = 149 -- LEFT = NIL -- RIGHT = NIL
+Segment 151 (4,152) -- Source(0.008072,-0.602953,0) - Destination(-0.624968,-0.873348,0) -- NDIST = 15
+	BETA = 0.546377
+	RESISTANCE = 28.5576 -- RADIUS = 2.82399 -- DELTA_P = 2254.55
+	PARENT = 3 -- LEFT = 152 -- RIGHT = 75
+Segment 152 (152,153) -- Source(-0.624968,-0.873348,0) - Destination(-0.566312,-1.19257,0) -- NDIST = 1
+	BETA = 0.307288
+	RESISTANCE = 2.9754 -- RADIUS = 0.867776 -- DELTA_P = 19.3208
+	PARENT = 151 -- LEFT = NIL -- RIGHT = NIL
+Segment 153 (42,154) -- Source(-0.988586,-2.32195,0) - Destination(-1.14219,-2.32521,0) -- NDIST = 2
+	BETA = 0.943033
+	RESISTANCE = 4.77882 -- RADIUS = 1.53154 -- DELTA_P = 50.8385
+	PARENT = 41 -- LEFT = 154 -- RIGHT = 42
+Segment 154 (154,155) -- Source(-1.14219,-2.32521,0) - Destination(-1.29145,-2.154,0) -- NDIST = 1
+	BETA = 0.745513
+	RESISTANCE = 2.08224 -- RADIUS = 1.14178 -- DELTA_P = 3.03471
+	PARENT = 153 -- LEFT = NIL -- RIGHT = NIL
+Segment 155 (136,156) -- Source(-1.45166,-3.01027,0) - Destination(-1.57338,-2.89615,0) -- NDIST = 2
+	BETA = 0.885986
+	RESISTANCE = 3.35636 -- RADIUS = 1.48592 -- DELTA_P = 35.706
+	PARENT = 135 -- LEFT = 156 -- RIGHT = 58
+Segment 156 (156,157) -- Source(-1.57338,-2.89615,0) - Destination(-1.67953,-2.65569,0) -- NDIST = 1
+	BETA = 0.901173
+	RESISTANCE = 2.40963 -- RADIUS = 1.33908 -- DELTA_P = 3.60275
+	PARENT = 155 -- LEFT = NIL -- RIGHT = NIL
+Segment 157 (76,158) -- Source(-0.783228,-0.940947,0) - Destination(-0.892234,-1.50737,0) -- NDIST = 2
+	BETA = 0.465206
+	RESISTANCE = 6.99667 -- RADIUS = 1.3009 -- DELTA_P = 74.4326
+	PARENT = 75 -- LEFT = 158 -- RIGHT = 76
+Segment 158 (158,159) -- Source(-0.892234,-1.50737,0) - Destination(-0.983638,-1.74766,0) -- NDIST = 1
+	BETA = 0.911278
+	RESISTANCE = 2.35678 -- RADIUS = 1.18549 -- DELTA_P = 7.76897
+	PARENT = 157 -- LEFT = NIL -- RIGHT = NIL
+Segment 159 (110,160) -- Source(1.8251,-1.23891,0) - Destination(2.14596,-1.7116,0) -- NDIST = 2
+	BETA = 0.934278
+	RESISTANCE = 6.86453 -- RADIUS = 1.77821 -- DELTA_P = 74.6145
+	PARENT = 109 -- LEFT = 160 -- RIGHT = 22
+Segment 160 (160,161) -- Source(2.14596,-1.7116,0) - Destination(2.26103,-1.94128,0) -- NDIST = 1
+	BETA = 0.922311
+	RESISTANCE = 2.355 -- RADIUS = 1.64007 -- DELTA_P = 10.1323
+	PARENT = 159 -- LEFT = NIL -- RIGHT = NIL
+Segment 161 (32,162) -- Source(0.00096864,-0.0723543,0) - Destination(0.00290592,-0.217063,0) -- NDIST = 97
+	BETA = 0.995469
+	RESISTANCE = 60.8671 -- RADIUS = 5.32918 -- DELTA_P = 29520.5
+	PARENT = 31 -- LEFT = 162 -- RIGHT = 7
+Segment 162 (162,163) -- Source(0.00290592,-0.217063,0) - Destination(0.297006,-0.288688,0) -- NDIST = 1
+	BETA = 0.148053
+	RESISTANCE = 2.77491 -- RADIUS = 0.789001 -- DELTA_P = 16.9202
+	PARENT = 161 -- LEFT = NIL -- RIGHT = NIL
+Segment 163 (26,164) -- Source(-0.419046,-3.70156,0) - Destination(-0.362015,-3.76771,0) -- NDIST = 7
+	BETA = 0.778625
+	RESISTANCE = 10.5745 -- RADIUS = 2.35912 -- DELTA_P = 373.847
+	PARENT = 25 -- LEFT = 164 -- RIGHT = 189
+Segment 164 (164,165) -- Source(-0.362015,-3.76771,0) - Destination(-0.0884194,-3.68762,0) -- NDIST = 1
+	BETA = 0.442091
+	RESISTANCE = 2.61341 -- RADIUS = 1.04294 -- DELTA_P = 8.76641
+	PARENT = 163 -- LEFT = NIL -- RIGHT = NIL
+Segment 165 (52,166) -- Source(-0.0827814,-1.83321,0) - Destination(-0.175447,-2.12646,0) -- NDIST = 42
+	BETA = 0.995009
+	RESISTANCE = 36.2846 -- RADIUS = 4.12792 -- DELTA_P = 7619.76
+	PARENT = 51 -- LEFT = 166 -- RIGHT = 23
+Segment 166 (166,167) -- Source(-0.175447,-2.12646,0) - Destination(0.188198,-2.32325,0) -- NDIST = 1
+	BETA = 0.227883
+	RESISTANCE = 3.79046 -- RADIUS = 0.940684 -- DELTA_P = 22.5623
+	PARENT = 165 -- LEFT = NIL -- RIGHT = NIL
+Segment 167 (22,168) -- Source(1.44231,-1.0516,0) - Destination(1.63372,-1.19453,0) -- NDIST = 4
+	BETA = 0.963843
+	RESISTANCE = 9.2154 -- RADIUS = 1.99197 -- DELTA_P = 200.335
+	PARENT = 21 -- LEFT = 168 -- RIGHT = 109
+Segment 168 (168,169) -- Source(1.63372,-1.19453,0) - Destination(1.63376,-1.39163,0) -- NDIST = 1
+	BETA = 0.503556
+	RESISTANCE = 1.80686 -- RADIUS = 1.00307 -- DELTA_P = 7.9137
+	PARENT = 167 -- LEFT = NIL -- RIGHT = NIL
+Segment 169 (126,170) -- Source(0.0142713,-1.06602,0) - Destination(0.017061,-1.2744,0) -- NDIST = 69
+	BETA = 0.998546
+	RESISTANCE = 50.0164 -- RADIUS = 4.85697 -- DELTA_P = 17255.6
+	PARENT = 125 -- LEFT = 170 -- RIGHT = 93
+Segment 170 (170,171) -- Source(0.017061,-1.2744,0) - Destination(0.232202,-1.34079,0) -- NDIST = 1
+	BETA = 0.157913
+	RESISTANCE = 2.06404 -- RADIUS = 0.766977 -- DELTA_P = 7.37512
+	PARENT = 169 -- LEFT = NIL -- RIGHT = NIL
+Segment 171 (68,172) -- Source(-0.133894,-4.03233,0) - Destination(0.138041,-4.41693,0) -- NDIST = 3
+	BETA = 0.907119
+	RESISTANCE = 8.39643 -- RADIUS = 2.01444 -- DELTA_P = 80.7409
+	PARENT = 67 -- LEFT = 172 -- RIGHT = 119
+Segment 172 (172,173) -- Source(0.138041,-4.41693,0) - Destination(0.415954,-4.49429,0) -- NDIST = 1
+	BETA = 0.681848
+	RESISTANCE = 2.64458 -- RADIUS = 1.37354 -- DELTA_P = 6.27374
+	PARENT = 171 -- LEFT = NIL -- RIGHT = NIL
+Segment 173 (14,174) -- Source(-1.68043,-1.68716,0) - Destination(-1.9636,-1.69154,0) -- NDIST = 2
+	BETA = 0.545397
+	RESISTANCE = 3.9474 -- RADIUS = 1.34297 -- DELTA_P = 44.8568
+	PARENT = 13 -- LEFT = 174 -- RIGHT = 4
+Segment 174 (174,175) -- Source(-1.9636,-1.69154,0) - Destination(-2.17295,-1.62527,0) -- NDIST = 1
+	BETA = 0.929021
+	RESISTANCE = 2.01302 -- RADIUS = 1.24765 -- DELTA_P = 11.4376
+	PARENT = 173 -- LEFT = NIL -- RIGHT = NIL
+Segment 175 (180,176) -- Source(0.704584,-1.52288,0) - Destination(0.859936,-1.59223,0) -- NDIST = 2
+	BETA = 0.875624
+	RESISTANCE = 3.81954 -- RADIUS = 1.36349 -- DELTA_P = 41.973
+	PARENT = 179 -- LEFT = 176 -- RIGHT = 64
+Segment 176 (176,177) -- Source(0.859936,-1.59223,0) - Destination(0.939005,-1.71964,0) -- NDIST = 1
+	BETA = 0.742624
+	RESISTANCE = 1.37466 -- RADIUS = 1.01256 -- DELTA_P = 7.72283
+	PARENT = 175 -- LEFT = NIL -- RIGHT = NIL
+Segment 177 (114,178) -- Source(0.381962,-3.54807,0) - Destination(0.420263,-3.74151,0) -- NDIST = 2
+	BETA = 0.884901
+	RESISTANCE = 3.82993 -- RADIUS = 1.69074 -- DELTA_P = 42.5548
+	PARENT = 113 -- LEFT = 178 -- RIGHT = 66
+Segment 178 (178,179) -- Source(0.420263,-3.74151,0) - Destination(0.588262,-3.90296,0) -- NDIST = 1
+	BETA = 0.85249
+	RESISTANCE = 2.13602 -- RADIUS = 1.44134 -- DELTA_P = 11.8668
+	PARENT = 177 -- LEFT = NIL -- RIGHT = NIL
+Segment 179 (64,180) -- Source(0.665745,-1.50554,0) - Destination(0.704584,-1.52288,0) -- NDIST = 3
+	BETA = 0.974249
+	RESISTANCE = 4.72151 -- RADIUS = 1.55716 -- DELTA_P = 77.8271
+	PARENT = 63 -- LEFT = 180 -- RIGHT = 175
+Segment 180 (180,181) -- Source(0.704584,-1.52288,0) - Destination(0.96426,-1.33335,0) -- NDIST = 1
+	BETA = 0.690094
+	RESISTANCE = 2.94715 -- RADIUS = 1.07459 -- DELTA_P = 16.1931
+	PARENT = 179 -- LEFT = NIL -- RIGHT = NIL
+Segment 181 (24,182) -- Source(-0.237224,-2.32196,0) - Destination(-0.0434486,-2.6884,0) -- NDIST = 10
+	BETA = 0.577005
+	RESISTANCE = 14.4802 -- RADIUS = 2.3724 -- DELTA_P = 731.323
+	PARENT = 23 -- LEFT = 182 -- RIGHT = 105
+Segment 182 (182,183) -- Source(-0.0434486,-2.6884,0) - Destination(-0.159379,-2.91039,0) -- NDIST = 1
+	BETA = 0.382905
+	RESISTANCE = 2.29584 -- RADIUS = 0.908402 -- DELTA_P = 2.35246
+	PARENT = 181 -- LEFT = NIL -- RIGHT = NIL
+Segment 183 (40,184) -- Source(0.614594,-2.1102,0) - Destination(1.15529,-2.04112,0) -- NDIST = 2
+	BETA = 0.409468
+	RESISTANCE = 7.5752 -- RADIUS = 1.35545 -- DELTA_P = 81.4538
+	PARENT = 39 -- LEFT = 184 -- RIGHT = 40
+Segment 184 (184,185) -- Source(1.15529,-2.04112,0) - Destination(1.24494,-2.09664,0) -- NDIST = 1
+	BETA = 0.658016
+	RESISTANCE = 0.966698 -- RADIUS = 0.891908 -- DELTA_P = 5.1973
+	PARENT = 183 -- LEFT = NIL -- RIGHT = NIL
+Segment 185 (12,186) -- Source(-0.666261,-2.8195,0) - Destination(-0.604457,-3.04001,0) -- NDIST = 15
+	BETA = 0.838886
+	RESISTANCE = 22.7575 -- RADIUS = 3.09721 -- DELTA_P = 1724.05
+	PARENT = 11 -- LEFT = 186 -- RIGHT = 77
+Segment 186 (186,187) -- Source(-0.604457,-3.04001,0) - Destination(-0.371138,-3.05568,0) -- NDIST = 1
+	BETA = 0.288401
+	RESISTANCE = 2.14373 -- RADIUS = 0.893239 -- DELTA_P = 2.56189
+	PARENT = 185 -- LEFT = NIL -- RIGHT = NIL
+Segment 187 (84,188) -- Source(-1.74083,-1.75745,0) - Destination(-1.59698,-2.06774,0) -- NDIST = 2
+	BETA = 0.614184
+	RESISTANCE = 4.65099 -- RADIUS = 1.4257 -- DELTA_P = 48.9578
+	PARENT = 83 -- LEFT = 188 -- RIGHT = 84
+Segment 188 (188,189) -- Source(-1.59698,-2.06774,0) - Destination(-1.57075,-2.29854,0) -- NDIST = 1
+	BETA = 0.915501
+	RESISTANCE = 2.12942 -- RADIUS = 1.30523 -- DELTA_P = 11.2075
+	PARENT = 187 -- LEFT = NIL -- RIGHT = NIL
+Segment 189 (164,190) -- Source(-0.362015,-3.76771,0) - Destination(-0.247955,-3.90002,0) -- NDIST = 6
+	BETA = 0.970327
+	RESISTANCE = 10.1084 -- RADIUS = 2.28912 -- DELTA_P = 306.316
+	PARENT = 163 -- LEFT = 190 -- RIGHT = 67
+Segment 190 (190,191) -- Source(-0.247955,-3.90002,0) - Destination(-0.355202,-4.08598,0) -- NDIST = 1
+	BETA = 0.443119
+	RESISTANCE = 1.96794 -- RADIUS = 1.01435 -- DELTA_P = 10.2497
+	PARENT = 189 -- LEFT = NIL -- RIGHT = NIL
+Segment 191 (44,192) -- Source(0.0655498,-2.89452,0) - Destination(0.0972096,-3.02195,0) -- NDIST = 7
+	BETA = 0.989603
+	RESISTANCE = 9.55515 -- RADIUS = 2.22875 -- DELTA_P = 337.808
+	PARENT = 43 -- LEFT = 192 -- RIGHT = 111
+Segment 192 (192,193) -- Source(0.0972096,-3.02195,0) - Destination(0.294781,-3.03438,0) -- NDIST = 1
+	BETA = 0.41975
+	RESISTANCE = 1.81478 -- RADIUS = 0.935517 -- DELTA_P = 3.80085
+	PARENT = 191 -- LEFT = NIL -- RIGHT = NIL
+Segment 193 (66,194) -- Source(0.296868,-3.41153,0) - Destination(0.30711,-3.41649,0) -- NDIST = 2
+	BETA = 0.607181
+	RESISTANCE = 1.61175 -- RADIUS = 1.26236 -- DELTA_P = 16.4465
+	PARENT = 65 -- LEFT = 194 -- RIGHT = 44
+Segment 194 (194,195) -- Source(0.30711,-3.41649,0) - Destination(0.534181,-3.36268,0) -- NDIST = 1
+	BETA = 0.917801
+	RESISTANCE = 2.13928 -- RADIUS = 1.1586 -- DELTA_P = 10.9147
+	PARENT = 193 -- LEFT = NIL -- RIGHT = NIL
+Segment 195 (36,196) -- Source(-0.725644,-4.25137,0) - Destination(-0.762506,-4.48584,0) -- NDIST = 2
+	BETA = 0.823959
+	RESISTANCE = 4.38753 -- RADIUS = 1.60278 -- DELTA_P = 44.3185
+	PARENT = 35 -- LEFT = 196 -- RIGHT = 12
+Segment 196 (196,197) -- Source(-0.762506,-4.48584,0) - Destination(-0.923192,-4.62809,0) -- NDIST = 1
+	BETA = 0.816647
+	RESISTANCE = 1.96734 -- RADIUS = 1.3089 -- DELTA_P = 9.93608
+	PARENT = 195 -- LEFT = NIL -- RIGHT = NIL
+Segment 197 (28,198) -- Source(-0.323031,-2.42147,0) - Destination(-0.487781,-2.61252,0) -- NDIST = 28
+	BETA = 0.973897
+	RESISTANCE = 30.3812 -- RADIUS = 3.7294 -- DELTA_P = 4253.37
+	PARENT = 27 -- LEFT = 198 -- RIGHT = 103
+Segment 198 (198,199) -- Source(-0.487781,-2.61252,0) - Destination(-0.378178,-2.77631,0) -- NDIST = 1
+	BETA = 0.218965
+	RESISTANCE = 1.80665 -- RADIUS = 0.816608 -- DELTA_P = 9.03326
+	PARENT = 197 -- LEFT = NIL -- RIGHT = NIL
+========================================================================================================
+[!] Checking bifurcation rule!
+113.303 = 71.4026 + 41.9006 --> 113.303 = 113.303
+138.074 = 22.521 + 115.553 --> 138.074 = 138.074
+33.7832 = 20.087 + 13.6962 --> 33.7832 = 33.7832
+150.859 = 12.785 + 138.074 --> 150.859 = 150.859
+11.6531 = 8.92807 + 2.72503 --> 11.6531 = 11.6531
+50.3271 = 29.7106 + 20.6166 --> 50.3271 = 50.3271
+14.93 = 12.5079 + 2.42213 --> 14.93 = 14.93
+20.6166 = 20.0334 + 0.583229 --> 20.6166 = 20.6166
+19.666 = 1.3902 + 18.2758 --> 19.666 = 19.666
+18.3558 = 12.7276 + 5.62826 --> 18.3558 = 18.3558
+8.82736 = 7.90404 + 0.923311 --> 8.82736 = 8.82736
+69.5063 = 13.3525 + 56.1538 --> 69.5063 = 69.5063
+27.814 = 13.1295 + 14.6845 --> 27.814 = 27.814
+56.1538 = 4.28358 + 51.8703 --> 56.1538 = 56.1538
+12.7276 = 10.0463 + 2.68123 --> 12.7276 = 12.7276
+153.426 = 2.07597 + 151.35 --> 153.426 = 153.426
+13.3556 = 6.26984 + 7.0858 --> 13.3556 = 13.3556
+7.36045 = 3.24307 + 4.11738 --> 7.36045 = 7.36045
+14.6845 = 5.51336 + 9.17113 --> 14.6845 = 14.6845
+36.2735 = 2.49029 + 33.7832 --> 36.2735 = 36.2735
+4.28358 = 3.59242 + 0.691154 --> 4.28358 = 4.28358
+11.4235 = 11.0709 + 0.352626 --> 11.4235 = 11.4235
+154.298 = 0.872466 + 153.426 --> 154.298 = 154.298
+7.00925 = 2.91175 + 4.0975 --> 7.00925 = 7.00925
+20.087 = 1.73117 + 18.3558 --> 20.087 = 20.087
+71.4026 = 1.06384 + 70.3387 --> 71.4026 = 71.4026
+7.0858 = 4.60584 + 2.47996 --> 7.0858 = 7.0858
+41.9006 = 4.08312 + 37.8175 --> 41.9006 = 41.9006
+18.0731 = 4.71747 + 13.3556 --> 18.0731 = 18.0731
+18.2758 = 2.31084 + 15.9649 --> 18.2758 = 18.2758
+37.2642 = 0.990733 + 36.2735 --> 37.2642 = 37.2642
+4.08312 = 3.77574 + 0.307382 --> 4.08312 = 4.08312
+8.98664 = 6.975 + 2.01165 --> 8.98664 = 8.98664
+10.9514 = 8.17453 + 2.77688 --> 10.9514 = 10.9514
+10.0463 = 1.84734 + 8.19899 --> 10.0463 = 10.0463
+12.8243 = 1.1712 + 11.6531 --> 12.8243 = 12.8243
+8.19899 = 2.32365 + 5.87533 --> 8.19899 = 8.19899
+21.8675 = 2.20159 + 19.666 --> 21.8675 = 21.8675
+28.9979 = 1.18383 + 27.814 --> 28.9979 = 28.9979
+5.22762 = 1.56101 + 3.66661 --> 5.22762 = 5.22762
+9.61001 = 4.38239 + 5.22762 --> 9.61001 = 9.61001
+12.5079 = 2.89788 + 9.61001 --> 12.5079 = 12.5079
+15.9649 = 1.03488 + 14.93 --> 15.9649 = 15.9649
+2.07597 = 1.47299 + 0.602981 --> 2.07597 = 2.07597
+4.68214 = 2.48985 + 2.19229 --> 4.68214 = 4.68214
+20.0334 = 1.96024 + 18.0731 --> 20.0334 = 20.0334
+114.125 = 0.822008 + 113.303 --> 114.125 = 114.125
+11.3316 = 0.773723 + 10.5579 --> 11.3316 = 11.3316
+2.68123 = 1.94817 + 0.733063 --> 2.68123 = 2.68123
+6.26984 = 1.58769 + 4.68214 --> 6.26984 = 6.26984
+12.785 = 0.721573 + 12.0634 --> 12.785 = 12.785
+51.3257 = 0.998573 + 50.3271 --> 51.3257 = 51.3257
+12.6029 = 1.17936 + 11.4235 --> 12.6029 = 12.6029
+5.87533 = 3.86862 + 2.00671 --> 5.87533 = 5.87533
+6.89481 = 1.27203 + 5.62278 --> 6.89481 = 6.89481
+10.2521 = 1.26548 + 8.98664 --> 10.2521 = 10.2521
+6.975 = 2.14187 + 4.83313 --> 6.975 = 6.975
+12.0634 = 0.731818 + 11.3316 --> 12.0634 = 12.0634
+3.90466 = 1.91341 + 1.99125 --> 3.90466 = 3.90466
+5.58319 = 4.36284 + 1.22035 --> 5.58319 = 5.58319
+115.553 = 0.475258 + 115.078 --> 115.553 = 115.553
+2.31084 = 1.43361 + 0.877237 --> 2.31084 = 2.31084
+115.078 = 0.501173 + 114.576 --> 115.078 = 115.078
+13.6962 = 0.871931 + 12.8243 --> 13.6962 = 13.6962
+4.38239 = 2.95783 + 1.42456 --> 4.38239 = 4.38239
+8.92807 = 1.91882 + 7.00925 --> 8.92807 = 8.92807
+4.60584 = 3.38281 + 1.22303 --> 4.60584 = 4.60584
+4.71747 = 1.43659 + 3.28088 --> 4.71747 = 4.71747
+9.82337 = 0.996016 + 8.82736 --> 9.82337 = 9.82337
+9.17113 = 1.81068 + 7.36045 --> 9.17113 = 9.17113
+10.5579 = 0.734495 + 9.82337 --> 10.5579 = 10.5579
+2.77688 = 2.08585 + 0.691027 --> 2.77688 = 2.77688
+5.62826 = 1.72359 + 3.90466 --> 5.62826 = 5.62826
+37.8175 = 0.553235 + 37.2642 --> 37.8175 = 37.8175
+5.51336 = 2.17573 + 3.33764 --> 5.51336 = 5.51336
+22.521 = 0.653467 + 21.8675 --> 22.521 = 22.521
+3.59242 = 1.48851 + 2.10391 --> 3.59242 = 3.59242
+3.28088 = 2.40112 + 0.879753 --> 3.28088 = 3.28088
+2.20159 = 1.66605 + 0.535533 --> 2.20159 = 2.20159
+5.62278 = 4.41147 + 1.21131 --> 5.62278 = 5.62278
+151.35 = 0.49117 + 150.859 --> 151.35 = 151.35
+13.1295 = 1.13444 + 11.9951 --> 13.1295 = 13.1295
+70.3387 = 0.832399 + 69.5063 --> 70.3387 = 70.3387
+7.90404 = 1.00924 + 6.89481 --> 7.90404 = 7.90404
+114.576 = 0.451177 + 114.125 --> 114.576 = 114.576
+8.17453 = 2.59134 + 5.58319 --> 8.17453 = 8.17453
+2.42213 = 1.94211 + 0.48002 --> 2.42213 = 2.42213
+2.53487 = 1.03815 + 1.49671 --> 2.53487 = 2.53487
+4.83313 = 2.9943 + 1.83883 --> 4.83313 = 4.83313
+3.77574 = 1.24087 + 2.53487 --> 3.77574 = 3.77574
+13.3525 = 0.749608 + 12.6029 --> 13.3525 = 13.3525
+2.49029 = 0.709512 + 1.78078 --> 2.49029 = 2.49029
+29.7106 = 0.712694 + 28.9979 --> 29.7106 = 29.7106
+2.89788 = 2.2236 + 0.674277 --> 2.89788 = 2.89788
+11.9951 = 1.04368 + 10.9514 --> 11.9951 = 11.9951
+11.0709 = 0.818756 + 10.2521 --> 11.0709 = 11.0709
+2.01165 = 1.55524 + 0.456407 --> 2.01165 = 2.01165
+4.11738 = 2.24246 + 1.87492 --> 4.11738 = 4.11738
+51.8703 = 0.544554 + 51.3257 --> 51.8703 = 51.8703

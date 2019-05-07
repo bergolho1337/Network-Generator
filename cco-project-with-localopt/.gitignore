@@ -35,3 +35,4 @@ build/
 .vs/
 *.json
 output/
+*.log

@@ -15,6 +15,7 @@
 #include "../utils/utils.h"
 
 #include "cost_function_config.h"
+#include "local_optimization_config.h"
 
 static const uint32_t MAX_FILENAME_SIZE = 200;
 
@@ -29,9 +30,10 @@ struct user_options
     bool use_cloud_points;
     char cloud_points_filename[MAX_FILENAME_SIZE];
 
-    char cost_function_name[MAX_FILENAME_SIZE]; // Remove this ...
-
     struct cost_function_config *config;
+    
+    bool use_local_optimization;
+    struct local_optimization_config *local_opt_config;
 
 };
 
@@ -43,6 +45,7 @@ void read_config_file (struct user_options *options, const char filename[]);
 void read_main_section (struct user_options *options, FILE *file);
 void read_cloud_points_section (struct user_options *options, FILE *file);
 void read_cost_function_section (struct user_options *options, FILE *file);
+void read_local_optimization_section (struct user_options *options, FILE *file);
 
 void print_user_options (struct user_options *options);
 

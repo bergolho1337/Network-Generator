@@ -102,15 +102,15 @@ void test2 (struct cco_network *the_network)
 
     // First segment
     double pos3[3] = {1,-3,0};
-    build_segment(the_network,0,pos3);
+    build_segment(the_network,NULL,0,pos3);
 
     // Second segment
     double pos4[3] = {-2,-4,0};
-    build_segment(the_network,1,pos4);
+    build_segment(the_network,NULL,1,pos4);
 
     // Third segment
     double pos5[3] = {-1,-3,0};
-    build_segment(the_network,2,pos5);
+    build_segment(the_network,NULL,2,pos5);
 
     print_list(p_list);
     print_list(s_list);
@@ -140,15 +140,15 @@ void test3 (struct cco_network *the_network)
 
     // First segment
     double pos3[3] = {2,-2.5,0};
-    build_segment(the_network,0,pos3);
+    build_segment(the_network,NULL,0,pos3);
 
     // Second segment
     double pos4[3] = {-2,-1.5,0};
-    build_segment(the_network,0,pos4);
+    build_segment(the_network,NULL,0,pos4);
 
     // Third segment
     double pos5[3] = {1,-5,0};
-    build_segment(the_network,1,pos5);
+    build_segment(the_network,NULL,1,pos5);
 
     print_list(p_list);
     print_list(s_list);

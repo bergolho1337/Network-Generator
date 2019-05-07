@@ -23,6 +23,9 @@
 #define CM_S_TO_M_S 0.01
 #define MS_TO_US 1000.0
 
+#define PRINT_DOTS ".........................................................................."
+#define PRINT_STARS "******************************************************************************"
+
 // =================================================================
 
 void generate_point_inside_perfusion_area (double pos[], const double radius);

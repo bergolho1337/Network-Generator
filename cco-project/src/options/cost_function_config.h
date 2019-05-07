@@ -27,6 +27,7 @@ struct cost_function_config;
 // Template for a cost function
 #define SET_COST_FUNCTION(name) EXPORT_FN struct segment_node* name(struct cco_network *the_network,\
                                                 struct cost_function_config *config,\
+                                                struct local_optimization_config *local_opt_config,\
                                                 const double new_pos[],\
                                                 const std::vector<struct segment_node*> feasible_segments)
 typedef SET_COST_FUNCTION(set_cost_function_fn);
@@ -35,7 +36,8 @@ struct cost_function_config
 {
     void *handle;
 
-    char *name;
+    char *function_name;
+    char *library_name;
     std::map<std::string,double> *params;    // Parameters of the cost function
 
     set_cost_function_fn *function;       // Reference to the cost function

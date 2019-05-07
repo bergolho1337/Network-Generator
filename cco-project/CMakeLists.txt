@@ -15,6 +15,7 @@ ADD_SUBDIRECTORY(src/test)
 ADD_SUBDIRECTORY(src/cco)
 
 ADD_SUBDIRECTORY(src/cost_function_library)
+ADD_SUBDIRECTORY(src/local_optimization_library)
 
 ADD_EXECUTABLE(Cco src/main.cpp)
 

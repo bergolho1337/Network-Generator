@@ -12,7 +12,8 @@ struct cost_function_config* new_cost_function_config ()
 void free_cost_function_config (struct cost_function_config *config)
 {
     delete config->params;
-    free(config->name);
+    free(config->function_name);
+    free(config->library_name);
 
     if (config->handle)
         dlclose(config->handle);
@@ -40,7 +41,7 @@ bool get_parameter_value_from_map (std::map<std::string,double> *params,\
 
 void set_cost_function (struct cost_function_config *config)
 {
-    char library_path[MAX_FILENAME_SIZE] = "./shared-libs/libdefault_cost_function.so";
+    char *library_path = config->library_name;
 
     config->handle = dlopen(library_path,RTLD_LAZY);
     if (!config->handle) 
@@ -53,7 +54,7 @@ void set_cost_function (struct cost_function_config *config)
         fprintf(stdout,"\n[cost_function] Cost function library \"%s\" opened with sucess\n",library_path);
     }
     
-    char *cost_function_name = config->name;
+    char *cost_function_name = config->function_name;
 
     config->function = (set_cost_function_fn*)dlsym(config->handle,cost_function_name);
     if (dlerror() != NULL)  
@@ -69,7 +70,8 @@ void set_cost_function (struct cost_function_config *config)
 
 void print_cost_function_config (struct cost_function_config *config)
 {
-    printf("Cost function name = \"%s\"\n",config->name);
+    printf("Cost function library name = \"%s\"\n",config->library_name);
+    printf("Cost function name = \"%s\"\n",config->function_name);
 
     if (!config->params->empty())
     {

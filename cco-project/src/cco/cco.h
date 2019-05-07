@@ -50,6 +50,9 @@ struct cco_network
     bool using_cloud_points;
     char *cloud_points_filename;
 
+    bool using_local_optimization;
+    char *local_optimization_function_name;
+
     char *cost_function_name;
 
     FILE *log_file;
@@ -60,10 +63,12 @@ void usage (const char pname[]);
 struct cco_network* new_cco_network (struct user_options *options);
 void free_cco_network (struct cco_network *the_network);
 
-struct segment_node* build_segment (struct cco_network *the_network, const uint32_t index, const double new_pos[]);
+struct segment_node* build_segment (struct cco_network *the_network, struct local_optimization_config *local_opt_config,\
+                                const uint32_t index, const double new_pos[]);
 
 void rescale_root (struct segment_node *iroot, const double Q_perf, const double delta_p);
-void rescale_tree (struct segment_node *ibiff, const double Q_perf, const double delta_p, const int num_terminals);
+void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struct segment_node *inew,\
+                 const double Q_perf, const double delta_p, const int num_terminals);
 void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_left, struct segment_node *ipar_right,\
                         const double Q_perf, const double delta_p, const int num_terminals);
 
@@ -122,12 +127,17 @@ void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_
 void make_root (struct cco_network *the_network);
 void make_root_using_cloud_points (struct cco_network *the_network, std::vector<struct point> cloud_points);
 
-void generate_terminal (struct cco_network *the_network, struct cost_function_config *config);
+void generate_terminal (struct cco_network *the_network,\
+                        struct cost_function_config *config,\
+                        struct local_optimization_config *local_opt_config);
+                        
+void generate_terminal_using_cloud_points(struct cco_network *the_network,\
+                                          struct cost_function_config *config,\
+                                          struct local_optimization_config *local_opt_config,\
+                                          std::vector<struct point> cloud_points);
 
 uint32_t sort_point_from_cloud (double pos[], std::vector<struct point> cloud_points);
 void read_cloud_points (const char filename[], std::vector<struct point> &cloud_points);
-void generate_terminal_using_cloud_points(struct cco_network *the_network, struct cost_function_config *config,\
-                                         std::vector<struct point> cloud_points);
 
 void write_to_vtk (struct cco_network *the_network);
 

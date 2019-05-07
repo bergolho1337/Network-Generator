@@ -14,9 +14,9 @@ struct cco_network* new_cco_network (struct user_options *options)
     result->A_perf = M_PI * result->r_perf * result->r_perf;
     result->log_file = fopen("output.log","w+");
 
-    uint32_t size = strlen(options->config->name) + 1;
+    uint32_t size = strlen(options->config->function_name) + 1;
     result->cost_function_name = (char*)malloc(sizeof(char)*size);
-    strcpy(result->cost_function_name,options->config->name);
+    strcpy(result->cost_function_name,options->config->function_name);
     printf("[cco] Cost function name = %s\n",result->cost_function_name);
 
     if (options->use_cloud_points)
@@ -35,6 +35,23 @@ struct cco_network* new_cco_network (struct user_options *options)
         
         printf("[cco] No cloud of points provided\n");
         printf("[cco] Generating cloud of points based on value of \"r_perf\"\n");    
+    }
+
+    if (options->use_local_optimization)
+    {
+        result->using_local_optimization = true;
+        size = strlen(options->local_opt_config->name) + 1;
+        result->local_optimization_function_name = (char*)malloc(sizeof(char)*size);
+        strcpy(result->local_optimization_function_name,options->local_opt_config->name);
+
+        printf("[cco] Using local optimization\n");
+        printf("[cco] Local optimization function name :> \"%s\"\n",result->local_optimization_function_name);    
+    }
+    else
+    {
+        result->using_local_optimization = false;
+
+        printf("[cco] No local optimization provided\n");
     }
 
     return result;
@@ -71,6 +88,7 @@ void grow_tree_default (struct cco_network *the_network, struct user_options *op
     FILE *log_file = the_network->log_file;
 
     struct cost_function_config *config = options->config;
+    struct local_optimization_config *local_opt_config = options->local_opt_config;
 
     double Q_perf = the_network->Q_perf;
     double p_perf = the_network->p_perf;
@@ -91,7 +109,7 @@ void grow_tree_default (struct cco_network *the_network, struct user_options *op
         fprintf(log_file,"%s\n",PRINT_LINE);
         fprintf(log_file,"[cco] Working on terminal number %d\n",the_network->num_terminals);
 
-        generate_terminal(the_network,config);
+        generate_terminal(the_network,config,local_opt_config);
 
         printf("%s\n",PRINT_LINE);
         fprintf(log_file,"%s\n",PRINT_LINE);
@@ -117,6 +135,7 @@ void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_
     FILE *log_file = the_network->log_file;
 
     struct cost_function_config *config = options->config;
+    struct local_optimization_config *local_opt_config = options->local_opt_config;
 
     double Q_perf = the_network->Q_perf;
     double p_perf = the_network->p_perf;
@@ -142,7 +161,7 @@ void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_
             fprintf(log_file,"%s\n",PRINT_LINE);
             fprintf(log_file,"[cco] Working on terminal number %d\n",the_network->num_terminals);
 
-            generate_terminal_using_cloud_points(the_network,config,cloud_points);
+            generate_terminal_using_cloud_points(the_network,config,local_opt_config,cloud_points);
 
             printf("%s\n",PRINT_LINE);
             fprintf(log_file,"%s\n",PRINT_LINE);
@@ -389,7 +408,8 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
 
 }
 
-struct segment_node* build_segment (struct cco_network *the_network, const uint32_t index, const double new_pos[])
+struct segment_node* build_segment (struct cco_network *the_network, struct local_optimization_config *local_opt_config,\
+                                const uint32_t index, const double new_pos[])
 {
     
     struct point_list *p_list = the_network->point_list;
@@ -398,14 +418,24 @@ struct segment_node* build_segment (struct cco_network *the_network, const uint3
     double p_perf = the_network->p_perf;
     double p_term = the_network->p_term;
     double delta_p = p_perf - p_term;
+    bool using_local_optimization = the_network->using_local_optimization;
 
     struct segment_node *iconn_node = search_segment_node(s_list,index);
     struct segment *iconn = iconn_node->value;
 
-    // Create the middle point
-    double middle_pos[3];
-    calc_middle_point_segment(iconn_node,middle_pos);
-    struct point_node *M = insert_point(p_list,middle_pos);
+    // Create the bifurcation point based on the user settings
+    struct point_node *M;
+    if (using_local_optimization)
+    {
+        double *best_pos = local_opt_config->best_pos;
+        M = insert_point(p_list,best_pos);
+    }
+    else
+    {
+        double middle_pos[3];
+        calc_middle_point_segment(iconn_node,middle_pos);
+        M = insert_point(p_list,middle_pos);
+    }
 
     // Create ibiff
     struct segment *ibiff = new_segment(iconn_node->value->src,M,\
@@ -868,12 +898,15 @@ void make_root (struct cco_network *the_network)
     the_network->num_terminals = 1;
 }
 
-void generate_terminal_using_cloud_points(struct cco_network *the_network, struct cost_function_config *config,\
-                                         std::vector<struct point> cloud_points)
+void generate_terminal_using_cloud_points(struct cco_network *the_network,\
+                                          struct cost_function_config *config,\
+                                          struct local_optimization_config *local_opt_config,\
+                                          std::vector<struct point> cloud_points)
 {
 
     FILE *log_file = the_network->log_file;
 
+    bool using_local_optimization = the_network->using_local_optimization;
     int K_term = the_network->num_terminals;
     int N_term = the_network->N_term;
     double r_perf = the_network->r_perf;
@@ -881,6 +914,9 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network, struc
 
     // Cost function reference
     set_cost_function_fn *cost_function_fn = config->function;
+    
+    // Local optimization reference
+    set_local_optimization_function_fn *local_optimization_fn = local_opt_config->function;
 
     // Increase support domain
     double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term; 
@@ -923,7 +959,7 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network, struc
             fprintf(log_file,"\n");
 
             // COST FUNCTION
-            iconn = cost_function_fn(the_network,config,new_pos,feasible_segments);
+            iconn = cost_function_fn(the_network,config,local_opt_config,new_pos,feasible_segments);
             if (iconn == NULL)
             {
                 fprintf(stderr,"[cco] Error! No feasible segment found!\n");
@@ -954,11 +990,13 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network, struc
         }
     }
 
-    // Build a new segment with the best connection given by the cost function
-    build_segment(the_network,iconn->id,new_pos);
+    // Build the new segment of the tree
+    build_segment(the_network,local_opt_config,iconn->id,new_pos);
 }
 
-void generate_terminal (struct cco_network *the_network, struct cost_function_config *config)
+void generate_terminal (struct cco_network *the_network,\
+                        struct cost_function_config *config,\
+                        struct local_optimization_config *local_opt_config)
 {
     FILE *log_file = the_network->log_file;
 
@@ -969,6 +1007,9 @@ void generate_terminal (struct cco_network *the_network, struct cost_function_co
 
     // Cost function reference
     set_cost_function_fn *cost_function_fn = config->function;
+
+    // Local optimization reference
+    set_local_optimization_function_fn *local_optimization_fn = local_opt_config->function;
 
     // Increase support domain
     double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term; 
@@ -1012,7 +1053,7 @@ void generate_terminal (struct cco_network *the_network, struct cost_function_co
             fprintf(log_file,"\n");
 
             // COST FUNCTION
-            iconn = cost_function_fn(the_network,config,new_pos,feasible_segments);
+            iconn = cost_function_fn(the_network,config,local_opt_config,new_pos,feasible_segments);
             if (iconn == NULL)
             {
                 //fprintf(stderr,"[cco] Error! No feasible segment found!\n");
@@ -1040,8 +1081,8 @@ void generate_terminal (struct cco_network *the_network, struct cost_function_co
         }
     }
 
-    // Build a new segment with the best connection given by the cost function
-    build_segment(the_network,iconn->id,new_pos);
+    // Build the new segment of the tree
+    build_segment(the_network,local_opt_config,iconn->id,new_pos);
 }
 
 void read_cloud_points (const char filename[], std::vector<struct point> &cloud_points)

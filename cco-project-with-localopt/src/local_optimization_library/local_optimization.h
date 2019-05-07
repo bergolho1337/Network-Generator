@@ -16,7 +16,7 @@ static const uint32_t NE = 5;              // Number of points inside the bifurc
 extern "C" void default_local_optimization (struct segment_node *iconn,\
                      struct segment_node *ibiff,\
                      struct segment_node *inew,\
-                     std::vector<struct point*> &test_positions);
+                     std::vector<struct point> &test_positions);
 
 // Auxiliary functions
 

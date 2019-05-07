@@ -36,7 +36,11 @@ SET_LOCAL_OPTIMIZATION_FUNCTION (default_local_optimization)
                 pos[1] = (phi[0]*g1->y) + (phi[1]*g2->y) + (phi[2]*g3->y);
                 pos[2] = (phi[0]*g1->z) + (phi[1]*g2->z) + (phi[2]*g3->z);
 
-                struct point *p = new_point(pos);
+                struct point p;
+                p.x = pos[0];
+                p.y = pos[1];
+                p.z = pos[2];
+                
                 test_positions.push_back(p);
 
             }

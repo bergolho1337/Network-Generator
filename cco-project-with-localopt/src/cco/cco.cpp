@@ -62,6 +62,8 @@ void free_cco_network (struct cco_network *the_network)
     free_point_list(the_network->point_list);
     free_segment_list(the_network->segment_list);
     free(the_network->cost_function_name);
+    if (the_network->local_optimization_function_name)
+        free(the_network->local_optimization_function_name);
     if (the_network->using_cloud_points)
         free(the_network->cloud_points_filename);
     fclose(the_network->log_file);

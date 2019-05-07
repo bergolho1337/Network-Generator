@@ -197,16 +197,16 @@ SET_COST_FUNCTION (minimize_tree_volume_default)
             }
 
             // 2) Now, call the local optimization function and fill the 'test_positions' array
-            std::vector<struct point*> test_positions;
+            std::vector<struct point> test_positions;
             local_optimization_fn(iconn,ibiff,inew,test_positions);
 
             for (uint32_t j = 0; j < test_positions.size(); j++)
             {
                 // Change the position of the bifurcation point 
                 double new_pos[3];
-                new_pos[0] = test_positions[j]->x;
-                new_pos[1] = test_positions[j]->y;
-                new_pos[2] = test_positions[j]->z;
+                new_pos[0] = test_positions[j].x;
+                new_pos[1] = test_positions[j].y;
+                new_pos[2] = test_positions[j].z;
                 move_bifurcation_location(iconn,ibiff,inew,new_pos);
 
                 rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,the_network->num_terminals);
@@ -345,16 +345,16 @@ SET_COST_FUNCTION (minimize_tree_volume_with_angle_restriction)
             }
 
             // 2) Now, call the local optimization function and fill the 'test_positions' array
-            std::vector<struct point*> test_positions;
+            std::vector<struct point> test_positions;
             local_optimization_fn(iconn,ibiff,inew,test_positions);
 
             for (uint32_t j = 0; j < test_positions.size(); j++)
             {
                 // Change the position of the bifurcation point 
                 double new_pos[3];
-                new_pos[0] = test_positions[j]->x;
-                new_pos[1] = test_positions[j]->y;
-                new_pos[2] = test_positions[j]->z;
+                new_pos[0] = test_positions[j].x;
+                new_pos[1] = test_positions[j].y;
+                new_pos[2] = test_positions[j].z;
                 move_bifurcation_location(iconn,ibiff,inew,new_pos);
 
                 rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,the_network->num_terminals);
@@ -511,16 +511,16 @@ SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
             }
 
             // 2) Now, call the local optimization function and fill the 'test_positions' array
-            std::vector<struct point*> test_positions;
+            std::vector<struct point> test_positions;
             local_optimization_fn(iconn,ibiff,inew,test_positions);
 
             for (uint32_t j = 0; j < test_positions.size(); j++)
             {
                 // Change the position of the bifurcation point 
                 double new_pos[3];
-                new_pos[0] = test_positions[j]->x;
-                new_pos[1] = test_positions[j]->y;
-                new_pos[2] = test_positions[j]->z;
+                new_pos[0] = test_positions[j].x;
+                new_pos[1] = test_positions[j].y;
+                new_pos[2] = test_positions[j].z;
                 move_bifurcation_location(iconn,ibiff,inew,new_pos);
 
                 rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,the_network->num_terminals);
@@ -654,16 +654,16 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
             }
 
             // 2) Now, call the local optimization function and fill the 'test_positions' array
-            std::vector<struct point*> test_positions;
+            std::vector<struct point> test_positions;
             local_optimization_fn(iconn,ibiff,inew,test_positions);
 
             for (uint32_t j = 0; j < test_positions.size(); j++)
             {
                 // Change the position of the bifurcation point 
                 double new_pos[3];
-                new_pos[0] = test_positions[j]->x;
-                new_pos[1] = test_positions[j]->y;
-                new_pos[2] = test_positions[j]->z;
+                new_pos[0] = test_positions[j].x;
+                new_pos[1] = test_positions[j].y;
+                new_pos[2] = test_positions[j].z;
                 move_bifurcation_location(iconn,ibiff,inew,new_pos);
 
                 rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,the_network->num_terminals);
@@ -793,16 +793,16 @@ SET_COST_FUNCTION (minimize_custom_function)
             }
 
             // 2) Now, call the local optimization function and fill the 'test_positions' array
-            std::vector<struct point*> test_positions;
+            std::vector<struct point> test_positions;
             local_optimization_fn(iconn,ibiff,inew,test_positions);
 
             for (uint32_t j = 0; j < test_positions.size(); j++)
             {
                 // Change the position of the bifurcation point 
                 double new_pos[3];
-                new_pos[0] = test_positions[j]->x;
-                new_pos[1] = test_positions[j]->y;
-                new_pos[2] = test_positions[j]->z;
+                new_pos[0] = test_positions[j].x;
+                new_pos[1] = test_positions[j].y;
+                new_pos[2] = test_positions[j].z;
                 move_bifurcation_location(iconn,ibiff,inew,new_pos);
 
                 rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,the_network->num_terminals);
@@ -929,16 +929,16 @@ SET_COST_FUNCTION (minimize_custom_function_with_level_penalty)
             }
 
             // 2) Now, call the local optimization function and fill the 'test_positions' array
-            std::vector<struct point*> test_positions;
+            std::vector<struct point> test_positions;
             local_optimization_fn(iconn,ibiff,inew,test_positions);
 
             for (uint32_t j = 0; j < test_positions.size(); j++)
             {
                 // Change the position of the bifurcation point 
                 double new_pos[3];
-                new_pos[0] = test_positions[j]->x;
-                new_pos[1] = test_positions[j]->y;
-                new_pos[2] = test_positions[j]->z;
+                new_pos[0] = test_positions[j].x;
+                new_pos[1] = test_positions[j].y;
+                new_pos[2] = test_positions[j].z;
                 move_bifurcation_location(iconn,ibiff,inew,new_pos);
 
                 rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,the_network->num_terminals);

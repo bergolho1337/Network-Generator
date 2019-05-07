@@ -17,7 +17,7 @@ struct local_optimization_config;
 #define SET_LOCAL_OPTIMIZATION_FUNCTION(name) EXPORT_FN void name(struct segment_node *iconn,\
                                         struct segment_node *ibiff,\
                                         struct segment_node *inew,\
-                                        std::vector<struct point*> &test_positions)
+                                        std::vector<struct point> &test_positions)
 typedef SET_LOCAL_OPTIMIZATION_FUNCTION(set_local_optimization_function_fn);
 
 struct local_optimization_config
@@ -41,8 +41,6 @@ void set_local_optimization_function (struct local_optimization_config *config);
 void print_local_optimization_function_config (struct local_optimization_config *config);
 
 // Auxiliary functions
-void local_optimization (struct segment_node *iconn, struct segment_node *ibiff, struct segment_node *inew,\
-                                std::vector<struct point*> &test_positions);
 void save_original_bifurcation_position (struct segment_node *ibiff, double ori_pos[]);
 void initialize_best_position_as_middle_point(double best_pos[], const double ori_pos[]);
 bool is_corner (const uint32_t i, const uint32_t j, const uint32_t NE);

@@ -1,5 +1,0 @@
-- Implement a new library specific for a type of cost function
-
-- Think about how to deal with the circumscribed circle when generating the network.
-	- Maybe create another function just to deal with this kind of geometry.
-	- Pass as additional arguments the 'inner_radius' and 'outer_radius'.

@@ -836,14 +836,18 @@ void make_root_using_cloud_points (struct cco_network *the_network, std::vector<
 
     int K_term = 1;
     double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term; 
-    double r_supp = sqrt(A_supp/M_PI);
+    //double r_supp = sqrt(A_supp/M_PI);
+    double r_supp = 500.0;
 
     struct point_list *p_list = the_network->point_list;
     struct segment_list *s_list = the_network->segment_list;
 
     // Positions from the root
-    double x_inew[3] = {0,0,0};
-    double x_prox[3] = {0,0,0};
+    // DEFAULT
+    //double x_inew[3] = {0,0,0};
+    //double x_prox[3] = {0,0,0};
+    double x_inew[3] = {0,2000,500};
+    double x_prox[3] = {0,2000,500};
 
     // Sort the distal position of the root until its size is larger than the perfusion radius  
     uint32_t index;

@@ -66,8 +66,9 @@ void write_to_vtp (struct cloud_generator_data *generator)
 
         vtkSmartPointer<vtkSphereSource> sphereSource = vtkSmartPointer<vtkSphereSource>::New();
         sphereSource->SetCenter(p.x,p.y,p.z);
-        sphereSource->SetRadius(0.001*generator->area);
-        sphereSource->Update();
+        //sphereSource->SetRadius(0.001*generator->area);
+	sphereSource->SetRadius(1.0);        
+	sphereSource->Update();
 
         // Append the sphere to the filter
         appendFilter->AddInputConnection(sphereSource->GetOutputPort());
@@ -79,6 +80,32 @@ void write_to_vtp (struct cloud_generator_data *generator)
     writer->SetFileName("output/cloud_points.vtp");
     writer->SetInputConnection(appendFilter->GetOutputPort());
     writer->Write();
+}
+
+void write_to_vtk (struct cloud_generator_data *generator)
+{
+    std::vector<Point> *points = generator->points;
+
+    FILE *file = fopen("output/cloud_points.vtk","w+");
+
+    fprintf(file,"# vtk DataFile Version 3.0\n");
+    fprintf(file,"Cloud\n");
+    fprintf(file,"ASCII\n");
+    fprintf(file,"DATASET POLYDATA\n");
+    fprintf(file,"POINTS %lu float\n",points->size());
+
+    for (uint32_t i = 0; i < points->size(); i++)    
+    {
+        Point p = generator->points->at(i);
+
+        fprintf(file,"%g %g %g\n",p.x,p.y,p.z);
+    }
+
+    fprintf(file,"VERTICES %lu %lu\n",points->size(),points->size()*2);    
+    for (uint32_t i = 0; i < points->size(); i++)
+        fprintf(file,"1 %u\n",i);
+
+    fclose(file);
 }
 
 void write_to_txt (struct cloud_generator_data *generator)

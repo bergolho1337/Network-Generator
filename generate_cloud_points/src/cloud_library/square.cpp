@@ -69,8 +69,8 @@ void generate_point_inside_square (double pos[], const double side_length)
     double y = generate_random_number()*side_length;
 
     pos[0] = -l2 + x;
-    pos[1] = 0 - y;
-    pos[2] = 0;
+    pos[1] = -l2 + y;
+    pos[2] = 500.0;
 }
 
 void draw_square_area (const double side_length)

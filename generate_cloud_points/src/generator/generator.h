@@ -52,5 +52,6 @@ void free_cloud_generator (struct cloud_generator_data *g);
 void set_generator_function (struct cloud_generator_data *generator, struct user_data *config);
 void write_to_txt (struct cloud_generator_data *generator);
 void write_to_vtp (struct cloud_generator_data *generator);
+void write_to_vtk (struct cloud_generator_data *generator);
 
 #endif

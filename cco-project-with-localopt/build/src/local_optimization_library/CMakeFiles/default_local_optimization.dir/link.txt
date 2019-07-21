@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC     -shared  -o ../../../shared-libs/libdefault_local_optimization.so CMakeFiles/default_local_optimization.dir/local_optimization.cpp.o 

@@ -1,2 +1,0 @@
-/usr/bin/ar qc libsegmentlist.a  CMakeFiles/segmentlist.dir/segment-list.cpp.o
-/usr/bin/ranlib libsegmentlist.a

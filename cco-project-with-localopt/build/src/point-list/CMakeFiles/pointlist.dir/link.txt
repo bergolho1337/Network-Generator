@@ -1,2 +1,0 @@
-/usr/bin/ar qc libpointlist.a  CMakeFiles/pointlist.dir/point-list.cpp.o
-/usr/bin/ranlib libpointlist.a

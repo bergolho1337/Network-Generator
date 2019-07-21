@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC     -shared  -o ../../../shared-libs/libdefault_cost_function.so CMakeFiles/default_cost_function.dir/cost_function.cpp.o 

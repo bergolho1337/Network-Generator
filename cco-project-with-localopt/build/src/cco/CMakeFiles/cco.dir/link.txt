@@ -1,2 +1,0 @@
-/usr/bin/ar qc libcco.a  CMakeFiles/cco.dir/cco.cpp.o
-/usr/bin/ranlib libcco.a

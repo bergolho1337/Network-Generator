@@ -54,6 +54,9 @@ void read_main_section (struct user_options *options, FILE *file)
     fscanf(file,"%s %s %lf",str,trash,&options->p_term);
     fscanf(file,"%s %s %lf",str,trash,&options->r_perf);
     fscanf(file,"%s %s %d",str,trash,&options->N_term);
+    fscanf(file,"%s %s %lf",str,trash,&options->root_pos[0]);
+    fscanf(file,"%s %s %lf",str,trash,&options->root_pos[1]);
+    fscanf(file,"%s %s %lf",str,trash,&options->root_pos[2]);
 }
 
 void read_cloud_points_section (struct user_options *options, FILE *file)

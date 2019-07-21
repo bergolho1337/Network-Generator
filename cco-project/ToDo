@@ -1,3 +1,14 @@
+- Finish implement the following cost function libraries to work with local optimization:
+	- Closest segment
+	- Custom function
+	- Minimize activation time
+
+- Use a ".ini" parser instead of simple 'fscanf'
+
+- Rewrite all the examples using the new features
+
 - Think about how to deal with the circumscribed circle when generating the network.
 	- Maybe create another function just to deal with this kind of geometry.
 	- Pass as additional arguments the 'inner_radius' and 'outer_radius'.
+
+

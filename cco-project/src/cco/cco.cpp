@@ -11,6 +11,9 @@ struct cco_network* new_cco_network (struct user_options *options)
     result->p_term = options->p_term;
     result->r_perf = options->r_perf;
     result->N_term = options->N_term;
+    result->root_pos[0] = options->root_pos[0];
+    result->root_pos[1] = options->root_pos[1];
+    result->root_pos[2] = options->root_pos[2];
     result->A_perf = M_PI * result->r_perf * result->r_perf;
     result->log_file = fopen("output.log","w+");
 
@@ -833,21 +836,23 @@ void make_root_using_cloud_points (struct cco_network *the_network, std::vector<
     double r_perf = the_network->r_perf;
     double A_perf = the_network->A_perf;
     double delta_p = p_perf - p_term;
+    double *root_pos = the_network->root_pos;
 
     int K_term = 1;
     double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term; 
-    //double r_supp = sqrt(A_supp/M_PI);
-    double r_supp = 500.0;
+    double r_supp = sqrt(A_supp/M_PI);
+    //double r_supp = 500.0;
 
     struct point_list *p_list = the_network->point_list;
     struct segment_list *s_list = the_network->segment_list;
 
     // Positions from the root
-    // DEFAULT
-    //double x_inew[3] = {0,0,0};
-    //double x_prox[3] = {0,0,0};
-    double x_inew[3] = {0,2000,500};
-    double x_prox[3] = {0,2000,500};
+    double x_prox[3], x_inew[3];
+    for (uint32_t i = 0; i < 3; i++)
+    {
+        x_prox[i] = root_pos[i];
+        x_inew[i] = root_pos[i];        // The position of 'x_inew' will change in the next instruction ...
+    }
 
     // Sort the distal position of the root until its size is larger than the perfusion radius  
     uint32_t index;
@@ -876,6 +881,7 @@ void make_root (struct cco_network *the_network)
     double r_perf = the_network->r_perf;
     double A_perf = the_network->A_perf;
     double delta_p = p_perf - p_term;
+    double *root_pos = the_network->root_pos;
 
     int K_term = 1;
     double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term; 
@@ -885,8 +891,12 @@ void make_root (struct cco_network *the_network)
     struct segment_list *s_list = the_network->segment_list;
 
     // Positions from the root
-    double x_inew[3] = {0,0,0};
-    double x_prox[3] = {0,0,0};
+    double x_prox[3], x_inew[3];
+    for (uint32_t i = 0; i < 3; i++)
+    {
+        x_prox[i] = root_pos[i];
+        x_inew[i] = root_pos[i];        // The position of 'x_inew' will change in the next instruction ...
+    }
 
     // Sort the distal position of the root until its size is larger than the perfusion radius  
     while (euclidean_norm(x_prox[0],x_prox[1],x_prox[2],x_inew[0],x_inew[1],x_inew[2]) < r_supp)

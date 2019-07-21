@@ -27,6 +27,8 @@ struct user_options
     double p_term;
     double r_perf;
 
+    double root_pos[3];
+
     bool use_cloud_points;
     char cloud_points_filename[MAX_FILENAME_SIZE];
 

@@ -1,0 +1,2 @@
+/usr/bin/ar qc liboptions.a  CMakeFiles/options.dir/user_options.cpp.o CMakeFiles/options.dir/cost_function_config.cpp.o CMakeFiles/options.dir/local_optimization_config.cpp.o
+/usr/bin/ranlib liboptions.a

@@ -44,6 +44,8 @@ struct cco_network
 
     double A_perf;
 
+    double root_pos[3];
+
     struct point_list *point_list;
     struct segment_list *segment_list;
 

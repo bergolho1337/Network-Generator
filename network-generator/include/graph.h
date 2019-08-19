@@ -14,7 +14,7 @@
 using namespace std;
 
 const double INF = __DBL_MAX__;				// The value of infinity is set to be the maximum value of a 'double'
-const double TOLERANCE_DUPLICATE = 1.0e-20;		// Distance tolerance to consider two Nodes equal
+const double TOLERANCE_DUPLICATE = 1.0e-08;		// Distance tolerance to consider two Nodes equal
 
 class Edge;
 class Node;

@@ -29,7 +29,7 @@ Lsystem_Generator::Lsystem_Generator (Lsystem_Config *config)
 	printf("[Lsystem] There are %d edges\n",this->the_purkinje_network->get_total_edges());
 	printf("%s\n",PRINT_LINE);
 
-	this->join_terminals();
+	//this->join_terminals();
 
 	// DEBUG
 	//this->count_number_terminals();
@@ -319,8 +319,8 @@ void Lsystem_Generator::make_root (const double l_bra)
 	p1[2] = this->root_point[2];
 
 	p2[0] = this->root_point[0]; 
-	p2[1] = this->root_point[1]; 
-	p2[2] = this->root_point[2] + l_bra;
+	p2[1] = this->root_point[1] - 200.0; 
+	p2[2] = this->root_point[2];
 	
 	prev = pk->insert_node_graph(p1,NULL);		
 	prev = pk->insert_node_graph(p2,prev);

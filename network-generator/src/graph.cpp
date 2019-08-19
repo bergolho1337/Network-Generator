@@ -139,7 +139,7 @@ bool Graph::is_duplicate (const double pos[])
 	Node *ptr = list_nodes;
 	while (ptr != NULL)
 	{	
-		if (calc_norm(pos[0],pos[0],pos[0],ptr->x,ptr->y,ptr->z) < TOLERANCE_DUPLICATE)
+		if (calc_norm(pos[0],pos[1],pos[2],ptr->x,ptr->y,ptr->z) < TOLERANCE_DUPLICATE)
 			return true;
 		ptr = ptr->next;
 	}

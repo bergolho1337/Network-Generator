@@ -68,9 +68,9 @@ void generate_point_inside_square (double pos[], const double side_length)
     double x = generate_random_number()*side_length;
     double y = generate_random_number()*side_length;
 
-    pos[0] = -l2 + x;
-    pos[1] = -l2 + y;
-    pos[2] = 500.0;
+    pos[0] = x;
+    pos[1] = y;
+    pos[2] = 0.0;
 }
 
 void draw_square_area (const double side_length)
@@ -81,10 +81,10 @@ void draw_square_area (const double side_length)
     vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
     
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
-    points->InsertNextPoint(-l2,0,0);
-    points->InsertNextPoint(l2,0,0);
-    points->InsertNextPoint(l2,-l,0);
-    points->InsertNextPoint(-l2,-l,0);
+    points->InsertNextPoint(0,l,0);
+    points->InsertNextPoint(l,l,0);
+    points->InsertNextPoint(l,0,0);
+    points->InsertNextPoint(0,0,0);
     polydata->SetPoints(points);
 
     vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();

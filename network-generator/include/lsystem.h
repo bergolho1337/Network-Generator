@@ -17,7 +17,7 @@
 #include "utils.h"
 
 #define MAX_SIZE_RAND_ARRAY 1000			// Max size of the random number array
-#define SIGMA_RANDOM_DISTRIBUTION 0.2			// 0.1*l_bra gerou bons resultados
+#define SIGMA_RANDOM_DISTRIBUTION 0.1			// 0.1*l_bra gerou bons resultados
 
 #define TOLERANCE_NEAREST 1.0E-08			// Tolerance to find the nearest point over the miocardium
 

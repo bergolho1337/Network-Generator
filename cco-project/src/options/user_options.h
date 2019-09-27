@@ -13,6 +13,9 @@
 
 #include "../point-list/point-list.h"
 #include "../utils/utils.h"
+#include "../ini_parser/ini.h"
+#include "../ini_parser/ini_file_sections.h"
+#include "../single_file_libraries/stb_ds.h"
 
 #include "cost_function_config.h"
 #include "local_optimization_config.h"
@@ -21,7 +24,8 @@ static const uint32_t MAX_FILENAME_SIZE = 200;
 
 struct user_options
 {
-    int N_term;
+    
+    uint32_t N_term;
     double Q_perf;
     double p_perf;
     double p_term;
@@ -30,7 +34,7 @@ struct user_options
     double root_pos[3];
 
     bool use_cloud_points;
-    char cloud_points_filename[MAX_FILENAME_SIZE];
+    char *cloud_points_filename;
 
     struct cost_function_config *config;
     
@@ -44,10 +48,7 @@ void free_user_options (struct user_options *options);
 
 void read_config_file (struct user_options *options, const char filename[]);
 
-void read_main_section (struct user_options *options, FILE *file);
-void read_cloud_points_section (struct user_options *options, FILE *file);
-void read_cost_function_section (struct user_options *options, FILE *file);
-void read_local_optimization_section (struct user_options *options, FILE *file);
+int parse_config_file(void *user, const char *section, const char *name, const char *value);
 
 void print_user_options (struct user_options *options);
 

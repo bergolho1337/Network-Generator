@@ -4,8 +4,9 @@ struct local_optimization_config* new_local_optimization_config ()
 {
     struct local_optimization_config *result = (struct local_optimization_config*)malloc(sizeof(struct local_optimization_config));
 
-    result->name = NULL;
     result->handle = NULL;
+    result->name = NULL;
+    result->function = NULL;
     
     //result->params = new std::map<std::string,double>();
 
@@ -26,6 +27,8 @@ void free_local_optimization_config (struct local_optimization_config *config)
 
 void set_local_optimization_function (struct local_optimization_config *config)
 {
+    assert(config);
+
     char library_path[MAX_FILENAME_SIZE] = "./shared-libs/libdefault_local_optimization.so";
 
     config->handle = dlopen(library_path,RTLD_LAZY);

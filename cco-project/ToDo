@@ -1,9 +1,12 @@
+- Refactor the code until now
+
+- Do more tests with the Minimize Activation Time Function with Level Penalty
+	- Include Local Optimization
+
 - Finish implement the following cost function libraries to work with local optimization:
 	- Closest segment
 	- Custom function
 	- Minimize activation time
-
-- Use a ".ini" parser instead of simple 'fscanf'
 
 - Rewrite all the examples using the new features
 

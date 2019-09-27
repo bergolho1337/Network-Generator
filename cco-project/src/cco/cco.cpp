@@ -221,7 +221,7 @@ bool has_collision (struct segment_list *s_list, struct segment_node *s, const d
     return false;
 }
 
-bool check_collisions (struct cco_network *the_network, const double new_pos[],\
+bool check_collisions_and_fill_feasible_segments (struct cco_network *the_network, const double new_pos[],\
                     std::vector<struct segment_node*> &feasible_segments)
 {
     FILE *log_file = the_network->log_file;
@@ -795,7 +795,7 @@ double calc_segment_custom_function_with_level_penalty (const double eval, struc
 {
     double level = calc_segment_level(iconn);
 
-    return pow( eval, 1.0/level );
+    return pow( eval, 1.0/pow(level,2) );
 }
 
 double calc_segment_custom_function (struct segment_node *s, const double beta, const double alpha)
@@ -929,7 +929,7 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
     // Cost function reference
     set_cost_function_fn *cost_function_fn = config->function;
     
-    // Local optimization reference
+    // Local optimization referencez
     set_local_optimization_function_fn *local_optimization_fn = local_opt_config->function;
 
     // Increase support domain
@@ -962,7 +962,7 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
 
         // Check collision with other segments
         if (point_is_ok)
-            point_is_ok = check_collisions(the_network,new_pos,feasible_segments);
+            point_is_ok = check_collisions_and_fill_feasible_segments(the_network,new_pos,feasible_segments);
 
         // Test the cost function
         if (point_is_ok)
@@ -997,7 +997,7 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
                 tosses = 0;
             }
         }
-        // The point is valid one and we can eliminate it from the cloud
+        // The point is a valid one and we can eliminate it from the cloud
         else
         {
             cloud_points.erase(cloud_points.begin()+index);
@@ -1056,7 +1056,7 @@ void generate_terminal (struct cco_network *the_network,\
 
         // Check collision with other segments
         if (point_is_ok)
-            point_is_ok = check_collisions(the_network,new_pos,feasible_segments);
+            point_is_ok = check_collisions_and_fill_feasible_segments(the_network,new_pos,feasible_segments);
 
         // Test the cost function
         if (point_is_ok)

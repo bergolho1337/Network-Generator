@@ -1,5 +1,6 @@
 #include "minimize_volume.h"
 
+// OK
 SET_COST_FUNCTION (minimize_tree_volume_default)
 {
     struct segment_node *best = NULL;
@@ -11,9 +12,10 @@ SET_COST_FUNCTION (minimize_tree_volume_default)
     double delta_p = p_perf - p_term;
 
     // Get a reference to the local optimization function
-    bool using_local_optimization = the_network->using_local_optimization;
     set_local_optimization_function_fn *local_optimization_fn = local_opt_config->function;
+    bool using_local_optimization = the_network->using_local_optimization;
 
+    // For each feasible segment try to make a connection
     for (uint32_t i = 0; i < feasible_segments.size(); i++)
     {
         struct segment_node *iconn = feasible_segments[i];
@@ -125,6 +127,7 @@ SET_COST_FUNCTION (minimize_tree_volume_default)
     return best;
 }
 
+// OK
 SET_COST_FUNCTION (minimize_tree_volume_with_angle_restriction)
 {
     struct segment_node *best = NULL;
@@ -200,12 +203,13 @@ SET_COST_FUNCTION (minimize_tree_volume_with_angle_restriction)
                 local_opt_config->best_pos[1] = best_pos[1];
                 local_opt_config->best_pos[2] = best_pos[2];
 
-                printf("[cost_function] Best segment = %d -- Volume = %g -- Best position = (%g,%g,%g)\n",\
+                printf("[cost_function] Best segment = %d -- Volume = %g -- Best position = (%g,%g,%g) -- Degree = %g\n",\
                                 best->id,\
                                 minimum_volume,\
                                 local_opt_config->best_pos[0],\
                                 local_opt_config->best_pos[1],\
-                                local_opt_config->best_pos[2]);
+                                local_opt_config->best_pos[2],\
+                                degrees);
 
             }
 
@@ -216,11 +220,11 @@ SET_COST_FUNCTION (minimize_tree_volume_with_angle_restriction)
             for (uint32_t j = 0; j < test_positions.size(); j++)
             {
                 // Change the position of the bifurcation point 
-                double new_pos[3];
-                new_pos[0] = test_positions[j].x;
-                new_pos[1] = test_positions[j].y;
-                new_pos[2] = test_positions[j].z;
-                move_bifurcation_location(iconn,ibiff,inew,new_pos);
+                double new_biff_pos[3];
+                new_biff_pos[0] = test_positions[j].x;
+                new_biff_pos[1] = test_positions[j].y;
+                new_biff_pos[2] = test_positions[j].z;
+                move_bifurcation_location(iconn,ibiff,inew,new_biff_pos);
 
                 rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,the_network->num_terminals);
 
@@ -253,16 +257,17 @@ SET_COST_FUNCTION (minimize_tree_volume_with_angle_restriction)
                     best = iconn;
 
                     // The best position of the best segment will be stored inside the 'local_optimization' structure
-                    local_opt_config->best_pos[0] = new_pos[0];
-                    local_opt_config->best_pos[1] = new_pos[1];
-                    local_opt_config->best_pos[2] = new_pos[2];
+                    local_opt_config->best_pos[0] = new_biff_pos[0];
+                    local_opt_config->best_pos[1] = new_biff_pos[1];
+                    local_opt_config->best_pos[2] = new_biff_pos[2];
 
-                    printf("[cost_function] Best segment = %d -- Volume = %g -- Best position = (%g,%g,%g)\n",\
+                    printf("[cost_function] Best segment = %d -- Volume = %g -- Best position = (%g,%g,%g) -- Degree = %g\n",\
                                     best->id,\
                                     minimum_volume,\
                                     local_opt_config->best_pos[0],\
                                     local_opt_config->best_pos[1],\
-                                    local_opt_config->best_pos[2]);
+                                    local_opt_config->best_pos[2],\
+                                    degrees);
                 }
             }
 
@@ -312,6 +317,7 @@ SET_COST_FUNCTION (minimize_tree_volume_with_angle_restriction)
     return best;
 }
 
+// OK
 SET_COST_FUNCTION (minimize_tree_volume_with_length_restriction)
 {
     struct segment_node *best = NULL;
@@ -396,11 +402,11 @@ SET_COST_FUNCTION (minimize_tree_volume_with_length_restriction)
             for (uint32_t j = 0; j < test_positions.size(); j++)
             {
                 // 2.1) Change the position of the bifurcation point 
-                double new_pos[3];
-                new_pos[0] = test_positions[j].x;
-                new_pos[1] = test_positions[j].y;
-                new_pos[2] = test_positions[j].z;
-                move_bifurcation_location(iconn,ibiff,inew,new_pos);
+                double new_biff_pos[3];
+                new_biff_pos[0] = test_positions[j].x;
+                new_biff_pos[1] = test_positions[j].y;
+                new_biff_pos[2] = test_positions[j].z;
+                move_bifurcation_location(iconn,ibiff,inew,new_biff_pos);
 
                 rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,the_network->num_terminals);
 
@@ -422,9 +428,9 @@ SET_COST_FUNCTION (minimize_tree_volume_with_length_restriction)
                     best = iconn;
 
                     // The best position of the best segment will be stored inside the 'local_optimization' structure
-                    local_opt_config->best_pos[0] = new_pos[0];
-                    local_opt_config->best_pos[1] = new_pos[1];
-                    local_opt_config->best_pos[2] = new_pos[2];
+                    local_opt_config->best_pos[0] = new_biff_pos[0];
+                    local_opt_config->best_pos[1] = new_biff_pos[1];
+                    local_opt_config->best_pos[2] = new_biff_pos[2];
 
                     printf("[cost_function] Best segment = %d -- Volume = %g -- Length = %g -- Best position = (%g,%g,%g)\n",\
                                     best->id,\
@@ -475,6 +481,7 @@ SET_COST_FUNCTION (minimize_tree_volume_with_length_restriction)
     return best;
 }
 
+// OK
 SET_COST_FUNCTION (minimize_tree_volume_with_angle_and_length_restriction)
 {
     struct segment_node *best = NULL;
@@ -555,9 +562,11 @@ SET_COST_FUNCTION (minimize_tree_volume_with_angle_and_length_restriction)
                 local_opt_config->best_pos[1] = best_pos[1];
                 local_opt_config->best_pos[2] = best_pos[2];
 
-                printf("[cost_function] Best segment = %d -- Volume = %g -- Best position = (%g,%g,%g)\n",\
+                printf("[cost_function] Best segment = %d -- Volume = %g -- Degree = %g -- Length = %g -- Best position = (%g,%g,%g)\n",\
                                 best->id,\
                                 minimum_volume,\
+                                degrees,\
+                                length,\
                                 local_opt_config->best_pos[0],\
                                 local_opt_config->best_pos[1],\
                                 local_opt_config->best_pos[2]);
@@ -571,11 +580,11 @@ SET_COST_FUNCTION (minimize_tree_volume_with_angle_and_length_restriction)
             for (uint32_t j = 0; j < test_positions.size(); j++)
             {
                 // Change the position of the bifurcation point 
-                double new_pos[3];
-                new_pos[0] = test_positions[j].x;
-                new_pos[1] = test_positions[j].y;
-                new_pos[2] = test_positions[j].z;
-                move_bifurcation_location(iconn,ibiff,inew,new_pos);
+                double new_biff_pos[3];
+                new_biff_pos[0] = test_positions[j].x;
+                new_biff_pos[1] = test_positions[j].y;
+                new_biff_pos[2] = test_positions[j].z;
+                move_bifurcation_location(iconn,ibiff,inew,new_biff_pos);
 
                 rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,the_network->num_terminals);
 
@@ -611,16 +620,18 @@ SET_COST_FUNCTION (minimize_tree_volume_with_angle_and_length_restriction)
                     best = iconn;
 
                     // The best position of the best segment will be stored inside the 'local_optimization' structure
-                    local_opt_config->best_pos[0] = new_pos[0];
-                    local_opt_config->best_pos[1] = new_pos[1];
-                    local_opt_config->best_pos[2] = new_pos[2];
+                    local_opt_config->best_pos[0] = new_biff_pos[0];
+                    local_opt_config->best_pos[1] = new_biff_pos[1];
+                    local_opt_config->best_pos[2] = new_biff_pos[2];
 
-                    printf("[cost_function] Best segment = %d -- Volume = %g -- Best position = (%g,%g,%g)\n",\
-                                    best->id,\
-                                    minimum_volume,\
-                                    local_opt_config->best_pos[0],\
-                                    local_opt_config->best_pos[1],\
-                                    local_opt_config->best_pos[2]);
+                    printf("[cost_function] Best segment = %d -- Volume = %g -- Degree = %g -- Length = %g -- Best position = (%g,%g,%g)\n",\
+                                best->id,\
+                                minimum_volume,\
+                                degrees,\
+                                length,\
+                                local_opt_config->best_pos[0],\
+                                local_opt_config->best_pos[1],\
+                                local_opt_config->best_pos[2]);
                 }
             }
 
@@ -664,7 +675,7 @@ SET_COST_FUNCTION (minimize_tree_volume_with_angle_and_length_restriction)
                 minimum_volume = volume;
                 best = iconn;
 
-                printf("[cost_function] Best segment = %d -- Volume = %g\n",best->id,minimum_volume);
+                printf("[cost_function] Best segment = %d -- Volume = %g -- Degree = %g -- Length = %g\n",best->id,minimum_volume,degrees,length);
             }
 
             restore_state_tree(the_network,iconn);
@@ -674,8 +685,11 @@ SET_COST_FUNCTION (minimize_tree_volume_with_angle_and_length_restriction)
     return best;
 }
 
+// TODO: Need to fix the collision detection when we use local optimization
 SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
 {
+    FILE *log_file = the_network->log_file;
+
     struct segment_node *best = NULL;
     double minimum_eval = __DBL_MAX__;
 
@@ -744,11 +758,11 @@ SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
             for (uint32_t j = 0; j < test_positions.size(); j++)
             {
                 // Change the position of the bifurcation point 
-                double new_pos[3];
-                new_pos[0] = test_positions[j].x;
-                new_pos[1] = test_positions[j].y;
-                new_pos[2] = test_positions[j].z;
-                move_bifurcation_location(iconn,ibiff,inew,new_pos);
+                double new_biff_pos[3];
+                new_biff_pos[0] = test_positions[j].x;
+                new_biff_pos[1] = test_positions[j].y;
+                new_biff_pos[2] = test_positions[j].z;
+                move_bifurcation_location(iconn,ibiff,inew,new_biff_pos);
 
                 rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,the_network->num_terminals);
 
@@ -757,15 +771,19 @@ SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
                 double volume = calc_tree_volume(the_network);
                 double eval = calc_segment_custom_function_with_level_penalty(volume,iconn);
 
+                // Collision detection
+                //struct segment_list *s_list = the_network->segment_list;
+                //bool point_is_not_ok = has_collision(s_list,iconn,new_pos,log_file);
+
                 if (eval < minimum_eval)
                 {
                     minimum_eval = eval;
                     best = iconn;
 
                     // The best position of the best segment will be stored inside the 'local_optimization' structure
-                    local_opt_config->best_pos[0] = new_pos[0];
-                    local_opt_config->best_pos[1] = new_pos[1];
-                    local_opt_config->best_pos[2] = new_pos[2];
+                    local_opt_config->best_pos[0] = new_biff_pos[0];
+                    local_opt_config->best_pos[1] = new_biff_pos[1];
+                    local_opt_config->best_pos[2] = new_biff_pos[2];
 
                     printf("[cost_function] Best segment = %d -- Eval = %g -- Best position = (%g,%g,%g)\n",\
                                     best->id,\
@@ -789,6 +807,10 @@ SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
         {
             double volume = calc_tree_volume(the_network);
             double eval = calc_segment_custom_function_with_level_penalty(volume,iconn);
+
+            // Collision detection
+            //struct segment_list *s_list = the_network->segment_list;
+            //bool point_is_not_ok = has_collision(s_list,iconn,new_pos,log_file);
 
             if (eval < minimum_eval)
             {

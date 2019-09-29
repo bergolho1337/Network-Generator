@@ -685,7 +685,7 @@ SET_COST_FUNCTION (minimize_tree_volume_with_angle_and_length_restriction)
     return best;
 }
 
-// TODO: Need to fix the collision detection when we use local optimization
+// OK
 SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
 {
     FILE *log_file = the_network->log_file;
@@ -731,7 +731,11 @@ SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
             double volume = calc_tree_volume(the_network);
             double eval = calc_segment_custom_function_with_level_penalty(volume,iconn);
 
-            if (eval < minimum_eval)
+            // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn'
+            struct segment_list *s_list = the_network->segment_list;
+            bool point_is_not_ok = has_collision(s_list,iconn,ibiff,inew,log_file);
+
+            if (eval < minimum_eval && !point_is_not_ok)
             {
                 minimum_eval = eval;
                 best = iconn;
@@ -742,7 +746,7 @@ SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
                 local_opt_config->best_pos[1] = best_pos[1];
                 local_opt_config->best_pos[2] = best_pos[2];
 
-                printf("[cost_function] Best segment = %d -- Eval = %g -- Best position = (%g,%g,%g)\n",\
+                printf("[cost_function] Best segment = %d -- Eval = %g -- Best position = (%g,%g,%g) -- middle point\n",\
                                 best->id,\
                                 minimum_eval,\
                                 local_opt_config->best_pos[0],\
@@ -771,11 +775,11 @@ SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
                 double volume = calc_tree_volume(the_network);
                 double eval = calc_segment_custom_function_with_level_penalty(volume,iconn);
 
-                // Collision detection
-                //struct segment_list *s_list = the_network->segment_list;
-                //bool point_is_not_ok = has_collision(s_list,iconn,new_pos,log_file);
+                // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn'
+                s_list = the_network->segment_list;
+                point_is_not_ok = has_collision(s_list,iconn,ibiff,inew,log_file);
 
-                if (eval < minimum_eval)
+                if (eval < minimum_eval && !point_is_not_ok)
                 {
                     minimum_eval = eval;
                     best = iconn;

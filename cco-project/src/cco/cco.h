@@ -114,6 +114,8 @@ bool check_collisions_and_fill_feasible_segments (struct cco_network *the_networ
                     std::vector<struct segment_node*> &feasible_segments);
 
 bool has_collision (struct segment_list *s_list, struct segment_node *s, const double new_pos[], FILE *log_file);
+bool has_collision (struct segment_list *s_list, struct segment_node *iconn, struct segment_node *ibiff, struct segment_node *inew, FILE *log_file);
+
 bool connection_search (struct cco_network *the_network, const double pos[], const double d_threash);
 bool distance_criterion (struct segment_node *s, const double pos[], const double d_threash);
 

@@ -221,6 +221,44 @@ bool has_collision (struct segment_list *s_list, struct segment_node *s, const d
     return false;
 }
 
+bool has_collision (struct segment_list *s_list, struct segment_node *iconn, struct segment_node *ibiff, struct segment_node *inew, FILE *log_file)
+{
+    // Get the reference to the points from the 'inew' segment
+    struct point *src_inew = inew->value->src->value;
+    struct point *dest_inew = inew->value->dest->value;
+
+    // Get the reference to the points from the 'ibiff' segment
+    struct point *src_ibiff = ibiff->value->src->value;
+    struct point *dest_ibiff = ibiff->value->dest->value;
+
+    struct segment_node *tmp = s_list->list_nodes;
+    while (tmp != NULL)
+    {
+        // We avoid both the 'iconn' and 'inew' segments from the search
+        if (tmp->id != iconn->id && tmp->id != inew->id && tmp->id != ibiff->id)
+        {
+            // Get the reference to the points of the current segment
+            struct point *src = tmp->value->src->value;
+            struct point *dest = tmp->value->dest->value;
+
+            bool intersect = collision_detection(src_inew->x,src_inew->y,src_inew->z,\
+                                            dest_inew->x,dest_inew->y,dest_inew->z,\
+                                            src->x,src->y,src->z,\
+                                            dest->x,dest->y,dest->z);
+
+            if (intersect)
+            {
+                printf("\t[-] ERROR! Intersection between segments!\n");
+                //fprintf(log_file,"\t[-] ERROR! Intersection with segment %d !\n",tmp->id);
+                return true;
+            }          
+        }
+        tmp = tmp->next;
+    }
+
+    return false;
+}
+
 bool check_collisions_and_fill_feasible_segments (struct cco_network *the_network, const double new_pos[],\
                     std::vector<struct segment_node*> &feasible_segments)
 {

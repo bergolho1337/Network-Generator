@@ -16,7 +16,7 @@ extern "C" struct segment_node* closest_segment (struct cco_network *the_network
                                         const double new_pos[],\
                                         const std::vector<struct segment_node*> feasible_segments);
 
-extern "C" struct segment_node* closest_segment_with_limit_size (struct cco_network *the_network,\
+extern "C" struct segment_node* closest_segment_with_length_restriction (struct cco_network *the_network,\
                                         struct cost_function_config *config,\
                                         struct local_optimization_config *local_opt_config,\
                                         const double new_pos[],\

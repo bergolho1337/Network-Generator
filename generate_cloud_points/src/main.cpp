@@ -27,7 +27,7 @@ int main (int argc, char *argv[])
     generator->function(generator,config);
 
     // Write the points to file
-    write_to_vtp(generator);
+    //write_to_vtp(generator);
     write_to_vtk(generator);
     write_to_txt(generator);
 

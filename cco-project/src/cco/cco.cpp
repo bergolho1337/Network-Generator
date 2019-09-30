@@ -833,7 +833,9 @@ double calc_segment_custom_function_with_level_penalty (const double eval, struc
 {
     double level = calc_segment_level(iconn);
 
-    return pow( eval, 1.0/pow(level,2) );
+    //return eval / level;
+    //return eval / (0.5 * level);
+    return pow( eval, 1.0/level );
 }
 
 double calc_segment_custom_function (struct segment_node *s, const double beta, const double alpha)

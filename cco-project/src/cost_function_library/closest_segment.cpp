@@ -1,5 +1,6 @@
 #include "closest_segment.h"
 
+// OK
 SET_COST_FUNCTION (closest_segment)
 {
     struct segment_node *best = NULL;
@@ -8,6 +9,12 @@ SET_COST_FUNCTION (closest_segment)
     // Get a reference to the local optimization function
     bool using_local_optimization = the_network->using_local_optimization;
     set_local_optimization_function_fn *local_optimization_fn = local_opt_config->function;
+
+    if (using_local_optimization)
+    {
+        fprintf(stderr,"[closest_segment] ERROR! Local optimization is not available for the 'closest_segment'\n");
+        exit(EXIT_FAILURE);
+    }
 
     for (uint32_t i = 0; i < feasible_segments.size(); i++)
     {
@@ -18,128 +25,39 @@ SET_COST_FUNCTION (closest_segment)
 
         struct segment_node *ibiff = iconn->value->parent;
 
-        //  WITH LOCAL OPTIMIZATION: not working ...
-        if (using_local_optimization)
+        // Calculate the length of the new segment
+        double middle_pos[3];
+        calc_middle_point_segment(iconn,middle_pos);
+
+        double length = euclidean_norm(new_pos[0],new_pos[1],new_pos[2],\
+                                    middle_pos[0],middle_pos[1],middle_pos[2]);
+
+        if (length < minimum_length)
         {
-            // Save the original position of the bifurcation
-            double ori_pos[3];
-            save_original_bifurcation_position(ibiff,ori_pos);
+            minimum_length = length;
+            best = iconn;
 
-            // Initialize the best position as middle point of the segment
-            double best_pos[3];
-            initialize_best_position_as_middle_point(best_pos,ori_pos);
-
-            //printf("[cost_function] Original bifurcation position = (%g,%g,%g)\n",\
-                                                        best_pos[0],\
-                                                        best_pos[1],\
-                                                        best_pos[2]);
-
-            // 1) Check the cost function of the first configuration
-            double length = euclidean_norm(new_pos[0],new_pos[1],new_pos[2],\
-                                        best_pos[0],best_pos[1],best_pos[2]);
-
-            if (length < minimum_length)
-            {
-                minimum_length = length;
-                best = iconn;
-
-                // The best position of the best segment will be stored inside the 
-                // 'local_optimization' structure
-                local_opt_config->best_pos[0] = best_pos[0];
-                local_opt_config->best_pos[1] = best_pos[1];
-                local_opt_config->best_pos[2] = best_pos[2];
-
-                printf("[cost_function] Best segment = %d -- Length = %g -- Best position = (%g,%g,%g)\n",\
+            printf("[cost_function] Best segment = %d -- Length = %g\n",\
                                 best->id,\
-                                minimum_length,\
-                                local_opt_config->best_pos[0],\
-                                local_opt_config->best_pos[1],\
-                                local_opt_config->best_pos[2]);
-            }
-
-            // 2) Now, call the local optimization function and fill the 'test_positions' array
-            std::vector<struct point> test_positions;
-            local_optimization_fn(iconn,ibiff,inew,test_positions);
-
-            for (uint32_t j = 0; j < test_positions.size(); j++)
-            {
-                // Change the position of the bifurcation point 
-                double new_pos[3];
-                new_pos[0] = test_positions[j].x;
-                new_pos[1] = test_positions[j].y;
-                new_pos[2] = test_positions[j].z;
-
-                move_bifurcation_location(iconn,ibiff,inew,new_pos);
-
-                double middle_pos[3];
-                calc_middle_point_segment(iconn,middle_pos);
-
-                double length = euclidean_norm(new_pos[0],new_pos[1],new_pos[2],\
-                                            middle_pos[0],middle_pos[1],middle_pos[2]);
-
-                if (length < minimum_length)
-                {
-                    minimum_length = length;
-                    best = iconn;
-
-                    // The best position of the best segment will be stored inside the 'local_optimization' structure
-                    local_opt_config->best_pos[0] = new_pos[0];
-                    local_opt_config->best_pos[1] = new_pos[1];
-                    local_opt_config->best_pos[2] = new_pos[2];
-
-                    printf("[cost_function] Best segment = %d -- Length = %g -- Best position = (%g,%g,%g)\n",\
-                                    best->id,\
-                                    minimum_length,\
-                                    local_opt_config->best_pos[0],\
-                                    local_opt_config->best_pos[1],\
-                                    local_opt_config->best_pos[2]);
-                }
-            }
-
-            // Move the bifurcation to the original position
-            move_bifurcation_location(iconn,ibiff,inew,ori_pos);
-
-            restore_state_tree(the_network,iconn);
-
-            // Clear the array for the next segment
-            test_positions.clear();
+                                minimum_length);
         }
-        // NO LOCAL OPTIMIZATION
-        else
-        {
-            // Calculate the length of the new segment
-            double middle_pos[3];
-            calc_middle_point_segment(iconn,middle_pos);
 
-            double length = euclidean_norm(new_pos[0],new_pos[1],new_pos[2],\
-                                        middle_pos[0],middle_pos[1],middle_pos[2]);
-
-            if (length < minimum_length)
-            {
-                minimum_length = length;
-                best = iconn;
-
-                printf("[cost_function] Best segment = %d -- Length = %g\n",\
-                                    best->id,\
-                                    minimum_length);
-            }
-
-            restore_state_tree(the_network,iconn);
-        }
+        restore_state_tree(the_network,iconn);
     }
 
     return best;
 }
 
-SET_COST_FUNCTION(closest_segment_with_limit_size)
+// OK
+SET_COST_FUNCTION(closest_segment_with_length_restriction)
 {
 
-    struct segment_node *closest = NULL;
-    double closest_dist = __DBL_MAX__;
+    struct segment_node *best = NULL;
+    double minimum_length = __DBL_MAX__;
 
-    // Get parameters for the cost function
-    double size_limit;
-    get_parameter_value_from_map(config->params,"size_limit",&size_limit);
+    // Get the length limit from the user input
+    double length_limit;
+    get_parameter_value_from_map(config->params,"length_limit",&length_limit);
 
     // Pass through the list of feasible segments
     struct segment_node *tmp;
@@ -153,25 +71,32 @@ SET_COST_FUNCTION(closest_segment_with_limit_size)
         double dist = euclidean_norm(new_pos[0],new_pos[1],new_pos[2],\
                                     middle_pos[0],middle_pos[1],middle_pos[2]);
                                     
-        if (dist < closest_dist && dist >= size_limit)
+        if (dist < minimum_length && dist >= length_limit)
         {
-            closest_dist = dist;
-            closest = tmp;
+            minimum_length = dist;
+            best = tmp;
+
+            printf("[cost_function] Best segment = %d -- Length = %g\n",\
+                                best->id,\
+                                minimum_length);
         }
     }
     
-    return closest;
+    return best;
 }
 
+// OK
 SET_COST_FUNCTION(closest_segment_with_angle_restriction)
 {
 
-    struct segment_node *closest = NULL;
-    double closest_dist = __DBL_MAX__;
+    struct segment_node *best = NULL;
+    double minimum_length = __DBL_MAX__;
 
     // Get parameters for the cost function
-    double degrees_limit;
-    get_parameter_value_from_map(config->params,"degrees",&degrees_limit);
+    double min_degrees_limit;
+    get_parameter_value_from_map(config->params,"min_degrees_limit",&min_degrees_limit);
+    double max_degrees_limit;
+    get_parameter_value_from_map(config->params,"max_degrees_limit",&max_degrees_limit);
 
     // Pass through the list of feasible segments
     struct segment_node *tmp;
@@ -196,12 +121,17 @@ SET_COST_FUNCTION(closest_segment_with_angle_restriction)
 
         double degrees = calc_angle_between_vectors(u,v);
                                     
-        if (dist < closest_dist && degrees >= degrees_limit)
+        if (dist < minimum_length && degrees > min_degrees_limit && degrees < max_degrees_limit)
         {
-            closest_dist = dist;
-            closest = tmp;
+            minimum_length = dist;
+            best = tmp;
+
+            printf("[cost_function] Best segment = %d -- Length = %g -- Degrees = %g\n",\
+                                best->id,\
+                                minimum_length,\
+                                degrees);
         }
     }
     
-    return closest;
+    return best;
 }

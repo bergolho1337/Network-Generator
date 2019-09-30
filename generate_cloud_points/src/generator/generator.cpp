@@ -56,6 +56,7 @@ void set_generator_function (struct cloud_generator_data *generator, struct user
 
 void write_to_vtp (struct cloud_generator_data *generator)
 {
+    fprintf(stdout,"[generator] Writing cloud of points in VTP format ...\n");
 
     vtkSmartPointer<vtkAppendPolyData> appendFilter = vtkSmartPointer<vtkAppendPolyData>::New();
     
@@ -84,6 +85,8 @@ void write_to_vtp (struct cloud_generator_data *generator)
 
 void write_to_vtk (struct cloud_generator_data *generator)
 {
+    fprintf(stdout,"[generator] Writing cloud of points in VTK format ...\n");
+
     std::vector<Point> *points = generator->points;
 
     FILE *file = fopen("output/cloud_points.vtk","w+");
@@ -110,6 +113,8 @@ void write_to_vtk (struct cloud_generator_data *generator)
 
 void write_to_txt (struct cloud_generator_data *generator)
 {
+    fprintf(stdout,"[generator] Writing cloud of points in TXT format ...\n");
+
     std::vector<Point> *points = generator->points;
 
     FILE *file = fopen("output/cloud_points.txt","w+");

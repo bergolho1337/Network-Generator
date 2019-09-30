@@ -129,9 +129,11 @@ void generate_point_inside_circle (double pos[], const double radius)
     double teta = generate_random_number()*2.0*M_PI;
     double r = generate_random_number()*radius;
 
-    pos[0] = 0 + r*cos(teta);
-    pos[1] = -radius + r*sin(teta);
-    pos[2] = 0 + 0;
+    static double center[3] = {radius,radius,0};
+
+    pos[0] = center[0] + r*cos(teta);
+    pos[1] = center[1] + r*sin(teta);
+    pos[2] = center[2] + 0;
 }
 
 void generate_point_inside_circumscribed_circle (double pos[],\
@@ -165,7 +167,7 @@ void draw_circle_area (const double radius)
     polygonSource->GeneratePolygonOff(); 
     polygonSource->SetNumberOfSides(50);
     polygonSource->SetRadius(radius);
-    polygonSource->SetCenter(0,-radius,0);
+    polygonSource->SetCenter(radius,radius,0);
 
     vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
     writer->SetFileName("output/circle_area_cloud.vtp");

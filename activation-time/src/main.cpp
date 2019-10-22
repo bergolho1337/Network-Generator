@@ -18,7 +18,7 @@ using namespace std;
 #define S_TO_MS 1000.0
 #define CM_S_TO_M_S 0.01
 
-const double C = 10808;
+const double C = 1080.8;
 const double CM = 1.2;                      // uF/cm^2
 const double SIGMA = 0.004;                 // mS/cm
 const double RM = 6750.0;                   // ohm.cm^2
@@ -28,9 +28,9 @@ const double SIGMA_M = 0.15;                // cm
 const double TAU_M = 8.4;                   // ms
 
 const double MIN_RADIUS = 10.0;             // um
-const double MAX_RADIUS = 50.0;             // um
-const double CABLE_LENGTH = 5.0;            // cm
-const unsigned int NPOINTS = 100; 
+const double MAX_RADIUS = 3000.0;             // um
+const double CABLE_LENGTH = 1.0;            // cm
+const unsigned int NPOINTS = 500;
 // ====================================================================================================================
 
 // Output will be given in (cm)
@@ -48,7 +48,7 @@ double calc_lambda_m (const double r)
 // Output will be given in (s)
 double calc_tau_m ()
 {
-    // Equation (4.16) from Keener's book 
+    // Equation (4.16) from Keener's book
     return RM * CM * MS_TO_S;
 }
 
@@ -82,7 +82,7 @@ void write_datafile ()
 
         fprintf(file_lambda,"%g %g\n",radius,lambda_m);
         fprintf(file_velocity,"%g %g\n",radius,velocity);
-        fprintf(file_at,"%g %g\n",radius,at); 
+        fprintf(file_at,"%g %g\n",radius,at);
     }
 
     fclose(file_lambda);
@@ -101,7 +101,7 @@ void write_function ()
     {
         double x = i*dx;
 
-        double y = pow(base,-1/x); 
+        double y = pow(base,-1/x);
 
         fprintf(file_new_at,"%g %g\n",x,y);
     }
@@ -116,7 +116,7 @@ int main (int argc, char *argv[])
         printf("%s\n",PRINT_LINE);
         printf("Usage:> %s\n",argv[0]);
         printf("%s\n",PRINT_LINE);
-        exit(EXIT_FAILURE);   
+        exit(EXIT_FAILURE);
     }
 
     write_datafile();

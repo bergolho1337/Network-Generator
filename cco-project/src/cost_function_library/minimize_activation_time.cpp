@@ -59,13 +59,13 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
                 minimum_at = at;
                 best = iconn;
 
-                // The best position of the best segment will be stored inside the 
+                // The best position of the best segment will be stored inside the
                 // 'local_optimization' structure
                 local_opt_config->best_pos[0] = best_pos[0];
                 local_opt_config->best_pos[1] = best_pos[1];
                 local_opt_config->best_pos[2] = best_pos[2];
 
-                printf("[cost_function] Best segment = %d -- Activation time = %g -- Best position = (%g,%g,%g)\n",\
+                printf("[cost_function] Best segment = %d -- Activation time = %g ms -- Best position = (%g,%g,%g)\n",\
                                 best->id,\
                                 minimum_at,\
                                 local_opt_config->best_pos[0],\
@@ -80,7 +80,7 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
 
             for (uint32_t j = 0; j < test_positions.size(); j++)
             {
-                // Change the position of the bifurcation point 
+                // Change the position of the bifurcation point
                 double new_pos[3];
                 new_pos[0] = test_positions[j].x;
                 new_pos[1] = test_positions[j].y;
@@ -104,7 +104,7 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
                     local_opt_config->best_pos[1] = new_pos[1];
                     local_opt_config->best_pos[2] = new_pos[2];
 
-                    printf("[cost_function] Best segment = %d -- Activation time = %g -- Best position = (%g,%g,%g)\n",\
+                    printf("[cost_function] Best segment = %d -- Activation time = %g ms -- Best position = (%g,%g,%g)\n",\
                                     best->id,\
                                     minimum_at,\
                                     local_opt_config->best_pos[0],\
@@ -132,11 +132,11 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
                 minimum_at = at;
                 best = iconn;
 
-                printf("[cost_function] Best segment = %d -- Activation time = %g\n",best->id,minimum_at);
+                printf("[cost_function] Best segment = %d -- Activation time = %g ms\n",best->id,minimum_at);
             }
 
             restore_state_tree(the_network,iconn);
-        }        
+        }
     }
 
     // DEBUG
@@ -238,7 +238,7 @@ SET_COST_FUNCTION (minimize_tree_activation_time_with_angle_restriction_and_leve
 
         // Calculate activation time
         double at = calc_terminal_activation_time(inew,c,cm,rc,rm);
-        
+
         // Convert from miliseconds to microseconds
         double new_at = at * MS_TO_US;
 

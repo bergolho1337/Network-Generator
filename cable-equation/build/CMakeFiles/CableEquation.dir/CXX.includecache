@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/berg/Github/Network-Generator/cable-equation/src/main.cpp
+iostream
+-
+vector
+-
+algorithm
+-
+cstdio
+-
+cstdlib
+-
+cmath
+-
+

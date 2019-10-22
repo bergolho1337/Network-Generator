@@ -11,16 +11,16 @@
 using namespace std;
 
 int main (int argc, char *argv[])
-{   
+{
     if (argc-1 != 1)
     {
         usage(argv[0]);
-        exit(EXIT_FAILURE);   
+        exit(EXIT_FAILURE);
     }
 
     struct user_options *options = new_user_options(argc,argv);
     struct cco_network *the_network = new_cco_network(options);
-    
+
     grow_tree(the_network,options);
     write_to_vtk(the_network);
 

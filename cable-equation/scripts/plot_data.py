@@ -9,10 +9,11 @@ def plot_data (data,xname,yname):
     plt.xlabel(xname,fontsize=15)
     plt.ylabel(yname,fontsize=15)
     plt.title("Data",fontsize=14)
-    #plt.xlim([2000,3000])
+    #plt.xlim([0,250])
+    #plt.ylim([0,4])
     plt.legend(loc=2,fontsize=14)
     plt.show()
-    #plt.savefig("ap.pdf")
+    #plt.savefig("../figures/activation_time_purkinje_cell.pdf")
 
 def main():
 

@@ -806,7 +806,7 @@ double calc_segment_activation_time (struct segment_node *s,\
     delta_s *= CM_TO_MM;
     r *= CM_TO_MM;
 
-    //printf("\tPropagation velocity = %g mm/ms \n",velocity);
+    printf("\tPropagation velocity = %g mm/ms \n",velocity);
     //printf("\tDistance = %g mm \n",delta_s);
     //printf("\tRadius = %g mm\n",r);
     //printf("\tActivation time = %g ms\n\n",delta_s / velocity);

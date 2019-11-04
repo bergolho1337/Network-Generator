@@ -141,6 +141,12 @@ SET_COST_FUNCTION (minimize_custom_function)
 
     }
 
+    if (using_local_optimization)
+    {
+        // Set off the 'first_call' flag
+        local_opt_config->first_call = false;
+    }
+
     return best;
 }
 
@@ -340,6 +346,12 @@ SET_COST_FUNCTION (minimize_custom_function_with_angle_restriction)
 
     }
 
+    if (using_local_optimization)
+    {
+        // Set off the 'first_call' flag
+        local_opt_config->first_call = false;
+    }
+
     return best;
 }
 
@@ -485,6 +497,12 @@ SET_COST_FUNCTION (minimize_custom_function_with_level_penalty)
 
             restore_state_tree(the_network,iconn);
         }
+    }
+
+    if (using_local_optimization)
+    {
+        // Set off the 'first_call' flag
+        local_opt_config->first_call = false;
     }
 
     return best;

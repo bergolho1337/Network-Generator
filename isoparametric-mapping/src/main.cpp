@@ -22,7 +22,7 @@ using namespace std;
 // CONSTANTS AND MACROS
 #define PRINT_LINE "--------------------------------------------------------------------------------------------"
 
-const double NE = 16;
+const double NE = 5;
 
 class Point
 {

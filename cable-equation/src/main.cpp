@@ -129,10 +129,10 @@ int main (int argc, char *argv[])
     //const double c = 3.87298;     // Good aproximation for the propagation velocity on the majority of the excitable cells
 
     // Parse the input
-    double Rm = atof(argv[1]);
-    double Rc = atof(argv[2]);
-    double Cm = atof(argv[3]);
-    double d = atof(argv[4]);
+    double Rm = atof(argv[1]);    // {k.ohm.cm^2}
+    double Rc = atof(argv[2]);    // {ohm.cm}
+    double Cm = atof(argv[3]);    // {uF/cm^2}
+    double d = atof(argv[4]);     // {um}
 
     double lambda_m = calc_lambda_m(Rm,Rc,d);
     double tau_m = calc_tau_m(Rm,Cm);

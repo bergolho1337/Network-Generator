@@ -468,8 +468,23 @@ struct segment_node* build_segment (struct cco_network *the_network, struct loca
     struct point_node *M;
     if (using_local_optimization)
     {
-        double *best_pos = local_opt_config->best_pos;
-        M = insert_point(p_list,best_pos);
+        bool first_call = local_opt_config->first_call;
+    
+        if (first_call)
+        {
+            double middle_pos[3];
+            calc_middle_point_segment(iconn_node,middle_pos);  
+            M = insert_point(p_list,middle_pos); 
+        }
+        else
+        {
+            double *best_pos = local_opt_config->best_pos;
+            M = insert_point(p_list,best_pos);
+
+            // Set on the 'first_call' flag
+            local_opt_config->first_call = true;
+        }
+        
     }
     else
     {
@@ -753,13 +768,14 @@ double calc_tau_m (const double cm, const double rm)
     return rm * cm;
 }
 
+// Input should be given in: ({cm},{ohm.cm},{kohm.cm^2}
 // Output will be given in (cm)
 double calc_lambda_m (const double r, const double rc, const double rm)
 {
     double d = 2.0 * r;
 
     // Equation (4.17) from Keener's book
-    double num = rm * d;
+    double num = 1000.0 * rm * d;                    // Here we need to convert the Rm to {ohm.cm^2}
     double den = 4.0 * rc;
 
     return sqrt(num / den);
@@ -806,7 +822,8 @@ double calc_segment_activation_time (struct segment_node *s,\
     delta_s *= CM_TO_MM;
     r *= CM_TO_MM;
 
-    printf("\tPropagation velocity = %g mm/ms \n",velocity);
+    //printf("\tPropagation velocity = %g mm/ms \n",velocity);
+    //printf("\tDiameter = %g um\n",r*2.0*MM_TO_UM);
     //printf("\tDistance = %g mm \n",delta_s);
     //printf("\tRadius = %g mm\n",r);
     //printf("\tActivation time = %g ms\n\n",delta_s / velocity);
@@ -978,7 +995,7 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
     // Cost function reference
     set_cost_function_fn *cost_function_fn = config->function;
 
-    // Local optimization referencez
+    // Local optimization reference
     set_local_optimization_function_fn *local_optimization_fn = local_opt_config->function;
 
     // Increase support domain
@@ -1025,7 +1042,8 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
             iconn = cost_function_fn(the_network,config,local_opt_config,new_pos,feasible_segments);
             if (iconn == NULL)
             {
-                fprintf(stderr,"[cco] Error! No feasible segment found!\n");
+                //fprintf(stderr,"[cco] Error! No feasible segment found!\n");
+                //exit(EXIT_FAILURE);
 
                 point_is_ok = false;
             }

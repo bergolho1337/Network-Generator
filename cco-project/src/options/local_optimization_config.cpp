@@ -7,6 +7,8 @@ struct local_optimization_config* new_local_optimization_config ()
     result->handle = NULL;
     result->name = NULL;
     result->function = NULL;
+
+    result->first_call = true;
     
     //result->params = new std::map<std::string,double>();
 
@@ -81,6 +83,7 @@ bool is_corner (const uint32_t i, const uint32_t j, const uint32_t NE)
 void move_bifurcation_location (struct segment_node *iconn, struct segment_node *ibiff, struct segment_node *inew,\
                             const double pos[])
 {
+
     ibiff->value->dest->value->x = pos[0];
     ibiff->value->dest->value->y = pos[1];
     ibiff->value->dest->value->z = pos[2];
@@ -94,11 +97,11 @@ void move_bifurcation_location (struct segment_node *iconn, struct segment_node 
     inew->value->src->value->z = pos[2];
 }
 
-void save_original_bifurcation_position (struct segment_node *ibiff, double ori_pos[])
+void save_original_bifurcation_position (struct segment_node *iconn, double ori_pos[])
 {
-    ori_pos[0] = ibiff->value->dest->value->x;
-    ori_pos[1] = ibiff->value->dest->value->y;
-    ori_pos[2] = ibiff->value->dest->value->z;
+    ori_pos[0] = iconn->value->src->value->x;
+    ori_pos[1] = iconn->value->src->value->y;
+    ori_pos[2] = iconn->value->src->value->z;
 }
 
 void initialize_best_position_as_middle_point(double best_pos[], const double ori_pos[])

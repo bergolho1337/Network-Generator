@@ -136,6 +136,12 @@ SET_COST_FUNCTION (minimize_tree_volume_default)
         }
     }
 
+    if (using_local_optimization)
+    {
+        // Set off the 'first_call' flag
+        local_opt_config->first_call = false;
+    }
+
     return best;
 }
 
@@ -338,6 +344,12 @@ SET_COST_FUNCTION (minimize_tree_volume_with_angle_restriction)
         }
     }
 
+    if (using_local_optimization)
+    {
+        // Set off the 'first_call' flag
+        local_opt_config->first_call = false;
+    }
+
     return best;
 }
 
@@ -510,6 +522,12 @@ SET_COST_FUNCTION (minimize_tree_volume_with_length_restriction)
 
             restore_state_tree(the_network,iconn);
         }
+    }
+
+    if (using_local_optimization)
+    {
+        // Set off the 'first_call' flag
+        local_opt_config->first_call = false;
     }
 
     return best;
@@ -728,6 +746,12 @@ SET_COST_FUNCTION (minimize_tree_volume_with_angle_and_length_restriction)
         }
     }
 
+    if (using_local_optimization)
+    {
+        // Set off the 'first_call' flag
+        local_opt_config->first_call = false;
+    }
+
     return best;
 }
 
@@ -872,6 +896,12 @@ SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
 
             restore_state_tree(the_network,iconn);
         }
+    }
+
+    if (using_local_optimization)
+    {
+        // Set off the 'first_call' flag
+        local_opt_config->first_call = false;
     }
 
     return best;
@@ -1079,6 +1109,12 @@ SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty_and_angle_restriction
 
             restore_state_tree(the_network,iconn);
         }
+    }
+
+    if (using_local_optimization)
+    {
+        // Set off the 'first_call' flag
+        local_opt_config->first_call = false;
     }
 
     return best;

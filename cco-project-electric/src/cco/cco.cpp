@@ -11,6 +11,9 @@ struct cco_network* new_cco_network (struct user_options *options)
     result->V_out = options->V_out;
     result->r_perf = options->r_perf;
     result->N_term = options->N_term;
+    result->root_pos[0] = options->root_pos[0];
+    result->root_pos[1] = options->root_pos[1];
+    result->root_pos[2] = options->root_pos[2];
     result->A_perf = M_PI * result->r_perf * result->r_perf;
     result->log_file = fopen("output.log","w+");
 
@@ -32,9 +35,9 @@ struct cco_network* new_cco_network (struct user_options *options)
     else
     {
         result->using_cloud_points = false;
-        
+
         printf("[cco] No cloud of points provided\n");
-        printf("[cco] Generating cloud of points based on value of \"r_perf\"\n");    
+        printf("[cco] Generating cloud of points based on value of \"r_perf\"\n");
     }
 
     if (options->use_local_optimization)
@@ -45,7 +48,7 @@ struct cco_network* new_cco_network (struct user_options *options)
         strcpy(result->local_optimization_function_name,options->local_opt_config->name);
 
         printf("[cco] Using local optimization\n");
-        printf("[cco] Local optimization function name :> \"%s\"\n",result->local_optimization_function_name);    
+        printf("[cco] Local optimization function name :> \"%s\"\n",result->local_optimization_function_name);
     }
     else
     {
@@ -77,7 +80,7 @@ void grow_tree (struct cco_network *the_network, struct user_options *options)
         grow_tree_default(the_network,options);
     else
         grow_tree_using_cloud_points(the_network,options);
-    
+
     // Unitary test
     check_bifurcation_rule(the_network);
 
@@ -94,7 +97,7 @@ void grow_tree_default (struct cco_network *the_network, struct user_options *op
     double V_in = the_network->V_in;
     double V_out = the_network->V_out;
     double r_perf = the_network->r_perf;
-    double delta_v = V_in - V_out;        
+    double delta_v = V_in - V_out;
 
     struct point_list *p_list = the_network->point_list;
     struct segment_list *s_list = the_network->segment_list;
@@ -105,7 +108,7 @@ void grow_tree_default (struct cco_network *the_network, struct user_options *op
     while (the_network->num_terminals < the_network->N_term)
     {
         printf("%s\n",PRINT_LINE);
-        printf("[cco] Working on terminal number %d\n",the_network->num_terminals);            
+        printf("[cco] Working on terminal number %d\n",the_network->num_terminals);
         fprintf(log_file,"%s\n",PRINT_LINE);
         fprintf(log_file,"[cco] Working on terminal number %d\n",the_network->num_terminals);
 
@@ -141,14 +144,14 @@ void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_
     double V_in = the_network->V_in;
     double V_out = the_network->V_out;
     double r_perf = the_network->r_perf;
-    double delta_v = V_in - V_out;        
+    double delta_v = V_in - V_out;
 
     struct point_list *p_list = the_network->point_list;
     struct segment_list *s_list = the_network->segment_list;
 
     if (the_network->using_cloud_points)
     {
-        std::vector<struct point> cloud_points; 
+        std::vector<struct point> cloud_points;
         read_cloud_points(the_network->cloud_points_filename,cloud_points);
 
         make_root_using_cloud_points(the_network,cloud_points);
@@ -157,7 +160,7 @@ void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_
         while (the_network->num_terminals < the_network->N_term)
         {
             printf("%s\n",PRINT_LINE);
-            printf("[cco] Working on terminal number %d\n",the_network->num_terminals);            
+            printf("[cco] Working on terminal number %d\n",the_network->num_terminals);
             fprintf(log_file,"%s\n",PRINT_LINE);
             fprintf(log_file,"[cco] Working on terminal number %d\n",the_network->num_terminals);
 
@@ -184,7 +187,7 @@ void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_
 bool has_collision (struct segment_list *s_list, struct segment_node *s, const double new_pos[], FILE *log_file)
 {
     double middle_pos[3];
-    calc_middle_point_segment(s,middle_pos); 
+    calc_middle_point_segment(s,middle_pos);
 
     //printf("[+] Trying connection with segment %u\n",s->id);
     //fprintf(log_file,"[+] Trying connection with segment %u\n",s->id);
@@ -204,21 +207,59 @@ bool has_collision (struct segment_list *s_list, struct segment_node *s, const d
             bool intersect = collision_detection(middle_pos[0],middle_pos[1],middle_pos[2],\
                                             new_pos[0],new_pos[1],new_pos[2],\
                                             src->x,src->y,src->z,\
-                                            dest->x,dest->y,dest->z);  
+                                            dest->x,dest->y,dest->z);
 
             if (intersect)
             {
                 //printf("\t[-] ERROR! Intersection with segment %d !\n",tmp->id);
                 //fprintf(log_file,"\t[-] ERROR! Intersection with segment %d !\n",tmp->id);
                 return true;
-            }          
+            }
         }
         tmp = tmp->next;
     }
     return false;
 }
 
-bool check_collisions (struct cco_network *the_network, const double new_pos[],\
+bool has_collision (struct segment_list *s_list, struct segment_node *iconn, struct segment_node *ibiff, struct segment_node *inew, FILE *log_file)
+{
+    // Get the reference to the points from the 'inew' segment
+    struct point *src_inew = inew->value->src->value;
+    struct point *dest_inew = inew->value->dest->value;
+
+    // Get the reference to the points from the 'ibiff' segment
+    struct point *src_ibiff = ibiff->value->src->value;
+    struct point *dest_ibiff = ibiff->value->dest->value;
+
+    struct segment_node *tmp = s_list->list_nodes;
+    while (tmp != NULL)
+    {
+        // We avoid both the 'iconn' and 'inew' segments from the search
+        if (tmp->id != iconn->id && tmp->id != inew->id && tmp->id != ibiff->id)
+        {
+            // Get the reference to the points of the current segment
+            struct point *src = tmp->value->src->value;
+            struct point *dest = tmp->value->dest->value;
+
+            bool intersect = collision_detection(src_inew->x,src_inew->y,src_inew->z,\
+                                            dest_inew->x,dest_inew->y,dest_inew->z,\
+                                            src->x,src->y,src->z,\
+                                            dest->x,dest->y,dest->z);
+
+            if (intersect)
+            {
+                printf("\t[-] ERROR! Intersection between segments!\n");
+                //fprintf(log_file,"\t[-] ERROR! Intersection with segment %d !\n",tmp->id);
+                return true;
+            }
+        }
+        tmp = tmp->next;
+    }
+
+    return false;
+}
+
+bool check_collisions_and_fill_feasible_segments (struct cco_network *the_network, const double new_pos[],\
                     std::vector<struct segment_node*> &feasible_segments)
 {
     FILE *log_file = the_network->log_file;
@@ -264,13 +305,13 @@ bool connection_search (struct cco_network *the_network, const double pos[], con
 bool distance_criterion (struct segment_node *s, const double pos[], const double d_threash)
 {
     double d_proj = calc_dproj(s,pos);
-    
+
     double d_crit;
     if (d_proj >= 0 && d_proj <= 1)
         d_crit = calc_dortho(s,pos);
     else
         d_crit = calc_dend(s,pos);
-    
+
     return (d_crit > d_threash) ? true : false;
 }
 
@@ -328,12 +369,12 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
 {
 
     double I_out = I_in / num_terminals;
-    
-    // inew: Calculate resistance, potential, current and radius 
+
+    // inew: Calculate resistance, potential, current and radius
     calc_relative_resistance_term(inew);
     calc_potential_drop_term(inew,I_out);
 
-    // iconn: Recalculate resistance using (2.5) and pressure drop (2.7)
+    // iconn: Recalculate resistance 
     if (iconn->value->left == NULL && iconn->value->right == NULL)
     {
         calc_relative_resistance_term(iconn);
@@ -344,7 +385,7 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
         calc_relative_resistance_subtree(iconn,iconn->value->right,iconn->value->left);
         calc_potential_drop_subtree(iconn,I_out);
     }
-        
+
     // Compute the radius ratio between left and right subtree from ibiff (2.32)
     double radius_ratio = calc_radius_ratio(iconn,inew,I_out);
 
@@ -352,7 +393,7 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
     inew->value->beta = calc_bifurcation_ratio(radius_ratio,false);
     iconn->value->beta = calc_bifurcation_ratio(radius_ratio,true);
 
-    // ibiff: Calculate resistance and potential drop using (2.7)
+    // ibiff: Calculate resistance using (2.5) and pressure drop using (2.7)
     calc_relative_resistance_subtree(ibiff,iconn,inew);
     calc_potential_drop_subtree(ibiff,I_out);
 
@@ -379,7 +420,7 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
     if (ipar == NULL) return;
 
     double I_out = I_in / num_terminals;
-    
+
     if (ipar_left != NULL && ipar_right != NULL)
     {
 
@@ -390,19 +431,19 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
         ipar_left->value->beta = calc_bifurcation_ratio(radius_ratio,false);
         ipar_right->value->beta = calc_bifurcation_ratio(radius_ratio,true);
 
-        // Recalculate resistance using (2.5) and potential drop using (2.7)
+        // Recalculate resistance using (2.5) and pressure drop using (2.7)
         calc_relative_resistance_subtree(ipar,ipar_left,ipar_right);
         calc_potential_drop_subtree(ipar,I_out);
 
         // Call the function recursively until we reach the root
-        if (ipar->value->parent != NULL) 
+        if (ipar->value->parent != NULL)
             rescale_until_root(ipar->value->parent,\
                                ipar->value->parent->value->left,\
                                ipar->value->parent->value->right,\
                                I_in,delta_v,num_terminals);
         // Recalculate the root radius when we reach this segment using (2.19)
         else
-            ipar->value->radius = pow(ipar->value->resistance * I_in / delta_v , 0.5); 
+            ipar->value->radius = pow(ipar->value->resistance * I_in / delta_v , 0.5);
     }
 
 }
@@ -410,7 +451,7 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
 struct segment_node* build_segment (struct cco_network *the_network, struct local_optimization_config *local_opt_config,\
                                 const uint32_t index, const double new_pos[])
 {
-    
+
     struct point_list *p_list = the_network->point_list;
     struct segment_list *s_list = the_network->segment_list;
     double I_in = the_network->I_in;
@@ -426,8 +467,23 @@ struct segment_node* build_segment (struct cco_network *the_network, struct loca
     struct point_node *M;
     if (using_local_optimization)
     {
-        double *best_pos = local_opt_config->best_pos;
-        M = insert_point(p_list,best_pos);
+        bool first_call = local_opt_config->first_call;
+    
+        if (first_call)
+        {
+            double middle_pos[3];
+            calc_middle_point_segment(iconn_node,middle_pos);  
+            M = insert_point(p_list,middle_pos); 
+        }
+        else
+        {
+            double *best_pos = local_opt_config->best_pos;
+            M = insert_point(p_list,best_pos);
+
+            // Set on the 'first_call' flag
+            local_opt_config->first_call = true;
+        }
+        
     }
     else
     {
@@ -447,7 +503,7 @@ struct segment_node* build_segment (struct cco_network *the_network, struct loca
     struct segment *inew = new_segment(M,T,\
                             NULL,NULL,ibiff_node,I_in,V_in);
     struct segment_node *inew_node = insert_segment_node(s_list,inew);
-    
+
     // Update pointers
     //  iconn:
     iconn_node->value->parent = ibiff_node;
@@ -510,7 +566,7 @@ void restore_state_tree (struct cco_network *the_network,\
     double I_in = the_network->I_in;
     double V_in = the_network->V_in;
     double V_out = the_network->V_out;
-    double delta_v = V_in - V_out;  
+    double delta_v = V_in - V_out;
 
     struct segment_node *ibiff = iconn->value->parent;
     struct segment_node *inew = ibiff->value->left;
@@ -528,7 +584,7 @@ void restore_state_tree (struct cco_network *the_network,\
             ibiff_par->value->right = iconn;
         else if (ibiff_par->value->left == ibiff)
             ibiff_par->value->left = iconn;
-    }   
+    }
 
     // Recalculate R* for "iconn" because we change its length
     if (iconn->value->left == NULL && iconn->value->right == NULL)
@@ -595,12 +651,8 @@ void calc_relative_resistance_subtree (struct segment_node *ibiff, struct segmen
 {
     calc_relative_resistance_term(ibiff);
     double R = ibiff->value->resistance;
-
-    // TODO: Check if the expoent is really 2 ...
     double R_left = pow(iconn->value->beta,2) / iconn->value->resistance;
     double R_right = pow(inew->value->beta,2) / inew->value->resistance;
-    //double R_left = pow(iconn->value->beta,4) / iconn->value->resistance;
-    //double R_right = pow(inew->value->beta,4) / inew->value->resistance;
 
     ibiff->value->resistance = R + pow( R_left + R_right , -1.0 );
 }
@@ -629,9 +681,9 @@ void calc_potential_drop_subtree (struct segment_node *iconn, const double I_out
 void calc_radius_term (struct segment_node *iterm, const double I_out, const double delta_v)
 {
     double R = iterm->value->resistance;
-    double I = iterm->value->ndist * I_out;
+    double Q = iterm->value->ndist * I_out;
 
-    iterm->value->radius = pow( R * I / delta_v , 0.5 );
+    iterm->value->radius = pow( R * Q / delta_v , 0.25 );
 }
 
 void calc_middle_point_segment (struct segment_node *s, double pos[])
@@ -646,14 +698,14 @@ void calc_middle_point_segment (struct segment_node *s, double pos[])
 
 double calc_radius_ratio (struct segment_node *iconn, struct segment_node *inew, const double I_out)
 {
-    double I_inew = inew->value->ndist*I_out;
+    double Q_inew = inew->value->ndist*I_out;
     double R_inew = inew->value->resistance;
 
-    double I_iconn = iconn->value->ndist*I_out;
+    double Q_iconn = iconn->value->ndist*I_out;
     double R_iconn = iconn->value->resistance;
-    
-    double ratio = pow( (I_iconn * R_iconn) / (I_inew * R_inew), 0.5 );
-    
+
+    double ratio = pow( (Q_iconn * R_iconn) / (Q_inew * R_inew), 0.25 );
+
     return ratio;
 }
 
@@ -684,7 +736,7 @@ double calc_tree_volume (struct cco_network *the_network)
 {
     struct segment_list *s_list = the_network->segment_list;
     struct segment_node *tmp = s_list->list_nodes;
-    
+
     double total_volume = 0.0;
 
     while (tmp != NULL)
@@ -704,24 +756,25 @@ double calc_assymetric_ratio (struct segment_node *right, struct segment_node *l
     double r_left = left->value->radius;
 
     double epsilon = std::min(r_right,r_left) / std::max(r_right,r_left);
-    
+
     return epsilon;
 }
 
 // Output will be given in (ms)
 double calc_tau_m (const double cm, const double rm)
 {
-    // Equation (4.16) from Keener's book 
+    // Equation (4.16) from Keener's book
     return rm * cm;
 }
 
+// Input should be given in: ({cm},{ohm.cm},{kohm.cm^2}
 // Output will be given in (cm)
 double calc_lambda_m (const double r, const double rc, const double rm)
 {
     double d = 2.0 * r;
 
     // Equation (4.17) from Keener's book
-    double num = rm * d;
+    double num = 1000.0 * rm * d;                    // Here we need to convert the Rm to {ohm.cm^2}
     double den = 4.0 * rc;
 
     return sqrt(num / den);
@@ -762,9 +815,19 @@ double calc_segment_activation_time (struct segment_node *s,\
     double r = s->value->radius;
 
     double velocity = calc_propagation_velocity(r,c,cm,rc,rm);
-    //printf("Propagation velocity = %g cm/ms \n",velocity);
-    //printf("Distance = %g cm \n",delta_s);
 
+    // Parse every distance to {mm}
+    velocity *= CM_TO_MM;
+    delta_s *= CM_TO_MM;
+    r *= CM_TO_MM;
+
+    //printf("\tPropagation velocity = %g mm/ms \n",velocity);
+    //printf("\tDiameter = %g um\n",r*2.0*MM_TO_UM);
+    //printf("\tDistance = %g mm \n",delta_s);
+    //printf("\tRadius = %g mm\n",r);
+    //printf("\tActivation time = %g ms\n\n",delta_s / velocity);
+
+    // The output will be on {mm/ms}
     return delta_s / velocity;
 }
 
@@ -787,7 +850,7 @@ double calc_segment_level (struct segment_node *iconn)
 
         tmp = tmp->value->parent;
     }
-    
+
     return level;
 }
 
@@ -795,6 +858,8 @@ double calc_segment_custom_function_with_level_penalty (const double eval, struc
 {
     double level = calc_segment_level(iconn);
 
+    //return eval / level;
+    //return eval / (0.5 * level);
     return pow( eval, 1.0/level );
 }
 
@@ -814,7 +879,7 @@ double calc_custom_function (struct cco_network *the_network, const double beta,
 {
     struct segment_list *s_list = the_network->segment_list;
     struct segment_node *tmp = s_list->list_nodes;
-    
+
     double total_eval = 0.0;
 
     while (tmp != NULL)
@@ -835,27 +900,33 @@ void make_root_using_cloud_points (struct cco_network *the_network, std::vector<
     double V_out = the_network->V_out;
     double r_perf = the_network->r_perf;
     double A_perf = the_network->A_perf;
-    double delta_v = V_out - V_in;
+    double delta_v = V_in - V_out;
+    double *root_pos = the_network->root_pos;
 
     int K_term = 1;
-    double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term; 
+    double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term;
     double r_supp = sqrt(A_supp/M_PI);
+    //double r_supp = 500.0;
 
     struct point_list *p_list = the_network->point_list;
     struct segment_list *s_list = the_network->segment_list;
 
     // Positions from the root
-    double x_inew[3] = {0,0,0};
-    double x_prox[3] = {0,0,0};
+    double x_prox[3], x_inew[3];
+    for (uint32_t i = 0; i < 3; i++)
+    {
+        x_prox[i] = root_pos[i];
+        x_inew[i] = root_pos[i];        // The position of 'x_inew' will change in the next instruction ...
+    }
 
-    // Sort the distal position of the root until its size is larger than the perfusion radius  
+    // Sort the distal position of the root until its size is larger than the perfusion radius
     uint32_t index;
     while (euclidean_norm(x_prox[0],x_prox[1],x_prox[2],x_inew[0],x_inew[1],x_inew[2]) < r_supp)
         index = sort_point_from_cloud(x_inew,cloud_points);
-    
+
     // Eliminate the sorted point from the cloud
     cloud_points.erase(cloud_points.begin()+index);
-    
+
     // Insert points and create the root segment
     struct point_node *A = insert_point(p_list,x_prox);
     struct point_node *B = insert_point(p_list,x_inew);
@@ -875,19 +946,24 @@ void make_root (struct cco_network *the_network)
     double r_perf = the_network->r_perf;
     double A_perf = the_network->A_perf;
     double delta_v = V_in - V_out;
+    double *root_pos = the_network->root_pos;
 
     int K_term = 1;
-    double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term; 
+    double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term;
     double r_supp = sqrt(A_supp/M_PI);
 
     struct point_list *p_list = the_network->point_list;
     struct segment_list *s_list = the_network->segment_list;
 
     // Positions from the root
-    double x_inew[3] = {0,0,0};
-    double x_prox[3] = {0,0,0};
+    double x_prox[3], x_inew[3];
+    for (uint32_t i = 0; i < 3; i++)
+    {
+        x_prox[i] = root_pos[i];
+        x_inew[i] = root_pos[i];        // The position of 'x_inew' will change in the next instruction ...
+    }
 
-    // Sort the distal position of the root until its size is larger than the perfusion radius  
+    // Sort the distal position of the root until its size is larger than the perfusion radius
     while (euclidean_norm(x_prox[0],x_prox[1],x_prox[2],x_inew[0],x_inew[1],x_inew[2]) < r_supp)
         generate_point_inside_perfusion_area(x_inew,r_supp);
 
@@ -917,12 +993,12 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
 
     // Cost function reference
     set_cost_function_fn *cost_function_fn = config->function;
-    
+
     // Local optimization reference
     set_local_optimization_function_fn *local_optimization_fn = local_opt_config->function;
 
     // Increase support domain
-    double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term; 
+    double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term;
     double r_supp = sqrt(A_supp/M_PI);
     //printf("[!] Support domain radius = %g\n",r_supp);
     fprintf(log_file,"[!] Support domain radius = %g\n",r_supp);
@@ -936,7 +1012,7 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
 
     // Reference to segment we are going to make the connection
     struct segment_node *iconn = NULL;
-    
+
     while (!point_is_ok)
     {
         // Reset the feasible segments list
@@ -945,13 +1021,13 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
         // Sort a terminal position from the cloud of points
         uint32_t index = sort_point_from_cloud(new_pos,cloud_points);
 
-        // RESTRICTION AREA 
+        // RESTRICTION AREA
         // Check the distance criterion for this point
         point_is_ok = connection_search(the_network,new_pos,d_threash);
 
         // Check collision with other segments
         if (point_is_ok)
-            point_is_ok = check_collisions(the_network,new_pos,feasible_segments);
+            point_is_ok = check_collisions_and_fill_feasible_segments(the_network,new_pos,feasible_segments);
 
         // Test the cost function
         if (point_is_ok)
@@ -965,7 +1041,8 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
             iconn = cost_function_fn(the_network,config,local_opt_config,new_pos,feasible_segments);
             if (iconn == NULL)
             {
-                fprintf(stderr,"[cco] Error! No feasible segment found!\n");
+                //fprintf(stderr,"[cco] Error! No feasible segment found!\n");
+                //exit(EXIT_FAILURE);
 
                 point_is_ok = false;
             }
@@ -986,7 +1063,7 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
                 tosses = 0;
             }
         }
-        // The point is valid one and we can eliminate it from the cloud
+        // The point is a valid one and we can eliminate it from the cloud
         else
         {
             cloud_points.erase(cloud_points.begin()+index);
@@ -1015,7 +1092,7 @@ void generate_terminal (struct cco_network *the_network,\
     set_local_optimization_function_fn *local_optimization_fn = local_opt_config->function;
 
     // Increase support domain
-    double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term; 
+    double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term;
     double r_supp = sqrt(A_supp/M_PI);
     //printf("[!] Support domain radius = %g\n",r_supp);
     fprintf(log_file,"[!] Support domain radius = %g\n",r_supp);
@@ -1024,7 +1101,7 @@ void generate_terminal (struct cco_network *the_network,\
     bool point_is_ok = false;
     uint32_t tosses = 0;
     double d_threash = calc_dthreashold(r_supp,K_term);
-    
+
     // Array with the reference to the feasible segments for a new connection
     std::vector<struct segment_node*> feasible_segments;
 
@@ -1039,13 +1116,13 @@ void generate_terminal (struct cco_network *the_network,\
         // Generate the terminal position inside the perfusion area
         generate_point_inside_perfusion_area(new_pos,r_supp);
 
-        // RESTRICTION AREA 
+        // RESTRICTION AREA
         // Check the distance criterion for this point
         point_is_ok = connection_search(the_network,new_pos,d_threash);
 
         // Check collision with other segments
         if (point_is_ok)
-            point_is_ok = check_collisions(the_network,new_pos,feasible_segments);
+            point_is_ok = check_collisions_and_fill_feasible_segments(the_network,new_pos,feasible_segments);
 
         // Test the cost function
         if (point_is_ok)
@@ -1060,14 +1137,14 @@ void generate_terminal (struct cco_network *the_network,\
             if (iconn == NULL)
             {
                 //fprintf(stderr,"[cco] Error! No feasible segment found!\n");
-                printf("[cco] Error! No feasible segment found!\n");
+                //printf("[cco] Error! No feasible segment found!\n");
 
                 point_is_ok = false;
             }
         }
 
         // If the point does not attend the distance criterion or if there is a collision
-        // or if there is no feasible segment for the cost function we need to choose 
+        // or if there is no feasible segment for the cost function we need to choose
         // another point.
         if (!point_is_ok)
         {
@@ -1100,7 +1177,7 @@ void read_cloud_points (const char filename[], std::vector<struct point> &cloud_
     {
         struct point point;
         fscanf(file,"%lf %lf %lf",&point.x,&point.y,&point.z);
-    
+
         cloud_points.push_back(point);
     }
 

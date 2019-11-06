@@ -10,7 +10,7 @@ double generate_random_number ()
 {
     double number = (double)rand() / (double)RAND_MAX;
     double sign = rand() % 2;
-    
+
     return (sign) ? number : -number;
 }
 
@@ -40,7 +40,7 @@ double calc_dproj (struct segment_node *s, const double pos[])
 
     double dot_product = (proximal->x - distal->x)*(pos[0] - distal->x) +\
                          (proximal->y - distal->y)*(pos[1] - distal->y);
-    
+
     return dot_product * pow(length,-2.0);
 }
 
@@ -68,7 +68,7 @@ double calc_dend (struct segment_node *s, const double pos[])
 
     double d_prox = euclidean_norm(pos[0],pos[1],pos[2],\
                                     proximal->x,proximal->y,proximal->z);
-    
+
     return std::min(d_dist,d_prox);
 }
 
@@ -80,13 +80,13 @@ void draw_perfusion_area (struct cco_network *the_network)
     double A_perf = the_network->A_perf;
 
     // Increase support domain
-    double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term; 
+    double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term;
     double r_supp = sqrt(A_supp/M_PI);
 
     // Create a circle
     vtkSmartPointer<vtkRegularPolygonSource> polygonSource =
       vtkSmartPointer<vtkRegularPolygonSource>::New();
-    
+
     polygonSource->GeneratePolygonOff(); // Outline of the circle
     polygonSource->SetNumberOfSides(50);
     polygonSource->SetRadius(r_supp);
@@ -106,7 +106,7 @@ bool collision_detection (const double x1, const double y1, const double z1,\
     double denominator = ((x2 - x1) * (y3 - y4)) - ((y2 - y1) * (x3 - x4));
     double numerator1 = ((y1 - y4) * (x3 - x4)) - ((x1 - x4) * (y3 - y4));
     double numerator2 = ((y1 - y4) * (x2 - x1)) - ((x1 - x4) * (y2 - y1));
-    
+
     // Detect coincident lines (has a problem, read below)
     if (denominator == 0) return numerator1 == 0 && numerator2 == 0;
 
@@ -127,10 +127,10 @@ void build_unitary_vector (double u[], const double x1, const double y1, const d
 }
 
 double calc_angle_between_vectors (const double u[], const double v[])
-{   
+{
     double dot_product = u[0]*v[0] + u[1]*v[1] + u[2]*v[2];
-    
-    double angle_radians = acos(dot_product); 
+
+    double angle_radians = acos(dot_product);
 
     // Return the angle in degrees
     return angle_radians * 180.0 / M_PI;
@@ -164,32 +164,48 @@ void write_to_vtk (struct cco_network *the_network)
     struct segment_list *s_list = the_network->segment_list;
     struct segment_node *s_tmp = s_list->list_nodes;
 
-    FILE *file = fopen("output/cco_tree.vtk","w+");
+    FILE *file = fopen("output/cco_tree_cm.vtk","w+");
+    FILE *file_converted = fopen("output/cco_tree_um.vtk","w+");
 
+    // Write the header
+    // File number 1 {cm}
     fprintf(file,"# vtk DataFile Version 3.0\n");
     fprintf(file,"Tree\n");
     fprintf(file,"ASCII\n");
     fprintf(file,"DATASET POLYDATA\n");
     fprintf(file,"POINTS %u float\n",num_points);
+    // File number 2 {um}
+    fprintf(file_converted,"# vtk DataFile Version 3.0\n");
+    fprintf(file_converted,"Tree converted\n");
+    fprintf(file_converted,"ASCII\n");
+    fprintf(file_converted,"DATASET POLYDATA\n");
+    fprintf(file_converted,"POINTS %u float\n",num_points);
     while (p_tmp != NULL)
     {
         fprintf(file,"%g %g %g\n",p_tmp->value->x,p_tmp->value->y,p_tmp->value->z);
+        fprintf(file_converted,"%g %g %g\n",p_tmp->value->x*CM_TO_UM,p_tmp->value->y*CM_TO_UM,p_tmp->value->z*CM_TO_UM);
         p_tmp = p_tmp->next;
     }
-        
+
     fprintf(file,"LINES %u %u\n",num_segments,num_segments*3);
+    fprintf(file_converted,"LINES %u %u\n",num_segments,num_segments*3);
     while (s_tmp != NULL)
     {
         fprintf(file,"2 %u %u\n",s_tmp->value->src->id,s_tmp->value->dest->id);
+        fprintf(file_converted,"2 %u %u\n",s_tmp->value->src->id,s_tmp->value->dest->id);
         s_tmp = s_tmp->next;
     }
     fprintf(file,"CELL_DATA %u\n",num_segments);
     fprintf(file,"SCALARS radius float\n");
     fprintf(file,"LOOKUP_TABLE default\n");
+    fprintf(file_converted,"CELL_DATA %u\n",num_segments);
+    fprintf(file_converted,"SCALARS radius float\n");
+    fprintf(file_converted,"LOOKUP_TABLE default\n");
     s_tmp = s_list->list_nodes;
     while (s_tmp != NULL)
     {
         fprintf(file,"%g\n",s_tmp->value->radius);
+        fprintf(file_converted,"%g\n",s_tmp->value->radius);
         s_tmp = s_tmp->next;
     }
     fclose(file);

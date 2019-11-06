@@ -1,3 +1,17 @@
+- Refactor the code until now
+
+- Do more tests with the Minimize Activation Time Function with Level Penalty
+	- Include Local Optimization
+
+- Finish implement the following cost function libraries to work with local optimization:
+	- Closest segment
+	- Custom function
+	- Minimize activation time
+
+- Rewrite all the examples using the new features
+
 - Think about how to deal with the circumscribed circle when generating the network.
 	- Maybe create another function just to deal with this kind of geometry.
 	- Pass as additional arguments the 'inner_radius' and 'outer_radius'.
+
+

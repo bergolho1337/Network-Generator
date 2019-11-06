@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.1)
-project(CcoElectric)
+project(Cco-Electric)
 
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/shared-libs)
@@ -10,6 +10,7 @@ INCLUDE(${VTK_USE_FILE})
 ADD_SUBDIRECTORY(src/point-list)
 ADD_SUBDIRECTORY(src/segment-list)
 ADD_SUBDIRECTORY(src/options)
+ADD_SUBDIRECTORY(src/ini_parser)
 ADD_SUBDIRECTORY(src/utils)
 ADD_SUBDIRECTORY(src/test)
 ADD_SUBDIRECTORY(src/cco)
@@ -17,8 +18,8 @@ ADD_SUBDIRECTORY(src/cco)
 ADD_SUBDIRECTORY(src/cost_function_library)
 ADD_SUBDIRECTORY(src/local_optimization_library)
 
-ADD_EXECUTABLE(CcoElectric src/main.cpp)
+ADD_EXECUTABLE(Cco-Electric src/main.cpp)
 
-ADD_DEPENDENCIES(CcoElectric pointlist segmentlist options utils cco test)
+ADD_DEPENDENCIES(Cco-Electric pointlist segmentlist options ini_parser utils cco test)
 
-TARGET_LINK_LIBRARIES(CcoElectric ${VTK_LIBRARIES} pointlist segmentlist options utils cco test dl m)
+TARGET_LINK_LIBRARIES(Cco-Electric ${VTK_LIBRARIES} pointlist segmentlist options ini_parser utils cco test dl m)

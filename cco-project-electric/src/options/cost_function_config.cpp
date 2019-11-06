@@ -4,6 +4,10 @@ struct cost_function_config* new_cost_function_config ()
 {
     struct cost_function_config *result = (struct cost_function_config*)malloc(sizeof(struct cost_function_config));
 
+    result->handle = NULL;
+    result->function_name = NULL;
+    result->library_name = NULL;
+
     result->params = new std::map<std::string,double>();
 
     return result;
@@ -34,13 +38,17 @@ bool get_parameter_value_from_map (std::map<std::string,double> *params,\
     }
     else
     {
-        fprintf(stderr,"Not found \"%s\" \n",key.c_str());
+        fprintf(stderr,"Not found \"%s\" ... using default value\n",key.c_str());
         return false;
     }
 }
 
 void set_cost_function (struct cost_function_config *config)
 {
+    assert(config);
+    assert(config->function_name);
+    assert(config->library_name);
+
     char *library_path = config->library_name;
 
     config->handle = dlopen(library_path,RTLD_LAZY);

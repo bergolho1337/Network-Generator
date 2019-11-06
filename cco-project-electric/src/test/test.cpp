@@ -2,8 +2,8 @@
 
 void test1 (struct cco_network *the_network)
 {
-    double I = the_network->I_in;
-    double v = the_network->V_in;
+    double I_in = the_network->I_in;
+    double V_in = the_network->V_in;
 
     struct point_list *p_list = the_network->point_list;
 
@@ -31,13 +31,13 @@ void test1 (struct cco_network *the_network)
     // Segments
     struct segment_list *s_list = the_network->segment_list;
 
-    struct segment *s1 = new_segment(A,C,NULL,NULL,NULL,I,v);
-    struct segment *s2 = new_segment(C,E,NULL,NULL,NULL,I,v);
-    struct segment *s3 = new_segment(C,G,NULL,NULL,NULL,I,v);
-    struct segment *s4 = new_segment(G,H,NULL,NULL,NULL,I,v);
-    struct segment *s5 = new_segment(G,D,NULL,NULL,NULL,I,v);
-    struct segment *s6 = new_segment(E,B,NULL,NULL,NULL,I,v);
-    struct segment *s7 = new_segment(E,F,NULL,NULL,NULL,I,v);
+    struct segment *s1 = new_segment(A,C,NULL,NULL,NULL,I_in,V_in);
+    struct segment *s2 = new_segment(C,E,NULL,NULL,NULL,I_in,V_in);
+    struct segment *s3 = new_segment(C,G,NULL,NULL,NULL,I_in,V_in);
+    struct segment *s4 = new_segment(G,H,NULL,NULL,NULL,I_in,V_in);
+    struct segment *s5 = new_segment(G,D,NULL,NULL,NULL,I_in,V_in);
+    struct segment *s6 = new_segment(E,B,NULL,NULL,NULL,I_in,V_in);
+    struct segment *s7 = new_segment(E,F,NULL,NULL,NULL,I_in,V_in);
 
     struct segment_node *s_node1 = insert_segment_node(s_list,s1);
     struct segment_node *s_node2 = insert_segment_node(s_list,s2);
@@ -67,7 +67,7 @@ void test1 (struct cco_network *the_network)
     s5->parent = s_node3;
     s5->left = NULL;
     s5->right = NULL;
-    
+
     s6->parent = s_node2;
     s6->left = NULL;
     s6->right = NULL;
@@ -94,7 +94,7 @@ void test2 (struct cco_network *the_network)
     double pos2[3] = {-3,-3,0};
     struct point_node *A = insert_point(p_list,pos1);
     struct point_node *B = insert_point(p_list,pos2);
-    
+
     struct segment *iroot = new_segment(A,B,NULL,NULL,NULL,I_in,V_in);
     struct segment_node *iroot_node = insert_segment_node(s_list,iroot);
     rescale_root(iroot_node,I_in,delta_v);
@@ -106,7 +106,7 @@ void test2 (struct cco_network *the_network)
 
     // Second segment
     double pos4[3] = {-2,-4,0};
-    build_segment(the_network,NULL,1,pos4);
+    build_segment(the_network,NULL,0,pos4);
 
     // Third segment
     double pos5[3] = {-1,-3,0};
@@ -114,6 +114,7 @@ void test2 (struct cco_network *the_network)
 
     print_list(p_list);
     print_list(s_list);
+
 }
 
 // Build the example network from Rafael's thesis
@@ -132,7 +133,7 @@ void test3 (struct cco_network *the_network)
     double pos2[3] = {0,-4,0};
     struct point_node *A = insert_point(p_list,pos1);
     struct point_node *B = insert_point(p_list,pos2);
-    
+
     struct segment *iroot = new_segment(A,B,NULL,NULL,NULL,I_in,V_in);
     struct segment_node *iroot_node = insert_segment_node(s_list,iroot);
     rescale_root(iroot_node,I_in,delta_v);
@@ -163,7 +164,7 @@ void check_bifurcation_rule (struct cco_network *the_network)
 
     struct segment_list *s_list = the_network->segment_list;
     struct segment_node *tmp, *tmp_left, *tmp_right;
-    
+
     tmp = s_list->list_nodes;
     while (tmp != NULL)
     {

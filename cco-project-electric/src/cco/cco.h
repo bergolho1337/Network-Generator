@@ -24,7 +24,7 @@
 
 // CONSTANTS AND MACROS 
 // =================================================================
-static const double RHO = 1.724e-08;     // Copper resistivity (ohm m)
+static const double RHO = 1.724e-06;    // Copper resistivity (ohm.cm)
 static const double GAMMA = 3.0;        // Bifurcation expoent
 static const uint32_t NTOSS = 200;      // Number of tosses for a new terminal
 
@@ -43,6 +43,8 @@ struct cco_network
     double r_supp;
 
     double A_perf;
+
+    double root_pos[3];
 
     struct point_list *point_list;
     struct segment_list *segment_list;
@@ -66,11 +68,11 @@ void free_cco_network (struct cco_network *the_network);
 struct segment_node* build_segment (struct cco_network *the_network, struct local_optimization_config *local_opt_config,\
                                 const uint32_t index, const double new_pos[]);
 
-void rescale_root (struct segment_node *iroot, const double I_in, const double delta_v);
+void rescale_root (struct segment_node *iroot, const double Q_perf, const double delta_p);
 void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struct segment_node *inew,\
-                 const double I_in, const double delta_v, const int num_terminals);
+                 const double Q_perf, const double delta_p, const int num_terminals);
 void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_left, struct segment_node *ipar_right,\
-                        const double I_in, const double delta_v, const int num_terminals);
+                        const double Q_perf, const double delta_p, const int num_terminals);
 
 void recalculate_radius (struct cco_network *the_network);
 
@@ -82,7 +84,7 @@ void calc_relative_resistance_term (struct segment_node *iterm);
 void calc_relative_resistance_subtree (struct segment_node *ibiff, struct segment_node *iconn, struct segment_node *inew);
 void calc_potential_drop_term (struct segment_node *iterm, const double I_out);
 void calc_potential_drop_subtree (struct segment_node *iconn, const double I_out);
-void calc_radius_term (struct segment_node *iterm, const double I_out, const double delta_v);
+void calc_radius_term (struct segment_node *iterm, const double I_out, const double delta_p);
 double calc_bifurcation_ratio (const double radius_ratio, bool sign);
 double calc_radius_ratio (struct segment_node *iconn, struct segment_node *inew, const double I_out);
 double calc_radius (struct cco_network *the_network, struct segment_node *s);
@@ -108,10 +110,12 @@ double calc_segment_custom_function (struct segment_node *s, const double beta, 
 double calc_segment_custom_function_with_level_penalty (const double eval, struct segment_node *iconn);
 
 void check_bifurcation_rule (struct cco_network *the_network);
-bool check_collisions (struct cco_network *the_network, const double new_pos[],\
+bool check_collisions_and_fill_feasible_segments (struct cco_network *the_network, const double new_pos[],\
                     std::vector<struct segment_node*> &feasible_segments);
 
 bool has_collision (struct segment_list *s_list, struct segment_node *s, const double new_pos[], FILE *log_file);
+bool has_collision (struct segment_list *s_list, struct segment_node *iconn, struct segment_node *ibiff, struct segment_node *inew, FILE *log_file);
+
 bool connection_search (struct cco_network *the_network, const double pos[], const double d_threash);
 bool distance_criterion (struct segment_node *s, const double pos[], const double d_threash);
 

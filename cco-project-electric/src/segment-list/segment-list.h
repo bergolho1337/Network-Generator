@@ -14,9 +14,9 @@
 
 struct segment
 {
-    double I;             // Current
-    double delta_v;       // Potential drop 
-    double radius;        // Radius 
+    double I;             // Current passing through the segment
+    double delta_v;       // Potential drop of the segment 
+    double radius;        // Radius of the segment
     double beta;          // Relative radius (ratio between my radius and parent radius = beta)
     double resistance;    // Relative resistance R*
     double length;

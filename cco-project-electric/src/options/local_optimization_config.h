@@ -27,6 +27,7 @@ struct local_optimization_config
     char *name;
     //std::map<std::string,double> *params;    // Parameters of the local optimization function
 
+    bool first_call;
     double best_pos[3];                                    // Best position for the bifurcation
 
     set_local_optimization_function_fn *function;          // Reference to the local optimization function
@@ -41,7 +42,7 @@ void set_local_optimization_function (struct local_optimization_config *config);
 void print_local_optimization_function_config (struct local_optimization_config *config);
 
 // Auxiliary functions
-void save_original_bifurcation_position (struct segment_node *ibiff, double ori_pos[]);
+void save_original_bifurcation_position (struct segment_node *iconn, double ori_pos[]);
 void initialize_best_position_as_middle_point(double best_pos[], const double ori_pos[]);
 bool is_corner (const uint32_t i, const uint32_t j, const uint32_t NE);
 void move_bifurcation_location (struct segment_node *iconn, struct segment_node *ibiff, struct segment_node *inew,\

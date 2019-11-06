@@ -129,7 +129,7 @@ void generate_point_inside_circle (double pos[], const double radius)
     double teta = generate_random_number()*2.0*M_PI;
     double r = generate_random_number()*radius;
 
-    static double center[3] = {radius,radius,0};
+    static double center[3] = {1,1,0};
 
     pos[0] = center[0] + r*cos(teta);
     pos[1] = center[1] + r*sin(teta);

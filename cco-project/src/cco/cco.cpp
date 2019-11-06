@@ -1138,7 +1138,7 @@ void generate_terminal (struct cco_network *the_network,\
             if (iconn == NULL)
             {
                 //fprintf(stderr,"[cco] Error! No feasible segment found!\n");
-                printf("[cco] Error! No feasible segment found!\n");
+                //printf("[cco] Error! No feasible segment found!\n");
 
                 point_is_ok = false;
             }

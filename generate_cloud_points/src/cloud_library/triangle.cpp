@@ -86,12 +86,12 @@ void draw_triangle_area (const double side_length)
     vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
     
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
-    points->InsertNextPoint(0,0,0);
-    points->InsertNextPoint(l2,-l*sin(M_PI/3.0),0);
-    points->InsertNextPoint(-l2,-l*sin(M_PI/3.0),0);
     //points->InsertNextPoint(0,0,0);
-    //points->InsertNextPoint(l2,l2*sin(M_PI/3.0),0);
-    //points->InsertNextPoint(l,l2*sin(M_PI/3.0),0);
+    //points->InsertNextPoint(l2,-l*sin(M_PI/3.0),0);
+    //points->InsertNextPoint(-l2,-l*sin(M_PI/3.0),0);
+    points->InsertNextPoint(0,0,0);
+    points->InsertNextPoint(l*cos(M_PI/3.0),l*sin(M_PI/3.0),0);
+    points->InsertNextPoint(l,0,0);
     polydata->SetPoints(points);
 
     vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();

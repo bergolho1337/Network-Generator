@@ -25,12 +25,11 @@ static const uint32_t MAX_FILENAME_SIZE = 200;
 struct user_options
 {
     
-    uint32_t N_term;
-    double Q_perf;
+    uint32_t n_term;
+    double q_perf;
     double p_perf;
     double p_term;
-    double r_perf;
-    double V_perf;
+    double v_perf;
 
     double root_pos[3];
 

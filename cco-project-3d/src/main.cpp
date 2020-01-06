@@ -22,7 +22,7 @@ int main (int argc, char *argv[])
     struct cco_network *the_network = new_cco_network(options);
 
     grow_tree(the_network,options);
-    //write_to_vtk(the_network);
+    write_to_vtk(the_network);
 
     free_cco_network(the_network);
     free_user_options(options);

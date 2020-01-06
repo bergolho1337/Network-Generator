@@ -27,6 +27,7 @@
 static const double ETA = 3.6e-03;                  // Blood viscosity 
 static const double GAMMA = 3.0;                    // Bifurcation expoent
 static const uint32_t NTOSS = 10;                   // Number of tosses for a new terminal
+static const double FACTOR = 0.95;                  // Reduction factor for the distance criterion
 
 #define PRINT_LINE "========================================================================================================"
 // =================================================================
@@ -145,6 +146,7 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
                                           std::vector<struct point> cloud_points);
 
 uint32_t sort_point_from_cloud (double pos[], std::vector<struct point> cloud_points);
+void sort_point_from_cloud_v2 (double pos[], std::vector<struct point> cloud_points);
 void read_cloud_points (const char filename[], std::vector<struct point> &cloud_points);
 
 void write_to_vtk (struct cco_network *the_network);

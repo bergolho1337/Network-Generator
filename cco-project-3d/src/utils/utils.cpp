@@ -32,36 +32,40 @@ double calc_dthreashold (const double radius, const int num_terminals)
 
 double calc_dproj (struct segment_node *s, const double pos[])
 {
-    struct point *distal = s->value->src->value;
-    struct point *proximal = s->value->dest->value;
+    struct point *proximal = s->value->src->value;
+    struct point *distal = s->value->dest->value;
 
     double length = euclidean_norm(proximal->x,proximal->y,proximal->z,\
                                    distal->x,distal->y,distal->z);
 
     double dot_product = (proximal->x - distal->x)*(pos[0] - distal->x) +\
-                         (proximal->y - distal->y)*(pos[1] - distal->y);
+                         (proximal->y - distal->y)*(pos[1] - distal->y) +\
+                         (proximal->z - distal->z)*(pos[2] - distal->z);
 
     return dot_product * pow(length,-2.0);
 }
 
 double calc_dortho (struct segment_node *s, const double pos[])
 {
-    struct point *distal = s->value->src->value;
-    struct point *proximal = s->value->dest->value;
+    struct point *proximal = s->value->src->value;
+    struct point *distal = s->value->dest->value;
 
     double length = euclidean_norm(proximal->x,proximal->y,proximal->z,\
                                    distal->x,distal->y,distal->z);
+    double length_term = euclidean_norm(pos[0],pos[1],pos[2],\
+                                distal->x,distal->y,distal->z);
 
-    double dot_product = (-proximal->y + distal->y)*(pos[0] - distal->x) +\
-                        (proximal->x - distal->x)*(pos[1] - distal->y);
+    double dot_product = (proximal->x - distal->x)*(distal->x - pos[0]) +\
+                         (proximal->y - distal->y)*(distal->y - pos[1]) +\
+                         (proximal->z - distal->z)*(distal->z - pos[2]);
 
-    return fabs(dot_product) * pow(length,-1.0);
+    return sqrt( powf(length_term * length, 2.0) - powf(dot_product,2.0) ) * powf(length,-1.0);
 }
 
 double calc_dend (struct segment_node *s, const double pos[])
 {
-    struct point *distal = s->value->src->value;
-    struct point *proximal = s->value->dest->value;
+    struct point *proximal = s->value->src->value;
+    struct point *distal = s->value->dest->value;
 
     double d_dist = euclidean_norm(pos[0],pos[1],pos[2],\
                                        distal->x,distal->y,distal->z);
@@ -100,22 +104,65 @@ void draw_perfusion_area (struct cco_network *the_network)
 }
 */
 
-bool collision_detection (const double x1, const double y1, const double z1,\
+// Return true if we detect a collision or if the points are too close
+// TODO: Double-check this function again ...
+bool collision_detection (const double x1, const double y1, const double z1,\     
                           const double x2, const double y2, const double z2,\
                           const double x3, const double y3, const double z3,\
                           const double x4, const double y4, const double z4)
 {
-    double denominator = ((x2 - x1) * (y3 - y4)) - ((y2 - y1) * (x3 - x4));
-    double numerator1 = ((y1 - y4) * (x3 - x4)) - ((x1 - x4) * (y3 - y4));
-    double numerator2 = ((y1 - y4) * (x2 - x1)) - ((x1 - x4) * (y2 - y1));
+    //printf("p1 = (%g,%g,%g)\n",x1,y1,z1);
+    //printf("p2 = (%g,%g,%g)\n",x2,y2,z2);
+    //printf("p3 = (%g,%g,%g)\n",x3,y3,z3);
+    //printf("p4 = (%g,%g,%g)\n",x4,y4,z4);
 
-    // Detect coincident lines (has a problem, read below)
-    if (denominator == 0) return numerator1 == 0 && numerator2 == 0;
+    bool ret = true;
+    double p13[3], p43[3], p21[3];
 
-    double r = numerator1 / denominator;
-    double s = numerator2 / denominator;
+    p13[0] = x1 - x3;
+    p13[1] = y1 - y3;
+    p13[2] = z1 - z3;
 
-    return (r >= 0 && r <= 1) && (s >= 0 && s <= 1);
+    p43[0] = x4 - x3;
+    p43[1] = y4 - y3;
+    p43[2] = z4 - z3;
+
+    p21[0] = x2 - x1;
+    p21[1] = y2 - y1;
+    p21[2] = z2 - z1;
+    
+    if (check_size(p43))
+        ret = false;
+    if (check_size(p21))
+        ret = false;
+    
+    // Calculate dot products
+    double dot_product_1343 = calc_dot_product(p13,p43);
+    double dot_product_4321 = calc_dot_product(p43,p21);
+    double dot_product_1321 = calc_dot_product(p13,p21);
+    double dot_product_4343 = calc_dot_product(p43,p43);
+    double dot_product_2121 = calc_dot_product(p21,p21);
+
+    double denominator = dot_product_2121 * dot_product_4343 - dot_product_4321 * dot_product_4321;
+    if (fabs(denominator) < EPSILON)
+        ret = false;
+    
+    double numerator = dot_product_1343 * dot_product_4321 - dot_product_1321 * dot_product_4343;
+
+    double mua = numerator / denominator;
+    double mub = (dot_product_1343 + dot_product_4321 * mua) / dot_product_4343;
+
+    double pa[3], pb[3];
+    pa[0] = x1 + mua * p21[0];
+    pa[1] = y1 + mua * p21[1];
+    pa[2] = z1 + mua * p21[2];
+
+    pb[0] = x3 + mub * p43[0];
+    pb[1] = y3 + mub * p43[1];
+    pb[2] = z3 + mub * p43[2];
+
+    //printf("Collision = %d\n\n",ret);
+    return ret;
 }
 
 void build_unitary_vector (double u[], const double x1, const double y1, const double z1,\
@@ -151,6 +198,12 @@ double calc_flux_terminals (const double Q_perf, const int N_term)
     return Q_perf / N_term;
 }
 
+// Calculate the dot product between two vectors
+double calc_dot_product (const double u[], const double v[])
+{
+    return (u[0] * v[0]) + (u[1] * v[1]) + (u[2] * v[2]); 
+}
+
 void generate_random_array_using_mersenne_twister (std::vector<double> &the_array)
 {
     dsfmt_t dsfmt;
@@ -161,6 +214,14 @@ void generate_random_array_using_mersenne_twister (std::vector<double> &the_arra
         double value = dsfmt_genrand_close_open(&dsfmt);
         the_array.push_back(value);
     }
+}
+
+bool check_size (const double p[])
+{
+    if (fabs(p[0]) < EPSILON && fabs(p[1]) < EPSILON && fabs(p[2]) < EPSILON)
+        return true;
+    else
+        return false;
 }
 
 void print_terminal_activation_time (struct cco_network *the_network,\
@@ -230,8 +291,8 @@ void write_to_vtk (struct cco_network *the_network)
     s_tmp = s_list->list_nodes;
     while (s_tmp != NULL)
     {
-        fprintf(file,"%g\n",s_tmp->value->radius);
-        fprintf(file_converted,"%g\n",s_tmp->value->radius);
+        fprintf(file,"%g\n",s_tmp->value->radius * 1000.0);
+        fprintf(file_converted,"%g\n",s_tmp->value->radius * 1000.0);
         s_tmp = s_tmp->next;
     }
     fclose(file);

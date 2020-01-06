@@ -63,7 +63,7 @@ int parse_config_file(void *user, const char *section, const char *name, const c
     {
         if (MATCH_NAME("N_term"))
         {
-            pconfig->N_term = (int)strtol(value, NULL, 10);
+            pconfig->n_term = (int)strtol(value, NULL, 10);
         }
         else if (MATCH_NAME("root_x"))
         {
@@ -79,7 +79,7 @@ int parse_config_file(void *user, const char *section, const char *name, const c
         }
         else if (MATCH_NAME("Q_perf"))
         {
-            pconfig->Q_perf = strtof(value, NULL);
+            pconfig->q_perf = strtof(value, NULL);
         }
         else if (MATCH_NAME("p_perf"))
         {
@@ -91,7 +91,7 @@ int parse_config_file(void *user, const char *section, const char *name, const c
         }
         else if (MATCH_NAME("V_perf"))
         {
-            pconfig->V_perf = strtof(value, NULL);
+            pconfig->v_perf = strtof(value, NULL);
         }
     }
     else if (SECTION_STARTS_WITH(CLOUD_SECTION))
@@ -161,11 +161,11 @@ int parse_config_file(void *user, const char *section, const char *name, const c
 void print_user_options (struct user_options *options)
 {
     printf("********************* user_options *********************\n");
-    printf("Q_perf = %g\n",options->Q_perf);
+    printf("Q_perf = %g\n",options->q_perf);
     printf("p_perf = %g\n",options->p_perf);
     printf("p_term = %g\n",options->p_term);
-    printf("r_perf = %g\n",options->r_perf);
-    printf("N_term = %d\n",options->N_term);
+    printf("V_perf = %g\n",options->v_perf);
+    printf("N_term = %d\n",options->n_term);
     printf("%s\n",PRINT_DOTS);
     if (options->use_cloud_points)
         printf("cloud_points_filename = %s\n",options->cloud_points_filename);

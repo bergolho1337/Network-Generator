@@ -32,6 +32,7 @@
 
 static const uint32_t RAND_ARRAY_SIZE = 8000000;    // Size of randomic vector
 static const uint32_t RAND_SEED = 1562046115;       // Random seed
+static const double EPSILON = 1.0e-02;              // Tolerance for comparing real numbers
 
 // =================================================================
 
@@ -51,6 +52,7 @@ double calc_angle_between_vectors (const double u[], const double v[]);
 
 double euclidean_norm (const double x1, const double y1, const double z1,\
                     const double x2, const double y2, const double z2);
+double calc_dot_product (const double u[], const double v[]);
 
 double calc_dthreashold (const double radius, const int num_terminals);
 double calc_dproj (struct segment_node *s, const double pos[]);
@@ -63,6 +65,8 @@ double calc_flux_terminals (const double Q_perf, const int N_term);
 void generate_random_array_using_mersenne_twister (std::vector<double> &the_array);
 
 //void draw_perfusion_area (struct cco_network *the_network);
+
+bool check_size (const double p[]);
 
 void print_terminal_activation_time (struct cco_network *the_network,\
                             const double c, const double cm, const double rc, const double rm);

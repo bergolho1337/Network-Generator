@@ -1,22 +1,25 @@
 #include "cco.h"
 
+uint32_t cur_rand_index = 0;
+
 struct cco_network* new_cco_network (struct user_options *options)
 {
     struct cco_network *result = (struct cco_network*)malloc(sizeof(struct cco_network));
     result->point_list = new_point_list();
     result->segment_list = new_segment_list();
     result->num_terminals = 0;
-    result->Q_perf = options->Q_perf;
-    result->Q_term = calc_flux_terminals(options->Q_perf,options->N_term);
+    result->Q_perf = options->q_perf;
+    result->Q_term = calc_flux_terminals(options->q_perf,options->n_term);
     result->p_perf = options->p_perf;
     result->p_term = options->p_term;
     result->delta_p = options->p_perf - options->p_term;
-    result->N_term = options->N_term;
+    result->N_term = options->n_term;
     result->root_pos[0] = options->root_pos[0];
     result->root_pos[1] = options->root_pos[1];
     result->root_pos[2] = options->root_pos[2];
-    result->V_perf = options->V_perf;
-    result->r_perf = calc_perfusion_radius(options->V_perf);
+    result->V_perf = options->v_perf;
+    result->r_perf = calc_perfusion_radius(options->v_perf);
+    result->r_supp = result->r_perf;                            // When we consider a fixed perfusion volume
     result->log_file = fopen("output.log","w+");
 
     uint32_t size = strlen(options->config->function_name) + 1;
@@ -88,6 +91,7 @@ void grow_tree (struct cco_network *the_network, struct user_options *options)
 
 }
 
+// TODO: Need to implement the generation of the random array
 void grow_tree_default (struct cco_network *the_network, struct user_options *options)
 {
     FILE *log_file = the_network->log_file;
@@ -154,26 +158,26 @@ void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_
     struct point_list *p_list = the_network->point_list;
     struct segment_list *s_list = the_network->segment_list;
 
-    if (the_network->using_cloud_points)
+    std::vector<struct point> cloud_points;
+    read_cloud_points(the_network->cloud_points_filename,cloud_points);
+
+    make_root_using_cloud_points(the_network,cloud_points);
+
+    // Main iteration loop
+    while (the_network->num_terminals < the_network->N_term)
     {
-        std::vector<struct point> cloud_points;
-        read_cloud_points(the_network->cloud_points_filename,cloud_points);
+        printf("%s\n",PRINT_LINE);
+        printf("[cco] Working on terminal number %d\n",the_network->num_terminals);
+        fprintf(log_file,"%s\n",PRINT_LINE);
+        fprintf(log_file,"[cco] Working on terminal number %d\n",the_network->num_terminals);
 
-        make_root_using_cloud_points(the_network,cloud_points);
+        generate_terminal_using_cloud_points(the_network,config,local_opt_config,cloud_points);
+        
+        // DEBUG
+        //print_list(s_list);
 
-        // Main iteration loop
-        while (the_network->num_terminals < the_network->N_term)
-        {
-            printf("%s\n",PRINT_LINE);
-            printf("[cco] Working on terminal number %d\n",the_network->num_terminals);
-            fprintf(log_file,"%s\n",PRINT_LINE);
-            fprintf(log_file,"[cco] Working on terminal number %d\n",the_network->num_terminals);
-
-            generate_terminal_using_cloud_points(the_network,config,local_opt_config,cloud_points);
-
-            printf("%s\n",PRINT_LINE);
-            fprintf(log_file,"%s\n",PRINT_LINE);
-        }
+        printf("%s\n",PRINT_LINE);
+        fprintf(log_file,"%s\n",PRINT_LINE);
     }
 
     //print_list(p_list);
@@ -189,6 +193,7 @@ void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_
     fprintf(log_file,"%s\n",PRINT_LINE);
 }
 
+// p1 -> proximal || p2 -> distal || p3 -> middle || p4 -> new 
 bool has_collision (struct segment_list *s_list, struct segment_node *s, const double new_pos[], FILE *log_file)
 {
     double middle_pos[3];
@@ -209,11 +214,11 @@ bool has_collision (struct segment_list *s_list, struct segment_node *s, const d
             struct point *src = tmp->value->src->value;
             struct point *dest = tmp->value->dest->value;
 
-            bool intersect = collision_detection(middle_pos[0],middle_pos[1],middle_pos[2],\
-                                            new_pos[0],new_pos[1],new_pos[2],\
-                                            src->x,src->y,src->z,\
-                                            dest->x,dest->y,dest->z);
-
+            bool intersect = collision_detection(src->x,src->y,src->z,\
+                                            dest->x,dest->y,dest->z,\
+                                            middle_pos[0],middle_pos[1],middle_pos[2],\
+                                            new_pos[0],new_pos[1],new_pos[2]);
+    
             if (intersect)
             {
                 //printf("\t[-] ERROR! Intersection with segment %d !\n",tmp->id);
@@ -303,7 +308,6 @@ bool connection_search (struct cco_network *the_network, const double pos[], con
 
         tmp = tmp->next;
     }
-
     return true;
 }
 
@@ -317,7 +321,7 @@ bool distance_criterion (struct segment_node *s, const double pos[], const doubl
     else
         d_crit = calc_dend(s,pos);
 
-    return (d_crit > d_threash) ? true : false;
+    return (d_crit < d_threash) ? false : true;
 }
 
 bool has_deviation (struct segment_list *s_list, struct segment_node *inew,\
@@ -466,6 +470,7 @@ struct segment_node* build_segment (struct cco_network *the_network, struct loca
     double delta_p = p_perf - p_term;
     bool using_local_optimization = the_network->using_local_optimization;
 
+    // TODO: Pass the pointer directly here ...
     struct segment_node *iconn_node = search_segment_node(s_list,index);
     struct segment *iconn = iconn_node->value;
 
@@ -700,6 +705,8 @@ void calc_middle_point_segment (struct segment_node *s, double pos[])
     pos[0] = (src->x + dest->x) / 2.0;
     pos[1] = (src->y + dest->y) / 2.0;
     pos[2] = (src->z + dest->z) / 2.0;
+
+    printf("prox = (%g,%g,%g) -- distal = (%g,%g,%g) -- meio = (%g,%g,%g)\n",src->x,src->y,src->z,dest->x,dest->y,dest->z,pos[0],pos[1],pos[2]);
 }
 
 double calc_radius_ratio (struct segment_node *iconn, struct segment_node *inew, const double Q_term)
@@ -905,206 +912,74 @@ void make_root_using_cloud_points (struct cco_network *the_network, std::vector<
     double p_perf = the_network->p_perf;
     double p_term = the_network->p_term;
     double r_perf = the_network->r_perf;
-    double A_perf = the_network->A_perf;
+    double V_perf = the_network->V_perf;
     double delta_p = p_perf - p_term;
     double *root_pos = the_network->root_pos;
-
-    int K_term = 1;
-    double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term;
-    double r_supp = sqrt(A_supp/M_PI);
-    //double r_supp = 500.0;
 
     struct point_list *p_list = the_network->point_list;
     struct segment_list *s_list = the_network->segment_list;
 
-    // Positions from the root
+    int K_term = 1;
+    double r_supp = r_perf;
+
+    // Set the position of the root
     double x_prox[3], x_inew[3];
     for (uint32_t i = 0; i < 3; i++)
     {
         x_prox[i] = root_pos[i];
-        x_inew[i] = root_pos[i];        // The position of 'x_inew' will change in the next instruction ...
+        x_inew[i] = 0.0;
     }
+    // Rafael`s tree root
+    x_prox[0] = 0.0;
+    x_prox[1] = 0.0;
+    x_prox[2] = r_supp;
 
-    // Sort the distal position of the root until its size is larger than the perfusion radius
-    uint32_t index;
-    while (euclidean_norm(x_prox[0],x_prox[1],x_prox[2],x_inew[0],x_inew[1],x_inew[2]) < r_supp)
-        index = sort_point_from_cloud(x_inew,cloud_points);
-
-    // Eliminate the sorted point from the cloud
-    cloud_points.erase(cloud_points.begin()+index);
-
-    // Insert points and create the root segment
+    // Create the first node of tree with proximal root position
     struct point_node *A = insert_point(p_list,x_prox);
+
+    // Sort the distal position of the root using the cloud of points until the root segment has a size larger than a threashold distance
+    uint32_t index = 0;
+    uint32_t counter = 0;
+    uint32_t iterations = 0;
+    bool is_root_ok = false;
+    double d_threashold = sqrt( M_PI * r_supp * r_supp );
+    while (!is_root_ok)
+    {
+        sort_point_from_cloud_v2(x_inew,cloud_points);
+
+        // Convert to the real domain
+        x_inew[0] *= r_supp;
+        x_inew[1] *= r_supp;
+        x_inew[2] *= r_supp;
+        double root_length = euclidean_norm(x_prox[0],x_prox[1],x_prox[2],x_inew[0],x_inew[1],x_inew[2]);
+
+        if (root_length >= d_threashold)
+            is_root_ok = true;
+        else
+            counter++;
+        
+        if (counter > 8)
+            d_threashold *= 0.9;
+
+        iterations++;
+    }
+    printf("[cco] Root segment was set in %u iterations.\n", iterations);
+
+    // Create the distal point of the root
     struct point_node *B = insert_point(p_list,x_inew);
 
+    // Create the root segment
     struct segment *iroot = new_segment(A,B,NULL,NULL,NULL,Q_perf,p_perf);
     struct segment_node *iroot_node = insert_segment_node(s_list,iroot);
     rescale_root(iroot_node,Q_perf,delta_p);
     the_network->num_terminals = 1;
+
 }
 
+// TODO: Implement this function generating the random points before ...
 void make_root (struct cco_network *the_network, std::vector<double> rand_array)
 {
-    int N_term = the_network->N_term;
-    double Q_perf = the_network->Q_perf;
-    double p_perf = the_network->p_perf;
-    double p_term = the_network->p_term;
-    double V_perf = the_network->V_perf;
-    double r_perf = the_network->r_perf;
-    double delta_p = the_network->delta_p;
-    double *root_pos = the_network->root_pos;
-
-    int N_tot = 2 * N_term - 1;
-    bool fix_perfusion_volume = true;
-    
-    double x_prox[3], x_dist[3];
-    double r_supp;
-    double cur_subvolume;
-
-    if (fix_perfusion_volume)
-    {
-        r_supp = r_perf;
-        cur_subvolume = V_perf;
-
-        x_prox[0] = 0.0;
-        x_prox[1] = 0.0;
-        x_prox[2] = r_supp;
-    }
-
-    // Sort the distal position of the root until its size is larger than the perfusion radius
-    // TODO: Transform this into a function
-    bool flag = false;
-    bool ok = false;
-    int iteration_cont = 0;
-    int draw_type = 1;
-    int draw_cont = 0;
-    uint32_t cont_rand_array = 0;
-    double d = M_PI * r_supp * r_supp;
-    double threashold_length = powf(r_supp,0.5);
-    double pos[3];
-
-    while (!flag)
-    {
-        // Pass through all the points on the random array until we find a suitable one
-        while (!ok)
-        {
-            // Generate a point (x,y,z) inside a cube: [-1,1]x[-1,1]x[-1,1]
-            if (cont_rand_array < rand_array.size())
-            {
-                pos[0] = 2.0 * rand_array[cont_rand_array] - 1.0;
-                cont_rand_array++;
-                if (cont_rand_array > rand_array.size())
-                    cont_rand_array = 0;
-                pos[1] = 2.0 * rand_array[cont_rand_array] - 1.0;
-                cont_rand_array++;
-                if (cont_rand_array > rand_array.size())
-                    cont_rand_array = 0;
-                pos[2] = 2.0 * rand_array[cont_rand_array] - 1.0;
-                cont_rand_array++;
-                if (cont_rand_array > rand_array.size())
-                    cont_rand_array = 0;
-            }
-            // If we reached the end of the array we reset the counter
-            else
-            {
-                cont_rand_array = 0;
-
-                pos[0] = 2.0 * rand_array[cont_rand_array] - 1.0;
-                cont_rand_array++;
-                if (cont_rand_array > rand_array.size())
-                    cont_rand_array = 0;
-                pos[1] = 2.0 * rand_array[cont_rand_array] - 1.0;
-                cont_rand_array++;
-                if (cont_rand_array > rand_array.size())
-                    cont_rand_array = 0;
-                pos[2] = 2.0 * rand_array[cont_rand_array] - 1.0;
-                cont_rand_array++;
-                if (cont_rand_array > rand_array.size())
-                    cont_rand_array = 0;
-            }
-            printf("%g %g %g\n",pos[0],pos[1],pos[2]);
-            // Now, check if the point is inside a sphere of radius 1
-            if (sqrt(pos[0] * pos[0] + pos[1] * pos[1] + pos[2] * pos[2]) > 1.0 )
-            {
-                ok = false;
-            }
-            else
-            {
-                x_dist[0] = pos[0];
-                x_dist[1] = pos[1];
-                x_dist[2] = pos[2];
-
-                ok = true;
-            }
-        }
-
-        // Calculate the distal position
-        switch (draw_type)
-        {
-            case 1:
-            {
-                double perfusion_subvolume = cur_subvolume;
-                double perfusion_radius = calc_perfusion_radius(perfusion_subvolume);
-                double cur_radius = perfusion_radius;
-
-                printf("Current radius = %g\n",cur_radius);
-
-                // Calculate the point coordinate over the perfusion domain
-                x_dist[0] *= cur_radius;
-                x_dist[1] *= cur_radius;
-                x_dist[2] *= cur_radius;
-                break;
-            }
-            case 2:
-            {
-                // TODO
-                break;
-            }
-            case 3:
-            {
-                // TODO
-                break;
-            }
-            default:
-            {
-                fprintf(stderr,"[-] ERROR! Invalid 'draw_type' = %d\n",draw_type);
-                exit(EXIT_FAILURE);
-            }  
-        }
-
-        double root_segment_length = euclidean_norm(x_prox[0],x_prox[1],x_prox[2],x_dist[0],x_dist[1],x_dist[2]);
-        printf("Tamanho = %g\n",root_segment_length);
-        if (root_segment_length >= threashold_length)
-            flag = true;
-        else
-            draw_cont++;
-
-        if (draw_cont > 8)
-            threashold_length *= 0.9;
-        iteration_cont++;
-    }
-    printf("[make_root] Root segment planted in %d iterations\n",iteration_cont);
-    exit(1);
-    
-    /*
-    struct point_list *p_list = the_network->point_list;
-    struct segment_list *s_list = the_network->segment_list;
-
-    
-     
-    while (euclidean_norm(x_prox[0],x_prox[1],x_prox[2],x_inew[0],x_inew[1],x_inew[2]) < r_supp)
-        generate_point_inside_perfusion_area(x_inew,r_supp);
-
-    // Insert points and create the root segment
-    struct point_node *A = insert_point(p_list,x_prox);
-    struct point_node *B = insert_point(p_list,x_inew);
-
-    struct segment *iroot = new_segment(A,B,NULL,NULL,NULL,Q_perf,p_perf);
-    struct segment_node *iroot_node = insert_segment_node(s_list,iroot);
-    rescale_root(iroot_node,Q_perf,delta_p);
-    the_network->num_terminals = 1;
-    */
-
+    // Implement me ...
 }
 
 void generate_terminal_using_cloud_points(struct cco_network *the_network,\
@@ -1119,7 +994,8 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
     int K_term = the_network->num_terminals;
     int N_term = the_network->N_term;
     double r_perf = the_network->r_perf;
-    double A_perf = the_network->A_perf;
+    double r_supp = the_network->r_supp;
+    double V_perf = the_network->V_perf;
 
     // Cost function reference
     set_cost_function_fn *cost_function_fn = config->function;
@@ -1127,17 +1003,15 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
     // Local optimization reference
     set_local_optimization_function_fn *local_optimization_fn = local_opt_config->function;
 
-    // Increase support domain
-    double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term;
-    double r_supp = sqrt(A_supp/M_PI);
-    //printf("[!] Support domain radius = %g\n",r_supp);
-    fprintf(log_file,"[!] Support domain radius = %g\n",r_supp);
+    bool is_point_ok = false;
+    bool connect_point = true;
 
+    // Calculate the distance threashold
     double new_pos[3];
     bool point_is_ok = false;
     uint32_t tosses = 0;
     double d_threash = calc_dthreashold(r_supp,K_term);
-
+    
     std::vector<struct segment_node*> feasible_segments;
 
     // Reference to segment we are going to make the connection
@@ -1149,11 +1023,18 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
         feasible_segments.clear();
 
         // Sort a terminal position from the cloud of points
-        uint32_t index = sort_point_from_cloud(new_pos,cloud_points);
+        sort_point_from_cloud_v2(new_pos,cloud_points);
+        // Convert to the real domain
+        new_pos[0] *= r_supp;
+        new_pos[1] *= r_supp;
+        new_pos[2] *= r_supp;
 
         // RESTRICTION AREA
         // Check the distance criterion for this point
         point_is_ok = connection_search(the_network,new_pos,d_threash);
+        printf("%d -- dist = %d -- (%g,%g,%g)\n",cur_rand_index,point_is_ok,new_pos[0],new_pos[1],new_pos[2]);
+
+// OK
 
         // Check collision with other segments
         if (point_is_ok)
@@ -1166,6 +1047,8 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
             for (unsigned int i = 0; i < feasible_segments.size(); i++)
                 fprintf(log_file,"%d ",feasible_segments[i]->id);
             fprintf(log_file,"\n");
+
+            //printf("total bifurcations = %u\n",feasible_segments.size());
 
             // COST FUNCTION
             iconn = cost_function_fn(the_network,config,local_opt_config,new_pos,feasible_segments);
@@ -1187,16 +1070,16 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
             {
                 //printf("[!] Reducing dthreash! Before = %.2lf || Now = %.2lf \n",\
                         d_threash,d_threash*0.9);
-                fprintf(log_file,"[!] Reducing dthreash! Before = %.2lf || Now = %.2lf \n",\
-                        d_threash,d_threash*0.9);
-                d_threash *= 0.9;
+                fprintf(log_file,"[!] Reducing dthreash! Before = %g || Now = %g \n",\
+                        d_threash,d_threash*FACTOR);
+                d_threash *= FACTOR;
                 tosses = 0;
             }
         }
         // The point is a valid one and we can eliminate it from the cloud
         else
         {
-            cloud_points.erase(cloud_points.begin()+index);
+            //cloud_points.erase(cloud_points.begin()+index);
         }
     }
 
@@ -1324,6 +1207,22 @@ uint32_t sort_point_from_cloud (double pos[], std::vector<struct point> cloud_po
     pos[2] = cloud_points[index].z;
 
     return index;
+}
+
+void sort_point_from_cloud_v2 (double pos[], std::vector<struct point> cloud_points)
+{
+    // Reset the counter
+    if (cur_rand_index == cloud_points.size()-1)
+        cur_rand_index = 0;
+
+    // Convert to the real domain
+    pos[0] = cloud_points[cur_rand_index].x;
+    pos[1] = cloud_points[cur_rand_index].y;
+    pos[2] = cloud_points[cur_rand_index].z;
+
+    // Increase the counter
+    cur_rand_index++;
+
 }
 
 void usage (const char pname[])

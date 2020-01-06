@@ -76,6 +76,8 @@ SET_COST_FUNCTION (minimize_tree_volume_default)
 
             for (uint32_t j = 0; j < test_positions.size(); j++)
             {
+                // TODO: Test the bifurcation placement -> bool VerificaPosicaoBif()
+
                 // Change the position of the bifurcation point 
                 double new_biff_pos[3];
                 new_biff_pos[0] = test_positions[j].x;

@@ -1,17 +1,14 @@
-- Refactor the code until now
-
-- Do more tests with the Minimize Activation Time Function with Level Penalty
-	- Include Local Optimization
-
-- Finish implement the following cost function libraries to work with local optimization:
-	- Closest segment
-	- Custom function
-	- Minimize activation time
-
-- Rewrite all the examples using the new features
-
-- Think about how to deal with the circumscribed circle when generating the network.
-	- Maybe create another function just to deal with this kind of geometry.
-	- Pass as additional arguments the 'inner_radius' and 'outer_radius'.
+- Think about the root generation when we use a cloud of points, which do not have a V_perf already prescribed
+	- One option could be already generate the root segment
+	- We will have a LV tree, RV tree and His-Bundle tree 
 
 
+- Check the units
+
+- Build classes for every struct
+	- Class Cloud_Points should have a counter to the current point
+
+========================================================================================================================
+Question for Rafael Bonfim
+
+1) Otimizacao local, porque o valor da variavel t eh 0.3 ? (Parametrizacao)

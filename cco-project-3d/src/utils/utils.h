@@ -11,6 +11,10 @@
 #include <cstdint>
 #include <cmath>
 
+#include <vtkRegularPolygonSource.h>
+#include <vtkXMLPolyDataWriter.h>
+#include <vtkSphereSource.h>
+
 #include "../cco/cco.h"
 
 #include "dSFMT.h"
@@ -30,15 +34,25 @@
 #define PRINT_DOTS ".........................................................................."
 #define PRINT_STARS "******************************************************************************"
 
-static const uint32_t RAND_ARRAY_SIZE = 8000000;    // Size of randomic vector
-static const uint32_t RAND_SEED = 1562046115;       // Random seed
-static const double EPSILON = 1.0e-02;              // Tolerance for comparing real numbers
-
+static const double EPSILON = 1.0e-02;                   // Tolerance for comparing real numbers
+static const uint32_t RAND_ARRAY_SIZE = 8000000;         // Size of randomic vector
+static const uint32_t RAND_SEED = 1;                     // Random seed
+static const uint32_t TOTAL_CLOUD_POINTS_SIZE = 2500000; // Total number of points in the generated cloud of points
 // =================================================================
 
-void generate_point_inside_perfusion_area (double pos[], const double radius);
+struct random_generator
+{
+    uint32_t counter;
+    double *array;
+};
 
-double generate_random_number ();
+struct random_generator* new_random_generator ();
+void free_random_generator (struct random_generator *the_generator);
+void generate_random_array (struct random_generator *the_generator);
+double get_value (struct random_generator *the_generator);
+
+void generate_cloud_points (struct random_generator *the_generator, std::vector<struct point> &cloud_points, const double radius);
+
 
 bool collision_detection (const double x1, const double y1, const double z1,\
                           const double x2, const double y2, const double z2,\
@@ -62,9 +76,7 @@ double calc_dend (struct segment_node *s, const double pos[]);
 double calc_perfusion_radius (const double V);
 double calc_flux_terminals (const double Q_perf, const int N_term);
 
-void generate_random_array_using_mersenne_twister (std::vector<double> &the_array);
-
-//void draw_perfusion_area (struct cco_network *the_network);
+void draw_perfusion_volume (const double radius);
 
 bool check_size (const double p[]);
 
@@ -72,5 +84,6 @@ void print_terminal_activation_time (struct cco_network *the_network,\
                             const double c, const double cm, const double rc, const double rm);
 
 void write_to_vtk (struct cco_network *the_network);
+void write_to_vtk_iteration (struct cco_network *the_network);
 
 #endif

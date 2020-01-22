@@ -9,3 +9,8 @@ TARGET_LINK_LIBRARIES(sphere_cloud_generator)
 ADD_LIBRARY(hexaedron_cloud_generator ${LIB_TYPE} hexaedron.cpp)
 TARGET_LINK_LIBRARIES(hexaedron_cloud_generator)
 ##################################################################################
+
+############## DEFAULT CLOUD PARABOLOID LIBRARY ##############################
+ADD_LIBRARY(paraboloid_cloud_generator ${LIB_TYPE} paraboloid.cpp)
+TARGET_LINK_LIBRARIES(paraboloid_cloud_generator)
+##################################################################################

@@ -9,6 +9,9 @@ SET_CLOUD_GENERATOR (default_sphere_cloud)
     std::vector<Point> *points = generator->points;
     double *rand_array = random_generator->array;
 
+    double radius;
+    get_parameter_value_from_map(config->param,"radius",&radius);
+
     double pos[3];
     for (uint32_t i = 0; i < num_points; i++)
     {
@@ -18,8 +21,13 @@ SET_CLOUD_GENERATOR (default_sphere_cloud)
             pos[0] = 2.0 * random_generator->get_value() - 1.0;
             pos[1] = 2.0 * random_generator->get_value() - 1.0;
             pos[2] = 2.0 * random_generator->get_value() - 1.0;
+
+            // Convert to the real domain
+            pos[0] *= radius;
+            pos[1] *= radius;
+            pos[2] *= radius;
             
-            if (sqrt(pos[0] * pos[0] + pos[1] * pos[1] + pos[2] * pos[2]) > 1.0)
+            if (sqrt(pos[0] * pos[0] + pos[1] * pos[1] + pos[2] * pos[2]) > radius)
                 point_is_inside_sphere = false;
             else
                 point_is_inside_sphere = true;
@@ -31,21 +39,20 @@ SET_CLOUD_GENERATOR (default_sphere_cloud)
         printf("[sphere] Generating point = %u\n",i);
     }
 
-    draw_default_sphere_volume(1.0);
+    draw_default_sphere_volume(radius);
 }
 
 void draw_default_sphere_volume (const double radius)
 {
-    vtkSmartPointer<vtkSphereSource> sphereSource =
-      vtkSmartPointer<vtkSphereSource>::New();
+    vtkSmartPointer<vtkSphereSource> sphereSource = vtkSmartPointer<vtkSphereSource>::New();
     
-    sphereSource->SetRadius(1.0);
+    sphereSource->SetRadius(radius);
     sphereSource->SetCenter(0,0,0);
     sphereSource->SetPhiResolution(100);
     sphereSource->SetThetaResolution(100);
 
     vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-    writer->SetFileName("output/sphere_volume_region.vtp");
+    writer->SetFileName("output/volume_region.vtp");
     writer->SetInputConnection(sphereSource->GetOutputPort());
     writer->Write();
 }

@@ -1,28 +1,85 @@
 #include "utils.h"
 
+struct random_generator* new_random_generator ()
+{
+    struct random_generator *result = (struct random_generator*)malloc(sizeof(struct random_generator));
+
+    result->counter = 0;
+    result->array = NULL;
+
+    return result;
+}
+
+void free_random_generator (struct random_generator *the_generator)
+{
+    if (the_generator->array)
+        free(the_generator->array);
+    free(the_generator);
+}
+
+void generate_random_array (struct random_generator *the_generator)
+{
+    the_generator->array = (double*)malloc(sizeof(double)*RAND_ARRAY_SIZE);
+    
+    dsfmt_t dsfmt;
+    dsfmt_init_gen_rand(&dsfmt, RAND_SEED);
+    for (uint32_t i = 0; i < RAND_ARRAY_SIZE; ++i) 
+    {
+        the_generator->array[i] = dsfmt_genrand_close_open(&dsfmt);
+    }
+}
+
+double get_value (struct random_generator *the_generator)
+{
+    double value = the_generator->array[the_generator->counter];
+    
+    the_generator->counter++;
+    if (the_generator->counter > RAND_ARRAY_SIZE)
+        the_generator->counter = 0;
+    
+    return value;
+}
+
+void generate_cloud_points (struct random_generator *the_generator, std::vector<struct point> &cloud_points, const double radius)
+{
+    printf("\n[utils] Generating default sphere cloud of points (Total number of points = %u)\n",TOTAL_CLOUD_POINTS_SIZE);
+
+    double pos[3];
+    for (uint32_t i = 0; i < TOTAL_CLOUD_POINTS_SIZE; i++)
+    {
+        bool point_is_inside_sphere = false;
+        while (!point_is_inside_sphere)
+        {
+            pos[0] = 2.0 * get_value(the_generator) - 1.0;
+            pos[1] = 2.0 * get_value(the_generator) - 1.0;
+            pos[2] = 2.0 * get_value(the_generator) - 1.0;
+
+            // Convert to the real domain
+            pos[0] *= radius;
+            pos[1] *= radius;
+            pos[2] *= radius;
+            
+            if (sqrt(pos[0] * pos[0] + pos[1] * pos[1] + pos[2] * pos[2]) > radius)
+                point_is_inside_sphere = false;
+            else
+                point_is_inside_sphere = true;
+
+        }
+
+        struct point point;
+        point.x = pos[0];
+        point.y = pos[1];
+        point.z = pos[2];
+
+        cloud_points.push_back(point);
+        
+    }
+}
+
 double euclidean_norm (const double x1, const double y1, const double z1,\
                     const double x2, const double y2, const double z2)
 {
     return sqrt( pow(x2-x1,2) + pow(y2-y1,2) + pow(z2-z1,2) );
-}
-
-double generate_random_number ()
-{
-    double number = (double)rand() / (double)RAND_MAX;
-    double sign = rand() % 2;
-
-    return (sign) ? number : -number;
-}
-
-void generate_point_inside_perfusion_area (double pos[], const double radius)
-{
-    double teta = generate_random_number()*2.0*M_PI;
-    double r = fabs(generate_random_number())*radius;
-
-    // Center of perfusion area = (0,-radius,0)
-    pos[0] = 0 + r*cos(teta);
-    pos[1] = -radius + r*sin(teta);
-    pos[2] = 0;
 }
 
 double calc_dthreashold (const double radius, const int num_terminals)
@@ -76,37 +133,26 @@ double calc_dend (struct segment_node *s, const double pos[])
     return std::min(d_dist,d_prox);
 }
 
-/*
-void draw_perfusion_area (struct cco_network *the_network)
+void draw_perfusion_volume (const double radius)
 {
-    int K_term = the_network->num_terminals;
-    int N_term = the_network->N_term;
-    double r_perf = the_network->r_perf;
-    double A_perf = the_network->A_perf;
+    // Create a sphere
+    vtkSmartPointer<vtkSphereSource> sphere_source = vtkSmartPointer<vtkSphereSource>::New();
+    sphere_source->SetCenter(0.0, 0.0, 0.0);
+    sphere_source->SetRadius(radius);
 
-    // Increase support domain
-    double A_supp = (double)((K_term + 1) * A_perf) / (double)N_term;
-    double r_supp = sqrt(A_supp/M_PI);
-
-    // Create a circle
-    vtkSmartPointer<vtkRegularPolygonSource> polygonSource =
-      vtkSmartPointer<vtkRegularPolygonSource>::New();
-
-    polygonSource->GeneratePolygonOff(); // Outline of the circle
-    polygonSource->SetNumberOfSides(50);
-    polygonSource->SetRadius(r_supp);
-    polygonSource->SetCenter(0,-r_supp,0);
+    // Make the surface smooth.
+    sphere_source->SetPhiResolution(100);
+    sphere_source->SetThetaResolution(100);
 
     vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-    writer->SetFileName("output/perfusion_area.vtp");
-    writer->SetInputConnection(polygonSource->GetOutputPort());
+    writer->SetFileName("output/perfusion_volume.vtp");
+    writer->SetInputConnection(sphere_source->GetOutputPort());
     writer->Write();
 }
-*/
 
 // Return true if we detect a collision or if the points are too close
 // TODO: Double-check this function again ...
-bool collision_detection (const double x1, const double y1, const double z1,\     
+bool collision_detection (const double x1, const double y1, const double z1,\
                           const double x2, const double y2, const double z2,\
                           const double x3, const double y3, const double z3,\
                           const double x4, const double y4, const double z4)
@@ -204,18 +250,6 @@ double calc_dot_product (const double u[], const double v[])
     return (u[0] * v[0]) + (u[1] * v[1]) + (u[2] * v[2]); 
 }
 
-void generate_random_array_using_mersenne_twister (std::vector<double> &the_array)
-{
-    dsfmt_t dsfmt;
-    dsfmt_init_gen_rand(&dsfmt, RAND_SEED);
-    
-    for (uint32_t i = 0; i < RAND_ARRAY_SIZE; i++)
-    {
-        double value = dsfmt_genrand_close_open(&dsfmt);
-        the_array.push_back(value);
-    }
-}
-
 bool check_size (const double p[])
 {
     if (fabs(p[0]) < EPSILON && fabs(p[1]) < EPSILON && fabs(p[2]) < EPSILON)
@@ -293,6 +327,50 @@ void write_to_vtk (struct cco_network *the_network)
     {
         fprintf(file,"%g\n",s_tmp->value->radius * 1000.0);
         fprintf(file_converted,"%g\n",s_tmp->value->radius * 1000.0);
+        s_tmp = s_tmp->next;
+    }
+    fclose(file);
+}
+
+void write_to_vtk_iteration (struct cco_network *the_network)
+{
+    uint32_t num_points = the_network->point_list->num_nodes;
+    uint32_t num_terminals = the_network->num_terminals;
+    struct point_list *p_list = the_network->point_list;
+    struct point_node *p_tmp = p_list->list_nodes;
+    uint32_t num_segments = the_network->segment_list->num_nodes;
+    struct segment_list *s_list = the_network->segment_list;
+    struct segment_node *s_tmp = s_list->list_nodes;
+
+    char filename[MAX_FILENAME_SIZE];
+    sprintf(filename,"output/cco_tree_cm_iter_%d.vtk",num_terminals);
+    FILE *file = fopen(filename,"w+");
+
+    // Write the header
+    fprintf(file,"# vtk DataFile Version 3.0\n");
+    fprintf(file,"Tree\n");
+    fprintf(file,"ASCII\n");
+    fprintf(file,"DATASET POLYDATA\n");
+    fprintf(file,"POINTS %u float\n",num_points);
+    while (p_tmp != NULL)
+    {
+        fprintf(file,"%g %g %g\n",p_tmp->value->x,p_tmp->value->y,p_tmp->value->z);
+        p_tmp = p_tmp->next;
+    }
+
+    fprintf(file,"LINES %u %u\n",num_segments,num_segments*3);
+    while (s_tmp != NULL)
+    {
+        fprintf(file,"2 %u %u\n",s_tmp->value->src->id,s_tmp->value->dest->id);
+        s_tmp = s_tmp->next;
+    }
+    fprintf(file,"CELL_DATA %u\n",num_segments);
+    fprintf(file,"SCALARS radius float\n");
+    fprintf(file,"LOOKUP_TABLE default\n");
+    s_tmp = s_list->list_nodes;
+    while (s_tmp != NULL)
+    {
+        fprintf(file,"%g\n",s_tmp->value->radius * 1000.0);
         s_tmp = s_tmp->next;
     }
     fclose(file);

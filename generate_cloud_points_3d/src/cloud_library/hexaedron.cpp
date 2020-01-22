@@ -1,6 +1,6 @@
 #include "hexaedron.h"
 
-// Generate points inside a hexaedron with dimensions: [-1,1]x[-1,1]x[-1,1]
+// Generate points inside a hexaedron with dimensions: [-side_length,side_length]x[-side_length,side_length]x[-side_length,side_length]
 SET_CLOUD_GENERATOR (default_hexaedron_cloud)
 {
     printf("\n[hexaedron] Generating default hexaedron cloud of points\n");
@@ -8,6 +8,9 @@ SET_CLOUD_GENERATOR (default_hexaedron_cloud)
     uint32_t num_points = generator->num_points;
     std::vector<Point> *points = generator->points;
     double *rand_array = random_generator->array;
+    
+    double side_length;
+    get_parameter_value_from_map(config->param,"side_length",&side_length);
 
     double pos[3];
     for (uint32_t i = 0; i < num_points; i++)
@@ -16,25 +19,30 @@ SET_CLOUD_GENERATOR (default_hexaedron_cloud)
         pos[1] = 2.0 * random_generator->get_value() - 1.0;
         pos[2] = 2.0 * random_generator->get_value() - 1.0;
 
+        // Convert to the real domain
+        pos[0] *= side_length;
+        pos[1] *= side_length;
+        pos[2] *= side_length;
+
         Point p(pos[0],pos[1],pos[2]);
         points->push_back(p);
         
         printf("[hexaedron] Generating point = %u\n",i);
     }
 
-    draw_default_hexaedron_volume(1.0);
+    draw_default_hexaedron_volume(side_length);
 }
 
 void draw_default_hexaedron_volume (const double side_length)
 {
-    double P0[3] = {-1.0, -1.0, -1.0};
-    double P1[3] = {1.0, -1.0, -1.0};
-    double P2[3] = {1.0, 1.0, -1.0};
-    double P3[3] = {-1.0, 1.0, -1.0};
-    double P4[3] = {-1.0, -1.0, 1.0};
-    double P5[3] = {1.0, -1.0, 1.0};
-    double P6[3] = {1.0, 1.0, 1.0};
-    double P7[3] = {-1.0, 1.0, 1.0};
+    double P0[3] = {-side_length, -side_length, -side_length};
+    double P1[3] = {side_length, -side_length, -side_length};
+    double P2[3] = {side_length, side_length, -side_length};
+    double P3[3] = {-side_length, side_length, -side_length};
+    double P4[3] = {-side_length, -side_length, side_length};
+    double P5[3] = {side_length, -side_length, side_length};
+    double P6[3] = {side_length, side_length, side_length};
+    double P7[3] = {-side_length, side_length, side_length};
 
     // Create the points
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
@@ -68,7 +76,7 @@ void draw_default_hexaedron_volume (const double side_length)
     unstructured_grid->InsertNextCell(hex->GetCellType(), hex->GetPointIds());
 
     vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
-    writer->SetFileName("output/hexaedron_volume_region.vtu");
+    writer->SetFileName("output/volume_region.vtu");
     #if VTK_MAJOR_VERSION <= 5
     writer->SetInput(unstructured_grid);
     #else

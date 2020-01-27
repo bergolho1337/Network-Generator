@@ -26,10 +26,6 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
     ret = get_parameter_value_from_map(config->params,"rm",&rm);
     double deviation_limit = __DBL_MAX__;
     ret = get_parameter_value_from_map(config->params,"deviation_limit",&deviation_limit);
-    double min_angle_limit = 0.0;
-    ret = get_parameter_value_from_map(config->params,"min_angle_limit",&min_angle_limit);
-    double max_angle_limit = 360.0;
-    ret = get_parameter_value_from_map(config->params,"max_angle_limit",&max_angle_limit);
 
     //printf("Feasible segment %u\n",feasible_segments.size());
 
@@ -62,24 +58,8 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
             // 1) Check the cost function of the first configuration
             double at = calc_terminal_activation_time(inew,c,cm,rc,rm);
 
-            // Calculate bifurcation angle
-            struct point *src = iconn->value->src->value;
-            struct point *dest = iconn->value->dest->value;
-
-            double middle_pos[3];
-            calc_middle_point_segment(iconn,middle_pos);
-
-            double u[3], v[3];
-            build_unitary_vector(u,middle_pos[0],middle_pos[1],middle_pos[2],\
-                                dest->x,dest->y,dest->z);
-            build_unitary_vector(v,middle_pos[0],middle_pos[1],middle_pos[2],\
-                                new_pos[0],new_pos[1],new_pos[2]);
-
-            double angle = calc_angle_between_vectors(u,v);
-
             if (at < minimum_at && \
-            !has_deviation(the_network->segment_list,inew,at,deviation_limit,c,cm,rc,rm) && \
-            angle >= min_angle_limit && angle <= max_angle_limit)
+            !has_deviation(the_network->segment_list,inew,at,deviation_limit,c,cm,rc,rm))
             {
                 minimum_at = at;
                 best = iconn;
@@ -119,24 +99,8 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
                 // Evaluate cost function for the current configuration
                 double at = calc_terminal_activation_time(inew,c,cm,rc,rm);
 
-                // Calculate bifurcation angle
-                struct point *src = iconn->value->src->value;
-                struct point *dest = iconn->value->dest->value;
-
-                double middle_pos[3];
-                calc_middle_point_segment(iconn,middle_pos);
-
-                double u[3], v[3];
-                build_unitary_vector(u,middle_pos[0],middle_pos[1],middle_pos[2],\
-                                    dest->x,dest->y,dest->z);
-                build_unitary_vector(v,middle_pos[0],middle_pos[1],middle_pos[2],\
-                                    new_pos[0],new_pos[1],new_pos[2]);
-
-                double angle = calc_angle_between_vectors(u,v);
-
                 if (at < minimum_at && \
-            !has_deviation(the_network->segment_list,inew,at,deviation_limit,c,cm,rc,rm) && \
-            angle >= min_angle_limit && angle <= max_angle_limit)
+            !has_deviation(the_network->segment_list,inew,at,deviation_limit,c,cm,rc,rm) )
                 {
                     minimum_at = at;
                     best = iconn;
@@ -171,24 +135,8 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
             // Evaluate the cost function
             double at = calc_terminal_activation_time(inew,c,cm,rc,rm);
 
-            // Calculate bifurcation angle
-            struct point *src = iconn->value->src->value;
-            struct point *dest = iconn->value->dest->value;
-
-            double middle_pos[3];
-            calc_middle_point_segment(iconn,middle_pos);
-
-            double u[3], v[3];
-            build_unitary_vector(u,middle_pos[0],middle_pos[1],middle_pos[2],\
-                                dest->x,dest->y,dest->z);
-            build_unitary_vector(v,middle_pos[0],middle_pos[1],middle_pos[2],\
-                                new_pos[0],new_pos[1],new_pos[2]);
-
-            double angle = calc_angle_between_vectors(u,v);
-
             if (at < minimum_at && \
-            !has_deviation(the_network->segment_list,inew,at,deviation_limit,c,cm,rc,rm) && \
-            angle >= min_angle_limit && angle <= max_angle_limit)
+            !has_deviation(the_network->segment_list,inew,at,deviation_limit,c,cm,rc,rm) )
             {
                 minimum_at = at;
                 best = iconn;
@@ -213,6 +161,7 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
     return best;
 }
 
+/*
 SET_COST_FUNCTION (minimize_tree_activation_time_with_angle_restriction_and_level_restriction)
 {
     struct segment_node *best = NULL;
@@ -428,3 +377,4 @@ SET_COST_FUNCTION (minimize_tree_activation_time_with_angle_restriction_and_leve
 
     return best;
 }
+*/

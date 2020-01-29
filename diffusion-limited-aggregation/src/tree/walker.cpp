@@ -1,126 +1,209 @@
 #include "walker.h"
 
-Walker::Walker ()
+struct walker* new_walker (struct user_options *the_options)
 {
-    sort_random_points(this->pos);
-    this->stuck = false;
-    this->radius = RADIUS;
+    struct walker *result = (struct walker*)malloc(sizeof(struct walker));
+
+    // Get the reference to teh library respawn function
+    set_walker_respawn_function_fn *respawn_function_ptr = the_options->walker_config->respawn_function; 
+
+    // Call the respawn library function
+    respawn_function_ptr(result->pos);
+
+    result->stuck = false;
+    result->radius = RADIUS;
+
+    return result;
 }
 
-Walker::Walker (const double x, const double y, const double z)
+struct walker* new_walker (const double x, const double y, const double z)
 {
-    this->pos[0] = x;
-    this->pos[1] = y;
-    this->pos[2] = z;
+    struct walker *result = (struct walker*)malloc(sizeof(struct walker));
 
-    this->stuck = false;
-    this->radius = RADIUS;
+    result->pos[0] = x;
+    result->pos[1] = y;
+    result->pos[2] = z;
+
+    result->stuck = false;
+    result->radius = RADIUS;
+
+    return result;
 }
 
-void Walker::print ()
+void free_walker (struct walker *the_walker)
 {
-    printf("(%.5lf,%.5lf,%.5lf)\n",this->pos[0],this->pos[1],this->pos[2]);
+    free(the_walker);
 }
 
-// Generate a random point within the boundary of the domain
-void sort_random_points (double pos[])
+uint32_t is_stuck (struct walker_list *the_tree, struct walker *the_other)
 {
-    uint8_t type = rand() % 4;
-    double number = (double) rand() / (double) RAND_MAX;
-    switch (type)
+    struct walker_node *tmp = the_tree->list_nodes;
+    while (tmp != NULL)
     {
-        case 0: {
-                    pos[0] = number * WIDTH;
-                    pos[1] = 0.0;
-                    pos[2] = 0.0;
-                    break;
-                }
-        case 1: {
-                    pos[0] = number * WIDTH;
-                    pos[1] = HEIGHT;
-                    pos[2] = 0.0;
-                    break;
-                }
-        case 2: {
-                    pos[0] = 0.0;
-                    pos[1] = number * HEIGHT;
-                    pos[2] = 0.0;
-                    break;
-                }
-        case 3: {
-                    pos[0] = WIDTH;
-                    pos[1] = number * HEIGHT;
-                    pos[2] = 0.0;
-                    break;
-                }
-    }
+        struct walker *cur_walker = tmp->value;
 
-}
-
-void Walker::walk ()
-{
-    
-    double dx = generate_random_number();
-    double dy = generate_random_number();
-
-    double new_x = this->pos[0] + dx;
-    double new_y = this->pos[1] + dy;
-
-    if (is_inside(new_x,new_y))
-    {
-        this->pos[0] += dx;
-        this->pos[1] += dy;
-    }
-}
-
-uint32_t Walker::is_stuck (std::vector<Walker*> the_tree)
-{
-    for (uint32_t i = 0; i < the_tree.size(); i++)
-    {
-        double d = calculate_distance(this->pos,the_tree[i]->pos);
+        double d = calculate_distance(the_other->pos,cur_walker->pos);
         if (d < RADIUS * RADIUS * 4.0)
         {
-            this->stuck = true;
-            return i;
+            //the_other->stuck = true;
+            return tmp->id;
         }
+
+        tmp = tmp->next;
     }
-    return the_tree.size();
+    return the_tree->num_nodes;
 }
 
-bool is_inside (const double x, const double y)
+void print_walker (struct walker *the_walker)
 {
-    if ( (x >= 0.0 && x <= WIDTH) && (y >= 0.0 && y <= HEIGHT) )
-        return true;
+    printf("%g %g %g\n",the_walker->pos[0],the_walker->pos[1],the_walker->pos[2]);
+}
+
+struct walker_list* new_walker_list ()
+{
+    struct walker_list *s = (struct walker_list*)malloc(sizeof(struct walker_list));
+    s->num_nodes = 0;
+    s->list_nodes = NULL;
+    return s;
+}
+
+void free_walker_list (struct walker_list *s)
+{
+    uint32_t cont = 0;
+    while (!is_empty(s))
+    {
+        delete_node(s,cont);
+        cont++;
+    }
+    //print_list(l);
+    
+    free(s);
+    s = NULL;
+}
+
+struct walker_node* insert_walker_node (struct walker_list *l, struct walker *walker)
+{
+    struct walker_node *node;
+    // List is empty
+    if (!l->list_nodes)
+    {
+        node = new_walker_node(l->num_nodes,walker);
+        l->list_nodes = node;
+    }
+    // List has some values
     else
-        return false;
+    {
+        // Pass through all the list
+        struct walker_node *tmp = l->list_nodes;
+        while (tmp->next != NULL)
+        {
+            tmp = tmp->next;
+        }
+
+        node = new_walker_node(l->num_nodes,walker);
+        tmp->next = node;
+    }
+    l->num_nodes++;
+    return node;
 }
 
-double calculate_distance (const double p1[], const double p2[])
+void delete_node (struct walker_list *l, const uint32_t index)
 {
-    return (p2[0] - p1[0])*(p2[0] - p1[0]) + (p2[1] - p1[1])*(p2[1] - p1[1]);
-}
+    struct walker_node *aux1, *aux2;
+    aux1 = l->list_nodes;
+    aux2 = NULL;
 
-double generate_random_number ()
-{
-    uint8_t sign = rand() % 2;
-    double value = (double) rand() / (double) RAND_MAX;
-    if (sign)
-        return value;
+    if (l->num_nodes == 0)
+    {
+        fprintf(stderr,"[-] ERROR! The list is empty!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    while (aux1 != NULL && aux1->id != index)
+    {
+        aux2 = aux1;
+        aux1 = aux1->next;
+    }
+
+    // Case 1: First element
+    if (aux1 == l->list_nodes)
+    {
+        //printf("Removing %lf --> Case 1\n",key);
+        l->list_nodes = aux1->next;
+        aux1->next = NULL;
+    }
+    // Case 2: Last element
+    else if (aux1->next == NULL)
+    {
+        //printf("Removing %lf --> Case 2\n",key);
+        aux2->next = NULL;
+    }
+    // Case 3: Middle element
     else
-        return -value;
+    {
+        //printf("Removing %lf --> Case 3\n",key);
+        aux2->next = aux1->next;
+        aux1->next = NULL;
+    }
+    free_walker(aux1->value);
+    free(aux1);
+    l->num_nodes--;
 }
 
-void print_progress_bar (const uint32_t cur_iter, const uint32_t max_iter)
+struct walker_node* search_walker_node (struct walker_list *l, const uint32_t index)
 {
-  double percentage = (cur_iter / (double) max_iter) * 100.0;
-  uint32_t filled_length = nearbyint(100 * cur_iter / max_iter);
-  
-  std::string the_bar;
-  for (uint32_t i = 0; i < filled_length; i++)
-    the_bar += "\u2588";    // Using Unicode here ... (filled box)
-  for (uint32_t i = 0; i < 100-filled_length; i++)
-    the_bar += "-";
-  
-  printf("%s |%s| %.1lf%% %s\r","Progress",the_bar.c_str(),percentage,"Complete"); // Carriage return
-  fflush(stdout); // Flush the standard output
+    struct walker_node *tmp = l->list_nodes;
+    while (tmp != NULL)
+    {
+        if (tmp->id == index)
+            return tmp;
+        tmp = tmp->next;
+    }
+    fprintf(stderr,"[-] ERROR! walker node %u not found!\n",index);
+    return NULL;
 }
+
+void order_list (struct walker_list *l)
+{
+    uint32_t cont = 0;
+    struct walker_node *tmp = l->list_nodes;
+    while (tmp != NULL)
+    {
+        tmp->id = cont;
+
+        cont++;
+        tmp = tmp->next;
+    }
+}
+
+bool is_empty (struct walker_list *l)
+{
+    return (l->list_nodes == NULL) ? true : false;
+}
+
+struct walker_node* new_walker_node (uint32_t id, struct walker *s)
+{
+    struct walker_node *tmp = (struct walker_node*)malloc(sizeof(struct walker_node));
+    tmp->id = id;
+    tmp->value = s;
+    tmp->next = NULL;
+    return tmp;
+}
+
+void print_list (struct walker_list *l)
+{
+    if (l->num_nodes == 0)
+    {
+        printf("[!] The list is empty!\n");
+        return;
+    }
+
+    struct walker_node *tmp = l->list_nodes;
+    printf("Number of walker_node in list = %u\n",l->num_nodes);
+    while (tmp != NULL)
+    {
+        printf("Walker %u - (%g,%g,%g)\n",tmp->id,tmp->value->pos[0],tmp->value->pos[1],tmp->value->pos[2]);
+        tmp = tmp->next;
+    }
+}
+

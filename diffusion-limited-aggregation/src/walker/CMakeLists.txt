@@ -1,7 +1,0 @@
-set(SOURCE_FILES_WALKER walker.h walker.cpp)
-
-ADD_LIBRARY(walker STATIC ${SOURCE_FILES_WALKER})
-
-if(NOT MSVC)
-    set_property(TARGET walker PROPERTY POSITION_INDEPENDENT_CODE ON)
-endif()

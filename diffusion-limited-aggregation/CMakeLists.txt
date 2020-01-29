@@ -8,10 +8,15 @@ FIND_PACKAGE(VTK REQUIRED)
 INCLUDE(${VTK_USE_FILE})
 
 ADD_SUBDIRECTORY(src/tree)
+ADD_SUBDIRECTORY(src/options)
+ADD_SUBDIRECTORY(src/ini_parser)
+ADD_SUBDIRECTORY(src/utils)
+
+ADD_SUBDIRECTORY(src/walker_library)
 
 ADD_EXECUTABLE(DLA src/main.cpp)
 
-ADD_DEPENDENCIES(DLA tree)
+ADD_DEPENDENCIES(DLA tree options ini_parser utils)
 
-TARGET_LINK_LIBRARIES(DLA ${VTK_LIBRARIES} tree dl m)
+TARGET_LINK_LIBRARIES(DLA ${VTK_LIBRARIES} tree options ini_parser utils dl m)
 

@@ -13,28 +13,56 @@
 #include <vector>
 #include <string>
 
+#include "../utils/utils.h"
+#include "../options/user_options.h"
+
 const double WIDTH = 600.0;
 const double HEIGHT = 600.0;
 const double RADIUS = 6.0;
 
-class Walker
+struct walker
 {
-public:
     double pos[3];
     bool stuck;
     double radius;
-public:
-    Walker ();
-    Walker (const double x, const double y, const double z);
-    void walk ();
-    uint32_t is_stuck (std::vector<Walker*> the_tree);
-    void print ();
 };
 
-void sort_random_points (double pos[]);
-bool is_inside (const double x, const double y);
-double calculate_distance (const double p1[], const double p2[]);
-double generate_random_number ();
-void print_progress_bar (const uint32_t cur_iter, const uint32_t max_iter);
+struct walker_node
+{
+    uint32_t id;
+    struct walker *value;           
+    struct walker_node *next;   
+};
+
+struct walker_list
+{
+    uint32_t num_nodes;
+    struct walker_node *list_nodes;
+};
+
+struct walker* new_walker (struct user_options *the_options);
+struct walker* new_walker (const double x, const double y, const double z);
+void free_walker (struct walker *the_walker);
+
+uint32_t is_stuck (struct walker_list *the_tree, struct walker *the_other);
+
+void print_walker (struct walker *the_walker);
+
+
+
+struct walker_list* new_walker_list ();
+void free_walker_list (struct walker_list *l);
+
+struct walker_node* insert_walker_node (struct walker_list *l, struct walker *s);
+void delete_node (struct walker_list *l, const uint32_t index);
+struct walker_node* search_walker_node (struct walker_list *l, const uint32_t index);
+bool is_empty (struct walker_list *l);
+void print_list (struct walker_list *l);
+
+void order_list (struct walker_list *l);
+
+struct walker_node* new_walker_node (uint32_t id, struct walker *s);
+void free_walker_node (struct walker_node *n);
+
 
 #endif

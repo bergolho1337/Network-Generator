@@ -1,68 +1,102 @@
 #include "tree.h"
 
-Tree::Tree ()
+struct dla_tree* new_dla_tree ()
 {
+    struct dla_tree *result = (struct dla_tree*)malloc(sizeof(struct dla_tree));
 
+    result->point_list = new_walker_list();
+    result->segment_list = new_segment_list();
+
+    return result;    
 }
 
-void Tree::grow ()
+void free_dla_tree (struct dla_tree *the_tree)
 {
+    if (the_tree->point_list)
+        free_walker_list(the_tree->point_list);
+    if (the_tree->segment_list)
+        free_segment_list(the_tree->segment_list);
+    free(the_tree);
+}
+
+void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
+{
+    struct walker_list *the_point_list = the_tree->point_list;
+    struct segment_list *the_segment_list = the_tree->segment_list;
+
+    uint32_t max_number_iterations = the_options->max_num_iter;
+    uint32_t max_num_walker = the_options->max_num_walkers;
+
     // Make the root
-    Walker *root = new Walker(WIDTH/2.0,HEIGHT/2.0,0.0);
-    this->the_tree.push_back(root);
+    struct walker *root = new_walker(WIDTH/2.0,HEIGHT/2.0,0.0);
+    insert_walker_node(the_point_list,root);
 
     // Add the Walkers
-    std::vector<Walker*> the_others;
-    for (uint32_t i = 0; i < MAX_NUMBER_OF_WALKERS; i++)
+    struct walker_list *the_others = new_walker_list();
+    for (uint32_t i = 0; i < the_options->max_num_walkers; i++)
     {
-        Walker *walker = new Walker();
-        //this->the_tree.push_back(walker);
-        the_others.push_back(walker);
+        struct walker *walker = new_walker(the_options);
+        insert_walker_node(the_others,walker);
     }
+
+    // Get the reference to teh walker move function
+    set_walker_move_function_fn *move_function_ptr = the_options->walker_config->move_function;
 
     // Main iteration loop 
-    for (uint32_t iter = 0; iter < MAX_NUMBER_OF_ITERATIONS; iter++)
+    for (uint32_t iter = 0; iter < max_number_iterations; iter++)
     {
-        print_progress_bar(iter,MAX_NUMBER_OF_ITERATIONS);
+        print_progress_bar(iter,max_number_iterations);
 
         // Move each Walker using the Random Walk
-        for (uint32_t i = the_others.size()-1; i > 0; i--)
+        struct walker_node *tmp = the_others->list_nodes;
+        while (tmp != NULL)
         {
-            //printf("%u\n",i);
-            the_others[i]->walk();
+            bool has_deleted = false;
+            struct walker *cur_walker = tmp->value;
+            move_function_ptr(cur_walker,the_options);
 
-            uint32_t stuck_index = the_others[i]->is_stuck(this->the_tree);
-            if (stuck_index != this->the_tree.size())
+            uint32_t stuck_index = is_stuck(the_tree->point_list,tmp->value);
+            if (stuck_index != the_tree->point_list->num_nodes)
             {
-                uint32_t new_index = this->the_tree.size();
-                Segment *segment = new Segment(stuck_index,new_index);
-                this->the_segments.push_back(segment);
+                uint32_t new_index = the_tree->point_list->num_nodes;
+                struct segment *the_segment = new_segment(stuck_index,new_index);
+                insert_segment_node(the_segment_list,the_segment);
 
-                this->the_tree.push_back(the_others[i]);
-                the_others.erase(the_others.begin()+i);
+                struct walker *the_new_walker = new_walker(cur_walker->pos[0],cur_walker->pos[1],cur_walker->pos[2]);
+                insert_walker_node(the_point_list,the_new_walker);
 
-                write_to_vtk(this->the_tree.size());
+                // Delete procedure
+                uint32_t delete_index = tmp->id;
+                tmp = tmp->next;
+                delete_node(the_others,delete_index);
+                has_deleted = true;
+
+                order_list(the_others);
+
+                write_to_vtk(the_tree);
             }
+
+            if (!has_deleted)
+                tmp = tmp->next;
         }
-        printf("\n");
 
         // Add more walkers as the tree grows ...
-        while (the_others.size() < MAX_NUMBER_OF_WALKERS)
+        while (the_others->num_nodes < max_num_walker)
         {
-            Walker *walker = new Walker();
-            the_others.push_back(walker);
+            struct walker *the_walker = new_walker(the_options);
+            insert_walker_node(the_others,the_walker);
         }
     }
-
+    printf("\n");
 }
 
-void Tree::write_to_vtk (const uint32_t iter)
+void write_to_vtk (struct dla_tree *the_tree)
 {
-    uint32_t num_points = this->the_tree.size();
-    uint32_t num_lines = this->the_segments.size();
+    uint32_t num_points = the_tree->point_list->num_nodes;
+    uint32_t num_lines = the_tree->segment_list->num_nodes;
 
     char filename[50];
-    sprintf(filename,"output/tree_%u.vtk",iter);
+    sprintf(filename,"output/tree_%u.vtk",num_points);
     FILE *file = fopen(filename,"w+");
 
     fprintf(file,"# vtk DataFile Version 3.0\n");
@@ -72,65 +106,25 @@ void Tree::write_to_vtk (const uint32_t iter)
     fprintf(file,"POINTS %u float\n",num_points);
     
     // Write the points
-    for (uint32_t i = 0; i < this->the_tree.size(); i++)    
+    struct walker_node *tmp = the_tree->point_list->list_nodes;
+    while (tmp != NULL)
     {
-        fprintf(file,"%g %g %g\n",this->the_tree[i]->pos[0],this->the_tree[i]->pos[1],this->the_tree[i]->pos[2]);
+        fprintf(file,"%g %g %g\n",tmp->value->pos[0],\
+                                tmp->value->pos[1],\
+                                tmp->value->pos[2]);
+        tmp = tmp->next;
     }
 
     fprintf(file,"LINES %u %u\n",num_lines,num_lines*3);
 
     // Write the lines
-    for (uint32_t i = 0; i < num_lines; i++)
+    struct segment_node *tmp2 = the_tree->segment_list->list_nodes;
+    while (tmp2 != NULL)
     {
-        fprintf(file,"2 %u %u\n",this->the_segments[i]->src,this->the_segments[i]->dest);
+        fprintf(file,"2 %u %u\n",tmp2->value->src,tmp2->value->dest);
+        tmp2 = tmp2->next;
     }
     
     fclose(file);
-}
-
-void Tree::write_to_vtp ()
-{
-    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();       
-    vtkSmartPointer<vtkCellArray> cell_array = vtkSmartPointer<vtkCellArray>::New();
-        
-    uint32_t counter = 0;
-    for (uint32_t i = 0; i < the_tree.size(); i++)
-    {
-        double *pos = the_tree[i]->pos;
-
-        points->InsertNextPoint(pos[0]-12,pos[1]-12,pos[2]);
-        points->InsertNextPoint(pos[0]+12,pos[1]-12,pos[2]);
-        points->InsertNextPoint(pos[0]-12,pos[1]-12,pos[2]+12);
-        points->InsertNextPoint(pos[0]+12,pos[1]-12,pos[2]+12);
-        points->InsertNextPoint(pos[0]+12,pos[1]+12,pos[2]);
-        points->InsertNextPoint(pos[0]-12,pos[1]+12,pos[2]);
-        points->InsertNextPoint(pos[0]+12,pos[1]+12,pos[2]+12);
-        points->InsertNextPoint(pos[0]-12,pos[1]+12,pos[2]+12);
-
-        vtkSmartPointer<vtkHexahedron> hexahedron_1 = vtkSmartPointer<vtkHexahedron>::New();
-        hexahedron_1->GetPointIds()->SetId(0,counter+0);
-        hexahedron_1->GetPointIds()->SetId(1,counter+1);
-        hexahedron_1->GetPointIds()->SetId(2,counter+2);
-        hexahedron_1->GetPointIds()->SetId(3,counter+3);
-        hexahedron_1->GetPointIds()->SetId(4,counter+4);
-        hexahedron_1->GetPointIds()->SetId(5,counter+6);
-        hexahedron_1->GetPointIds()->SetId(6,counter+7);
-        hexahedron_1->GetPointIds()->SetId(7,counter+8);
-
-        cell_array->InsertNextCell(hexahedron_1);
-
-        counter += 8;
-   
-    }
-
-    vtkSmartPointer<vtkUnstructuredGrid> unstructured_grid = vtkSmartPointer<vtkUnstructuredGrid>::New();
-    unstructured_grid->SetPoints(points);
-    unstructured_grid->SetCells(VTK_HEXAHEDRON,cell_array);
-
-    // Write the polydata to a file
-    vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
-    writer->SetFileName("output/tree.vtu");
-    writer->SetInputData(unstructured_grid);
-    writer->Write();
 
 }

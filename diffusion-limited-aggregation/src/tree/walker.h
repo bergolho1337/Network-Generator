@@ -16,9 +16,7 @@
 #include "../utils/utils.h"
 #include "../options/user_options.h"
 
-const double WIDTH = 600.0;
-const double HEIGHT = 600.0;
-const double RADIUS = 6.0;
+const double RADIUS = 6.0; // Radius of the walker
 
 struct walker
 {
@@ -58,6 +56,7 @@ void delete_node (struct walker_list *l, const uint32_t index);
 struct walker_node* search_walker_node (struct walker_list *l, const uint32_t index);
 bool is_empty (struct walker_list *l);
 void print_list (struct walker_list *l);
+void write_list (struct walker_list *l, const uint32_t iter);
 
 void order_list (struct walker_list *l);
 

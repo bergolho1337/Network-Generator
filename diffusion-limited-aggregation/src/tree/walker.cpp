@@ -4,11 +4,11 @@ struct walker* new_walker (struct user_options *the_options)
 {
     struct walker *result = (struct walker*)malloc(sizeof(struct walker));
 
-    // Get the reference to teh library respawn function
+    // Get the reference to the library respawn function
     set_walker_respawn_function_fn *respawn_function_ptr = the_options->walker_config->respawn_function; 
 
     // Call the respawn library function
-    respawn_function_ptr(result->pos);
+    respawn_function_ptr(the_options->walker_config,result->pos);
 
     result->stuck = false;
     result->radius = RADIUS;
@@ -207,3 +207,32 @@ void print_list (struct walker_list *l)
     }
 }
 
+void write_list (struct walker_list *l, const uint32_t iter)
+{
+    uint32_t num_points = l->num_nodes;
+
+    char filename[50];
+    sprintf(filename,"output/walker-%u.vtk",iter);
+    FILE *file = fopen(filename,"w+");
+
+    fprintf(file,"# vtk DataFile Version 3.0\n");
+    fprintf(file,"Walker\n");
+    fprintf(file,"ASCII\n");
+    fprintf(file,"DATASET POLYDATA\n");
+    fprintf(file,"POINTS %u float\n",num_points);
+    
+    // Write the points
+    struct walker_node *tmp = l->list_nodes;
+    while (tmp != NULL)
+    {
+        fprintf(file,"%g %g %g\n",tmp->value->pos[0],\
+                                tmp->value->pos[1],\
+                                tmp->value->pos[2]);
+        tmp = tmp->next;
+    }
+    fprintf(file,"VERTICES %lu %lu\n",num_points,num_points*2);    
+    for (uint32_t i = 0; i < num_points; i++)
+        fprintf(file,"1 %u\n",i);
+    
+    fclose(file);
+}

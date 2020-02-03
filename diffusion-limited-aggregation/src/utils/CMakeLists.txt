@@ -1,4 +1,5 @@
-set(SOURCE_FILES_UTILS utils.h utils.cpp)
+set(SOURCE_FILES_UTILS utils.h utils.cpp
+                    stop_watch.h stop_watch.cpp)
 
 ADD_LIBRARY(utils STATIC ${SOURCE_FILES_UTILS})
 

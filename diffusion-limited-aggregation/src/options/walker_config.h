@@ -26,8 +26,11 @@ struct walker_config;
 #define SET_WALKER_MOVE_FUNCTION(name) EXPORT_FN void name(struct walker *the_walker, struct user_options *the_options)
 typedef SET_WALKER_MOVE_FUNCTION(set_walker_move_function_fn);
 
-#define SET_WALKER_RESPAWN_FUNCTION(name) EXPORT_FN void name(double pos[])
+#define SET_WALKER_RESPAWN_FUNCTION(name) EXPORT_FN void name(struct walker_config *the_walker_config, double pos[])
 typedef SET_WALKER_RESPAWN_FUNCTION(set_walker_respawn_function_fn);
+
+#define SET_WALKER_DOMAIN_DRAW_FUNCTION(name) EXPORT_FN void name(struct walker_config *the_walker_config, const double root_pos[])
+typedef SET_WALKER_DOMAIN_DRAW_FUNCTION(set_walker_draw_domain_function_fn);
 
 struct walker_config
 {
@@ -38,6 +41,7 @@ struct walker_config
 
     set_walker_move_function_fn *move_function;
     set_walker_respawn_function_fn *respawn_function;
+    set_walker_draw_domain_function_fn *draw_domain_function;
 };
 
 struct walker_config* new_walker_config ();

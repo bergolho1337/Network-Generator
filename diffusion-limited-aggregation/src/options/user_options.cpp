@@ -59,6 +59,22 @@ int parse_config_file(void *user, const char *section, const char *name, const c
         {
             pconfig->max_num_walkers = (int)strtol(value, NULL, 10);
         }
+        else if (MATCH_NAME("seed"))
+        {
+            pconfig->seed = (uint32_t)strtol(value, NULL, 10);
+        }
+        else if (MATCH_NAME("root_pos_x"))
+        {
+            pconfig->root_pos[0] = (double)strtol(value, NULL, 10);
+        }
+        else if (MATCH_NAME("root_pos_y"))
+        {
+            pconfig->root_pos[1] = (double)strtol(value, NULL, 10);
+        }
+        else if (MATCH_NAME("root_pos_z"))
+        {
+            pconfig->root_pos[2] = (double)strtol(value, NULL, 10);
+        }
     }
     else if (SECTION_STARTS_WITH(WALKER_SECTION))
     {

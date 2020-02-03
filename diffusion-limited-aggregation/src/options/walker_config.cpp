@@ -67,6 +67,19 @@ void set_walker_functions (struct walker_config *the_walker_config)
     {
         fprintf(stdout, "[walker_config] Using the function \"%s\" as walker respawn function\n",walker_respawn_function_name);
     }
+
+    // Search for the 'draw' function
+    char walker_draw_domain_function_name[50] = "draw";
+    the_walker_config->draw_domain_function = (set_walker_draw_domain_function_fn*)dlsym(the_walker_config->handle,walker_draw_domain_function_name);
+    if (dlerror() != NULL)  
+    {
+        fprintf(stderr, "[walker_config] \"%s\" function not found in the provided function library\n",walker_draw_domain_function_name);
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        fprintf(stdout, "[walker_config] Using the function \"%s\" as walker draw domain function\n",walker_draw_domain_function_name);
+    }
 }
 
 void print_walker_config (struct walker_config *the_walker_config)

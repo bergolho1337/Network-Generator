@@ -26,9 +26,19 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
 
     uint32_t max_number_iterations = the_options->max_num_iter;
     uint32_t max_num_walker = the_options->max_num_walkers;
+    uint32_t seed = the_options->seed;
+    double *root_pos = the_options->root_pos;
 
+    srand(seed);
+
+    struct stop_watch solver_time;
+    long total_solver_time = 0;
+    init_stop_watch(&solver_time);
+    start_stop_watch(&solver_time);
+
+//********* MAIN CONFIGURATION BEGIN **********************************************
     // Make the root
-    struct walker *root = new_walker(WIDTH/2.0,HEIGHT/2.0,0.0);
+    struct walker *root = new_walker(root_pos[0],root_pos[1],root_pos[2]);
     insert_walker_node(the_point_list,root);
 
     // Add the Walkers
@@ -39,13 +49,15 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
         insert_walker_node(the_others,walker);
     }
 
-    // Get the reference to teh walker move function
+    // Get the reference to the walker move function
     set_walker_move_function_fn *move_function_ptr = the_options->walker_config->move_function;
 
     // Main iteration loop 
     for (uint32_t iter = 0; iter < max_number_iterations; iter++)
     {
         print_progress_bar(iter,max_number_iterations);
+
+        //write_list(the_others,iter);
 
         // Move each Walker using the Random Walk
         struct walker_node *tmp = the_others->list_nodes;
@@ -87,7 +99,26 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
             insert_walker_node(the_others,the_walker);
         }
     }
-    printf("\n");
+    //********* MAIN CONFIGURATION END **********************************************
+
+    total_solver_time = stop_stop_watch(&solver_time);
+    printf("\nTotal solver time: %ld μs ==> %ld s\n",total_solver_time,total_solver_time/1000000);
+
+    // Get the reference to the walker draw domain function
+    set_walker_draw_domain_function_fn *draw_domain_function_ptr = the_options->walker_config->draw_domain_function;
+    draw_domain_function_ptr(the_options->walker_config,the_options->root_pos);
+
+    // Free the walker list
+    free_walker_list(the_others);
+}
+
+void print_dla_tree (struct dla_tree *the_tree)
+{
+    printf("[tree] Point list ...\n");
+    print_list(the_tree->point_list);
+
+    printf("[tree] Segment list ...\n");
+    print_list(the_tree->segment_list); 
 }
 
 void write_to_vtk (struct dla_tree *the_tree)

@@ -21,6 +21,9 @@ struct user_options
 {
     uint32_t max_num_iter;
     uint32_t max_num_walkers;
+    uint32_t seed;
+
+    double root_pos[3];
 
     struct walker_config *walker_config;
 };

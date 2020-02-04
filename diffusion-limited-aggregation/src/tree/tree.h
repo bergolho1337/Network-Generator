@@ -14,6 +14,9 @@
 #include <vtkRegularPolygonSource.h>
 #include <vtkXMLPolyDataWriter.h>
 #include <vtkSphereSource.h>
+#include <vtkUnstructuredGrid.h>
+#include <vtkXMLUnstructuredGridWriter.h>
+#include <vtkHexahedron.h>
 #include <vtkPoints.h>
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>

@@ -11,12 +11,15 @@ struct walker* new_walker (struct user_options *the_options)
     respawn_function_ptr(the_options->walker_config,result->pos);
 
     result->stuck = false;
-    result->radius = RADIUS;
+    
+    double walker_radius = 6.0;
+    get_parameter_value_from_map(the_options->walker_config->params,"walker_radius",&walker_radius);
+    result->radius = walker_radius;
 
     return result;
 }
 
-struct walker* new_walker (const double x, const double y, const double z)
+struct walker* new_walker (const double x, const double y, const double z, const double walker_radius)
 {
     struct walker *result = (struct walker*)malloc(sizeof(struct walker));
 
@@ -25,7 +28,7 @@ struct walker* new_walker (const double x, const double y, const double z)
     result->pos[2] = z;
 
     result->stuck = false;
-    result->radius = RADIUS;
+    result->radius = walker_radius;
 
     return result;
 }
@@ -41,9 +44,10 @@ uint32_t is_stuck (struct walker_list *the_tree, struct walker *the_other)
     while (tmp != NULL)
     {
         struct walker *cur_walker = tmp->value;
+        double walker_radius = cur_walker->radius;
 
         double d = calculate_distance(the_other->pos,cur_walker->pos);
-        if (d < RADIUS * RADIUS * 4.0)
+        if (d < walker_radius * walker_radius * 4.0)
         {
             //the_other->stuck = true;
             return tmp->id;

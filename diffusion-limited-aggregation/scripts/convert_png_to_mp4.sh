@@ -6,9 +6,9 @@
 
 # Variables
 FILENAME="frames/frame"
-FRAME_RATE="40"
-END_FRAME="488"
-OUTPUT_VIDEO_FILENAME="videos/dla-tree-square-domain"
+FRAME_RATE="50"
+END_FRAME="554"
+OUTPUT_VIDEO_FILENAME="videos/dla-tree-sphere-domain"
 RESOLUTION="944x714"
 
 # Execute the converting command using FFMPEG

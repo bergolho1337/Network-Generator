@@ -29,6 +29,10 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
     uint32_t seed = the_options->seed;
     double *root_pos = the_options->root_pos;
 
+    // Get the radius of the walkers
+    double walker_radius = 6.0;
+    get_parameter_value_from_map(the_options->walker_config->params,"walker_radius",&walker_radius);
+
     srand(seed);
 
     struct stop_watch solver_time;
@@ -38,7 +42,7 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
 
 //********* MAIN CONFIGURATION BEGIN **********************************************
     // Make the root
-    struct walker *root = new_walker(root_pos[0],root_pos[1],root_pos[2]);
+    struct walker *root = new_walker(root_pos[0],root_pos[1],root_pos[2],walker_radius);
     insert_walker_node(the_point_list,root);
 
     // Add the Walkers
@@ -49,6 +53,13 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
         insert_walker_node(the_others,walker);
     }
 
+    // DEBUG
+    // Get the reference to the walker draw domain function
+    //set_walker_draw_domain_function_fn *draw_domain_function_ptr_2 = the_options->walker_config->draw_domain_function;
+    //draw_domain_function_ptr_2(the_options->walker_config,the_options->root_pos);
+    //write_list(the_others,0);
+    //exit(0);
+
     // Get the reference to the walker move function
     set_walker_move_function_fn *move_function_ptr = the_options->walker_config->move_function;
 
@@ -57,6 +68,7 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
     {
         print_progress_bar(iter,max_number_iterations);
 
+        // DEBUG
         //write_list(the_others,iter);
 
         // Move each Walker using the Random Walk
@@ -74,7 +86,7 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
                 struct segment *the_segment = new_segment(stuck_index,new_index);
                 insert_segment_node(the_segment_list,the_segment);
 
-                struct walker *the_new_walker = new_walker(cur_walker->pos[0],cur_walker->pos[1],cur_walker->pos[2]);
+                struct walker *the_new_walker = new_walker(cur_walker->pos[0],cur_walker->pos[1],cur_walker->pos[2],cur_walker->radius);
                 insert_walker_node(the_point_list,the_new_walker);
 
                 // Delete procedure

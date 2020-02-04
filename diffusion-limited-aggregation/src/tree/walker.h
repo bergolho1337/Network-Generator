@@ -16,8 +16,6 @@
 #include "../utils/utils.h"
 #include "../options/user_options.h"
 
-const double RADIUS = 6.0; // Radius of the walker
-
 struct walker
 {
     double pos[3];
@@ -39,7 +37,7 @@ struct walker_list
 };
 
 struct walker* new_walker (struct user_options *the_options);
-struct walker* new_walker (const double x, const double y, const double z);
+struct walker* new_walker (const double x, const double y, const double z, const double walker_radius);
 void free_walker (struct walker *the_walker);
 
 uint32_t is_stuck (struct walker_list *the_tree, struct walker *the_other);

@@ -1,0 +1,15 @@
+# vtk DataFile Version 3.0
+Line Collision
+ASCII
+DATASET POLYDATA
+POINTS 5 float
+1 0 0
+0 1 0
+0 0 1
+0.5 0.5 0
+0.25 0.25 0.5
+LINES 4 12
+2 0 1
+2 1 2
+2 2 0
+2 3 4

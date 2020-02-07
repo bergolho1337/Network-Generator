@@ -69,7 +69,7 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
         print_progress_bar(iter,max_number_iterations);
 
         // DEBUG
-        //write_list(the_others,iter);
+        write_list(the_others,iter);
 
         // Move each Walker using the Random Walk
         struct walker_node *tmp = the_others->list_nodes;

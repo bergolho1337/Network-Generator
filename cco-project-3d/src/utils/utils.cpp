@@ -250,10 +250,93 @@ double calc_dot_product (const double u[], const double v[])
     return (u[0] * v[0]) + (u[1] * v[1]) + (u[2] * v[2]); 
 }
 
+// Calculate the difference between two vectors
+void calc_subtract_vector(const double a[], const double b[], double c[])
+{
+    for (uint32_t i = 0; i < 3; i++)
+        c[i] = a[i] - b[i];
+}
+
+void calc_normal_vector (const double a[], const double b[], const double c[], double n[])
+{
+    n[0] = ( c[2] - a[2] ) * ( b[1] - a[1] ) -\
+           ( b[2] - a[2] ) * ( c[1] - a[1]);
+    n[1] = ( b[2] - a[2] ) * ( c[0] - a[0] ) -\
+           ( b[0] - a[0] ) * ( c[2] - a[2]);
+    n[2] = ( b[0] - a[0] ) * ( c[1] - a[1] ) -\
+           ( b[1] - a[1] ) * ( c[0] - a[0]);
+}
+
+void calc_plane_coefficients (const double v1[], const double v2[], const double v3[], double N[], double &D)
+{
+    // Plane equation: ax + by + cz = d --> N = (a,b,c)
+    calc_normal_vector(v1,v2,v3,N);
+    D = calc_dot_product(N,v1);
+}
+
 bool check_size (const double p[])
 {
     if (fabs(p[0]) < EPSILON && fabs(p[1]) < EPSILON && fabs(p[2]) < EPSILON)
         return true;
+    else
+        return false;
+}
+
+bool check_segment_plane_intersection (const double x_prox[], const double x_new[], struct face the_face)
+{
+    // Calculate the plane equation for the given triangle face
+    double v1[3], v2[3], v3[3];
+    
+    // Vertex 1
+    v1[0] = the_face.x1;
+    v1[1] = the_face.y1;
+    v1[2] = the_face.z1;
+
+    // Vertex 2
+    v2[0] = the_face.x2;
+    v2[1] = the_face.y2;
+    v2[2] = the_face.z2;
+
+    // Vertex 3
+    v3[0] = the_face.x3;
+    v3[1] = the_face.y3;
+    v3[2] = the_face.z3;
+
+    double N[3], D;
+    calc_plane_coefficients(v1,v2,v3,N,D);
+
+    double seg_rq[3];
+    calc_subtract_vector(x_new,x_prox,seg_rq);
+
+    double num, den, t;
+    num = D - calc_dot_product(x_prox,N);
+    den = calc_dot_product(seg_rq,N);
+
+    // Case 1: Segment is parallel to the plane
+    if (den == 0.0)
+    {
+        // Within the plane
+        if (num == 0.0)
+            return true;
+        // Outside the plane
+        else
+            return false;
+    }
+    else
+    {
+        t = num / den;
+    }
+
+    // Case 2: Intersection point is between the endpoints
+    if ( (t > 0.0) && (t < 1.0) )
+        return true;
+    // Case 3: Intersection point is the endpoint 'q'
+    else if (t == 0.0)
+        return true;
+    // Case 4: Intersection point is the endpoint 'r'
+    else if (t == 1.0)
+        return true;
+    // Case 5: There is NO intersection
     else
         return false;
 }

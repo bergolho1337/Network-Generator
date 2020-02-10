@@ -29,7 +29,8 @@ struct cost_function_config;
                                                 struct cost_function_config *config,\
                                                 struct local_optimization_config *local_opt_config,\
                                                 const double new_pos[],\
-                                                const std::vector<struct segment_node*> feasible_segments)
+                                                const std::vector<struct segment_node*> feasible_segments,\
+                                                const std::vector<struct face> obstacle_faces)
 typedef SET_COST_FUNCTION(set_cost_function_fn);
 
 struct cost_function_config

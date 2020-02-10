@@ -9,6 +9,7 @@ INCLUDE(${VTK_USE_FILE})
 
 ADD_SUBDIRECTORY(src/point-list)
 ADD_SUBDIRECTORY(src/segment-list)
+ADD_SUBDIRECTORY(src/face-list)
 ADD_SUBDIRECTORY(src/options)
 ADD_SUBDIRECTORY(src/ini_parser)
 ADD_SUBDIRECTORY(src/utils)
@@ -20,6 +21,6 @@ ADD_SUBDIRECTORY(src/local_optimization_library)
 
 ADD_EXECUTABLE(Cco_3D src/main.cpp)
 
-ADD_DEPENDENCIES(Cco_3D pointlist segmentlist options ini_parser utils cco test)
+ADD_DEPENDENCIES(Cco_3D pointlist segmentlist facelist options ini_parser utils cco test)
 
-TARGET_LINK_LIBRARIES(Cco_3D ${VTK_LIBRARIES} pointlist segmentlist options ini_parser utils cco test dl m)
+TARGET_LINK_LIBRARIES(Cco_3D ${VTK_LIBRARIES} pointlist segmentlist facelist options ini_parser utils cco test dl m)

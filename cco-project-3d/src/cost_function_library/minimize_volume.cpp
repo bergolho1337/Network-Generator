@@ -47,8 +47,12 @@ SET_COST_FUNCTION (minimize_tree_volume_default)
             double volume = calc_tree_volume(the_network);
 
             // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn'
+            //                      and if do not intersect any triangle face from the obstacle object (if it is given). 
             struct segment_list *s_list = the_network->segment_list;
-            bool point_is_not_ok = has_collision(s_list,iconn,ibiff,inew,log_file);
+            bool has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
+            bool has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
+            
+            bool point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision;
 
             if (volume < minimum_volume && !point_is_not_ok)
             {
@@ -92,8 +96,12 @@ SET_COST_FUNCTION (minimize_tree_volume_default)
                 double volume = calc_tree_volume(the_network);
 
                 // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn' and 'ibiff'
+                //                      and if do not intersect any triangle face from the obstacle object (if it is given).
                 s_list = the_network->segment_list;
-                point_is_not_ok = has_collision(s_list,iconn,ibiff,inew,log_file);
+                has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
+                has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
+
+                point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision;
 
                 if (volume < minimum_volume && !point_is_not_ok)
                 {
@@ -147,6 +155,7 @@ SET_COST_FUNCTION (minimize_tree_volume_default)
     return best;
 }
 
+/*
 // OK
 SET_COST_FUNCTION (minimize_tree_volume_with_angle_restriction)
 {
@@ -1121,3 +1130,4 @@ SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty_and_angle_restriction
 
     return best;
 }
+*/

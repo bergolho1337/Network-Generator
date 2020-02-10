@@ -16,6 +16,7 @@
 
 #include "../point-list/point-list.h"
 #include "../segment-list/segment-list.h"
+#include "../face-list/face-list.h"
 #include "../options/user_options.h"
 #include "../utils/utils.h"
 
@@ -55,6 +56,8 @@ struct cco_network
 
     bool using_cloud_points;
     char *cloud_points_filename;
+    bool using_obstacle;
+    char *obstacle_filename;
 
     bool using_local_optimization;
     char *local_optimization_function_name;
@@ -72,6 +75,7 @@ void free_cco_network (struct cco_network *the_network);
 void set_parameters (struct cco_network *the_network, struct user_options *options);
 void set_cost_function_name (struct cco_network *the_network, struct user_options *options);
 void set_cloud_points_name (struct cco_network *the_network, struct user_options *options);
+void set_obstacle_name (struct cco_network *the_network, struct user_options *options);
 void set_local_optimization_function_name (struct cco_network *the_network, struct user_options *options);
 
 struct segment_node* build_segment (struct cco_network *the_network, struct local_optimization_config *local_opt_config,\
@@ -94,24 +98,30 @@ bool check_collisions_and_fill_feasible_segments (struct cco_network *the_networ
 
 bool has_collision (struct segment_list *s_list, struct segment_node *s, const double new_pos[], FILE *log_file);
 bool has_collision (struct segment_list *s_list, struct segment_node *iconn, struct segment_node *ibiff, struct segment_node *inew, FILE *log_file);
+bool has_intersect_obstacle (struct segment_node *inew, std::vector<struct face> obstacle_faces);
+bool has_intersect_obstacle (const double x_prox[], const double x_new[], std::vector<struct face> obstacle_faces);
 
 bool connection_search (struct cco_network *the_network, const double pos[], const double d_threash);
 bool distance_criterion (struct segment_node *s, const double pos[], const double d_threash);
 
 void grow_tree (struct cco_network *the_network, struct user_options *options);
-void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_options *options, std::vector<struct point> cloud_points);
+void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_options *options, std::vector<struct point> cloud_points, std::vector<struct face> obstacle_faces);
 
-void make_root_using_cloud_points (struct cco_network *the_network, std::vector<struct point> cloud_points);
+void make_root_using_cloud_points (struct cco_network *the_network, std::vector<struct point> cloud_points, std::vector<struct face> obstacle_faces);
                         
 void generate_terminal_using_cloud_points(struct cco_network *the_network,\
                                           struct cost_function_config *config,\
                                           struct local_optimization_config *local_opt_config,\
-                                          std::vector<struct point> cloud_points);
+                                          std::vector<struct point> cloud_points,\
+                                          std::vector<struct face> obstacle_faces);
 
 uint32_t sort_point_from_cloud (double pos[], std::vector<struct point> cloud_points);
 void sort_point_from_cloud_v2 (double pos[], std::vector<struct point> cloud_points);
 
 void read_cloud_points (const char filename[], std::vector<struct point> &cloud_points);
 void build_cloud_points (std::vector<struct point> &cloud_points, const double radius);
+
+void read_obstacle_faces (const char filename[], std::vector<struct face> &obstacle_faces);
+void read_face (FILE *file, std::vector<struct face> &faces);
 
 #endif

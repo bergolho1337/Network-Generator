@@ -6,6 +6,7 @@ struct user_options* new_user_options (int argc, char *argv[])
 
     result->use_cloud_points = false;
     result->use_local_optimization = false;
+    result->use_obstacle = false;
 
     read_config_file(result,argv[1]);
     
@@ -112,6 +113,22 @@ int parse_config_file(void *user, const char *section, const char *name, const c
         {
             pconfig->cloud_points_filename = strdup(value);
         }
+        else if (MATCH_NAME("use_obstacle"))
+        {
+            if (strcmp(value,"true") == 0 || strcmp(value,"yes") == 0)
+                pconfig->use_obstacle = true;
+            else if (strcmp(value,"false") == 0 || strcmp(value,"no") == 0)
+                pconfig->use_obstacle = false;
+            else
+            {
+                fprintf(stderr,"[user_options] Error reading configuration file! Invalid option in \"cloud_points\" section\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+        else if (MATCH_NAME("obstacle_filename"))
+        {
+            pconfig->obstacle_filename = strdup(value);
+        }
     }
     else if (SECTION_STARTS_WITH(LOCAL_OPT_SECTION))
     {
@@ -171,6 +188,10 @@ void print_user_options (struct user_options *options)
         printf("cloud_points_filename = %s\n",options->cloud_points_filename);
     else
         printf("cloud_points_filename = NULL\n");
+    if (options->use_obstacle)
+        printf("obstacle_filename = %s\n",options->cloud_points_filename);
+    else
+        printf("obstacle_filename = NULL\n");
     printf("%s\n",PRINT_DOTS);
     print_cost_function_config(options->config);
     printf("%s\n",PRINT_DOTS);

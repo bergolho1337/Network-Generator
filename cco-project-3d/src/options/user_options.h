@@ -36,6 +36,9 @@ struct user_options
     bool use_cloud_points;
     char *cloud_points_filename;
 
+    bool use_obstacle;
+    char *obstacle_filename;
+
     struct cost_function_config *config;
     
     bool use_local_optimization;

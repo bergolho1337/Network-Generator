@@ -76,9 +76,14 @@ double calc_dend (struct segment_node *s, const double pos[]);
 double calc_perfusion_radius (const double V);
 double calc_flux_terminals (const double Q_perf, const int N_term);
 
+void calc_plane_coefficients (const double v1[], const double v2[], const double v3[], double N[], double &D);
+void calc_subtract_vector(const double x_new[], const double x_prox[], double seg_rq[]);
+
 void draw_perfusion_volume (const double radius);
 
 bool check_size (const double p[]);
+
+bool check_segment_plane_intersection (const double x_prox[], const double x_new[], struct face the_face);
 
 void print_terminal_activation_time (struct cco_network *the_network,\
                             const double c, const double cm, const double rc, const double rm);

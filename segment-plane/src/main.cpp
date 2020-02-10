@@ -122,78 +122,98 @@ void subtract_vector (const Point *r, const Point *q, double rq[])
     rq[2] = r->z - q->z;
 }
 
-// Calculate the volume of a tethahedron
-double calculate_volume_sign (Point *q, Point *a, Point *b, Point *r)
+void calculate_normal_vector(Point *a, Point *b, Point *c, double N[])
 {
-    double vol;
-    double A[3], B[3], C[3];
-
-    A[0] = q->x - r->x;
-    A[1] = q->y - r->y;
-    A[2] = q->z - r->z;
-    B[0] = a->x - r->x;
-    B[1] = a->y - r->y;
-    B[2] = a->z - r->z;
-    C[0] = b->x - r->x;
-    C[1] = b->y - r->y;
-    C[2] = b->z - r->z;
-
-    vol = A[0] * (B[1]*C[2] - B[2]*C[1]) +\
-          A[1] * (B[2]*C[0] - B[0]*C[2]) +\
-          A[2] * (B[0]*C[1] - B[1]*C[0]);
-
-    if (vol > 0.5)          return 1;
-    else if (vol < -0.5)    return -1;
-    else                    return 0;
+    N[0] = ( c->z - a->z ) * ( b->y - a->y ) -\
+           ( b->z - a->z ) * ( c->y - a->y);
+    N[1] = ( b->z - a->z ) * ( c->x - a->x ) -\
+           ( b->x - a->x ) * ( c->z - a->z);
+    N[2] = ( b->x - a->x ) * ( c->y - a->y ) -\
+           ( b->y - a->y ) * ( c->x - a->x);
 }
 
-
-char check_segment_triangle_intersection (vector<Segment> triangle, vector<Segment> segment)
+uint32_t calculate_plane_coefficients (vector<Segment> triangle, double N[], double &D)
 {
-    double vol[3];
+    Point *p1 = triangle[0].p1;
+    Point *p2 = triangle[1].p1;
+    Point *p3 = triangle[2].p1;
 
-    Point *a = triangle[0].p1;
-    Point *b = triangle[1].p1;
-    Point *c = triangle[2].p1; 
+    calculate_normal_vector(p1,p2,p3,N);
+    D = dot_product(N[0],N[1],N[2],p1->x,p1->y,p1->z);
+
+    // Find the largest component of N
+    double largest = 0.0;
+    uint32_t largest_index = 0;
+    for (uint32_t i = 0; i < 3; i++)
+    {
+        double value = fabs(N[i]);
+        if (value > largest)
+        {
+            largest = value;
+            largest_index = i;
+        }
+    }
+
+    return largest_index;
+} 
+
+char check_segment_plane_intersection (vector<Segment> triangle, vector<Segment> segment, Point &p)
+{
+    double segment_rq[3];   // Segment vector 
+    double N[3];            // Triangle plane normal vector
+    double D;               // 'D' coefficient of the plane equation
+    uint32_t m;             // Index of the largest component of N
+    double num, den, t;
+
     Point *q = segment[0].p1;
     Point *r = segment[0].p2;
 
-    vol[0] = calculate_volume_sign(q,a,b,r);
-    vol[1] = calculate_volume_sign(q,b,c,r);
-    vol[2] = calculate_volume_sign(q,c,a,r);
+    m = calculate_plane_coefficients(triangle,N,D);
+    subtract_vector(r,q,segment_rq);
 
-    // Same sign: Segment intersects interior of triangle
-    if ( (vol[0] > 0) && (vol[1] > 0) && (vol[2] > 0) ||\
-         (vol[0] < 0) && (vol[1] < 0) && (vol[2] < 0) )
-        return 'f';
+    num = D - dot_product(q->x,q->y,q->z,N[0],N[1],N[2]);
+    den = dot_product(segment_rq[0],segment_rq[1],segment_rq[2],N[0],N[1],N[2]);
 
-    // Opposite sign: no intersection between segment and triangle
-    if ( (vol[0] > 0) || (vol[1] > 0) || (vol[2] > 0) &&\
-         (vol[0] < 0) || (vol[1] < 0) || (vol[2] < 0) ) 
-        return '0';
-    
-    else if ( (vol[0] == 0.0) && (vol[1] == 0.0) && (vol[2] == 0.0))
+    // Case 1: Segment is parallel to the plane
+    if (den == 0.0)
     {
-        fprintf(stderr,"[-] ERROR!\n");
-        exit(EXIT_FAILURE);
+        printf("[!] Segment is parallel to the plane\n");
+        // Endpoint 'q' is on plane
+        if (num == 0.0)
+            return 'p';
+        else
+            return '0';
     }
-
-    // Two zeros: Segment intersects vertex
-    else if ( (vol[0] == 0.0) && (vol[1] == 0.0) ||\
-              (vol[0] == 0.0) && (vol[2] == 0.0) ||\
-              (vol[1] == 0.0) && (vol[2] == 0.0))
-        return 'v';
-
-    // One zero: Segment intersects edge
-    else if ( (vol[0] == 0.0) || (vol[1] == 0.0) || (vol[2] == 0.0) )
-        return 'e';
-    
     else
     {
-        fprintf(stderr,"[-] ERROR!\n");
-        exit(EXIT_FAILURE);
-    } 
+        t = num / den;
+    }
 
+    // DEBUG
+    //printf("N = (%g,%g,%g)\n",N[0],N[1],N[2]);
+    //printf("num = %g\n",num);
+    //printf("den = %g\n",den);
+    //printf("t = %g\n",t);
+
+    // Calculate the point of intersection
+    p.x = q->x + t * segment_rq[0];
+    p.y = q->y + t * segment_rq[1];
+    p.z = q->z + t * segment_rq[2];
+    printf("[+] Intersection point = (%g,%g,%g)\n",p.x,p.y,p.z);
+    write_intersection_point_to_vtk(p);
+
+    // Case 2: Intersection point is between the endpoints
+    if ( (t > 0.0) && (t < 1.0) )
+        return '1';
+    // Case 3: Intersection point is the endpoint 'q'
+    else if (t == 0.0)
+        return 'q';
+    // Case 4: Intersection point is the endpoint 'r'
+    else if (t == 1.0)
+        return 'r';
+    // Case 5: There is NO intersection
+    else
+        return '0'; 
 }
 
 int main (int argc, char *argv[])
@@ -222,16 +242,18 @@ int main (int argc, char *argv[])
 
     Point p;
 
-    char ret = check_segment_triangle_intersection(triangle,segment);
+    char ret = check_segment_plane_intersection(triangle,segment,p);
     switch (ret)
     {
-        case 'v': printf("[+] The segment includes a vertex of T -- code 'v'\n");
+        case 'p': printf("[+] Segment lies within the plane -- code 'p'\n");
                   break;
-        case 'e': printf("[+] The segment includes a point in the interior of an edge of T -- code 'e'\n");
+        case 'q': printf("[+] The (first) q endpoint is on the plane -- code 'q'\n");
                   break;
-        case 'f': printf("[+] The segment includes a point in the interior of a face of T -- code 'f'\n");
+        case 'r': printf("[+] The (second) r endpoint is on the plane -- code 'r'\n");
                   break;
-        case '0': printf("[-] Segment does not intersect the triangle T -- code '0'\n");
+        case '0': printf("[-] Segment is outside the plane -- code '0'\n");
+                  break;
+        case '1': printf("[+] Segment intersects the plane -- code '1'\n");
                   break;
     }
 

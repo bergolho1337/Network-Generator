@@ -1,0 +1,8 @@
+# vtk DataFile Version 3.0
+Intersection Point
+ASCII
+DATASET POLYDATA
+POINTS 1 float
+0.166667 0.333333 0.5
+VERTICES 1 2
+1 0

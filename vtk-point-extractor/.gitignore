@@ -33,9 +33,5 @@ shared-libs/
 build/
 *~
 .vs/
-*.json
-output/
-*.log
-clouds/generated-clouds
-clouds/private
+outputs/elizabeth*
 inputs/elizabeth*

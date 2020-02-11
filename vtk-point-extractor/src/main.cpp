@@ -94,7 +94,8 @@ int main (int argc, char *argv[])
     read_points(argv[1],points);
     //print_points(points);
 
-    double scale_factor = 0.025;
+    //double scale_factor = 0.025;		// Paraboloid example
+    double scale_factor = 1.0;			// Default
     rescale_points(points,scale_factor);
 
     write_points_to_pts(points);

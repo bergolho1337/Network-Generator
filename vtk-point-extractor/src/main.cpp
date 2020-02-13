@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -97,6 +98,8 @@ int main (int argc, char *argv[])
     //double scale_factor = 0.025;		// Paraboloid example
     double scale_factor = 1.0;			// Default
     rescale_points(points,scale_factor);
+
+    reverse(points.begin(),points.end());
 
     write_points_to_pts(points);
 

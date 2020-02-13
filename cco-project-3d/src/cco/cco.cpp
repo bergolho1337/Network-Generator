@@ -700,6 +700,7 @@ void make_root_using_cloud_points (struct cco_network *the_network, std::vector<
     double d_threashold = sqrt( M_PI * r_supp * r_supp );
     while (!is_root_ok)
     {
+        //sort_point_from_cloud_v1(x_inew,cloud_points);
         sort_point_from_cloud_v2(x_inew,cloud_points);
 
         // Convert to the real domain
@@ -773,7 +774,9 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
         feasible_segments.clear();
 
         // Sort a terminal position from the cloud of points
+        //sort_point_from_cloud_v1(new_pos,cloud_points);
         sort_point_from_cloud_v2(new_pos,cloud_points);
+
         // Convert to the real domain
         //new_pos[0] *= r_supp;
         //new_pos[1] *= r_supp;
@@ -913,7 +916,8 @@ void build_cloud_points (std::vector<struct point> &cloud_points, const double r
     free_random_generator(the_generator);
 }
 
-uint32_t sort_point_from_cloud (double pos[], std::vector<struct point> cloud_points)
+// Randomly choose a point inside the cloud
+void sort_point_from_cloud_v1 (double pos[], std::vector<struct point> cloud_points)
 {
     uint32_t num_points = cloud_points.size();
     uint32_t index = rand() % num_points;
@@ -922,9 +926,10 @@ uint32_t sort_point_from_cloud (double pos[], std::vector<struct point> cloud_po
     pos[1] = cloud_points[index].y;
     pos[2] = cloud_points[index].z;
 
-    return index;
+    //return index;
 }
 
+// Sort points in a sequential order
 void sort_point_from_cloud_v2 (double pos[], std::vector<struct point> cloud_points)
 {
     // Reset the counter

@@ -1,4 +1,8 @@
 // Author: Lucas Berg
+// Program that receives a cloud of points and remap them using a root point as a reference.
+// The remapping is done by envoloping the root point with a sphere, which at each iteration will
+// increase its radius. By using this idea, all the current points of the cloud that are inside the spehre and 
+// that are not visited yet will be placed in a array of points that can later be writen in .pts format.
 
 #include <iostream>
 #include <cmath>

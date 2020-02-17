@@ -139,7 +139,7 @@ void write_to_vtk (struct dla_tree *the_tree)
     uint32_t num_lines = the_tree->segment_list->num_nodes;
 
     char filename[50];
-    sprintf(filename,"output/tree_%u.vtk",num_points);
+    sprintf(filename,"output/tree/tree_%u.vtk",num_points);
     FILE *file = fopen(filename,"w+");
 
     fprintf(file,"# vtk DataFile Version 3.0\n");

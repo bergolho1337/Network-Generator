@@ -37,6 +37,10 @@ struct walker_config
     void *handle;
 
     char *library_name;
+
+    char *mesh_filename;                     // Filename with the points of the mesh (Custom library)
+    char *map_filename;                      // Filename with the points to face mapping (Custom library)
+
     std::map<std::string,double> *params;    // Parameters of the cost function
 
     set_walker_move_function_fn *move_function;

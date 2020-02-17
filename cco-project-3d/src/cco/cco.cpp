@@ -177,7 +177,7 @@ void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_
         generate_terminal_using_cloud_points(the_network,config,local_opt_config,cloud_points,obstacle_faces);
 
         // DEBUG
-        //write_to_vtk_iteration(the_network);
+        write_to_vtk_iteration(the_network);
 
         printf("%s\n",PRINT_LINE);
         fprintf(log_file,"%s\n",PRINT_LINE);
@@ -701,7 +701,8 @@ void make_root_using_cloud_points (struct cco_network *the_network, std::vector<
     while (!is_root_ok)
     {
         //sort_point_from_cloud_v1(x_inew,cloud_points);
-        sort_point_from_cloud_v2(x_inew,cloud_points);
+        //sort_point_from_cloud_v2(x_inew,cloud_points);
+        sort_point_from_cloud_v3(x_inew,cloud_points);
 
         // Convert to the real domain
         //x_inew[0] *= r_supp;
@@ -775,7 +776,8 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
 
         // Sort a terminal position from the cloud of points
         //sort_point_from_cloud_v1(new_pos,cloud_points);
-        sort_point_from_cloud_v2(new_pos,cloud_points);
+        //sort_point_from_cloud_v2(new_pos,cloud_points);
+        sort_point_from_cloud_v3(new_pos,cloud_points);
 
         // Convert to the real domain
         //new_pos[0] *= r_supp;
@@ -943,7 +945,25 @@ void sort_point_from_cloud_v2 (double pos[], std::vector<struct point> cloud_poi
 
     // Increase the counter
     cur_rand_index++;
+}
 
+// Sort points in a sequential order, but using a fixed offset
+void sort_point_from_cloud_v3 (double pos[], std::vector<struct point> cloud_points)
+{
+    // offset = 5 --> cover almost the whole surface
+    static const uint32_t offset = 1;     
+
+    // Reset the counter
+    if (cur_rand_index > cloud_points.size()-1)
+        cur_rand_index = cur_rand_index % (cloud_points.size()-1);
+
+    // Convert to the real domain
+    pos[0] = cloud_points[cur_rand_index].x;
+    pos[1] = cloud_points[cur_rand_index].y;
+    pos[2] = cloud_points[cur_rand_index].z;
+
+    // Increase the counter
+    cur_rand_index += offset;
 }
 
 void usage (const char pname[])

@@ -1,4 +1,6 @@
 // Author: Lucas Berg
+// Program that can extract a set of points from a VTK Legacy file format and write them in .pts
+// This program can also rescale the cloud of point by given value
 
 #include <iostream>
 #include <cmath>

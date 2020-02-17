@@ -39,3 +39,5 @@ output/
 clouds/generated-clouds
 clouds/private
 inputs/elizabeth*
+inputs/rabbit*
+saved-networks/elizabeth*

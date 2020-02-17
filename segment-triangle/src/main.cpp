@@ -1,4 +1,5 @@
 // Author: Lucas Berg
+// Program that checks collision between a given segment and triangle.
 
 #include <iostream>
 #include <cmath>

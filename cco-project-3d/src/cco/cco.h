@@ -117,6 +117,7 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
 
 void sort_point_from_cloud_v1 (double pos[], std::vector<struct point> cloud_points);
 void sort_point_from_cloud_v2 (double pos[], std::vector<struct point> cloud_points);
+void sort_point_from_cloud_v3 (double pos[], std::vector<struct point> cloud_points);
 
 void read_cloud_points (const char filename[], std::vector<struct point> &cloud_points);
 void build_cloud_points (std::vector<struct point> &cloud_points, const double radius);

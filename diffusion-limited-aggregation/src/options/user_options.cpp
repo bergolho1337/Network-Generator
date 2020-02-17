@@ -87,6 +87,14 @@ int parse_config_file(void *user, const char *section, const char *name, const c
         {
             pconfig->walker_config->library_name = strdup(value);
         }
+        else if (MATCH_NAME("mesh_filename"))
+        {
+            pconfig->walker_config->mesh_filename = strdup(value);
+        }
+        else if (MATCH_NAME("map_filename"))
+        {
+            pconfig->walker_config->map_filename = strdup(value);
+        }
         else
         {
             std::string key(name);

@@ -19,3 +19,8 @@ TARGET_LINK_LIBRARIES(box_walker)
 ADD_LIBRARY(sphere_walker ${LIB_TYPE} sphere.cpp)
 TARGET_LINK_LIBRARIES(sphere_walker)
 #####################################################################################
+
+############## DEFAULT CUSTOM LIBRARY ###############################################
+ADD_LIBRARY(custom_walker ${LIB_TYPE} custom.cpp)
+TARGET_LINK_LIBRARIES(custom_walker)
+#####################################################################################

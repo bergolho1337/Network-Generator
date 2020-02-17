@@ -216,7 +216,7 @@ void write_list (struct walker_list *l, const uint32_t iter)
     uint32_t num_points = l->num_nodes;
 
     char filename[50];
-    sprintf(filename,"output/walker-%u.vtk",iter);
+    sprintf(filename,"output/walker/walker-%u.vtk",iter);
     FILE *file = fopen(filename,"w+");
 
     fprintf(file,"# vtk DataFile Version 3.0\n");

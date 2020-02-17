@@ -6,6 +6,8 @@ struct walker_config* new_walker_config ()
 
     result->handle = NULL;
     result->library_name = NULL;
+    result->mesh_filename = NULL;
+    result->map_filename = NULL;
     result->params = new std::map<std::string,double>();
 
     return result;
@@ -17,6 +19,9 @@ void free_walker_config (struct walker_config *the_walker_config)
 
     if (the_walker_config->library_name)
         free(the_walker_config->library_name);
+
+    if (the_walker_config->mesh_filename)
+        free(the_walker_config->mesh_filename);
 
     if (the_walker_config->handle)
         dlclose(the_walker_config->handle);
@@ -85,6 +90,16 @@ void set_walker_functions (struct walker_config *the_walker_config)
 void print_walker_config (struct walker_config *the_walker_config)
 {
     printf("Walker function library name = \"%s\"\n",the_walker_config->library_name);
+
+    if (!the_walker_config->mesh_filename)
+    {
+        printf("Walker mesh filename = \"%s\"\n",the_walker_config->mesh_filename);
+    }
+
+    if (!the_walker_config->map_filename)
+    {
+        printf("Walker map filename = \"%s\"\n",the_walker_config->map_filename);
+    }
 
     if (!the_walker_config->params->empty())
     {

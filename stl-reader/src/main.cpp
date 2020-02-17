@@ -1,4 +1,5 @@
 // Author: Lucas Berg
+// Program that reads a STL file and store its faces and point on a vector.
 
 #include <iostream>
 #include <cmath>
@@ -6,8 +7,12 @@
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
+#include <map>
 
 using namespace std;
+
+static const double dx = 12.0;
+static const double dy = 12.0;
 
 class Point
 {
@@ -27,6 +32,12 @@ public:
     {
         printf("%d -- (%.2lf,%.2lf,%.2lf)\n",this->id,this->x,this->y,this->z);
     };
+    bool operator <(const Point& pt) const
+    {
+        return (this->x < pt.x) || \
+               ((!(pt.x < this->x)) && (this->y < pt.y)) || \
+               ((!(pt.x < this->x)) && (!(pt.y < this->y)) && (this->z < pt.z));
+    }
 };
 
 class Face
@@ -113,6 +124,124 @@ void print_faces (vector<Face> faces)
     }
 }
 
+void insert_points_from_faces_to_map (vector<Face> faces, map<Point,uint32_t> &unique_points)
+{
+    map<Point,uint32_t>::iterator it, it2;
+    uint32_t unique_num_points = 0;
+    for (uint32_t i = 0; i < faces.size(); i++)
+    {
+        Point *v1 = faces[i].v1;
+        Point *v2 = faces[i].v2;
+        Point *v3 = faces[i].v3;
+
+        it = unique_points.find(*v1);
+        if (it == unique_points.end())
+        {
+            unique_points.insert(pair<Point,uint32_t>(*v1,unique_num_points));
+            unique_num_points++;
+        }
+        it = unique_points.find(*v2);
+        if (it == unique_points.end())
+        {
+            unique_points.insert(pair<Point,uint32_t>(*v2,unique_num_points));
+            unique_num_points++;
+        }
+        it = unique_points.find(*v3);
+        if (it == unique_points.end())
+        {
+            unique_points.insert(pair<Point,uint32_t>(*v3,unique_num_points));
+            unique_num_points++;
+        }
+    }
+
+    // Map points to face
+    vector< vector< int > > points_to_faces;
+    points_to_faces.assign(unique_points.size(),vector<int>());
+
+    for (it = unique_points.begin(); it != unique_points.end(); ++it)
+    {
+        // Check if the current point matches one of the 3 points from the faces
+        uint32_t cur_id = it->second;
+        printf("Point %u -- (%lf %lf %lf)\n",it->second,it->first.x,it->first.y,it->first.z);
+
+        for (uint32_t j = 0; j < faces.size(); j++)
+        {
+            Point *v1 = faces[j].v1;
+            Point *v2 = faces[j].v2;
+            Point *v3 = faces[j].v3;
+
+            it2 = unique_points.find(*v1);
+            if (it2->second == cur_id)
+            {
+                points_to_faces[cur_id].push_back(j);
+            }
+            it2 = unique_points.find(*v2);
+            if (it2->second == cur_id)
+            {
+                points_to_faces[cur_id].push_back(j);
+            }
+            it2 = unique_points.find(*v3);
+            if (it2->second == cur_id)
+            {
+                points_to_faces[cur_id].push_back(j);
+            }
+        }
+    }
+    
+    for (uint32_t i = 0; i < points_to_faces.size(); i++)
+    {
+        printf("Point %u -- ",i);
+        for (uint32_t j = 0; j < points_to_faces[i].size(); j++)
+        {
+            printf("%u ",points_to_faces[i][j]);
+        }
+        printf("\n");
+    }
+    //printf("Point %u -- (%lf %lf %lf)\n",it->second,it->first.x,it->first.y,it->first.z);   
+} 
+
+void draw_triangles (FILE *file, const double x, const double y)
+{
+
+    // First triangle
+    fprintf(file," facet normal 0 0 1\n");
+    fprintf(file,"  outer loop\n");
+    fprintf(file,"   vertex %lf %lf 0\n",x,y);
+    fprintf(file,"   vertex %lf %lf 0\n",x+dx,y);
+    fprintf(file,"   vertex %lf %lf 0\n",x+dx,y+dy);
+    fprintf(file,"  endloop\n");
+    fprintf(file," endfacet\n");
+    
+    // Second triangle
+    fprintf(file," facet normal 0 0 1\n");
+    fprintf(file,"  outer loop\n");
+    fprintf(file,"   vertex %lf %lf 0\n",x,y);
+    fprintf(file,"   vertex %lf %lf 0\n",x,y+dy);
+    fprintf(file,"   vertex %lf %lf 0\n",x+dx,y+dy);
+    fprintf(file,"  endloop\n");
+    fprintf(file," endfacet\n");
+}
+
+void generate_grid_stl (const uint32_t nx, const uint32_t ny)
+{
+    FILE *file = fopen("output.stl","w+");
+    fprintf(file,"solid ascii\n");
+
+    for (uint32_t i = 0; i < nx; i++)
+    {
+        double x = i*dx;
+        for (uint32_t j = 0; j < ny; j++)
+        {
+            double y = j*dy;
+
+            draw_triangles(file,x,y);
+        }
+    }
+
+    fprintf(file,"endsolid\n");    
+    fclose(file);
+}
+
 int main (int argc, char *argv[])
 {
     if (argc-1 != 1)
@@ -121,9 +250,15 @@ int main (int argc, char *argv[])
         exit(EXIT_FAILURE);   
     }
 
-    vector<Face> faces;
-    read_faces(argv[1],faces);
-    print_faces(faces);
+    const uint32_t n = 50;
+    generate_grid_stl(n,n);
 
+    //vector<Face> faces;
+    //read_faces(argv[1],faces);
+    //print_faces(faces);
+
+    //map<Point,uint32_t> unique_points;
+    //insert_points_from_faces_to_map(faces,unique_points);
+    
     return 0;
 }

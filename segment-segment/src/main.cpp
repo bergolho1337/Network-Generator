@@ -1,4 +1,5 @@
 // Author: Lucas Berg
+// Program that checks segment-segment intersection.
 
 #include <iostream>
 #include <cstdio>

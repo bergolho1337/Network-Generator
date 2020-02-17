@@ -1,4 +1,5 @@
+- Create a script to generate the "point_to_face_map" and write into a file
+- Create a file format to read the "point_to_face_map" directly from file
 - Change the linked list structure to vector
 - Transform all the structures in classes
-- Expand the domain as the tree grows
-- Optimize teh algorithm
+- Optimize the algorithm

@@ -61,7 +61,7 @@ SET_WALKER_RESPAWN_FUNCTION (respawn)
         else
         {
             printf("[custom] Reading the points to faces mapping from file '%s' ...\n",map_filename);
-            //read_points_from_faces_to_map();
+            read_points_from_faces_to_map(map_filename);
         }
         
         first_call = false;
@@ -234,4 +234,41 @@ void insert_points_from_faces_to_map ()
         printf("\n");
     }
 */
+}
+
+void read_points_from_faces_to_map (const char filename[])
+{
+    FILE *file = fopen(filename,"r");
+    if (!file)
+    {
+        fprintf(stderr,"[custom] ERROR! Could not open file '%s'!\n",filename);
+        exit(EXIT_FAILURE);
+    }
+
+    // Read the number of points
+    uint32_t num_points;
+    fscanf(file,"%u",&num_points);
+
+    // Read the unique points
+    double pos[3];
+    for (uint32_t i = 0; i < num_points; i++)
+    {
+        fscanf(file,"%lf %lf %lf",&pos[0],&pos[1],&pos[2]);
+
+        Point_Custom new_point(pos[0],pos[1],pos[2]);
+
+        unique_points.insert(std::pair<Point_Custom,uint32_t>(new_point,i));   
+    }
+
+    // Initialize the map 
+    points_to_faces.assign(num_points,std::vector<uint32_t>());
+
+    // Read all the links
+    uint32_t point_index, face_index;
+    while (fscanf(file,"%u %u",&point_index,&face_index) != EOF)
+    {
+        points_to_faces[point_index].push_back(face_index);
+    }
+
+    fclose(file);
 }

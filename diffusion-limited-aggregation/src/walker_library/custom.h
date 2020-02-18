@@ -73,6 +73,7 @@ extern "C" void draw (struct walker_config *the_walker_config, const double root
 
 // Auxiliary functions
 void read_faces_from_stl(const char filename[]);
+void read_points_from_faces_to_map (const char filename[]);
 void insert_points_from_faces_to_map ();
 void read_face (FILE *file, std::vector<Face_Custom> &faces);
 void print_faces (std::vector<Face_Custom> faces);

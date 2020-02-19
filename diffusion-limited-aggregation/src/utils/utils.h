@@ -15,6 +15,8 @@
 #define PRINT_LINE "==========================================================================================="
 #define PRINT_DOTS "..........................................................................................."
 
+#define OI printf("oi\n")
+
 void usage (const char pname[]);
 double calculate_distance (const double p1[], const double p2[]);
 double generate_random_number ();

@@ -45,6 +45,10 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
     struct walker *root = new_walker(root_pos[0],root_pos[1],root_pos[2],walker_radius);
     insert_walker_node(the_point_list,root);
 
+
+    // DEBUG
+    write_root(the_point_list);
+
     // Add the Walkers
     struct walker_list *the_others = new_walker_list();
     for (uint32_t i = 0; i < the_options->max_num_walkers; i++)
@@ -69,7 +73,7 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
         print_progress_bar(iter,max_number_iterations);
 
         // DEBUG
-        write_list(the_others,iter);
+        //write_list(the_others,iter);
 
         // Move each Walker using the Random Walk
         struct walker_node *tmp = the_others->list_nodes;
@@ -111,6 +115,7 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
             insert_walker_node(the_others,the_walker);
         }
     }
+
     //********* MAIN CONFIGURATION END **********************************************
 
     total_solver_time = stop_stop_watch(&solver_time);
@@ -170,4 +175,34 @@ void write_to_vtk (struct dla_tree *the_tree)
     
     fclose(file);
 
+}
+
+void write_root (struct walker_list *l)
+{
+    uint32_t num_points = l->num_nodes;
+
+    char filename[50];
+    sprintf(filename,"output/root.vtk");
+    FILE *file = fopen(filename,"w+");
+
+    fprintf(file,"# vtk DataFile Version 3.0\n");
+    fprintf(file,"Walker\n");
+    fprintf(file,"ASCII\n");
+    fprintf(file,"DATASET POLYDATA\n");
+    fprintf(file,"POINTS %u float\n",num_points);
+    
+    // Write the points
+    struct walker_node *tmp = l->list_nodes;
+    while (tmp != NULL)
+    {
+        fprintf(file,"%g %g %g\n",tmp->value->pos[0],\
+                                tmp->value->pos[1],\
+                                tmp->value->pos[2]);
+        tmp = tmp->next;
+    }
+    fprintf(file,"VERTICES %lu %lu\n",num_points,num_points*2);    
+    for (uint32_t i = 0; i < num_points; i++)
+        fprintf(file,"1 %u\n",i);
+    
+    fclose(file);
 }

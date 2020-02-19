@@ -65,15 +65,15 @@ int parse_config_file(void *user, const char *section, const char *name, const c
         }
         else if (MATCH_NAME("root_pos_x"))
         {
-            pconfig->root_pos[0] = (double)strtol(value, NULL, 10);
+            pconfig->root_pos[0] = (double)strtod(value, NULL);
         }
         else if (MATCH_NAME("root_pos_y"))
         {
-            pconfig->root_pos[1] = (double)strtol(value, NULL, 10);
+            pconfig->root_pos[1] = (double)strtod(value, NULL);
         }
         else if (MATCH_NAME("root_pos_z"))
         {
-            pconfig->root_pos[2] = (double)strtol(value, NULL, 10);
+            pconfig->root_pos[2] = (double)strtod(value, NULL);
         }
     }
     else if (SECTION_STARTS_WITH(WALKER_SECTION))

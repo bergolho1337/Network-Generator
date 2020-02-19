@@ -8,6 +8,11 @@ SET_WALKER_MOVE_FUNCTION (move)
 
     // Find the point which is at the Walker current position in the map
     it = unique_points.find(tmp);
+    if (it == unique_points.end())
+    {
+        fprintf(stderr,"[-] ERROR! Point not found!\n");
+        exit(EXIT_FAILURE);
+    }
 
     // Get the face which contains point and sort a neighbour face
     src_face_index = it->second;
@@ -63,7 +68,7 @@ SET_WALKER_RESPAWN_FUNCTION (respawn)
             printf("[custom] Reading the points to faces mapping from file '%s' ...\n",map_filename);
             read_points_from_faces_to_map(map_filename);
         }
-        
+
         first_call = false;
     }
 
@@ -249,19 +254,36 @@ void read_points_from_faces_to_map (const char filename[])
     uint32_t num_points;
     fscanf(file,"%u",&num_points);
 
-    // Read the unique points
-    double pos[3];
-    for (uint32_t i = 0; i < num_points; i++)
+    // Insert the unique points
+    uint32_t unique_num_points = 0;
+    for (uint32_t i = 0; i < mesh_faces.size(); i++)
     {
-        fscanf(file,"%lf %lf %lf",&pos[0],&pos[1],&pos[2]);
+        Point_Custom *v1 = mesh_faces[i].v1;
+        Point_Custom *v2 = mesh_faces[i].v2;
+        Point_Custom *v3 = mesh_faces[i].v3;
 
-        Point_Custom new_point(pos[0],pos[1],pos[2]);
-
-        unique_points.insert(std::pair<Point_Custom,uint32_t>(new_point,i));   
+        auto it = unique_points.find(*v1);
+        if (it == unique_points.end())
+        {
+            unique_points.insert(std::pair<Point_Custom,uint32_t>(*v1,unique_num_points));
+            unique_num_points++;
+        }
+        it = unique_points.find(*v2);
+        if (it == unique_points.end())
+        {
+            unique_points.insert(std::pair<Point_Custom,uint32_t>(*v2,unique_num_points));
+            unique_num_points++;
+        }
+        it = unique_points.find(*v3);
+        if (it == unique_points.end())
+        {
+            unique_points.insert(std::pair<Point_Custom,uint32_t>(*v3,unique_num_points));
+            unique_num_points++;
+        }
     }
 
     // Initialize the map 
-    points_to_faces.assign(num_points,std::vector<uint32_t>());
+    points_to_faces.assign(unique_points.size(),std::vector<uint32_t>());
 
     // Read all the links
     uint32_t point_index, face_index;

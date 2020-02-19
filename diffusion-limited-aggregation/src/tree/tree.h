@@ -44,6 +44,8 @@ void free_dla_tree (struct dla_tree *the_tree);
 void grow_tree (struct dla_tree *the_tree, struct user_options *the_options);
 void write_to_vtk (struct dla_tree *the_tree);
 
+void write_root (struct walker_list *l);
+
 void print_dla_tree (struct dla_tree *the_tree);
 
 #endif

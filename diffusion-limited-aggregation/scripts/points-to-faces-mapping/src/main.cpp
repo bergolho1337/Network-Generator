@@ -195,10 +195,6 @@ void write_points_from_faces_to_map ()
     //              .
     FILE *file = fopen("outputs/mapping.txt","w+");
     fprintf(file,"%u\n",points_to_faces.size());
-    for (it = unique_points.begin(); it != unique_points.end(); ++it)
-    {
-        fprintf(file,"%lf %lf %lf\n",it->first.x,it->first.y,it->first.z);
-    }
     for (uint32_t i = 0; i < points_to_faces.size(); i++)
     {
         for (uint32_t j = 0; j < points_to_faces[i].size(); j++)

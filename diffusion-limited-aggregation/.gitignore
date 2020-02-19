@@ -37,3 +37,7 @@ build/
 output/
 *.log
 clouds/generated-clouds
+inputs/rabbit*
+meshes/rabbit*
+maps/rabbit*
+saved-networks/rabbit*

@@ -47,6 +47,7 @@ uint32_t is_stuck (struct walker_list *the_tree, struct walker *the_other)
         double walker_radius = cur_walker->radius;
 
         double d = calculate_distance(the_other->pos,cur_walker->pos);
+        //printf("distance = %lf\n",d);
         if (d < walker_radius * walker_radius * 4.0)
         {
             //the_other->stuck = true;

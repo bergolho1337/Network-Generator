@@ -39,5 +39,6 @@ output/
 clouds/generated-clouds
 inputs/rabbit*
 meshes/rabbit*
+meshes/elizabeth*
 maps/rabbit*
 saved-networks/rabbit*

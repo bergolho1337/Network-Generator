@@ -6,10 +6,10 @@
 
 # Variables
 FILENAME="frames/frame"
-FRAME_RATE="50"
-END_FRAME="554"
-OUTPUT_VIDEO_FILENAME="videos/dla-tree-sphere-domain"
-RESOLUTION="944x714"
+FRAME_RATE="40"
+END_FRAME="465"
+OUTPUT_VIDEO_FILENAME="videos/dla-elizabeth-LV-3"
+RESOLUTION="1576x746"
 
 # Execute the converting command using FFMPEG
 ffmpeg -r ${FRAME_RATE} -f image2 -s ${RESOLUTION} -start_number 1 -i ${FILENAME}.%04d.png -vframes ${END_FRAME} -vcodec libx264 -crf 25  -pix_fmt yuv420p ${OUTPUT_VIDEO_FILENAME}.mp4

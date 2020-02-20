@@ -149,12 +149,15 @@ void write_points_from_faces_to_map ()
 
     // Map points to face
     points_to_faces.assign(unique_points.size(),std::vector<uint32_t>());
+    uint32_t counter = 0;
 
     for (it = unique_points.begin(); it != unique_points.end(); ++it)
     {
         // Check if the current point matches one of the 3 points from the faces
         uint32_t cur_id = it->second;
         //printf("Point %u -- (%lf %lf %lf)\n",it->second,it->first.x,it->first.y,it->first.z);
+
+        printf("[!] Working on Point %u ... (%u of %u)\n",cur_id,counter,unique_points.size());
 
         for (uint32_t j = 0; j < mesh_faces.size(); j++)
         {
@@ -178,6 +181,8 @@ void write_points_from_faces_to_map ()
                 points_to_faces[cur_id].push_back(j);
             }
         }
+
+        counter++;
     }
 
     // Write the mapping graph to a file

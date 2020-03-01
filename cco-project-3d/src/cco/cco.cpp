@@ -1,6 +1,7 @@
 #include "cco.h"
 
 uint32_t cur_rand_index = 0;
+double start_radius;
 
 struct cco_network* new_cco_network (struct user_options *options)
 {
@@ -47,6 +48,8 @@ void set_parameters (struct cco_network *the_network, struct user_options *optio
     the_network->r_perf = calc_perfusion_radius(options->v_perf);
     the_network->r_supp = the_network->r_perf;                            // When we consider a fixed perfusion volume
     the_network->log_file = fopen("output.log","w+");
+
+    the_network->using_only_murray_law = options->use_only_murray;
 }
 
 void set_cost_function_name (struct cco_network *the_network, struct user_options *options)
@@ -177,7 +180,7 @@ void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_
         generate_terminal_using_cloud_points(the_network,config,local_opt_config,cloud_points,obstacle_faces);
 
         // DEBUG
-        write_to_vtk_iteration(the_network);
+        //write_to_vtk_iteration(the_network);
 
         printf("%s\n",PRINT_LINE);
         fprintf(log_file,"%s\n",PRINT_LINE);
@@ -358,7 +361,7 @@ bool distance_criterion (struct segment_node *s, const double pos[], const doubl
     return (d_crit < d_threash) ? false : true;
 }
 
-void rescale_root (struct segment_node *iroot, const double Q_perf, const double delta_p)
+void rescale_root (struct segment_node *iroot, const double Q_perf, const double delta_p, const bool using_only_murray)
 {
     // Set the flux and pressure of this segment
     iroot->value->Q = Q_perf;
@@ -375,12 +378,22 @@ void rescale_root (struct segment_node *iroot, const double Q_perf, const double
     iroot->value->resistance = R;
 
     // Calculate the radius using Poisselle's law
-    iroot->value->radius = pow(R * Q_perf / delta_p , 0.25);
+    if (!using_only_murray)
+    {
+        iroot->value->radius = pow(R * Q_perf / delta_p , 0.25);
+    }
+    // [FRACTAL] The user needs to specify the initial radius of the root
+    else
+    {
+        printf("Please enter the initial radius of the root: ");
+        scanf("%lf",&start_radius);
 
+        iroot->value->radius = start_radius;
+    }
 }
 
 void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struct segment_node *inew,\
-                 const double Q_perf, const double delta_p, const int num_terminals)
+                 const double Q_perf, const double delta_p, const int num_terminals, const bool use_only_murray)
 {
 
     double Q_term = Q_perf / num_terminals;
@@ -403,7 +416,27 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
     }
 
     // Compute the radius ratio between left and right subtree from ibiff (2.32)
-    double radius_ratio = calc_radius_ratio(iconn,inew,Q_term);
+    double radius_ratio;
+    if (!use_only_murray)
+    {
+        radius_ratio = calc_radius_ratio(iconn,inew,Q_term);
+    }
+    // [FRACTAL] Compute the radius ratio using only Murray's law
+    else
+    {
+        // Assymetric
+        //double value = generate_random_number_default();
+        //double r_par = iconn->value->radius;
+        //double r_left = value * powf( 0.5*powf(r_par,GAMMA), 1.0/GAMMA);
+        //double r_right = powf( powf(r_par,GAMMA) - powf(r_left,GAMMA), 1.0/GAMMA);
+
+        // Symmetric
+        double r_par = iconn->value->radius;
+        double r_left = pow(0.5, 1.0/GAMMA) * r_par;
+        double r_right = pow(0.5, 1.0/GAMMA) * r_par;
+
+        radius_ratio = r_left / r_right;
+    }
 
     // iconn + inew: Calculate bifurcation ratio using (2.31)
     inew->value->beta = calc_bifurcation_ratio(radius_ratio,false);
@@ -419,17 +452,22 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
     {
         struct segment_node *ipar_left = ipar->value->left;
         struct segment_node *ipar_right = ipar->value->right;
-        rescale_until_root(ipar,ipar_left,ipar_right,Q_perf,delta_p,num_terminals);
+        rescale_until_root(ipar,ipar_left,ipar_right,Q_perf,delta_p,num_terminals,use_only_murray);
     }
-    // We are already at the root, so recalculate the radius using (2.19)
+    // We are already at the root
     else
     {
-        ibiff->value->radius = pow(ibiff->value->resistance * Q_perf / delta_p , 0.25);
+        // Recalculate the radius using (2.19)
+        if (!use_only_murray)
+            ibiff->value->radius = pow(ibiff->value->resistance * Q_perf / delta_p , 0.25);
+        // [FRACTAL] Use the initial radius
+        else
+            ibiff->value->radius = start_radius;
     }
 }
 
 void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_left, struct segment_node *ipar_right,\
-                        const double Q_perf, const double delta_p, const int num_terminals)
+                        const double Q_perf, const double delta_p, const int num_terminals, const bool use_only_murray)
 {
 
     // Reach the root
@@ -440,8 +478,28 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
     if (ipar_left != NULL && ipar_right != NULL)
     {
 
+        double radius_ratio;
         // Calculate radius ratio between left and right subtree
-        double radius_ratio = calc_radius_ratio(ipar_right,ipar_left,Q_term);
+        if (!use_only_murray)
+        {
+            radius_ratio = calc_radius_ratio(ipar_right,ipar_left,Q_term);
+        }
+        // [FRACTAL] Compute the radius ratio using only Murray's law
+        else
+        {
+            // Assymetric
+            //double value = generate_random_number_default();
+            //double r_par = ipar->value->radius;
+            //double r_left = value * powf( 0.5*powf(r_par,GAMMA), 1.0/GAMMA);
+            //double r_right = powf( powf(r_par,GAMMA) - powf(r_left,GAMMA), 1.0/GAMMA);
+
+            // Symmetric
+            double r_par = ipar->value->radius;
+            double r_left = pow(0.5, 1.0/GAMMA) * r_par;
+            double r_right = pow(0.5, 1.0/GAMMA) * r_par;
+
+            radius_ratio = r_left / r_right;
+        }
 
         // Recalculate bifurcation ratios for the offsprings using (2.31)
         ipar_left->value->beta = calc_bifurcation_ratio(radius_ratio,false);
@@ -456,12 +514,17 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
             rescale_until_root(ipar->value->parent,\
                                ipar->value->parent->value->left,\
                                ipar->value->parent->value->right,\
-                               Q_perf,delta_p,num_terminals);
-        // Recalculate the root radius when we reach this segment using (2.19)
+                               Q_perf,delta_p,num_terminals,use_only_murray);
         else
-            ipar->value->radius = pow(ipar->value->resistance * Q_perf / delta_p , 0.25);
+        {
+            // Recalculate the root radius when we reach this segment using (2.19)
+            if (!use_only_murray)
+                ipar->value->radius = pow(ipar->value->resistance * Q_perf / delta_p , 0.25);
+            // [FRACTAL] Use the initial root radius
+            else
+                ipar->value->radius = start_radius;
+        }
     }
-
 }
 
 struct segment_node* build_segment (struct cco_network *the_network, struct local_optimization_config *local_opt_config,\
@@ -548,7 +611,7 @@ struct segment_node* build_segment (struct cco_network *the_network, struct loca
     tmp->value->ndist++;
     the_network->num_terminals = tmp->value->ndist;
 
-    rescale_tree(ibiff_node,iconn_node,inew_node,Q_perf,delta_p,the_network->num_terminals);
+    rescale_tree(ibiff_node,iconn_node,inew_node,Q_perf,delta_p,the_network->num_terminals,the_network->using_only_murray_law);
 
     recalculate_radius(the_network);
 
@@ -584,6 +647,8 @@ void restore_state_tree (struct cco_network *the_network,\
     double p_perf = the_network->p_perf;
     double p_term = the_network->p_term;
     double delta_p = p_perf - p_term;
+
+    bool use_only_murray = the_network->using_only_murray_law;
 
     struct segment_node *ibiff = iconn->value->parent;
     struct segment_node *inew = ibiff->value->left;
@@ -651,12 +716,20 @@ void restore_state_tree (struct cco_network *the_network,\
         struct segment_node *ipar_right = ipar->value->right;
 
         rescale_until_root(ipar,ipar_left,ipar_right,\
-                        Q_perf,delta_p,the_network->num_terminals);
+                        Q_perf,delta_p,the_network->num_terminals,use_only_murray);
     }
-    // Recalculate the root radius when we reach this segment using (2.19)
     else
     {
-        iconn->value->radius = pow(iconn->value->resistance * Q_perf / delta_p , 0.25);
+        // Recalculate the root radius when we reach this segment using (2.19)
+        if (!use_only_murray)
+        {
+            iconn->value->radius = pow(iconn->value->resistance * Q_perf / delta_p , 0.25);
+        }
+        // [FRACTAL] Use the initial value of the root radius
+        else
+        {
+            iconn->value->radius = start_radius;
+        }
     }
 
     // Update the segments radius
@@ -674,6 +747,7 @@ void make_root_using_cloud_points (struct cco_network *the_network, std::vector<
     double V_perf = the_network->V_perf;
     double delta_p = p_perf - p_term;
     double *root_pos = the_network->root_pos;
+    bool using_only_murray_law = the_network->using_only_murray_law;
 
     struct point_list *p_list = the_network->point_list;
     struct segment_list *s_list = the_network->segment_list;
@@ -728,7 +802,7 @@ void make_root_using_cloud_points (struct cco_network *the_network, std::vector<
     // Create the root segment
     struct segment *iroot = new_segment(A,B,NULL,NULL,NULL,Q_perf,p_perf);
     struct segment_node *iroot_node = insert_segment_node(s_list,iroot);
-    rescale_root(iroot_node,Q_perf,delta_p);
+    rescale_root(iroot_node,Q_perf,delta_p,using_only_murray_law);
     the_network->num_terminals = 1;
 
 }

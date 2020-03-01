@@ -16,6 +16,16 @@
 #include <vtkMath.h>
 #include <vtkLine.h>
 
+#include <vtkQuadric.h>
+#include <vtkSampleFunction.h>
+#include <vtkContourFilter.h>
+#include <vtkOutlineFilter.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkActor.h>
+#include <vtkXMLPolyDataWriter.h>
+#include <vtkPolyDataWriter.h>
+#include <vtkSTLWriter.h>
+
 #include "../generator/generator.h"
 
 // Cost functions implementations
@@ -25,6 +35,6 @@ extern "C" void default_paraboloid_cloud (Cloud_Generator *generator,\
 
 
 // Auxiliary functions
-void draw_default_paraboloid_volume ();
+void draw_default_paraboloid_volume (const double a, const double b, const double side_length);
 
 #endif

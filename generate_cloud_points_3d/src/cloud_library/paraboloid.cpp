@@ -47,10 +47,41 @@ SET_CLOUD_GENERATOR (default_paraboloid_cloud)
         printf("[paraboloid] Generating point = %u\n",i);
     }
 
-    //draw_default_sphere_volume(radius);
+    //draw_default_paraboloid_volume(a,b,side_length);
 }
 
-void draw_default_paraboloid_volume ()
+void draw_default_paraboloid_volume (const double a, const double b, const double side_length)
 {
 
+    // Create the quadric function definition
+    vtkSmartPointer<vtkQuadric> quadric = vtkSmartPointer<vtkQuadric>::New();
+    quadric->SetCoefficients(a,b,0,0,0,0,0,0,-1,0);
+
+    vtkSmartPointer<vtkSampleFunction> sample = vtkSmartPointer<vtkSampleFunction>::New();
+    sample->SetSampleDimensions(200,200,200);
+    sample->SetImplicitFunction(quadric);
+    double xmin = -2, xmax=2, ymin=-2, ymax=2, zmin=-1, zmax=1;
+    //double xmin = -side_length, xmax=side_length, ymin=-side_length, ymax=side_length, zmin=-side_length, zmax=side_length;
+    sample->SetModelBounds(xmin, xmax, ymin, ymax, zmin, zmax);
+
+    vtkSmartPointer<vtkContourFilter> contours = vtkSmartPointer<vtkContourFilter>::New();
+    contours->SetInputConnection(sample->GetOutputPort());
+    contours->GenerateValues(1,1,1);
+
+    vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    mapper->SetInputConnection(contours->GetOutputPort());
+    mapper->Update();   
+
+    // Get the reference to the Polydata
+    vtkPolyData *polydata = mapper->GetInput();
+
+    vtkSmartPointer<vtkPolyDataWriter> writer = vtkSmartPointer<vtkPolyDataWriter>::New();
+    writer->SetFileName("output/paraboloid.vtk");
+    writer->SetInputData(polydata);
+    writer->Write();
+
+    vtkSmartPointer<vtkSTLWriter> stlWriter = vtkSmartPointer<vtkSTLWriter>::New();
+    stlWriter->SetFileName("output/paraboloid.stl");
+    stlWriter->SetInputData(polydata);
+    stlWriter->Write();
 }

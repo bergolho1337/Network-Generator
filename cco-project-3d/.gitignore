@@ -36,8 +36,10 @@ build/
 *.json
 output/
 *.log
-clouds/generated-clouds
 clouds/private
+clouds/generated-clouds
+pmjs/private
 inputs/elizabeth*
+inputs/hermenegild*
 inputs/rabbit*
 saved-networks/elizabeth*

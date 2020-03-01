@@ -62,6 +62,8 @@ struct cco_network
     bool using_local_optimization;
     char *local_optimization_function_name;
 
+    bool using_only_murray_law;
+
     char *cost_function_name;
 
     FILE *log_file;
@@ -81,11 +83,11 @@ void set_local_optimization_function_name (struct cco_network *the_network, stru
 struct segment_node* build_segment (struct cco_network *the_network, struct local_optimization_config *local_opt_config,\
                                 const uint32_t index, const double new_pos[]);
 
-void rescale_root (struct segment_node *iroot, const double Q_perf, const double delta_p);
+void rescale_root (struct segment_node *iroot, const double Q_perf, const double delta_p, const bool using_only_murray);
 void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struct segment_node *inew,\
-                 const double Q_perf, const double delta_p, const int num_terminals);
+                 const double Q_perf, const double delta_p, const int num_terminals, const bool use_only_murray);
 void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_left, struct segment_node *ipar_right,\
-                        const double Q_perf, const double delta_p, const int num_terminals);
+                        const double Q_perf, const double delta_p, const int num_terminals, const bool use_only_murray);
 
 void recalculate_radius (struct cco_network *the_network);
 

@@ -1,14 +1,8 @@
-- Think about the root generation when we use a cloud of points, which do not have a V_perf already prescribed
-	- One option could be already generate the root segment
-	- We will have a LV tree, RV tree and His-Bundle tree 
+- Create a script to merge the LV tree to the RV tree by creating the His-Bundle 
 
+- Check the units for the electric
 
-- Check the units
+- Write a documentation to use the program
 
-- Build classes for every struct
-	- Class Cloud_Points should have a counter to the current point
-
+- Implement different cost functions
 ========================================================================================================================
-Question for Rafael Bonfim
-
-1) Otimizacao local, porque o valor da variavel t eh 0.3 ? (Parametrizacao)

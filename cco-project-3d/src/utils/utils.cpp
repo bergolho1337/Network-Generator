@@ -40,6 +40,11 @@ double get_value (struct random_generator *the_generator)
     return value;
 }
 
+double generate_random_number_default ()
+{
+    return (double)rand() / (double)RAND_MAX;
+}
+
 void generate_cloud_points (struct random_generator *the_generator, std::vector<struct point> &cloud_points, const double radius)
 {
     printf("\n[utils] Generating default sphere cloud of points (Total number of points = %u)\n",TOTAL_CLOUD_POINTS_SIZE);

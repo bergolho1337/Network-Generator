@@ -93,7 +93,7 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
                 new_biff_pos[1] = test_positions[j].y;
                 new_biff_pos[2] = test_positions[j].z;
                 move_bifurcation_location(iconn,ibiff,inew,new_biff_pos);
-                rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,the_network->num_terminals);
+                rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,the_network->num_terminals,the_network->using_only_murray_law);
                 recalculate_radius(the_network);
 
                 // Evaluate cost function for the current configuration

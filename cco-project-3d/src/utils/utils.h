@@ -51,6 +51,8 @@ void free_random_generator (struct random_generator *the_generator);
 void generate_random_array (struct random_generator *the_generator);
 double get_value (struct random_generator *the_generator);
 
+double generate_random_number_default ();
+
 void generate_cloud_points (struct random_generator *the_generator, std::vector<struct point> &cloud_points, const double radius);
 
 

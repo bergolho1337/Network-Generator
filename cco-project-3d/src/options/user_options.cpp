@@ -7,6 +7,7 @@ struct user_options* new_user_options (int argc, char *argv[])
     result->use_cloud_points = false;
     result->use_local_optimization = false;
     result->use_obstacle = false;
+    result->use_only_murray = false;
 
     read_config_file(result,argv[1]);
     
@@ -93,6 +94,18 @@ int parse_config_file(void *user, const char *section, const char *name, const c
         else if (MATCH_NAME("V_perf"))
         {
             pconfig->v_perf = strtof(value, NULL);
+        }
+        else if (MATCH_NAME("use_only_murray"))
+        {
+            if (strcmp(value,"true") == 0 || strcmp(value,"yes") == 0)
+                pconfig->use_only_murray = true;
+            else if (strcmp(value,"false") == 0 || strcmp(value,"no") == 0)
+                pconfig->use_only_murray = false;
+            else
+            {
+                fprintf(stderr,"[user_options] Error reading configuration file! Invalid option in \"main\" section\n");
+                exit(EXIT_FAILURE);
+            }
         }
     }
     else if (SECTION_STARTS_WITH(CLOUD_SECTION))

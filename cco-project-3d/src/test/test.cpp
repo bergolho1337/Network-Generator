@@ -86,6 +86,8 @@ void test2 (struct cco_network *the_network)
     double p_term = the_network->p_term;
     double delta_p = p_perf - p_term;
 
+    bool use_only_murray = the_network->using_only_murray_law;
+
     struct point_list *p_list = the_network->point_list;
     struct segment_list *s_list = the_network->segment_list;
 
@@ -97,7 +99,7 @@ void test2 (struct cco_network *the_network)
 
     struct segment *iroot = new_segment(A,B,NULL,NULL,NULL,Q_perf,p_perf);
     struct segment_node *iroot_node = insert_segment_node(s_list,iroot);
-    rescale_root(iroot_node,Q_perf,delta_p);
+    rescale_root(iroot_node,Q_perf,delta_p,use_only_murray);
     the_network->num_terminals = 1;
 
     // First segment
@@ -125,6 +127,8 @@ void test3 (struct cco_network *the_network)
     double p_term = the_network->p_term;
     double delta_p = p_perf - p_term;
 
+    bool use_only_murray = the_network->using_only_murray_law;
+
     struct point_list *p_list = the_network->point_list;
     struct segment_list *s_list = the_network->segment_list;
 
@@ -136,7 +140,7 @@ void test3 (struct cco_network *the_network)
 
     struct segment *iroot = new_segment(A,B,NULL,NULL,NULL,Q_perf,p_perf);
     struct segment_node *iroot_node = insert_segment_node(s_list,iroot);
-    rescale_root(iroot_node,Q_perf,delta_p);
+    rescale_root(iroot_node,Q_perf,delta_p,use_only_murray);
     the_network->num_terminals = 1;
 
     // First segment

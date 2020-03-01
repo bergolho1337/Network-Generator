@@ -39,6 +39,8 @@ struct user_options
     bool use_obstacle;
     char *obstacle_filename;
 
+    bool use_only_murray;
+
     struct cost_function_config *config;
     
     bool use_local_optimization;

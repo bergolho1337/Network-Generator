@@ -349,6 +349,8 @@ Node::Node (const int id, const double pos[])
     num_edges = 0;
 	list_edges = NULL;
     last_edge = NULL;
+
+    is_pmj = false;
 }
 
 Edge::Edge (const int id, const double l, Node *destination)
@@ -414,6 +416,37 @@ void Graph::write_VTK (const char filename[])
     }
 
     fclose(file);
+}
+
+void Graph::write_pmj_config_file (const char filename[])
+{
+    const double RPMJ = 1.0e+03;
+
+    FILE *file = fopen(filename,"w+");
+
+    Node *tmp = this->list_nodes;
+    while (tmp != NULL)
+    {
+        if (is_terminal(tmp))
+        {
+            if (tmp->is_pmj)
+                fprintf(file,"%u %g\n",tmp->index,RPMJ);
+            else
+                fprintf(file,"%u %g\n",tmp->index,__DBL_MAX__);
+        }
+            
+        tmp = tmp->next;
+    }
+
+    fclose(file);
+}
+
+bool is_terminal (Node *u)
+{
+    if (u->num_edges == 0 && u->index != 0)
+        return true;
+    else
+        return false;
 }
 
 double calc_norm (const double x1, const double y1, const double z1,\

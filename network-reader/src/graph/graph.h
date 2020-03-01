@@ -54,6 +54,7 @@ public:
 	int index;			// Identifier of the Node 
 	double x, y, z;		// Coordinates (x,y,z)
 	int num_edges;		// Number of edges of the Node
+	bool is_pmj;		// Flag for a Purkinje-Muscle-Junction node
 	Node *next;			// Pointer to the next Node
 	Node *previous;		// Pointer to the previous Node
 
@@ -72,6 +73,7 @@ public:
 
     void print ();
 	void write_VTK (const char filename[]);
+	void write_pmj_config_file (const char filename[]);
 	//void printterm ();
     void error (const char msg[]);
 	void depth_first_search ();
@@ -90,6 +92,7 @@ public:
 	void remove_all_edges (const int id);
 	void remove_node_graph (const int id);
 	Node* search_node (const int id);
+
 private:
 	Node *list_nodes;			// Pointer to the list of Nodes
 	Node *last_node;			// Pointer to the last Node of the list
@@ -113,6 +116,7 @@ void usage (const char pname[]);
 void print_stars (const int number);
 double calc_norm (double x1, double y1, double z1, double x2, double y2, double z2);
 bool check_file_extension (const char filename[], const char extension_name[]);
+bool is_terminal (Node *u);
 // =============================================================================================================
 
 #endif

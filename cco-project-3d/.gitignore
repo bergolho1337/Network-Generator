@@ -38,6 +38,7 @@ output/
 *.log
 clouds/private
 clouds/generated-clouds
+clouds/obstacles/rabbit*
 pmjs/private
 inputs/elizabeth*
 inputs/hermenegild*

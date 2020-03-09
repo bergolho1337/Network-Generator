@@ -115,7 +115,7 @@ void read_faces_from_stl (const char filename[])
     fclose(file);
 }
 
-void write_points_from_faces_to_map ()
+void write_points_from_faces_to_map (const char filename[])
 {
     printf("[!] Calculating points to faces mapping ...\n");
 
@@ -198,7 +198,7 @@ void write_points_from_faces_to_map ()
     //              .
     //              .
     //              .
-    FILE *file = fopen("outputs/mapping.txt","w+");
+    FILE *file = fopen(filename,"w+");
     fprintf(file,"%u\n",points_to_faces.size());
     for (uint32_t i = 0; i < points_to_faces.size(); i++)
     {
@@ -222,13 +222,13 @@ void print_faces (std::vector<Face_Custom> faces)
 void usage (const char pname[])
 {
   printf("%s\n",PRINT_LINE);
-  printf("Usage:> %s <input_file>\n",pname);
+  printf("Usage:> %s <input_filename> <output_filename>\n",pname);
   printf("%s\n",PRINT_LINE);
 }
 
 int main (int argc, char *argv[])
 {
-    if (argc-1 != 1)
+    if (argc-1 != 2)
     {
         usage(argv[0]);
         exit(EXIT_FAILURE);
@@ -238,7 +238,8 @@ int main (int argc, char *argv[])
     read_faces_from_stl(mesh_filename);
     //print_faces(mesh_faces);
 
-    write_points_from_faces_to_map();
+    char *output_filename = argv[2];
+    write_points_from_faces_to_map(output_filename);
 
     return 0;
 }

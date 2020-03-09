@@ -354,12 +354,15 @@ void remap_points_from_root_v2 (vector<Point> &points, const uint32_t root_index
     double initial_radius = 1;
     double max_radius = 200;
     double offset = 2;
-    double a = ratios[0];         // X axis: || > 1 (decrease) || < 1 (increase)
-    double b = ratios[1];         // Y axis: || > 1 (decrease) || < 1 (increase)
-    double c = ratios[2];         // Z axis: || > 1 (decrease) || < 1 (increase)
-    //a = 0.5;  // LV rabbit
-    //b = 1.0;  // LV rabbit
-    //c = 5.0;  // LV rabbit
+    //double a = ratios[0];         // X axis: || > 1 (decrease) || < 1 (increase)
+    //double b = ratios[1];         // Y axis: || > 1 (decrease) || < 1 (increase)
+    //double c = ratios[2];         // Z axis: || > 1 (decrease) || < 1 (increase)
+    //double a = 0.5;  // LV rabbit
+    //double b = 1.0;  // LV rabbit
+    //double c = 5.0;  // LV rabbit
+    double a = 0.5;  // RV rabbit
+    double b = 1.0;  // RV rabbit
+    double c = 5.0;  // RV rabbit
     uint32_t iter = 0;
 
     for (double radius = initial_radius; radius < max_radius; radius += offset, iter++)

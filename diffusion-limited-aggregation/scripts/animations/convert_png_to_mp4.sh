@@ -7,8 +7,8 @@
 # Variables
 FILENAME="frames/frame"
 FRAME_RATE="40"
-END_FRAME="465"
-OUTPUT_VIDEO_FILENAME="videos/dla-elizabeth-LV-3"
+END_FRAME="403"
+OUTPUT_VIDEO_FILENAME="videos/dla-rabbit-rotating"
 RESOLUTION="1576x746"
 
 # Execute the converting command using FFMPEG

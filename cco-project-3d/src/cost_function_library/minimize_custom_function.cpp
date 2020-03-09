@@ -150,6 +150,7 @@ SET_COST_FUNCTION (minimize_custom_function)
     return best;
 }
 
+/*
 SET_COST_FUNCTION (minimize_custom_function_with_angle_restriction)
 {
     FILE *log_file = the_network->log_file;
@@ -507,3 +508,4 @@ SET_COST_FUNCTION (minimize_custom_function_with_level_penalty)
 
     return best;
 }
+*/

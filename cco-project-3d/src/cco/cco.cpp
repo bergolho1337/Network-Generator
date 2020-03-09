@@ -180,7 +180,7 @@ void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_
         generate_terminal_using_cloud_points(the_network,config,local_opt_config,cloud_points,obstacle_faces);
 
         // DEBUG
-        //write_to_vtk_iteration(the_network);
+        write_to_vtk_iteration(the_network);
 
         printf("%s\n",PRINT_LINE);
         fprintf(log_file,"%s\n",PRINT_LINE);

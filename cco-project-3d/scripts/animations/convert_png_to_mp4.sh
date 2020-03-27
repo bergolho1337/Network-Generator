@@ -6,9 +6,9 @@
 
 # Variables
 FILENAME="frames/frame"
-FRAME_RATE="40"
-END_FRAME="498"
-OUTPUT_VIDEO_FILENAME="videos/rabbit-LVRV-cco-rotating-nterm500"
+FRAME_RATE="50"
+END_FRAME="598"
+OUTPUT_VIDEO_FILENAME="videos/elizabeth-LV-cco-rotating-nterm600"
 RESOLUTION="1584x870"
 
 # Execute the converting command using FFMPEG

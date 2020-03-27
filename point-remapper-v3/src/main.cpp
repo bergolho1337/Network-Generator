@@ -15,6 +15,64 @@
 
 using namespace std;
 
+void write_mapping_to_file (vector<Point> points, vector<Face> faces)
+{
+    // Write the mapping graph to a file
+    // FORMAT:  The first line is the number of points
+    //          Followed by the coordinates of the points
+    //          Next, each line of the file represents a link between a point and face
+    //          <num_points>
+    //          <x> <y> <z>
+    //              .
+    //              .
+    //              .
+    //          <point_i> <face_j>
+    //              .
+    //              .
+    //   
+    FILE *file = fopen("outputs/mapping_graph.txt","w+");
+
+    uint32_t num_points = points.size();
+    uint32_t num_faces = faces.size();
+
+    fprintf(file,"%u\n",num_points);
+    for (uint32_t i = 0; i < num_points; i++)
+    {
+        uint32_t index;
+        double pos[3];
+
+        index = points[i].id;
+        pos[0] = points[i].x;
+        pos[1] = points[i].y;
+        pos[2] = points[i].z;
+
+        fprintf(file,"%lf %lf %lf\n",pos[0],pos[1],pos[2]);
+    } 
+
+    for (uint32_t i = 0; i < num_faces; i++)
+    {
+        uint32_t point_index;
+        uint32_t face_index;
+
+        // Get the index from the current face
+        face_index = i;
+
+        // Get the indexes from each vertex 
+        point_index = faces[i].vertex_index_1;
+        fprintf(file,"%u %u\n",point_index,face_index);
+        
+        point_index = faces[i].vertex_index_2;
+        fprintf(file,"%u %u\n",point_index,face_index);
+        
+        point_index = faces[i].vertex_index_3;
+        fprintf(file,"%u %u\n",point_index,face_index);
+
+
+    }
+
+    fclose(file);
+}
+
 void build_mapping (Graph *g, vector<Point> points, vector<Face> faces, vector<Link> &links)
 {
 
@@ -58,6 +116,8 @@ void build_mapping (Graph *g, vector<Point> points, vector<Face> faces, vector<L
         links.push_back(link3);
         
     }
+
+    write_mapping_to_file(points,faces);
 }
 
 void link_points_to_faces (Graph *g, vector<Face> faces, vector<Link> links)
@@ -98,8 +158,8 @@ int main (int argc, char *argv[])
         printf("Example:\n");
         printf("\t%s inputs/generated_grid.stl 0\n",argv[0]);
         printf("\t%s inputs/generated_grid.stl 1300\n",argv[0]);
-        printf("\t%s inputs/generated_grid_refined.stl 5100\n,argv[0]");
-	printf("----------------------------------------------------------------------------\n");
+        printf("\t%s inputs/generated_grid_refined.stl 5100\n",argv[0]);
+	    printf("----------------------------------------------------------------------------\n");
         exit(EXIT_FAILURE);   
     }
 

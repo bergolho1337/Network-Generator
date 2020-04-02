@@ -420,6 +420,10 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
     if (!use_only_murray)
     {
         radius_ratio = calc_radius_ratio(iconn,inew,Q_term);
+
+        // iconn + inew: Calculate bifurcation ratio using (2.31)
+        inew->value->beta = calc_bifurcation_ratio(radius_ratio,false);
+        iconn->value->beta = calc_bifurcation_ratio(radius_ratio,true);
     }
     // [FRACTAL] Compute the radius ratio using only Murray's law
     else
@@ -436,11 +440,12 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
         double r_right = pow(0.5, 1.0/GAMMA) * r_par;
 
         radius_ratio = r_left / r_right;
-    }
 
-    // iconn + inew: Calculate bifurcation ratio using (2.31)
-    inew->value->beta = calc_bifurcation_ratio(radius_ratio,false);
-    iconn->value->beta = calc_bifurcation_ratio(radius_ratio,true);
+        // TODO: Use Murray law in some way ...
+        // Fix a bifurcation ratio (Decrease the radius at each level of the tree by fixed factor)
+        inew->value->beta = 0.98;
+        iconn->value->beta = 0.98;
+    }
 
     // ibiff: Calculate resistance using (2.5) and pressure drop using (2.7)
     calc_relative_resistance_subtree(ibiff,iconn,inew);
@@ -483,6 +488,10 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
         if (!use_only_murray)
         {
             radius_ratio = calc_radius_ratio(ipar_right,ipar_left,Q_term);
+
+            // Recalculate bifurcation ratios for the offsprings using (2.31)
+            ipar_left->value->beta = calc_bifurcation_ratio(radius_ratio,false);
+            ipar_right->value->beta = calc_bifurcation_ratio(radius_ratio,true);
         }
         // [FRACTAL] Compute the radius ratio using only Murray's law
         else
@@ -499,11 +508,12 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
             double r_right = pow(0.5, 1.0/GAMMA) * r_par;
             
             radius_ratio = r_left / r_right;
-        }
 
-        // Recalculate bifurcation ratios for the offsprings using (2.31)
-        ipar_left->value->beta = calc_bifurcation_ratio(radius_ratio,false);
-        ipar_right->value->beta = calc_bifurcation_ratio(radius_ratio,true);
+            // TODO: Use Murray law in some way ...
+            // Fix a bifurcation ratio (Decrease the radius at each level of the tree by fixed factor)
+            ipar_left->value->beta = 0.98;
+            ipar_right->value->beta = 0.98;
+        }
 
         // Recalculate resistance using (2.5) and pressure drop using (2.7)
         calc_relative_resistance_subtree(ipar,ipar_left,ipar_right);
@@ -620,6 +630,7 @@ struct segment_node* build_segment (struct cco_network *the_network, struct loca
 
 double calc_radius (struct cco_network *the_network, struct segment_node *s)
 {
+    //printf("beta = %g\n",s->value->beta);
     if (s->value->parent == NULL)
         return s->value->radius;
     else
@@ -634,6 +645,7 @@ void recalculate_radius (struct cco_network *the_network)
     while (tmp != NULL)
     {
         tmp->value->radius = calc_radius(the_network,tmp);
+        //printf("\n");
 
         tmp = tmp->next;
     }

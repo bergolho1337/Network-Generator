@@ -117,6 +117,7 @@ void build_mapping (Graph *g, vector<Point> points, vector<Face> faces, vector<L
         
     }
 
+    printf("[!] Writing TXT mapping graph file ... File will be saved at 'outputs/mapping_graph.txt'\n");
     write_mapping_to_file(points,faces);
 }
 
@@ -186,8 +187,11 @@ int main (int argc, char *argv[])
     vector<Node> mapped_points;
     the_mapping->breadth_first_search(mapped_points,root_index);
 
-    printf("[!] Writing PTS file ...\n");
+    printf("[!] Writing mapped points in a PTS file ... File will be saved at 'outputs/mapped_points.pts'\n");
     write_mapped_points_to_pts(mapped_points);
+
+    printf("[!] Writing mapped points in a TXT file ... File will be saved at 'outputs/mapped_points.pts'\n");
+    write_mapped_points_to_txt(mapped_points);
 
     delete the_mapping;
 

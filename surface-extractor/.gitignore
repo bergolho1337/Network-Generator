@@ -1,0 +1,7 @@
+bin/
+shared-libs/
+.vscode/
+build/
+inputs/elizabeth*
+networks/elizabeth*
+outputs/private

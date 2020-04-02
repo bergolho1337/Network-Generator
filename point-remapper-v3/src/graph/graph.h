@@ -133,6 +133,7 @@ bool check_file_extension (const char filename[], const char extension_name[]);
 bool is_terminal (Node *u);
 void write_mapped_points_to_pts (vector<Node> mapped_points);
 void write_mapped_points_to_pts_iter (vector<Node> mapped_points, const uint32_t iter);
+void write_mapped_points_to_txt (vector<Node> mapped_points);
 // =============================================================================================================
 
 #endif

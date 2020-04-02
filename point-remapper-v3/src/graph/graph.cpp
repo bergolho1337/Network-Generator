@@ -544,12 +544,12 @@ void Graph::breadth_first_search (vector<Node> &mapped_points, const uint32_t ro
     Node *source_node = search_node(source_index);
 
     // Add the root point to the mapped points
-    index = source_node->index; 
-    pos[0] = source_node->x;
-    pos[1] = source_node->y;
-    pos[2] = source_node->z;    
-    Node root(index,pos);
-    mapped_points.push_back(root);
+    //index = source_node->index; 
+    //pos[0] = source_node->x;
+    //pos[1] = source_node->y;
+    //pos[2] = source_node->z;    
+    //Node root(index,pos);
+    //mapped_points.push_back(root);
 
     map<int,int> dist;              // Distance from source to the other nodes
     dist[source_index] = 0;         // Distance from source to source is zero
@@ -638,6 +638,17 @@ void write_mapped_points_to_pts_iter (vector<Node> mapped_points, const uint32_t
     fprintf(file,"%lu\n",mapped_points.size());
     for (uint32_t i = 0; i < mapped_points.size(); i++)
         fprintf(file,"%lf %lf %lf\n",mapped_points[i].x,mapped_points[i].y,mapped_points[i].z);
+
+    fclose(file);
+}
+
+void write_mapped_points_to_txt (vector<Node> mapped_points)
+{
+    FILE *file = fopen("outputs/mapped_points_with_ids.txt","w+");
+
+    fprintf(file,"%lu\n",mapped_points.size());
+    for (uint32_t i = 0; i < mapped_points.size(); i++)
+        fprintf(file,"%u %lf %lf %lf\n",mapped_points[i].index,mapped_points[i].x,mapped_points[i].y,mapped_points[i].z);
 
     fclose(file);
 }

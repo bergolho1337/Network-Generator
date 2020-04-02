@@ -1,0 +1,7 @@
+set(SOURCE_FILES_READER reader.h reader.cpp)
+
+ADD_LIBRARY(reader STATIC ${SOURCE_FILES_READER})
+
+if(NOT MSVC)
+    set_property(TARGET reader PROPERTY POSITION_INDEPENDENT_CODE ON)
+endif()

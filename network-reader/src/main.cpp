@@ -67,11 +67,11 @@ int main (int argc, char *argv[])
 	}
 	
 	Graph *g1 = new Graph(argv[1]);
-	//g1->print();
+	g1->print();
 
 	//g1->depth_first_search();
 
-	//g1->breadth_first_search();
+	g1->breadth_first_search();
 
 	//g1->write_VTK("outputs/graph-1.vtk");
 	

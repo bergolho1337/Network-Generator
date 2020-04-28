@@ -24,6 +24,8 @@ static const uint32_t MAX_FILENAME_SIZE = 200;
 
 struct user_options
 {
+    uint32_t seed;
+    uint32_t max_rand_offset;
     
     uint32_t n_term;
     double q_perf;

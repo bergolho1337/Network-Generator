@@ -1,4 +1,4 @@
 #!/bin/bash
 
 rm output/tree/*
-#rm output/walker/*
+rm output/walker/*

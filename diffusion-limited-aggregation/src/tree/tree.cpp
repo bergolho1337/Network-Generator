@@ -70,6 +70,7 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
     // Main iteration loop 
     for (uint32_t iter = 0; iter < max_number_iterations; iter++)
     {
+
         print_progress_bar(iter,max_number_iterations);
 
         // DEBUG
@@ -79,12 +80,20 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
         struct walker_node *tmp = the_others->list_nodes;
         while (tmp != NULL)
         {
+            // Avoid overcrown of segments
+            if (the_tree->point_list->num_nodes > MAX_NUMBER_OF_NODES)
+            {
+                iter = max_number_iterations;
+                printf("\n[-] Warning! Maximum number of nodes reached!\n");
+                break;
+            }
+
             bool has_deleted = false;
             struct walker *cur_walker = tmp->value;
             move_function_ptr(cur_walker,the_options);
 
             uint32_t stuck_index = is_stuck(the_tree->point_list,tmp->value);
-            if (stuck_index != the_tree->point_list->num_nodes)
+            if (stuck_index < the_tree->point_list->num_nodes)
             {
                 uint32_t new_index = the_tree->point_list->num_nodes;
                 struct segment *the_segment = new_segment(stuck_index,new_index);
@@ -101,7 +110,7 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
 
                 order_list(the_others);
 
-                write_to_vtk(the_tree);
+                //write_to_vtk(the_tree);
             }
 
             if (!has_deleted)
@@ -111,7 +120,14 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
         // Add more walkers as the tree grows ...
         while (the_others->num_nodes < max_num_walker)
         {
-            struct walker *the_walker = new_walker(the_options);
+            struct walker *the_walker = new_walker(the_options,the_others);
+            // If it is not possible to add more walker break the main loop
+            if (the_walker == NULL)
+            {
+                iter = max_number_iterations;
+                printf("\n[-] Warning! Maximum number of iterations reached for respawn new walker!\n");
+                break;
+            }
             insert_walker_node(the_others,the_walker);
         }
     }
@@ -145,6 +161,45 @@ void write_to_vtk (struct dla_tree *the_tree)
 
     char filename[50];
     sprintf(filename,"output/tree/tree_%u.vtk",num_points);
+    FILE *file = fopen(filename,"w+");
+
+    fprintf(file,"# vtk DataFile Version 3.0\n");
+    fprintf(file,"Tree\n");
+    fprintf(file,"ASCII\n");
+    fprintf(file,"DATASET POLYDATA\n");
+    fprintf(file,"POINTS %u float\n",num_points);
+    
+    // Write the points
+    struct walker_node *tmp = the_tree->point_list->list_nodes;
+    while (tmp != NULL)
+    {
+        fprintf(file,"%g %g %g\n",tmp->value->pos[0],\
+                                tmp->value->pos[1],\
+                                tmp->value->pos[2]);
+        tmp = tmp->next;
+    }
+
+    fprintf(file,"LINES %u %u\n",num_lines,num_lines*3);
+
+    // Write the lines
+    struct segment_node *tmp2 = the_tree->segment_list->list_nodes;
+    while (tmp2 != NULL)
+    {
+        fprintf(file,"2 %u %u\n",tmp2->value->src,tmp2->value->dest);
+        tmp2 = tmp2->next;
+    }
+    
+    fclose(file);
+
+}
+
+void write_tree_to_vtk (struct dla_tree *the_tree)
+{
+    uint32_t num_points = the_tree->point_list->num_nodes;
+    uint32_t num_lines = the_tree->segment_list->num_nodes;
+
+    char filename[50];
+    sprintf(filename,"output/dla_tree.vtk",num_points);
     FILE *file = fopen(filename,"w+");
 
     fprintf(file,"# vtk DataFile Version 3.0\n");

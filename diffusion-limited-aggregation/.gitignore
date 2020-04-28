@@ -38,7 +38,11 @@ output/
 *.log
 clouds/generated-clouds
 inputs/rabbit*
+inputs/dla*
 meshes/rabbit*
 meshes/elizabeth*
 maps/rabbit*
+maps/elizabeth*
 saved-networks/rabbit*
+saved-networks/elizabeth*
+scripts/points-to-faces-mapping/outputs/elizabeth*

@@ -28,7 +28,7 @@ bool get_parameter_value_from_map (std::map<std::string,double> *params,\
     }
     else
     {
-        fprintf(stderr,"Not found \"%s\" ... using default value\n",key.c_str());
+        //fprintf(stderr,"Not found \"%s\" ... using default value\n",key.c_str());
         return false;
     }
 }

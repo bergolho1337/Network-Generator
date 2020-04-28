@@ -16,9 +16,12 @@
 #include "../utils/utils.h"
 #include "../options/user_options.h"
 
+const uint32_t MAX_RESPAWN_TRIES = 5000;
+
 struct walker
 {
     double pos[3];
+    uint32_t stuck_counter;
     bool stuck;
     double radius;
 };
@@ -37,6 +40,7 @@ struct walker_list
 };
 
 struct walker* new_walker (struct user_options *the_options);
+struct walker* new_walker (struct user_options *the_options, struct walker_list *l);
 struct walker* new_walker (const double x, const double y, const double z, const double walker_radius);
 void free_walker (struct walker *the_walker);
 
@@ -57,6 +61,8 @@ void print_list (struct walker_list *l);
 void write_list (struct walker_list *l, const uint32_t iter);
 
 void order_list (struct walker_list *l);
+
+bool is_duplicate (const double pos[], struct walker_list *l);
 
 struct walker_node* new_walker_node (uint32_t id, struct walker *s);
 void free_walker_node (struct walker_node *n);

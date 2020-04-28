@@ -11,11 +11,56 @@ struct walker* new_walker (struct user_options *the_options)
     respawn_function_ptr(the_options->walker_config,result->pos);
 
     result->stuck = false;
+    result->stuck_counter = 0;
     
     double walker_radius = 6.0;
     get_parameter_value_from_map(the_options->walker_config->params,"walker_radius",&walker_radius);
     result->radius = walker_radius;
 
+    return result;
+}
+
+struct walker* new_walker (struct user_options *the_options, struct walker_list *l)
+{
+    struct walker *result = (struct walker*)malloc(sizeof(struct walker));
+
+    // Get the reference to the library respawn function
+    set_walker_respawn_function_fn *respawn_function_ptr = the_options->walker_config->respawn_function; 
+
+    // Generate a new walker position
+    uint32_t counter = 0;
+    bool point_is_not_ok = false;
+    do
+    {
+        // WARNING
+        if (counter > MAX_RESPAWN_TRIES)
+            return NULL;
+
+        // Call the respawn library function
+        respawn_function_ptr(the_options->walker_config,result->pos);
+
+        // Check if the generated point is not part of the network
+        struct walker_node *tmp = l->list_nodes;
+        while (tmp != NULL)
+        {
+            double d = calculate_distance(result->pos,tmp->value->pos);
+            if (d < EPSILON)
+                point_is_not_ok = true;
+
+            tmp = tmp->next;
+        }
+
+        counter++;
+        
+    }while(point_is_not_ok);
+
+    result->stuck = false;
+    result->stuck_counter = 0;
+    
+    double walker_radius = 6.0;
+    get_parameter_value_from_map(the_options->walker_config->params,"walker_radius",&walker_radius);
+    result->radius = walker_radius;
+    
     return result;
 }
 
@@ -28,6 +73,7 @@ struct walker* new_walker (const double x, const double y, const double z, const
     result->pos[2] = z;
 
     result->stuck = false;
+    result->stuck_counter = 0;
     result->radius = walker_radius;
 
     return result;
@@ -39,7 +85,7 @@ void free_walker (struct walker *the_walker)
 }
 
 uint32_t is_stuck (struct walker_list *the_tree, struct walker *the_other)
-{
+{   
     struct walker_node *tmp = the_tree->list_nodes;
     while (tmp != NULL)
     {
@@ -47,16 +93,19 @@ uint32_t is_stuck (struct walker_list *the_tree, struct walker *the_other)
         double walker_radius = cur_walker->radius;
 
         double d = calculate_distance(the_other->pos,cur_walker->pos);
-        //printf("distance = %lf\n",d);
-        if (d < walker_radius * walker_radius * 4.0)
+
+        // No trifurcations are allowed here ...
+        // Collisions to close are also not allowed
+        if (d < walker_radius * walker_radius * 4.0 && tmp->value->stuck_counter < 2)
         {
             //the_other->stuck = true;
+            tmp->value->stuck_counter++;
             return tmp->id;
         }
 
         tmp = tmp->next;
     }
-    return the_tree->num_nodes;
+    return the_tree->num_nodes+1;
 }
 
 void print_walker (struct walker *the_walker)
@@ -186,6 +235,20 @@ bool is_empty (struct walker_list *l)
     return (l->list_nodes == NULL) ? true : false;
 }
 
+bool is_duplicate (const double pos[], struct walker_list *l)
+{
+    struct walker_node *tmp = l->list_nodes;
+    while (tmp != NULL)
+    {
+        double d = calculate_distance(tmp->value->pos,pos);
+        if (d < EPSILON)
+            return true;
+
+        tmp = tmp->next;
+    }
+    return false;
+}
+
 struct walker_node* new_walker_node (uint32_t id, struct walker *s)
 {
     struct walker_node *tmp = (struct walker_node*)malloc(sizeof(struct walker_node));
@@ -207,7 +270,7 @@ void print_list (struct walker_list *l)
     printf("Number of walker_node in list = %u\n",l->num_nodes);
     while (tmp != NULL)
     {
-        printf("Walker %u - (%g,%g,%g)\n",tmp->id,tmp->value->pos[0],tmp->value->pos[1],tmp->value->pos[2]);
+        printf("Walker %u - (%g,%g,%g) || Links = %u\n",tmp->id,tmp->value->pos[0],tmp->value->pos[1],tmp->value->pos[2],tmp->value->stuck_counter);
         tmp = tmp->next;
     }
 }

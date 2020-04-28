@@ -32,6 +32,8 @@
 #include "../options/user_options.h"
 #include "../utils/stop_watch.h"
 
+const uint32_t MAX_NUMBER_OF_NODES = 1000;
+
 struct dla_tree
 {
     struct walker_list *point_list;
@@ -43,6 +45,7 @@ void free_dla_tree (struct dla_tree *the_tree);
 
 void grow_tree (struct dla_tree *the_tree, struct user_options *the_options);
 void write_to_vtk (struct dla_tree *the_tree);
+void write_tree_to_vtk (struct dla_tree *the_tree);
 
 void write_root (struct walker_list *l);
 

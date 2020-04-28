@@ -50,6 +50,10 @@ void set_parameters (struct cco_network *the_network, struct user_options *optio
     the_network->log_file = fopen("output.log","w+");
 
     the_network->using_only_murray_law = options->use_only_murray;
+
+    the_network->seed = options->seed;
+    the_network->max_rand_offset = options->max_rand_offset;
+    srand(the_network->seed);
 }
 
 void set_cost_function_name (struct cco_network *the_network, struct user_options *options)
@@ -761,6 +765,8 @@ void make_root_using_cloud_points (struct cco_network *the_network, std::vector<
     double *root_pos = the_network->root_pos;
     bool using_only_murray_law = the_network->using_only_murray_law;
 
+    uint32_t max_rand_offset = the_network->max_rand_offset;
+
     struct point_list *p_list = the_network->point_list;
     struct segment_list *s_list = the_network->segment_list;
 
@@ -788,7 +794,8 @@ void make_root_using_cloud_points (struct cco_network *the_network, std::vector<
     {
         //sort_point_from_cloud_v1(x_inew,cloud_points);
         //sort_point_from_cloud_v2(x_inew,cloud_points);
-        sort_point_from_cloud_v3(x_inew,cloud_points);
+        //sort_point_from_cloud_v3(x_inew,cloud_points);
+        sort_point_from_cloud_v4(x_inew,cloud_points,max_rand_offset);
 
         // Convert to the real domain
         //x_inew[0] *= r_supp;
@@ -835,6 +842,8 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
     double r_supp = the_network->r_supp;
     double V_perf = the_network->V_perf;
 
+    uint32_t max_rand_offset = the_network->max_rand_offset;
+
     // Cost function reference
     set_cost_function_fn *cost_function_fn = config->function;
 
@@ -863,7 +872,8 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
         // Sort a terminal position from the cloud of points
         //sort_point_from_cloud_v1(new_pos,cloud_points);
         //sort_point_from_cloud_v2(new_pos,cloud_points);
-        sort_point_from_cloud_v3(new_pos,cloud_points);
+        //sort_point_from_cloud_v3(new_pos,cloud_points);
+        sort_point_from_cloud_v4(new_pos,cloud_points,max_rand_offset);
 
         // Convert to the real domain
         //new_pos[0] *= r_supp;
@@ -1036,8 +1046,25 @@ void sort_point_from_cloud_v2 (double pos[], std::vector<struct point> cloud_poi
 // Sort points in a sequential order, but using a fixed offset
 void sort_point_from_cloud_v3 (double pos[], std::vector<struct point> cloud_points)
 {
-    // offset = 5 --> cover almost the whole surface
     static const uint32_t offset = 1;     
+    
+    // Reset the counter
+    if (cur_rand_index > cloud_points.size()-1)
+        cur_rand_index = cur_rand_index % (cloud_points.size()-1);
+
+    // Convert to the real domain
+    pos[0] = cloud_points[cur_rand_index].x;
+    pos[1] = cloud_points[cur_rand_index].y;
+    pos[2] = cloud_points[cur_rand_index].z;
+
+    // Increase the counter
+    cur_rand_index += offset;
+}
+
+// Sort points in a sequential order, but using a variable offset
+void sort_point_from_cloud_v4 (double pos[], std::vector<struct point> cloud_points, uint32_t max_rand_offset)
+{
+    uint32_t offset = rand() % max_rand_offset + 1;           // max_offset = 5 --> Nice results !!!!
 
     // Reset the counter
     if (cur_rand_index > cloud_points.size()-1)

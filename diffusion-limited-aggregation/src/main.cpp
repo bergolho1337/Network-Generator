@@ -24,6 +24,8 @@ int main (int argc, char *argv[])
     //print_dla_tree(the_tree);
 
     grow_tree(the_tree, the_options);
+    write_tree_to_vtk(the_tree);
+    //print_dla_tree(the_tree);
 
     free_dla_tree(the_tree);
     free_user_options(the_options);

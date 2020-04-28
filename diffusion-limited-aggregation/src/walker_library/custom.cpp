@@ -2,7 +2,7 @@
 
 SET_WALKER_MOVE_FUNCTION (move)
 {
-    uint32_t src_face_index, dest_face_index;
+    uint32_t src_point_index, dest_face_index;
     std::map<Point_Custom,uint32_t>::iterator it, it2;
     Point_Custom tmp(the_walker->pos[0],the_walker->pos[1],the_walker->pos[2]);
 
@@ -15,9 +15,9 @@ SET_WALKER_MOVE_FUNCTION (move)
     }
 
     // Get the face which contains point and sort a neighbour face
-    src_face_index = it->second;
-    uint32_t num_neighbour_faces = points_to_faces[src_face_index].size();
-    dest_face_index = points_to_faces[src_face_index][rand() % num_neighbour_faces];
+    src_point_index = it->second;
+    uint32_t num_neighbour_faces = points_to_faces[src_point_index].size();
+    dest_face_index = points_to_faces[src_point_index][rand() % num_neighbour_faces];
 
     // Next, sort a vertex from the destination face to move to
     uint32_t vertex_index = rand() % 3;
@@ -58,11 +58,13 @@ SET_WALKER_RESPAWN_FUNCTION (respawn)
         printf("[custom] Reading STL file with the mesh nodes ...\n");
         read_faces_from_stl(mesh_filename);
 
+        // If no mapping was passed we need to calculate the mapping graph
         if (!map_filename)
         {
             printf("[custom] Calculating the points to faces mapping ...\n");
             insert_points_from_faces_to_map();
         }
+        // Otherwise, we read the mapping 
         else
         {
             printf("[custom] Reading the points to faces mapping from file '%s' ...\n",map_filename);
@@ -72,32 +74,61 @@ SET_WALKER_RESPAWN_FUNCTION (respawn)
         first_call = false;
     }
 
-    uint32_t face_index = rand() % mesh_faces.size();
-    uint32_t vertex_index = rand() % 3;
-    switch (vertex_index)
+    // Get a new position until the coordinate is not within the network
+    bool point_is_not_ok = true;
+    do
     {
-        // Vertex 1
-        case 0: {
-                    pos[0] = mesh_faces[face_index].v1->x;
-                    pos[1] = mesh_faces[face_index].v1->y;
-                    pos[2] = mesh_faces[face_index].v1->z;
-                    break;
-                }
-        // Vertex 2
-        case 1: {
-                    pos[0] = mesh_faces[face_index].v2->x;
-                    pos[1] = mesh_faces[face_index].v2->y;
-                    pos[2] = mesh_faces[face_index].v2->z;
-                    break;
-                }
-        // Vertex 3
-        case 2: {
-                    pos[0] = mesh_faces[face_index].v3->x;
-                    pos[1] = mesh_faces[face_index].v3->y;
-                    pos[2] = mesh_faces[face_index].v3->z;
-                    break;
-                }
-    }
+        uint32_t face_index = rand() % mesh_faces.size();
+        uint32_t vertex_index = rand() % 3;
+        switch (vertex_index)
+        {
+            // Vertex 1
+            case 0: {
+                        if (!mesh_faces[face_index].v1->is_taken)
+                        {
+                            pos[0] = mesh_faces[face_index].v1->x;
+                            pos[1] = mesh_faces[face_index].v1->y;
+                            pos[2] = mesh_faces[face_index].v1->z;
+
+                            mesh_faces[face_index].v1->is_taken = true;
+
+                            point_is_not_ok = false;
+                        }
+                        break;
+                    }
+            // Vertex 2
+            case 1: {
+                        if (!mesh_faces[face_index].v2->is_taken)
+                        {
+                            pos[0] = mesh_faces[face_index].v2->x;
+                            pos[1] = mesh_faces[face_index].v2->y;
+                            pos[2] = mesh_faces[face_index].v2->z;
+
+                            mesh_faces[face_index].v2->is_taken = true;
+
+                            point_is_not_ok = false;
+                        }
+
+                        break;
+                    }
+            // Vertex 3
+            case 2: {
+                        if (!mesh_faces[face_index].v3->is_taken)
+                        {
+                            pos[0] = mesh_faces[face_index].v3->x;
+                            pos[1] = mesh_faces[face_index].v3->y;
+                            pos[2] = mesh_faces[face_index].v3->z;
+
+                            mesh_faces[face_index].v3->is_taken = true;
+
+                            point_is_not_ok = false;
+                        }
+
+                        break;
+                    }
+        }
+    }while (point_is_not_ok);
+
 }
 
 SET_WALKER_DOMAIN_DRAW_FUNCTION (draw)

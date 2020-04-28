@@ -14,11 +14,13 @@
 class Point_Custom
 {
 public:
+    bool is_taken;
     double x, y, z;
 public:
     Point_Custom () {};
     Point_Custom (const double x, const double y, const double z)
     {
+        this->is_taken = false;
         this->x = x;
         this->y = y;
         this->z = z;

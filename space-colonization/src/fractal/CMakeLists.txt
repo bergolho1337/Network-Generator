@@ -1,0 +1,7 @@
+set(SOURCE_FILES_OPTIONS fractal.h fractal.cpp)
+
+ADD_LIBRARY(fractal STATIC ${SOURCE_FILES_OPTIONS})
+
+if(NOT MSVC)
+    set_property(TARGET fractal PROPERTY POSITION_INDEPENDENT_CODE ON)
+endif()

@@ -13,7 +13,7 @@ void free_point_list (struct point_list *l)
     uint32_t cont = 0;
     while (!is_empty(l))
     {
-        delete_node(l,cont);
+        delete_node(l,0);
         cont++;
     }
     //print_list(l);
@@ -89,6 +89,9 @@ void delete_node (struct point_list *l, const uint32_t index)
     free_point(aux1->value);
     free(aux1);
     l->num_nodes--;
+
+    if (l)
+        order_list(l);
 }
 
 struct point_node* search_node (struct point_list *l, const uint32_t index)

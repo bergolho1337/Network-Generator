@@ -74,6 +74,7 @@ public:
     void print ();
 	void write_VTK (const char filename[]);
 	void write_pmj_config_file (const char filename[]);
+	void write_largest_segment (const int parents[], const int ref_index);
 	//void printterm ();
     void error (const char msg[]);
 	void depth_first_search ();

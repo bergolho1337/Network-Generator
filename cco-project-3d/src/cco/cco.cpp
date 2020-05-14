@@ -12,6 +12,7 @@ struct cco_network* new_cco_network (struct user_options *options)
     set_cloud_points_name(result,options);
     set_obstacle_name(result,options);
     set_local_optimization_function_name(result,options);
+    set_pruning_function(result,options);
 
     return result;
 }
@@ -50,7 +51,18 @@ void set_parameters (struct cco_network *the_network, struct user_options *optio
     the_network->log_file = fopen("output.log","w+");
 
     the_network->using_only_murray_law = options->use_only_murray;
-
+    if (options->use_only_murray)
+    {
+        if (options->start_radius == -1)
+        {
+            printf("Please enter the initial radius of the root: ");
+            scanf("%lf",&start_radius);
+        }
+        else
+        {
+            start_radius = options->start_radius;
+        }
+    }
     the_network->seed = options->seed;
     the_network->max_rand_offset = options->max_rand_offset;
     srand(the_network->seed);
@@ -125,6 +137,17 @@ void set_local_optimization_function_name (struct cco_network *the_network, stru
     }
 }
 
+void set_pruning_function (struct cco_network *the_network, struct user_options *options)
+{
+    the_network->using_pruning = options->use_pruning;
+    if (options->use_pruning)
+    {
+        the_network->A = options->a;
+        the_network->B = options->b;
+        the_network->C = options->c;
+    }
+}
+
 void grow_tree (struct cco_network *the_network, struct user_options *options)
 {
     printf("\n[cco] Growing CCO network !\n");
@@ -173,7 +196,7 @@ void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_
 
     make_root_using_cloud_points(the_network,cloud_points,obstacle_faces);
 
-    // Main iteration loop
+    // MAIN ITERATION LOOP
     while (the_network->num_terminals < the_network->N_term)
     {
         printf("%s\n",PRINT_LINE);
@@ -189,6 +212,25 @@ void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_
         printf("%s\n",PRINT_LINE);
         fprintf(log_file,"%s\n",PRINT_LINE);
     }
+
+    // PRUNNING
+    if (the_network->using_pruning)
+        prune_tree(the_network);
+
+    // If some terminal was eliminated by the pruning process, add the remaining ones
+    while (the_network->num_terminals != the_network->N_term)
+    {
+        printf("%s\n",PRINT_LINE);
+        printf("[cco] Working on terminal number %d after pruning\n",the_network->num_terminals);
+        fprintf(log_file,"%s\n",PRINT_LINE);
+        fprintf(log_file,"[cco] Working on terminal number %d after pruning\n",the_network->num_terminals);
+
+        generate_terminal_using_cloud_points(the_network,config,local_opt_config,cloud_points,obstacle_faces);
+    }
+        
+
+    //if (the_network->num_terminals == the_network->N_term)
+    //    tree_is_ready = true;
 
     //print_list(p_list);
     //print_list(s_list);
@@ -389,9 +431,6 @@ void rescale_root (struct segment_node *iroot, const double Q_perf, const double
     // [FRACTAL] The user needs to specify the initial radius of the root
     else
     {
-        printf("Please enter the initial radius of the root: ");
-        scanf("%lf",&start_radius);
-
         iroot->value->radius = start_radius;
     }
 }
@@ -447,8 +486,11 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
 
         // TODO: Use Murray law in some way ...
         // Fix a bifurcation ratio (Decrease the radius at each level of the tree by fixed factor)
-        inew->value->beta = 0.98;
-        iconn->value->beta = 0.98;
+        double level = calc_segment_level(iconn);
+        double ratio;
+        ratio = 0.999;
+        inew->value->beta = ratio;
+        iconn->value->beta = ratio;
     }
 
     // ibiff: Calculate resistance using (2.5) and pressure drop using (2.7)
@@ -484,8 +526,10 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
 
     double Q_term = Q_perf / num_terminals;
 
+
     if (ipar_left != NULL && ipar_right != NULL)
     {
+        //printf("ipar = %u -- ipar_left = %u -- ipar_right = %u\n",ipar->id,ipar_left->id,ipar_right->id);
 
         double radius_ratio;
         // Calculate radius ratio between left and right subtree
@@ -515,8 +559,11 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
 
             // TODO: Use Murray law in some way ...
             // Fix a bifurcation ratio (Decrease the radius at each level of the tree by fixed factor)
-            ipar_left->value->beta = 0.98;
-            ipar_right->value->beta = 0.98;
+            double level = calc_segment_level(ipar_right);
+            double ratio;
+            ratio = 0.999;
+            ipar_left->value->beta = ratio;
+            ipar_right->value->beta = ratio;
         }
 
         // Recalculate resistance using (2.5) and pressure drop using (2.7)
@@ -649,7 +696,6 @@ void recalculate_radius (struct cco_network *the_network)
     while (tmp != NULL)
     {
         tmp->value->radius = calc_radius(the_network,tmp);
-        //printf("\n");
 
         tmp = tmp->next;
     }
@@ -733,6 +779,7 @@ void restore_state_tree (struct cco_network *the_network,\
 
         rescale_until_root(ipar,ipar_left,ipar_right,\
                         Q_perf,delta_p,the_network->num_terminals,use_only_murray);
+        
     }
     else
     {
@@ -1077,6 +1124,144 @@ void sort_point_from_cloud_v4 (double pos[], std::vector<struct point> cloud_poi
 
     // Increase the counter
     cur_rand_index += offset;
+}
+
+void prune_tree_segment (struct cco_network *the_network, struct segment_node *inew)
+{
+
+    double Q_perf = the_network->Q_perf;
+    double p_perf = the_network->p_perf;
+    double p_term = the_network->p_term;
+    double delta_p = p_perf - p_term;
+
+    bool use_only_murray = the_network->using_only_murray_law;
+
+    struct segment_node *ibiff;
+    struct segment_node *ibiff_par;
+    struct segment_node *iconn;
+    
+    ibiff = inew->value->parent;
+    if (ibiff->value->left == inew)
+        iconn = ibiff->value->right;
+    else if (ibiff->value->right == inew)
+        iconn = ibiff->value->left;
+    ibiff_par = ibiff->value->parent;
+
+    // Update "iconn" pointers and values
+    iconn->value->parent = ibiff->value->parent;
+    iconn->value->src = ibiff->value->src;
+    iconn->value->beta = ibiff->value->beta;
+
+    // Update "ibiff" parent subtree pointer if exists
+    if (ibiff_par != NULL)
+    {
+        if (ibiff_par->value->right == ibiff)
+            ibiff_par->value->right = iconn;
+        else if (ibiff_par->value->left == ibiff)
+            ibiff_par->value->left = iconn;
+    }
+
+    // Recalculate R* for "iconn" because we change its length
+    if (iconn->value->left == NULL && iconn->value->right == NULL)
+        calc_relative_resistance_term(iconn);
+    else
+        calc_relative_resistance_subtree(iconn,iconn->value->right,iconn->value->left);
+
+    // Eliminate "ibiff" and "inew"
+    struct point_list *p_list = the_network->point_list;
+    struct segment_list *s_list = the_network->segment_list;
+
+    struct point_node *M = inew->value->src;
+    struct point_node *T = inew->value->dest;
+
+    delete_node(p_list,T->id);
+    delete_node(p_list,M->id);
+    delete_node(s_list,inew->id);
+    delete_node(s_list,ibiff->id);
+
+    // Update "ndist" from "iconn" until we reach the root
+    struct segment_node *tmp = iconn->value->parent;
+
+    if (tmp != NULL)
+    {
+        while (tmp->value->parent != NULL)
+        {
+            tmp->value->ndist--;
+            tmp = tmp->value->parent;
+        }
+        // At the root ...
+        tmp->value->ndist--;
+        the_network->num_terminals = tmp->value->ndist;
+    }
+    // Already at the root ...
+    else
+    {
+        the_network->num_terminals = iconn->value->ndist;
+    }
+
+    // Update R* and betas until we reach the root
+    struct segment_node *ipar = iconn->value->parent;
+
+    // Call the function recursively until we reach the root
+    if (ipar != NULL)
+    {
+        struct segment_node *ipar_left = ipar->value->left;
+        struct segment_node *ipar_right = ipar->value->right;
+
+        rescale_until_root(ipar,ipar_left,ipar_right,\
+                        Q_perf,delta_p,the_network->num_terminals,use_only_murray);
+    }
+    else
+    {
+        // Recalculate the root radius when we reach this segment using (2.19)
+        if (!use_only_murray)
+        {
+            iconn->value->radius = pow(iconn->value->resistance * Q_perf / delta_p , 0.25);
+        }
+        // [FRACTAL] Use the initial value of the root radius
+        else
+        {
+            iconn->value->radius = start_radius;
+        }
+    }
+
+    // Update the segments radius
+    recalculate_radius(the_network);
+
+}
+
+void prune_tree (struct cco_network *the_network)
+{
+    // User parameters for the pruning function
+    double A = the_network->A;
+    double B = the_network->B;
+    double C = the_network->C;
+    
+    struct segment_node *tmp = the_network->segment_list->list_nodes;
+    while (tmp != NULL)
+    {
+        // Save the reference to the next node
+        struct segment_node *tmp_next = tmp->next;
+
+        // We only prune terminal segments
+        if (is_terminal(tmp) && tmp->id < the_network->N_term)
+        {
+            double level = calc_segment_level(tmp);
+
+            double eval = pruning_function(level,A,B,C);
+            
+            double r = ((double)rand() / (double)RAND_MAX) * 100.0;
+
+            if (r <= eval)
+            {
+                printf("[!] Pruning segment %u!\n",tmp->id);
+                prune_tree_segment(the_network,tmp);
+            }       
+        }
+
+        tmp = tmp_next;
+    }
+
 }
 
 void usage (const char pname[])

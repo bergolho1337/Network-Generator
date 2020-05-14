@@ -21,6 +21,7 @@
 #include "../utils/utils.h"
 
 #include "cco_helper.h"
+#include "pruning.h"
 
 // CONSTANTS AND MACROS 
 // =================================================================
@@ -69,6 +70,9 @@ struct cco_network
 
     char *cost_function_name;
 
+    bool using_pruning;
+    double A, B, C;
+
     FILE *log_file;
 };
 
@@ -82,6 +86,7 @@ void set_cost_function_name (struct cco_network *the_network, struct user_option
 void set_cloud_points_name (struct cco_network *the_network, struct user_options *options);
 void set_obstacle_name (struct cco_network *the_network, struct user_options *options);
 void set_local_optimization_function_name (struct cco_network *the_network, struct user_options *options);
+void set_pruning_function (struct cco_network *the_network, struct user_options *options);
 
 struct segment_node* build_segment (struct cco_network *the_network, struct local_optimization_config *local_opt_config,\
                                 const uint32_t index, const double new_pos[]);
@@ -119,6 +124,9 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
                                           struct local_optimization_config *local_opt_config,\
                                           std::vector<struct point> cloud_points,\
                                           std::vector<struct face> obstacle_faces);
+
+void prune_tree (struct cco_network *the_network);
+void prune_tree_segment (struct cco_network *the_network, struct segment_node *inew);
 
 void sort_point_from_cloud_v1 (double pos[], std::vector<struct point> cloud_points);
 void sort_point_from_cloud_v2 (double pos[], std::vector<struct point> cloud_points);

@@ -30,6 +30,7 @@
 #define CM_S_TO_M_S 0.01
 #define MS_TO_US 1000.0
 #define CM_TO_MM 10.0
+#define CM_TO_M 0.01
 
 #define PRINT_DOTS ".........................................................................."
 #define PRINT_STARS "******************************************************************************"
@@ -88,8 +89,8 @@ bool check_size (const double p[]);
 bool check_segment_plane_intersection (const double x_prox[], const double x_new[], struct face the_face);
 
 void print_terminal_activation_time (struct cco_network *the_network,\
-                            const double c, const double cm, const double rc, const double rm);
-
+                            const double G, const double Cf, const double tau_f);
+                            
 void write_to_vtk (struct cco_network *the_network);
 void write_to_vtk_iteration (struct cco_network *the_network);
 

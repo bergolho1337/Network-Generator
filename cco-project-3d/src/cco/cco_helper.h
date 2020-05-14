@@ -36,11 +36,11 @@ double calc_segment_volume (struct segment_node *s);
 double calc_assymetric_ratio (struct segment_node *right, struct segment_node *left);
 
 double calc_terminal_activation_time (struct segment_node *s,\
-                        const double c, const double cm, const double rc, const double rm);
+                        const double G, const double Cf, const double tau_f);
 double calc_segment_activation_time (struct segment_node *s,\
-                        const double c, const double cm, const double rc, const double rm);
-double calc_propagation_velocity (const double r,\
-                        const double c, const double cm, const double rc, const double rm);
+                        const double G, const double Cf, const double tau_f);
+double calc_propagation_velocity (const double d,\
+                        const double G, const double Cf, const double tau_f);
 double calc_lambda_m (const double r, const double rc, const double rm);
 double calc_tau_m (const double cm, const double rm);
 
@@ -54,7 +54,7 @@ double calc_segment_custom_function_with_level_penalty (const double eval, struc
 
 bool has_deviation (struct segment_list *s_list, struct segment_node *inew,\
                     const double new_at, const double limit,\
-                    const double c, const double cm, const double rc, const double rm);
+                    const double G, const double Cf, const double tau_f);
 bool is_terminal (struct segment_node *s);
 
 #endif

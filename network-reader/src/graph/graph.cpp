@@ -43,7 +43,7 @@ void Graph::read_graph_from_vtk (const char filename[])
     }    
 
     uint32_t num_nodes, num_edges, tmp;
-    double pos[3];
+    double pos[3], scalar_value;
     uint32_t dir[2];
     char str[200];
 
@@ -506,8 +506,11 @@ void Graph::dfs (Node *u, vector<int> &dfs_num)
 
 void Graph::breadth_first_search ()
 {
+    int *parents = new int[total_nodes]();
+
     int source_index = 0;
     Node *source_node = search_node(source_index);
+    parents[source_index] = -1;
 
     map<int,int> dist;              // Distance from source to the other nodes
     dist[source_index] = 0;         // Distance from source to source is zero
@@ -528,6 +531,7 @@ void Graph::breadth_first_search ()
             if (!dist.count(v_index))
             {
                 dist[v_index] = dist[u_index] + 1;
+                parents[v_index] = u_index;
                 q.push(v->dest);
             }
             v = v->next;
@@ -559,6 +563,45 @@ void Graph::breadth_first_search ()
         print_stars(nodes_per_level[i]);
         printf(" (%d)\n",nodes_per_level[i]);
     }
+
+    //write_largest_segment(parents,3954);  // Elizabeth LV
+
+    delete [] parents;
+}
+
+void Graph::write_largest_segment (const int parents[], const int ref_index)
+{
+    int counter = 0;
+    int current_index = ref_index;
+    while (current_index != -1)
+    {
+        //printf("Node %d -- Parent %d\n",current_index,parents[current_index]);
+        current_index = parents[current_index];
+        counter++;
+    }
+
+    FILE *file = fopen("outputs/largest_segment.vtk","w+");
+
+    fprintf(file,"# vtk DataFile Version 3.0\n");
+    fprintf(file,"Graph\n");
+    fprintf(file,"ASCII\n");
+    fprintf(file,"DATASET POLYDATA\n");
+    fprintf(file,"POINTS %d float\n",counter);
+    
+    current_index = ref_index;
+    while (current_index != -1)
+    {
+        Node *tmp = search_node(current_index);
+        fprintf(file,"%g %g %g\n",tmp->x,tmp->y,tmp->z);
+
+        current_index = parents[current_index];
+    }
+
+    fprintf(file,"LINES %d %d\n",counter-1,(counter-1)*3);    
+    for (uint32_t i = 0; i < (counter-1); i++)
+        fprintf(file,"2 %d %d\n",i,i+1);
+
+    fclose(file);
 }
 
 void print_stars (const int number)

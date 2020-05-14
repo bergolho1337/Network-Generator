@@ -13,7 +13,7 @@ void free_face_list (struct face_list *l)
     uint32_t cont = 0;
     while (!is_empty(l))
     {
-        delete_node(l,cont);
+        delete_node(l,0);
         cont++;
     }
     //print_list(l);
@@ -90,6 +90,9 @@ void delete_node (struct face_list *l, const uint32_t index)
     free_face(aux1->value);
     free(aux1);
     l->num_nodes--;
+
+    if (l)
+        order_list(l);
 }
 
 struct face_node* search_node (struct face_list *l, const uint32_t index)

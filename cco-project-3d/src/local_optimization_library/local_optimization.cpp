@@ -98,7 +98,7 @@ SET_LOCAL_OPTIMIZATION_FUNCTION (rafael_local_optimization)
             pos[1] = (phi * G[1]) + (eta * F[1]) + (neta * E[1]);
             pos[2] = (phi * G[2]) + (eta * F[2]) + (neta * E[2]);
 
-            printf("Bifurcation position test -> (%g,%g,%g)\n",pos[0],pos[1],pos[2]);
+            //printf("Bifurcation position test -> (%g,%g,%g)\n",pos[0],pos[1],pos[2]);
 
             struct point p;
             p.x = pos[0];

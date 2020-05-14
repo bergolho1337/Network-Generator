@@ -13,7 +13,7 @@ void free_segment_list (struct segment_list *s)
     uint32_t cont = 0;
     while (!is_empty(s))
     {
-        delete_node(s,cont);
+        delete_node(s,0);
         cont++;
     }
     //print_list(l);
@@ -89,6 +89,10 @@ void delete_node (struct segment_list *l, const uint32_t index)
     free_segment(aux1->value);
     free(aux1);
     l->num_nodes--;
+
+    if (l)
+        order_list(l);
+
 }
 
 struct segment_node* search_segment_node (struct segment_list *l, const uint32_t index)
@@ -107,6 +111,19 @@ struct segment_node* search_segment_node (struct segment_list *l, const uint32_t
 bool is_empty (struct segment_list *l)
 {
     return (l->list_nodes == NULL) ? true : false;
+}
+
+void order_list (struct segment_list *l)
+{
+    uint32_t cont = 0;
+    struct segment_node *tmp = l->list_nodes;
+    while (tmp != NULL)
+    {
+        tmp->id = cont;
+
+        cont++;
+        tmp = tmp->next;
+    }
 }
 
 struct segment_node* new_segment_node (uint32_t id, struct segment *s)

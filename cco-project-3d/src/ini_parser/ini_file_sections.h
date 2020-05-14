@@ -9,6 +9,7 @@
 #define CLOUD_SECTION "cloud_points"
 #define LOCAL_OPT_SECTION "local_optimization"
 #define COST_FUNCTION_SECTION "cost_function"
+#define PRUNING_SECTION "pruning"
 
 #define MATCH_SECTION_AND_NAME(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
 #define MATCH_SECTION(s) strcmp(section, s) == 0

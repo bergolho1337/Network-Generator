@@ -1,9 +1,12 @@
 #include "minimize_activation_time.h"
 
+// THIS IMPLEMENTATION IS NOT WORKING !!!!!!!!!!!!!!!!!
 SET_COST_FUNCTION (minimize_tree_activation_time)
 {
+    FILE *log_file = the_network->log_file;
+
     struct segment_node *best = NULL;
-    double minimum_at = __DBL_MAX__;
+    double minimum_activation_time = __DBL_MAX__;
 
     double Q_perf = the_network->Q_perf;
     double p_perf = the_network->p_perf;
@@ -11,24 +14,21 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
     double delta_p = p_perf - p_term;
 
     // Get a reference to the local optimization function
-    bool using_local_optimization = the_network->using_local_optimization;
     set_local_optimization_function_fn *local_optimization_fn = local_opt_config->function;
+    bool using_local_optimization = the_network->using_local_optimization;
 
     // Get cost function parameters
     bool ret;
-    double c;
-    ret = get_parameter_value_from_map(config->params,"c",&c);
-    double cm;
-    ret = get_parameter_value_from_map(config->params,"cm",&cm);
-    double rc;
-    ret = get_parameter_value_from_map(config->params,"rc",&rc);
-    double rm;
-    ret = get_parameter_value_from_map(config->params,"rm",&rm);
+    double G;
+    ret = get_parameter_value_from_map(config->params,"G",&G);
+    double Cf;
+    ret = get_parameter_value_from_map(config->params,"Cf",&Cf);
+    double tau_f;
+    ret = get_parameter_value_from_map(config->params,"tauf",&tau_f);
     double deviation_limit = __DBL_MAX__;
-    ret = get_parameter_value_from_map(config->params,"deviation_limit",&deviation_limit);
+    ret = get_parameter_value_from_map(config->params,"deviation_limit",&deviation_limit);    
 
     //printf("Feasible segment %u\n",feasible_segments.size());
-
     for (uint32_t i = 0; i < feasible_segments.size(); i++)
     {
 
@@ -41,10 +41,9 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
         //  WITH LOCAL OPTIMIZATION
         if (using_local_optimization)
         {
-
             // Save the original position of the bifurcation
             double ori_pos[3];
-            save_original_bifurcation_position(iconn,ori_pos);
+            save_original_bifurcation_position(ibiff,ori_pos);
 
             // Initialize the best position as middle point of the segment
             double best_pos[3];
@@ -56,23 +55,30 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
                                                         best_pos[2]);
 
             // 1) Check the cost function of the first configuration
-            double at = calc_terminal_activation_time(inew,c,cm,rc,rm);
+            double activation_time = calc_terminal_activation_time(inew,G,Cf,tau_f);
 
-            if (at < minimum_at && \
-            !has_deviation(the_network->segment_list,inew,at,deviation_limit,c,cm,rc,rm))
+            // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn'
+            //                      and if do not intersect any triangle face from the obstacle object (if it is given). 
+            struct segment_list *s_list = the_network->segment_list;
+            bool has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
+            bool has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
+            
+            bool point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision;
+
+            if (activation_time < minimum_activation_time && !point_is_not_ok)
             {
-                minimum_at = at;
+                minimum_activation_time = activation_time;
                 best = iconn;
 
-                // The best position of the best segment will be stored inside the
+                // The best position of the best segment will be stored inside the 
                 // 'local_optimization' structure
                 local_opt_config->best_pos[0] = best_pos[0];
                 local_opt_config->best_pos[1] = best_pos[1];
                 local_opt_config->best_pos[2] = best_pos[2];
 
-                printf("[cost_function] Best segment = %d -- Activation time = %g ms -- Best position = (%g,%g,%g)\n",\
+                printf("[cost_function] Best segment = %d -- Activation time = %g -- Best position = (%g,%g,%g)\n",\
                                 best->id,\
-                                minimum_at,\
+                                minimum_activation_time,\
                                 local_opt_config->best_pos[0],\
                                 local_opt_config->best_pos[1],\
                                 local_opt_config->best_pos[2]);
@@ -85,24 +91,32 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
 
             for (uint32_t j = 0; j < test_positions.size(); j++)
             {
-                //printf("Test position = (%g,%g,%g)\n",test_positions[j].x,test_positions[j].y,test_positions[j].z);
+                // TODO: Test the bifurcation placement -> bool VerificaPosicaoBif()
 
-                // Change the position of the bifurcation point
+                // Change the position of the bifurcation point 
                 double new_biff_pos[3];
                 new_biff_pos[0] = test_positions[j].x;
                 new_biff_pos[1] = test_positions[j].y;
                 new_biff_pos[2] = test_positions[j].z;
                 move_bifurcation_location(iconn,ibiff,inew,new_biff_pos);
+
                 rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,the_network->num_terminals,the_network->using_only_murray_law);
+
                 recalculate_radius(the_network);
 
-                // Evaluate cost function for the current configuration
-                double at = calc_terminal_activation_time(inew,c,cm,rc,rm);
+                double activation_time = calc_terminal_activation_time(inew,G,Cf,tau_f);
 
-                if (at < minimum_at && \
-            !has_deviation(the_network->segment_list,inew,at,deviation_limit,c,cm,rc,rm) )
+                // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn' and 'ibiff'
+                //                      and if do not intersect any triangle face from the obstacle object (if it is given).
+                s_list = the_network->segment_list;
+                has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
+                has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
+
+                point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision;
+
+                if (activation_time < minimum_activation_time && !point_is_not_ok)
                 {
-                    minimum_at = at;
+                    minimum_activation_time = activation_time;
                     best = iconn;
 
                     // The best position of the best segment will be stored inside the 'local_optimization' structure
@@ -110,14 +124,13 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
                     local_opt_config->best_pos[1] = new_biff_pos[1];
                     local_opt_config->best_pos[2] = new_biff_pos[2];
 
-                    printf("[cost_function] Best segment = %d -- Activation time = %g ms -- Best position = (%g,%g,%g)\n",\
+                    printf("[cost_function] Best segment = %d -- Activation time = %g -- Best position = (%g,%g,%g)\n",\
                                     best->id,\
-                                    minimum_at,\
+                                    minimum_activation_time,\
                                     local_opt_config->best_pos[0],\
                                     local_opt_config->best_pos[1],\
                                     local_opt_config->best_pos[2]);
                 }
-
             }
 
             // Move the bifurcation to the original position
@@ -127,21 +140,19 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
 
             // Clear the array for the next segment
             test_positions.clear();
- 
         }
         // NO LOCAL OPTIMIZATION
         else
         {
             // Evaluate the cost function
-            double at = calc_terminal_activation_time(inew,c,cm,rc,rm);
+            double activation_time = calc_terminal_activation_time(inew,G,Cf,tau_f);
 
-            if (at < minimum_at && \
-            !has_deviation(the_network->segment_list,inew,at,deviation_limit,c,cm,rc,rm) )
+            if (activation_time < minimum_activation_time)
             {
-                minimum_at = at;
+                minimum_activation_time = activation_time;
                 best = iconn;
 
-                printf("[cost_function] Best segment = %d -- Activation time = %g ms\n",best->id,minimum_at);
+                printf("[cost_function] Best segment = %d -- Activation time = %g\n",best->id,minimum_activation_time);
             }
 
             restore_state_tree(the_network,iconn);

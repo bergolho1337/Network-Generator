@@ -9,7 +9,7 @@ void calc_middle_point_segment (struct segment_node *s, double pos[])
     pos[1] = (src->y + dest->y) / 2.0;
     pos[2] = (src->z + dest->z) / 2.0;
 
-    printf("prox = (%g,%g,%g) -- distal = (%g,%g,%g) -- meio = (%g,%g,%g)\n",src->x,src->y,src->z,dest->x,dest->y,dest->z,pos[0],pos[1],pos[2]);
+    //printf("prox = (%g,%g,%g) -- distal = (%g,%g,%g) -- meio = (%g,%g,%g)\n",src->x,src->y,src->z,dest->x,dest->y,dest->z,pos[0],pos[1],pos[2]);
 }
 
 void calc_relative_resistance_subtree (struct segment_node *ibiff, struct segment_node *iconn, struct segment_node *inew)
@@ -135,22 +135,22 @@ double calc_lambda_m (const double r, const double rc, const double rm)
     return sqrt(num / den);
 }
 
-// Calculate the propagation velocity using the cable equation (6.21) from Kenner's book
-double calc_propagation_velocity (const double r,\
-                        const double c, const double cm, const double rc, const double rm)
+// Cable equation: {m/s}
+double calc_propagation_velocity (const double d,\
+                        const double G, const double Cf, const double tau_f)
 {
-    return c * calc_lambda_m(r,rc,rm) / calc_tau_m(cm,rm);
+    return powf( (G*d)/(4.0*Cf*tau_f) , 0.5 ) * 0.1;
 }
 
 double calc_terminal_activation_time (struct segment_node *s,\
-                        const double c, const double cm, const double rc, const double rm)
+                        const double G, const double Cf, const double tau_f)
 {
     struct segment_node *tmp = s;
     double at = 0.0;
 
     while (tmp != NULL)
     {
-        at += calc_segment_activation_time(tmp,c,cm,rc,rm);
+        at += calc_segment_activation_time(tmp,G,Cf,tau_f);
 
         tmp = tmp->value->parent;
     }
@@ -158,32 +158,34 @@ double calc_terminal_activation_time (struct segment_node *s,\
     return at;
 }
 
+// Activation time: {ms}
 double calc_segment_activation_time (struct segment_node *s,\
-                        const double c, const double cm, const double rc, const double rm)
+                        const double G, const double Cf, const double tau_f)
 {
     struct point *src = s->value->src->value;
     struct point *dest = s->value->dest->value;
     double length = euclidean_norm(src->x,src->y,src->z,\
                                   dest->x,dest->y,dest->z);
 
-    double delta_s = length;
-    double r = s->value->radius;
+    double delta_s = length;                    // cm
+    double radius = s->value->radius;           // mm 
+    double diameter = radius * 2.0;             // mm
 
-    double velocity = calc_propagation_velocity(r,c,cm,rc,rm);
+    diameter *= 1000;                           // um
+    delta_s *= CM_TO_M;                         // m
 
-    // Parse every distance to {mm}
-    velocity *= CM_TO_MM;
-    delta_s *= CM_TO_MM;
-    r *= CM_TO_MM;
+    double velocity = calc_propagation_velocity(diameter,G,Cf,tau_f);
 
-    //printf("\tPropagation velocity = %g mm/ms \n",velocity);
-    //printf("\tDiameter = %g um\n",r*2.0*MM_TO_UM);
-    //printf("\tDistance = %g mm \n",delta_s);
-    //printf("\tRadius = %g mm\n",r);
-    //printf("\tActivation time = %g ms\n\n",delta_s / velocity);
+    // The output will be on {s}
+    double at = delta_s / velocity * S_TO_MS;
+    
+    //printf("\tPropagation velocity = %g m/s \n",velocity);
+    //printf("\tDiameter = %g um\n",diameter);
+    //printf("\tDistance = %g m \n",delta_s);
+    //printf("\tActivation time = %g ms\n\n",at);
+    //exit(1);
 
-    // The output will be on {mm/ms}
-    return delta_s / velocity;
+    return at;
 }
 
 // The activation time is already in microseconds
@@ -198,7 +200,7 @@ double calc_segment_level (struct segment_node *iconn)
 {
     struct segment_node *tmp = iconn;
 
-    double level = 1.0;
+    double level = 0.0;
     while (tmp != NULL)
     {
         level++;
@@ -213,9 +215,10 @@ double calc_segment_custom_function_with_level_penalty (const double eval, struc
 {
     double level = calc_segment_level(iconn);
 
-    //return eval / level;
+    //return eval;
+    return eval / level;
     //return eval / (0.5 * level);
-    return pow( eval, 1.0/level );
+    //return pow( eval, 1.0/level );
 }
 
 double calc_segment_custom_function (struct segment_node *s, const double beta, const double alpha)
@@ -249,7 +252,7 @@ double calc_custom_function (struct cco_network *the_network, const double beta,
 
 bool has_deviation (struct segment_list *s_list, struct segment_node *inew,\
                     const double new_at, const double limit,\
-                    const double c, const double cm, const double rc, const double rm)
+                    const double G, const double Cf, const double tau_f)
 {
     struct segment_node *tmp = s_list->list_nodes;
 
@@ -257,7 +260,7 @@ bool has_deviation (struct segment_list *s_list, struct segment_node *inew,\
     {
         if (tmp != inew && is_terminal(tmp))
         {
-            double at = calc_terminal_activation_time(tmp,c,cm,rc,rm);
+            double at = calc_terminal_activation_time(tmp,G,Cf,tau_f);
             if (fabs(new_at - at) > limit)
                 return true;
         }

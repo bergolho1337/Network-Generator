@@ -8,6 +8,8 @@ struct user_options* new_user_options (int argc, char *argv[])
     result->use_local_optimization = false;
     result->use_obstacle = false;
     result->use_only_murray = false;
+    result->use_pruning = false;
+    result->start_radius = -1;
     result->seed = 1;                           // Default value
     result->max_rand_offset = 1;                // Default value
 
@@ -117,6 +119,10 @@ int parse_config_file(void *user, const char *section, const char *name, const c
                 exit(EXIT_FAILURE);
             }
         }
+        else if (MATCH_NAME("start_radius"))
+        {
+            pconfig->start_radius = strtof(value, NULL);
+        }
     }
     else if (SECTION_STARTS_WITH(CLOUD_SECTION))
     {
@@ -192,6 +198,28 @@ int parse_config_file(void *user, const char *section, const char *name, const c
             std::string key(name);
         
             pconfig->config->params->insert(std::pair<std::string,double>(key,atof(value)));
+        }
+    }
+    else if (SECTION_STARTS_WITH(PRUNING_SECTION))
+    {
+        if (MATCH_NAME("use_pruning"))
+        {
+            if (strcmp(value,"true") == 0 || strcmp(value,"yes") == 0)
+                pconfig->use_pruning = true;
+            else
+                pconfig->use_pruning = false;
+        }
+        else if (MATCH_NAME("A"))
+        {
+            pconfig->a = strtof(value, NULL);
+        }
+        else if (MATCH_NAME("B"))
+        {
+            pconfig->b = strtof(value, NULL);
+        }
+        else if (MATCH_NAME("C"))
+        {
+            pconfig->c = strtof(value, NULL);
         }
     }
 

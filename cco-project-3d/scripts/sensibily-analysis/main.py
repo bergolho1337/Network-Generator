@@ -23,7 +23,8 @@ COST_FUNCTION_LIBRARY_NAME = "shared-libs/libminimize_volume.so"
 COST_FUNCTION_NAME = "minimize_tree_volume_default"
 
 def write_cco_config_file (seed,rand_offset):
-    filename = "cco_config/elizabeth_purkinje_cco_seed-%u_offset-%u_nterm-130.ini" % (seed,rand_offset)
+    #filename = "cco_config/elizabeth_purkinje_cco_seed-%u_offset-%u_nterm-130.ini" % (seed,rand_offset)
+    filename = "cco_config/elizabeth_purkinje_co_seed-%u_offset-%u_nterm-130.ini" % (seed,rand_offset)
     file = open(filename,"w")
 
     # Write [main] section
@@ -39,7 +40,9 @@ def write_cco_config_file (seed,rand_offset):
     file.write("root_z = %g\n" % ROOT_Z)
     file.write("max_rand_offset = %u\n" % rand_offset)
     file.write("seed = %u\n" % seed)
-    file.write("use_only_murray = false\n")
+    #file.write("use_only_murray = false\n")
+    file.write("use_only_murray = true\n")                 # CO Fractal
+    file.write("start_radius = 0.00102269\n")              # CO Fractal
     file.write("\n")
 
     # Write [cloud_points] section
@@ -65,14 +68,15 @@ def write_cco_config_file (seed,rand_offset):
     file.close()
 
 def write_monoalg_config_file (seed,rand_offset):
-    filename = "monoalg3d_config/elizabeth_purkinje_cco_seed-%u_offset-%u_nterm-130.ini" % (seed,rand_offset)
+    #filename = "monoalg3d_config/elizabeth_purkinje_cco_seed-%u_offset-%u_nterm-130.ini" % (seed,rand_offset)
+    filename = "monoalg3d_config/elizabeth_purkinje_co_seed-%u_offset-%u_nterm-130.ini" % (seed,rand_offset)
     file = open(filename,"w")
 
     # Write [main] section
     file.write("[main]\n")
-    file.write("num_threads = 4\n")
-    file.write("dt_pde = 0.02\n")
-    file.write("simulation_time = 800.0\n")
+    file.write("num_threads = 6\n")
+    file.write("dt_pde = 0.01\n")
+    file.write("simulation_time = 500.0\n")
     file.write("abort_on_no_activity = false\n")
     file.write("use_adaptivity = false\n")
     file.write("calc_activation_time = true\n")
@@ -87,8 +91,9 @@ def write_monoalg_config_file (seed,rand_offset):
 
     # Write [save_result] section
     file.write("[save_result]\n")
-    file.write("print_rate = 100\n")
-    file.write("output_dir = ./outputs/elizabeth_coupled_arpf_cco_seed-%u_offset-%u_LV\n" % (seed,rand_offset))
+    file.write("print_rate = 200\n")
+    #file.write("output_dir = ./outputs/elizabeth_coupled_arpf_cco_seed-%u_offset-%u_LV\n" % (seed,rand_offset))
+    file.write("output_dir = ./outputs/elizabeth_coupled_arpf_co_seed-%u_offset-%u_LV\n" % (seed,rand_offset))		# CO Fractal
     file.write("main_function = save_as_vtu_tissue_coupled_vtp_purkinje\n")
     file.write("save_pvd = true\n")
     file.write("file_prefix = V_Tissue\n")
@@ -113,7 +118,7 @@ def write_monoalg_config_file (seed,rand_offset):
     # Write [linear_system_solver] section
     file.write("[linear_system_solver]\n")
     file.write("tolerance = 1e-16\n")
-    file.write("use_preconditioner = yes\n")
+    file.write("use_preconditioner = no\n")
     file.write("max_iterations = 200\n")
     file.write("main_function = conjugate_gradient\n")
     file.write("library_file = shared_libs/libdefault_linear_system_solver.so\n")
@@ -153,7 +158,8 @@ def write_monoalg_config_file (seed,rand_offset):
     file.write("start_discretization = 100.0\n")
     file.write("start_dx = 100.0\n")
     file.write("retro_propagation = false\n")
-    file.write("network_file = networks/elizabeth-meshes/cco_classic/elizabeth_purkinje_cco_seed-%u_offset-%u_nterm-130.vtk\n" % (seed,rand_offset))
+    #file.write("network_file = networks/elizabeth-meshes/cco_classic/elizabeth_purkinje_cco_seed-%u_offset-%u_nterm-130.vtk\n" % (seed,rand_offset))
+    file.write("network_file = networks/elizabeth-meshes/co_fractal_classic/elizabeth_purkinje_cco_seed-%u_offset-%u_nterm-130.vtk\n" % (seed,rand_offset))
     file.write("main_function = initialize_purkinje_with_custom_mesh\n")
     file.write("library_file = shared_libs/libdefault_purkinje.so\n")
     #file.write("library_file = /home/berg/MonoAlg3D_C/shared_libs/libdefault_purkinje.so\n")
@@ -170,7 +176,7 @@ def write_monoalg_config_file (seed,rand_offset):
 
     # Write [ode_solver] section
     file.write("[ode_solver]\n")
-    file.write("dt_ode = 0.02\n")
+    file.write("dt_ode = 0.01\n")
     file.write("use_gpu = yes\n")
     file.write("gpu_id = 0\n")
     file.write("library_file = shared_libs/libten_tusscher_2006.so\n")
@@ -180,9 +186,9 @@ def write_monoalg_config_file (seed,rand_offset):
     # Write [stimulus] section
     file.write("[stim_purkinje_his]\n")
     file.write("start = 0.0\n")
-    file.write("duration = 4.0\n")
-    file.write("current = -50.0\n")
-    file.write("id_limit = 20\n")
+    file.write("duration = 1.0\n")
+    file.write("current = -90.0\n")
+    file.write("id_limit = 5\n")
     file.write("main_function = stim_if_id_less_than\n")
     #file.write("library_file = /home/berg/MonoAlg3D_C/shared_libs/libdefault_stimuli.so")
     file.write("\n")
@@ -191,8 +197,9 @@ def write_monoalg_config_file (seed,rand_offset):
 
 def main():
 	
-    seeds = [1562046115,1562013988,1562042299,1562005512,1562009134,1562009768,1562044566,1562008423,1562036996,1562020974]
-    rand_offsets = [2,3,4,5,6,7,8,9,10]
+    seeds = [1562046115,1562013988,1562042299,1562005513,1562009134,1562009769,1562044567,1562008424,1562036996,1562020974]
+    #rand_offsets = [2,3,4,5,6,7,8,9,10]
+    rand_offsets = [9]
 
     for seed in seeds:
         for rand_offset in rand_offsets:

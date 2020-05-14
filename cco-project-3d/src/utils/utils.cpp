@@ -347,7 +347,7 @@ bool check_segment_plane_intersection (const double x_prox[], const double x_new
 }
 
 void print_terminal_activation_time (struct cco_network *the_network,\
-                            const double c, const double cm, const double rc, const double rm)
+                            const double G, const double Cf, const double tau_f)
 {
     struct segment_list *s_list = the_network->segment_list;
     struct segment_node *tmp = s_list->list_nodes;
@@ -356,7 +356,7 @@ void print_terminal_activation_time (struct cco_network *the_network,\
     {
         if (is_terminal(tmp))
         {
-            double at = calc_terminal_activation_time(tmp,c,cm,rc,rm);
+            double at = calc_terminal_activation_time(tmp,G,Cf,tau_f);
 
             //printf("Terminal %d -- AT = %g ms\n",tmp->id,at);
         }

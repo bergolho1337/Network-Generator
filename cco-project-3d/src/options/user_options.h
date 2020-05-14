@@ -42,11 +42,15 @@ struct user_options
     char *obstacle_filename;
 
     bool use_only_murray;
+    double start_radius;
 
     struct cost_function_config *config;
     
     bool use_local_optimization;
     struct local_optimization_config *local_opt_config;
+
+    bool use_pruning;
+    double a, b, c;
 
 };
 

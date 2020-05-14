@@ -4,5 +4,8 @@
 
 - Write a documentation to use the program
 
-- Implement different cost functions
+- Add more examples that demonstrates some functionalities:
+    - Pruning
+    - Obstacles
+    - PMJ Locations
 ========================================================================================================================

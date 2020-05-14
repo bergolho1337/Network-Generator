@@ -1,6 +1,7 @@
 #include "cco.h"
 
 uint32_t cur_rand_index = 0;
+uint32_t cur_pmj_index = 0;
 double start_radius;
 
 struct cco_network* new_cco_network (struct user_options *options)
@@ -11,6 +12,7 @@ struct cco_network* new_cco_network (struct user_options *options)
     set_cost_function_name(result,options);
     set_cloud_points_name(result,options);
     set_obstacle_name(result,options);
+    set_pmj_location_name(result,options);
     set_local_optimization_function_name(result,options);
     set_pruning_function(result,options);
 
@@ -117,6 +119,26 @@ void set_obstacle_name (struct cco_network *the_network, struct user_options *op
     }
 }
 
+void set_pmj_location_name (struct cco_network *the_network, struct user_options *options)
+{
+    if (options->use_pmj_location)
+    {
+        the_network->using_pmj_location = true;
+        uint32_t size = strlen(options->pmj_location_filename) + 1;
+        the_network->pmj_location_filename = (char*)malloc(sizeof(char)*size);
+        strcpy(the_network->pmj_location_filename,options->pmj_location_filename);
+
+        printf("[cco] Using PMJ location\n");
+        printf("[cco] PMJ location filename :> \"%s\"\n",the_network->pmj_location_filename);
+    }
+    else
+    {
+        the_network->using_pmj_location = false;
+
+        printf("[cco] No PMJ location provided\n");
+    }
+}
+
 void set_local_optimization_function_name (struct cco_network *the_network, struct user_options *options)
 {
     if (options->use_local_optimization)
@@ -170,15 +192,26 @@ void grow_tree (struct cco_network *the_network, struct user_options *options)
     {
         read_obstacle_faces(the_network->obstacle_filename,obstacle_faces);
     }
+
+    // PMJ location section
+    std::vector<struct point> pmj_points;
+    if (the_network->using_pmj_location)
+    {
+        read_pmj_location_points(the_network->pmj_location_filename,pmj_points);
+    }
     
-    grow_tree_using_cloud_points(the_network,options,cloud_points,obstacle_faces);
+    grow_tree_using_cloud_points(the_network,options,cloud_points,obstacle_faces,pmj_points);
 
     // Unitary test
     check_bifurcation_rule(the_network);
 
 }
 
-void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_options *options, std::vector<struct point> cloud_points, std::vector<struct face> obstacle_faces)
+void grow_tree_using_cloud_points (struct cco_network *the_network,\
+                                   struct user_options *options,\
+                                   std::vector<struct point> cloud_points,\
+                                   std::vector<struct face> obstacle_faces,\
+                                   std::vector<struct point> pmj_points)
 {
     FILE *log_file = the_network->log_file;
 
@@ -227,14 +260,18 @@ void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_
 
         generate_terminal_using_cloud_points(the_network,config,local_opt_config,cloud_points,obstacle_faces);
     }
+
+    // PMJ's locations
+    if (the_network->using_pmj_location)
+    {
+        uint32_t num_pmj_points = pmj_points.size();
+
+        for (uint32_t i = 0; i < num_pmj_points; i++)
+            generate_terminal_using_pmj_points(the_network,config,local_opt_config,pmj_points,obstacle_faces);
+    }
         
-
-    //if (the_network->num_terminals == the_network->N_term)
-    //    tree_is_ready = true;
-
-    //print_list(p_list);
-    //print_list(s_list);
-
+        
+        
     // Write to the logfile
     fprintf(log_file,"%s\n",PRINT_LINE);
     write_list(p_list,log_file);
@@ -930,7 +967,116 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
         // RESTRICTION AREA
         // Check the distance criterion for this point
         point_is_ok = connection_search(the_network,new_pos,d_threash);
-        printf("%d -- dist = %d -- (%g,%g,%g)\n",cur_rand_index,point_is_ok,new_pos[0],new_pos[1],new_pos[2]);
+        //printf("%d -- dist = %d -- (%g,%g,%g)\n",cur_rand_index,point_is_ok,new_pos[0],new_pos[1],new_pos[2]);
+
+        // Check collision with other segments
+        if (point_is_ok)
+            point_is_ok = check_collisions_and_fill_feasible_segments(the_network,new_pos,feasible_segments);
+
+        // Test the cost function
+        if (point_is_ok)
+        {
+            fprintf(log_file,"Feasible segments: ");
+            for (unsigned int i = 0; i < feasible_segments.size(); i++)
+                fprintf(log_file,"%d ",feasible_segments[i]->id);
+            fprintf(log_file,"\n");
+
+            //printf("total bifurcations = %u\n",feasible_segments.size());
+
+            // COST FUNCTION
+            iconn = cost_function_fn(the_network,config,local_opt_config,new_pos,feasible_segments,obstacle_faces);
+            if (iconn == NULL)
+            {
+                //fprintf(stderr,"[cco] Error! No feasible segment found!\n");
+                //exit(EXIT_FAILURE);
+
+                point_is_ok = false;
+            }
+        }
+
+        // If the point does not attend the distance criterion or if there is a collision
+        // we need to choose another point.
+        if (!point_is_ok)
+        {
+            tosses++;
+            if (tosses > NTOSS)
+            {
+                //printf("[!] Reducing dthreash! Before = %.2lf || Now = %.2lf \n",\
+                        d_threash,d_threash*0.9);
+                fprintf(log_file,"[!] Reducing dthreash! Before = %g || Now = %g \n",\
+                        d_threash,d_threash*FACTOR);
+                d_threash *= FACTOR;
+                tosses = 0;
+            }
+        }
+        // The point is a valid one and we can eliminate it from the cloud
+        else
+        {
+            //cloud_points.erase(cloud_points.begin()+index);
+        }
+    }
+
+    // Build the new segment of the tree
+    build_segment(the_network,local_opt_config,iconn->id,new_pos);
+}
+
+void generate_terminal_using_pmj_points(struct cco_network *the_network,\
+                                          struct cost_function_config *config,\
+                                          struct local_optimization_config *local_opt_config,\
+                                          std::vector<struct point> pmj_points,\
+                                          std::vector<struct face> obstacle_faces)
+{
+
+    FILE *log_file = the_network->log_file;
+
+    bool using_local_optimization = the_network->using_local_optimization;
+    int K_term = the_network->num_terminals;
+    int N_term = the_network->N_term;
+    double r_perf = the_network->r_perf;
+    double r_supp = the_network->r_supp;
+    double V_perf = the_network->V_perf;
+
+    // Cost function reference
+    set_cost_function_fn *cost_function_fn = config->function;
+
+    // Local optimization reference
+    set_local_optimization_function_fn *local_optimization_fn = local_opt_config->function;
+
+    bool is_point_ok = false;
+    bool connect_point = true;
+
+    // Calculate the distance threashold
+    double new_pos[3];
+    bool point_is_ok = false;
+    uint32_t tosses = 0;
+    double d_threash = calc_dthreashold(r_supp,K_term);
+    
+    std::vector<struct segment_node*> feasible_segments;
+
+    // Reference to segment we are going to make the connection
+    struct segment_node *iconn = NULL;
+
+    // Get a PMJ position
+    printf("[cco] Trying to insert PMJ point %u ...\n",cur_pmj_index+1);
+    fprintf(log_file,"[cco] Trying to insert PMJ point %u ...\n",cur_pmj_index+1);
+    new_pos[0] = pmj_points[cur_pmj_index].x;
+    new_pos[1] = pmj_points[cur_pmj_index].y;
+    new_pos[2] = pmj_points[cur_pmj_index].z;
+    cur_pmj_index++;
+
+    while (!point_is_ok)
+    {
+        // Reset the feasible segments list
+        feasible_segments.clear();
+
+        // Convert to the real domain
+        //new_pos[0] *= r_supp;
+        //new_pos[1] *= r_supp;
+        //new_pos[2] *= r_supp;
+
+        // RESTRICTION AREA
+        // Check the distance criterion for this point
+        point_is_ok = connection_search(the_network,new_pos,d_threash);
 
         // Check collision with other segments
         if (point_is_ok)
@@ -997,6 +1143,27 @@ void read_cloud_points (const char filename[], std::vector<struct point> &cloud_
         fscanf(file,"%lf %lf %lf",&point.x,&point.y,&point.z);
 
         cloud_points.push_back(point);
+    }
+
+    fclose(file);
+}
+
+void read_pmj_location_points (const char filename[], std::vector<struct point> &pmj_points)
+{
+    printf("[cco] Reading PMJ locations from '%s' !\n",filename);
+
+    char str[200];
+    FILE *file = fopen(filename,"r");
+
+    uint32_t num_points;
+    fscanf(file,"%u",&num_points);
+
+    for (uint32_t i = 0; i < num_points; i++)
+    {
+        struct point point;
+        fscanf(file,"%lf %lf %lf",&point.x,&point.y,&point.z);
+
+        pmj_points.push_back(point);
     }
 
     fclose(file);

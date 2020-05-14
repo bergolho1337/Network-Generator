@@ -62,6 +62,8 @@ struct cco_network
     char *cloud_points_filename;
     bool using_obstacle;
     char *obstacle_filename;
+    bool using_pmj_location;
+    char *pmj_location_filename;
 
     bool using_local_optimization;
     char *local_optimization_function_name;
@@ -85,6 +87,7 @@ void set_parameters (struct cco_network *the_network, struct user_options *optio
 void set_cost_function_name (struct cco_network *the_network, struct user_options *options);
 void set_cloud_points_name (struct cco_network *the_network, struct user_options *options);
 void set_obstacle_name (struct cco_network *the_network, struct user_options *options);
+void set_pmj_location_name (struct cco_network *the_network, struct user_options *options);
 void set_local_optimization_function_name (struct cco_network *the_network, struct user_options *options);
 void set_pruning_function (struct cco_network *the_network, struct user_options *options);
 
@@ -115,7 +118,16 @@ bool connection_search (struct cco_network *the_network, const double pos[], con
 bool distance_criterion (struct segment_node *s, const double pos[], const double d_threash);
 
 void grow_tree (struct cco_network *the_network, struct user_options *options);
-void grow_tree_using_cloud_points (struct cco_network *the_network, struct user_options *options, std::vector<struct point> cloud_points, std::vector<struct face> obstacle_faces);
+void grow_tree_using_cloud_points (struct cco_network *the_network,\
+                                   struct user_options *options,\
+                                   std::vector<struct point> cloud_points,\
+                                   std::vector<struct face> obstacle_faces,\
+                                   std::vector<struct point> pmj_points);
+void generate_terminal_using_pmj_points(struct cco_network *the_network,\
+                                          struct cost_function_config *config,\
+                                          struct local_optimization_config *local_opt_config,\
+                                          std::vector<struct point> pmj_points,\
+                                          std::vector<struct face> obstacle_faces);
 
 void make_root_using_cloud_points (struct cco_network *the_network, std::vector<struct point> cloud_points, std::vector<struct face> obstacle_faces);
                         
@@ -138,5 +150,7 @@ void build_cloud_points (std::vector<struct point> &cloud_points, const double r
 
 void read_obstacle_faces (const char filename[], std::vector<struct face> &obstacle_faces);
 void read_face (FILE *file, std::vector<struct face> &faces);
+
+void read_pmj_location_points (const char filename[], std::vector<struct point> &pmj_points);
 
 #endif

@@ -41,6 +41,9 @@ struct user_options
     bool use_obstacle;
     char *obstacle_filename;
 
+    bool use_pmj_location;
+    char *pmj_location_filename;
+
     bool use_only_murray;
     double start_radius;
 

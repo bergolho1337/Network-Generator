@@ -1,43 +1,47 @@
 #include "tree.h"
 
-Tree::Tree ()
+Tree::Tree (User_Options *options)
 {
-    create_leaves();
-    make_root();
+    this->max_number_iterations = options->number_of_iterations;
+    memcpy(root_pos,options->root_pos,sizeof(double)*3);
+    memcpy(root_dir,options->root_dir_pos,sizeof(double)*3);
 
-    draw_canvas();
+    char *cloud_points_filename = options->cloud_points_filename;
+    if (cloud_points_filename)
+    {
+        read_cloud_points(cloud_points_filename);
+    }
+    else
+    {
+        fprintf(stderr,"[ERROR] Reading cloud of points filename '%s'\n",cloud_points_filename);
+        exit(EXIT_FAILURE);
+    }
+
+    uint32_t leaves_offset = options->leaves_offset;
+    create_leaves(leaves_offset);
+
+    make_root();
 }
 
-void Tree::create_leaves ()
+void Tree::create_leaves (const double leaves_offset)
 {
-    //srand(time(NULL));
-    // Create all the leaves
-    /*
-    for (uint32_t i = 0; i < MAX_NUMBER_LEAVES; i++)
+    uint32_t num_points = this->the_cloud_points.size();
+    for (uint32_t i = 0; i < num_points; i = i + leaves_offset)
     {
-        Leaf leaf(WIDTH,HEIGHT);
-        this->the_leaves.push_back(leaf);
-    }
-    */
+        Leaf leaf(this->the_cloud_points[i].pos[0],this->the_cloud_points[i].pos[1],this->the_cloud_points[i].pos[2]);
 
-    // Load all the leaves
-    FILE *file = fopen("inputs/leaves_positions.txt","r");
-    for (uint32_t i = 0; i < 200; i++)
-    {
-        Leaf leaf(WIDTH,HEIGHT);
-        fscanf(file,"%lf %lf",&leaf.pos[0],&leaf.pos[1]);
         this->the_leaves.push_back(leaf);
     }
-    fclose(file);
+
     // DEBUG
-    write_leaves(0);
+    //write_leaves(0);
 }
 
 void Tree::make_root ()
 {
     // Create the root segment
-    double root_pos[3] = {WIDTH/2,HEIGHT,0};
-    double root_dir[3] = {0,-1,0};
+    double *root_pos = this->root_pos;
+    double *root_dir = this->root_dir;
     Branch root(0,root_pos[0],root_pos[1],root_pos[2],\
                 root_dir[0],root_dir[1],root_dir[2],\
                 -1);
@@ -58,7 +62,7 @@ void Tree::make_root ()
             
             if (dist < MAX_DISTANCE)
             {
-                //printf("Found --> (%g,%g,%g) || distance = %g\n",this->the_leaves[i].pos[0],this->the_leaves[i].pos[1],this->the_leaves[i].pos[2],dist);
+                printf("Found --> (%g,%g,%g) || distance = %g\n",this->the_leaves[i].pos[0],this->the_leaves[i].pos[1],this->the_leaves[i].pos[2],dist);
                 found = true;
             }
         }
@@ -169,6 +173,45 @@ void Tree::grow_network ()
         }
     }    
     //printf("\n");
+}
+
+void Tree::read_cloud_points (const char filename[])
+{
+    double pos[3];
+    uint32_t num_points;
+
+    FILE *file = fopen(filename,"r");
+    fscanf(file,"%u",&num_points);
+
+    for (uint32_t i = 0; i < num_points; i++)
+    {
+        fscanf(file,"%lf %lf %lf",&pos[0],&pos[1],&pos[2]);
+
+        Point p(i,pos[0],pos[1],pos[2]);
+
+        this->the_cloud_points.push_back(p);
+    }   
+
+    fclose(file);
+
+}
+
+void Tree::generate ()
+{
+    uint32_t max_number_iterations = this->max_number_iterations;
+
+    // MAIN LOOP
+    for (uint32_t k = 0; k < max_number_iterations; k++)
+    {
+        printf("[generate] Growing iteration %u ...\n",k);
+		grow_network();
+
+        // DEBUG
+		//write_leaves(k);
+        //write_branches(k);
+    }
+
+    write_branches(0);
 }
 
 void Tree::write_branches (uint32_t iter)

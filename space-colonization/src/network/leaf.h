@@ -15,7 +15,7 @@ public:
     bool is_reached;
     double pos[3];
 public:
-    Leaf (const uint32_t width, const uint32_t height);
+    Leaf (const double x, const double y, const double z);
     void print ();
 };
 

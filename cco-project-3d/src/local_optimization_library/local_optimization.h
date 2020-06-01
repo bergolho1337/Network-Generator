@@ -9,7 +9,7 @@
 #include "../cco/cco.h"
 
 // CONSTANTS AND MACROS
-static const uint32_t NE = 5;              // Number of points inside the bifurcation plane
+static const uint32_t NE = 5;              // Number of points inside the bifurcation plane (Default)
 
 
 // Local optimization functions implementations

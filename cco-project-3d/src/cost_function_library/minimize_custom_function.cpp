@@ -106,12 +106,12 @@ SET_COST_FUNCTION (minimize_custom_function)
                     local_opt_config->best_pos[1] = new_biff_pos[1];
                     local_opt_config->best_pos[2] = new_biff_pos[2];
 
-                    printf("[cost_function] Best segment = %d -- Eval = %g -- Best position = (%g,%g,%g)\n",\
+                    printf("[cost_function] Best segment = %d -- Eval = %g -- Best position = (%g,%g,%g) [%u]\n",\
                                     best->id,\
                                     minimum_eval,\
                                     local_opt_config->best_pos[0],\
                                     local_opt_config->best_pos[1],\
-                                    local_opt_config->best_pos[2]);
+                                    local_opt_config->best_pos[2],j);
                 }
             }
 

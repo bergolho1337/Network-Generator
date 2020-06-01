@@ -148,6 +148,7 @@ double calc_terminal_activation_time (struct segment_node *s,\
     struct segment_node *tmp = s;
     double at = 0.0;
 
+    at = calc_segment_activation_time(tmp,G,Cf,tau_f);
     while (tmp != NULL)
     {
         at += calc_segment_activation_time(tmp,G,Cf,tau_f);
@@ -156,6 +157,24 @@ double calc_terminal_activation_time (struct segment_node *s,\
     }
 
     return at;
+}
+
+double calc_total_activation_time (struct cco_network *the_network,\
+                            const double G, const double Cf, const double tau_f)
+{
+    struct segment_list *s_list = the_network->segment_list;
+    struct segment_node *tmp = s_list->list_nodes;
+
+    double total_activation_time = 0.0;
+
+    while (tmp != NULL)
+    {
+        total_activation_time += calc_segment_activation_time(tmp,G,Cf,tau_f);
+
+        tmp = tmp->next;
+    }
+
+    return total_activation_time;
 }
 
 // Activation time: {ms}
@@ -175,6 +194,7 @@ double calc_segment_activation_time (struct segment_node *s,\
     delta_s *= CM_TO_M;                         // m
 
     double velocity = calc_propagation_velocity(diameter,G,Cf,tau_f);
+    //double velocity = 3.0;
 
     // The output will be on {s}
     double at = delta_s / velocity * S_TO_MS;

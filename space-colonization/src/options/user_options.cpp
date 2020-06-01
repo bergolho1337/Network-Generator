@@ -30,7 +30,7 @@ void User_Options::read_config_file (const char filename[])
     fclose(file);
 
     // DEBUG
-    this->print();
+    //print();
 }
 
 int parse_config_file(void *user, const char *section, const char *name, const char *value) 
@@ -39,9 +39,9 @@ int parse_config_file(void *user, const char *section, const char *name, const c
 
     if (SECTION_STARTS_WITH(MAIN_SECTION))
     {
-        if (MATCH_NAME("max_iterations"))
+        if (MATCH_NAME("number_of_iterations"))
         {
-            pconfig->max_iterations = (uint32_t)strtol(value, NULL, 10);
+            pconfig->number_of_iterations = (uint32_t)strtol(value, NULL, 10);
         }
         else if (MATCH_NAME("root_x"))
         {
@@ -55,29 +55,43 @@ int parse_config_file(void *user, const char *section, const char *name, const c
         {
             pconfig->root_pos[2] = strtof(value, NULL);
         }
-        else if (MATCH_NAME("initial_length"))
+        else if (MATCH_NAME("root_dir_x"))
         {
-            pconfig->initial_length = strtof(value, NULL);
+            pconfig->root_dir_pos[0] = strtof(value, NULL);
         }
-        else if (MATCH_NAME("initial_angle"))
+        else if (MATCH_NAME("root_dir_y"))
         {
-            pconfig->initial_angle = strtof(value, NULL);
+            pconfig->root_dir_pos[1] = strtof(value, NULL);
         }
-        else if (MATCH_NAME("initial_diameter"))
+        else if (MATCH_NAME("root_dir_z"))
         {
-            pconfig->initial_diameter = strtof(value, NULL);
+            pconfig->root_dir_pos[2] = strtof(value, NULL);
         }
-        else if (MATCH_NAME("length_decrease_ratio"))
+        else if (MATCH_NAME("segment_length"))
         {
-            pconfig->length_decrease_ratio = strtof(value, NULL);
+            pconfig->segment_length = strtof(value, NULL);
         }
-        else if (MATCH_NAME("angle_decrease_ratio"))
+        else if (MATCH_NAME("leaves_offset"))
         {
-            pconfig->angle_decrease_ratio = strtof(value, NULL);
+            pconfig->leaves_offset = (uint32_t)strtol(value, NULL, 10);
         }
-        else if (MATCH_NAME("diameter_decrease_ratio"))
+    }
+    else if (SECTION_STARTS_WITH(SPACE_COLONIZATION_SECTION))
+    {
+        if (MATCH_NAME("min_distance"))
         {
-            pconfig->diameter_decrease_ratio = strtof(value, NULL);
+            pconfig->min_distance = strtof(value, NULL);
+        }
+        else if (MATCH_NAME("max_distance"))
+        {
+            pconfig->max_distance = strtof(value, NULL);
+        }
+    }
+    else if (SECTION_STARTS_WITH(CLOUD_SECTION))
+    {
+        if (MATCH_NAME("cloud_points_filename"))
+        {
+            pconfig->cloud_points_filename = strdup(value);
         }
     }
 
@@ -87,11 +101,12 @@ int parse_config_file(void *user, const char *section, const char *name, const c
 void User_Options::print ()
 {
     printf("********************* user_options *********************\n");
-    printf("max_iterations = %u\n",this->max_iterations);
-    printf("initial_length = %g\n",this->initial_length);
-    printf("initial_angle = %g\n",this->initial_angle);
-    printf("length_decrease_ratio = %g\n",this->length_decrease_ratio);
-    printf("angle_decrease_ratio = %g\n",this->angle_decrease_ratio);
+    printf("number_of_iterations = %u\n",this->number_of_iterations);
     printf("root_pos = (%g,%g,%g)\n",this->root_pos[0],this->root_pos[1],this->root_pos[2]);
+    printf("root_dir = (%g,%g,%g)\n",this->root_dir_pos[0],this->root_dir_pos[1],this->root_dir_pos[2]);
+    printf("segment_length = %g\n",this->segment_length);
+    printf("leaves_offset = %u\n",this->leaves_offset);
+    printf("--------------------------------------------------------\n");
+    printf("cloud_points_filename = %s\n",this->cloud_points_filename);
     printf("********************************************************\n");
 }

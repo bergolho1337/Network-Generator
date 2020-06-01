@@ -6,6 +6,8 @@
 #define MONOALG3D_INI_FILE_HEADERS_H
 
 #define MAIN_SECTION "main"
+#define SPACE_COLONIZATION_SECTION "space_colonization"
+#define CLOUD_SECTION "cloud_points"
 
 #define MATCH_SECTION_AND_NAME(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
 #define MATCH_SECTION(s) strcmp(section, s) == 0

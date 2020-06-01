@@ -79,6 +79,10 @@ SET_LOCAL_OPTIMIZATION_FUNCTION (rafael_local_optimization)
     G[2] = B->z + (A->z - B->z) * (t);
     
     // DEBUG
+    //printf("A = (%g,%g,%g)\n",A->x,A->y,A->z);
+    //printf("B = (%g,%g,%g)\n",B->x,B->y,B->z);
+    //printf("Bif = (%g,%g,%g)\n",Bif->x,Bif->y,Bif->z);
+    //printf("T = (%g,%g,%g)\n",T->x,T->y,Bif->z);
     //printf("G1 = (%g,%g,%g)\n",G[0],G[1],G[2]);
     //printf("G2 = (%g,%g,%g)\n",F[0],F[1],F[2]);
     //printf("G3 = (%g,%g,%g)\n",E[0],E[1],E[2]);
@@ -105,6 +109,7 @@ SET_LOCAL_OPTIMIZATION_FUNCTION (rafael_local_optimization)
             p.y = pos[1];
             p.z = pos[2];
             
+            //printf(" %g %g %g\n",p.x,p.y,p.z);
             test_positions.push_back(p);
         }
     }

@@ -32,7 +32,10 @@ inline void normalize_vector (double a[])
 { 
     double norm = sqrt( pow(a[0],2) + pow(a[1],2) + pow(a[2],2));
     for (uint32_t i = 0; i < 3; i++)
+    {
         a[i] /= norm;
+        a[i] *= 0.00005;
+    }
 }
 
 void usage (const char pname[]);

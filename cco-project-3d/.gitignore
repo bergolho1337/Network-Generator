@@ -37,6 +37,7 @@ build/
 output/
 *.log
 inputs/cco*
+inputs/co*
 clouds/private
 clouds/generated-clouds
 clouds/obstacles/rabbit*

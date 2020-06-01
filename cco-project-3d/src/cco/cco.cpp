@@ -228,7 +228,7 @@ void grow_tree_using_cloud_points (struct cco_network *the_network,\
     struct segment_list *s_list = the_network->segment_list;
 
     make_root_using_cloud_points(the_network,cloud_points,obstacle_faces);
-
+    
     // MAIN ITERATION LOOP
     while (the_network->num_terminals < the_network->N_term)
     {

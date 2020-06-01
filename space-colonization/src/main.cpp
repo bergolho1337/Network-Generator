@@ -1,19 +1,23 @@
 #include "network/tree.h"
+#include "options/user_options.h"
 
 using namespace std;
 
 int main (int argc, char *argv[])
 {
-	Tree *the_tree = new Tree();
-
-	for (uint32_t i = 0; i < 200; i++)
+	if (argc-1 != 1)
 	{
-		the_tree->grow_network();
-		the_tree->write_branches(i);
-		the_tree->write_leaves(i);
+		usage(argv[0]);
+		exit(EXIT_FAILURE);
 	}
 
+	User_Options *the_options = new User_Options(argc,argv);
+	Tree *the_tree = new Tree(the_options);
+
+	the_tree->generate();
+
 	delete the_tree;
+	delete the_options;
 
 	return 0;
 }

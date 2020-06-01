@@ -5,8 +5,13 @@ void usage (const char pname[])
     fprintf(stderr,"%s\n",PRINT_LINE);
     fprintf(stderr,"Usage:> %s <input_config_file>\n",pname);
     fprintf(stderr,"%s\n",PRINT_DOTS);
-    fprintf(stderr,"Example:\n");
-    fprintf(stderr,"\t%s inputs/simple_fractal.ini\n",pname);
+    fprintf(stderr,"Examples:\n");
+    fprintf(stderr,"\t%s inputs/simple_square_domain.ini\n",pname);
+    fprintf(stderr,"\t%s inputs/simple_circle_domain.ini\n",pname);
+    fprintf(stderr,"\t%s inputs/simple_box_domain.ini\n",pname);
+    fprintf(stderr,"\t%s inputs/simple_sphere_domain.ini\n",pname);
+    fprintf(stderr,"\t%s inputs/simple_cylinder_domain.ini\n",pname);
+    fprintf(stderr,"\t%s inputs/simple_custom_domain.ini\n",pname);
     fprintf(stderr,"%s\n",PRINT_LINE);
 }
 

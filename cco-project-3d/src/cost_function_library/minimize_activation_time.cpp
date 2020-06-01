@@ -55,7 +55,8 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
                                                         best_pos[2]);
 
             // 1) Check the cost function of the first configuration
-            double activation_time = calc_terminal_activation_time(inew,G,Cf,tau_f);
+            //double activation_time = calc_terminal_activation_time(inew,G,Cf,tau_f);
+            double activation_time = calc_total_activation_time(the_network,G,Cf,tau_f);
 
             // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn'
             //                      and if do not intersect any triangle face from the obstacle object (if it is given). 
@@ -104,7 +105,7 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
 
                 recalculate_radius(the_network);
 
-                double activation_time = calc_terminal_activation_time(inew,G,Cf,tau_f);
+                double activation_time = calc_total_activation_time(the_network,G,Cf,tau_f);
 
                 // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn' and 'ibiff'
                 //                      and if do not intersect any triangle face from the obstacle object (if it is given).
@@ -124,12 +125,12 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
                     local_opt_config->best_pos[1] = new_biff_pos[1];
                     local_opt_config->best_pos[2] = new_biff_pos[2];
 
-                    printf("[cost_function] Best segment = %d -- Activation time = %g -- Best position = (%g,%g,%g)\n",\
+                    printf("[cost_function] Best segment = %d -- Activation time = %g -- Best position = (%g,%g,%g) [%u]\n",\
                                     best->id,\
                                     minimum_activation_time,\
                                     local_opt_config->best_pos[0],\
                                     local_opt_config->best_pos[1],\
-                                    local_opt_config->best_pos[2]);
+                                    local_opt_config->best_pos[2],j);
                 }
             }
 
@@ -145,7 +146,8 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
         else
         {
             // Evaluate the cost function
-            double activation_time = calc_terminal_activation_time(inew,G,Cf,tau_f);
+            //double activation_time = calc_terminal_activation_time(inew,G,Cf,tau_f);
+            double activation_time = calc_total_activation_time(the_network,G,Cf,tau_f);
 
             if (activation_time < minimum_activation_time)
             {

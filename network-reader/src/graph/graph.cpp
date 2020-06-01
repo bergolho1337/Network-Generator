@@ -23,14 +23,49 @@ Graph::Graph (const char filename[])
 
     // Test file format
     bool is_vtk = check_file_extension(filename,"vtk");
-    if (!is_vtk)
+    bool is_txt = check_file_extension(filename,"txt");
+    if (!is_vtk && !is_txt)
     {
-        fprintf(stderr,"[-] ERROR! Input file must be in '.vtk' file format\n");
+        fprintf(stderr,"[-] ERROR! Input file must be in '.vtk' or '.txt' file format\n");
         exit(EXIT_FAILURE);
     }
 
-    read_graph_from_vtk(filename);
+    if (is_vtk)
+        read_graph_from_vtk(filename);
+    else if (is_txt)
+        read_graph_from_txt(filename);
     
+}
+
+void Graph::read_graph_from_txt (const char filename[])
+{
+    FILE *file = fopen(filename,"r");
+    if (!file)
+    {
+        fprintf(stderr,"[-] ERROR! Cannot open filename '%s'\n",filename);
+        exit(EXIT_FAILURE);
+    }    
+
+    uint32_t num_nodes, num_edges, tmp;
+    double pos[3], scalar_value;
+    uint32_t dir[2];
+    char str[200];
+    
+    // Read POINTS
+    fscanf(file,"%u",&num_nodes);
+    for (uint32_t i = 0; i < num_nodes; i++)
+    {
+        fscanf(file,"%lf %lf %lf",&pos[0],&pos[1],&pos[2]);
+        insert_node_graph(pos);
+    }
+
+    // Find the EDGES 
+    while (fscanf(file,"%u %u",&dir[0],&dir[1]) != EOF)
+    {
+        insert_edge_graph(dir[0],dir[1]);
+    }
+
+    fclose(file);
 }
 
 void Graph::read_graph_from_vtk (const char filename[])

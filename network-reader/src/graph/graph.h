@@ -107,6 +107,7 @@ private:
 	void free_list_nodes ();
 	void free_list_edges (Node *node);
 	void read_graph_from_vtk (const char filename[]);
+	void read_graph_from_txt (const char filename[]);
 
 };
 

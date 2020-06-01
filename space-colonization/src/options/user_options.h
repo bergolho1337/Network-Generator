@@ -20,17 +20,18 @@ static const uint32_t MAX_FILENAME_SIZE = 200;
 class User_Options
 {
 public:
-    uint32_t max_iterations;
+    uint32_t number_of_iterations;
 
-    double initial_length;
-    double initial_angle;
-    double initial_diameter;
-
-    double angle_decrease_ratio;
-    double length_decrease_ratio;
-    double diameter_decrease_ratio;
-
+    double segment_length;
     double root_pos[3];
+    double root_dir_pos[3];
+
+    uint32_t leaves_offset;
+
+    double min_distance;
+    double max_distance;
+
+    char *cloud_points_filename;
 
 public:
     User_Options (int argc, char *argv[]);

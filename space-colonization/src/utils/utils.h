@@ -34,7 +34,6 @@ inline void normalize_vector (double a[])
     for (uint32_t i = 0; i < 3; i++)
     {
         a[i] /= norm;
-        a[i] *= 0.00005;
     }
 }
 

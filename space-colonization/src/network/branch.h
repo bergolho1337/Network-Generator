@@ -22,6 +22,7 @@ public:
 public:
     Branch (const uint32_t id, const double x, const double y, const double z,\
             const double dx, const double dy, const double dz,\
+            const double length,\
             uint32_t parent);
     void get_next_branch_position (double new_pos[]);
     void reset ();

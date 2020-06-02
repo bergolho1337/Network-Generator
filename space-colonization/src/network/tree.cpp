@@ -3,6 +3,7 @@
 Tree::Tree (User_Options *options)
 {
     this->max_number_iterations = options->number_of_iterations;
+    this->segment_length = options->segment_length;
     memcpy(root_pos,options->root_pos,sizeof(double)*3);
     memcpy(root_dir,options->root_dir_pos,sizeof(double)*3);
 
@@ -42,8 +43,10 @@ void Tree::make_root ()
     // Create the root segment
     double *root_pos = this->root_pos;
     double *root_dir = this->root_dir;
+    double segment_length = this->segment_length;
     Branch root(0,root_pos[0],root_pos[1],root_pos[2],\
                 root_dir[0],root_dir[1],root_dir[2],\
+                segment_length,\
                 -1);
     this->the_branches.push_back(root);
 
@@ -74,6 +77,7 @@ void Tree::make_root ()
             current->get_next_branch_position(new_pos);
             Branch branch(counter+1,new_pos[0],new_pos[1],new_pos[2],\
                             current->dir[0],current->dir[1],current->dir[2],\
+                            segment_length,\
                             current->id);
             this->the_branches.push_back(branch);
 
@@ -162,6 +166,7 @@ void Tree::grow_network ()
 
             Branch new_branch(this->the_branches.size(),new_pos[0],new_pos[1],new_pos[2],\
                             this->the_branches[i].dir[0],this->the_branches[i].dir[1],this->the_branches[i].dir[2],\
+                            this->segment_length,\
                             this->the_branches[i].id);
             
             // Add this branch to the vector

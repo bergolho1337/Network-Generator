@@ -2,6 +2,7 @@
 
 Branch::Branch (const uint32_t id, const double x, const double y, const double z,\
             const double dx, const double dy, const double dz,\
+            const double length,\
             uint32_t parent)
 {
     this->id = id;
@@ -18,7 +19,7 @@ Branch::Branch (const uint32_t id, const double x, const double y, const double 
     this->original_dir[1] = dy;
     this->original_dir[2] = dz;
 
-    this->length = 5.0;
+    this->length = length;
     this->counter = 0;
     this->parent = parent;
 }
@@ -26,7 +27,7 @@ Branch::Branch (const uint32_t id, const double x, const double y, const double 
 void Branch::get_next_branch_position (double new_pos[])
 {
     for (uint32_t i = 0; i < 3; i++)
-        new_pos[i] = this->pos[i] + this->dir[i]*this->length;
+        new_pos[i] = this->pos[i] + (this->dir[i]*this->length);
 }
 
 void Branch::reset ()

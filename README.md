@@ -20,7 +20,7 @@ A program that builds a fractal network. A general and more complete version of 
 
 ## Cable-Equation
 
-Another program that studies the cable equation paramter. In this version, the study is done using cardiac cells parameters. The ``scripts`` folder contains a Python program that plots a visualization of the function. In addition, there are several scripts for running batch simulations for a sensibility analysis. 
+Another program that studies the cable equation. In this version, the study is done using cardiac cells parameters. The ``scripts`` folder contains a Python program that plots a visualization of the function. In addition, there are several scripts for running batch simulations for a sensibility analysis. 
 
 ## Cable-Theory
 
@@ -48,15 +48,13 @@ General version of the ``cco-project``, it enables the user to not only build a 
 
 Furthermore, the user can specify if the Murray law for bifurcation must be satisfied or not. By default, the program will always attend the law, but for some particular cost functions where this restriction can be carried out, like on the *activation_time* function, the user must supply an initial diameter for the root segment.
 
-There is also two new options for pos-processing the Purkinje network. Firtly, the user can specify a set of points that must be part of the final network. This process is normally used when the positions of the *Purkinje-Muscle-Junction* (PMJ) are known. Secondly, there is option to configure a prune function, which will can only remove terminal branches.
+There is also two new options for pos-processing the Purkinje network. Firtly, the user can specify a set of points that must be part of the final network. This process is normally used when the positions of the *Purkinje-Muscle-Junction* (PMJ) are known. Secondly, there is an option to configure a prune function, which will remove only terminal branches.
 
-In this folder there is also a `scripts` folder which can be use to transform the generated Purkinje network to a different domain, like for instance, the domain where a simulation from the ``MonoAlg3D_C`` is executed. 
+In this folder there is also a `scripts` folder, which can be use to transform the generated Purkinje network to a different domain, like for instance, the domain where a simulation from the ``MonoAlg3D_C`` is executed. 
 
 Additionally, there is a script for sensibility analysis. It can generate all the configuration files that are necessary to run not only the ``cco-project-3d`` program with different inputs, but also the configuration files used by the ``MonoAlg3D_C`` using the generated networks. 
 
 There is also a script which enables the animation of the growing process of the Purkinje. To fully use this feature, the program must be run on ``debug-mode`` and the Paraview software should be used to generate the frames. 
-
-Programs that generates different types of Purkinje Networks and some helper codes.
 
 ##### OBS:
 
@@ -86,7 +84,7 @@ O'ROURKE, Joseph et al. **Computational geometry in C**. Cambridge university pr
 
 This program uses the Diffusion-Limited-Aggregation (DLA) algorithm to build a Purkinje network over a mesh written in ``stl`` format. 
 
-By default, a point-to-faces graph map is generated for each mesh, but to improve performance is recommended to run first the ``points-to-faces-mapping``, which will generate the map file required by the program to run more fast.
+By default, a point-to-faces graph map is generated for each mesh, but to improve performance is recommended to run first the ``points-to-faces-mapping`` script, which will generate the map file required by the program to run more fast.
 
 In the same way as the ``cco-project-3d``, there are scripts for sensibility analysis, to transform the generated network into the domain used by the ``MonoAlg3D_C`` solver and to animate the growing process.
 
@@ -102,7 +100,7 @@ A simple program that was used to understand the distance criterion procedure ne
 
 ## Duplicate-Points
 
-Program that receive a Purkinje network written on .vtk format and returns the duplicate points on it.
+Program that receive a Purkinje network written in ``vtk`` format and returns the duplicate points on it.
 
 ## Filter-Files
 

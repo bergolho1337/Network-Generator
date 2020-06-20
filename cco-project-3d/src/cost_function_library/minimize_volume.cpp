@@ -1,6 +1,5 @@
 #include "minimize_volume.h"
 
-// OK
 SET_COST_FUNCTION (minimize_tree_volume_default)
 {
     FILE *log_file = the_network->log_file;
@@ -156,13 +155,12 @@ SET_COST_FUNCTION (minimize_tree_volume_default)
 }
 
 
-// TODO: Need improvements ...
-SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
+SET_COST_FUNCTION (minimize_tree_volume_with_angle_restriction)
 {
     FILE *log_file = the_network->log_file;
 
     struct segment_node *best = NULL;
-    double minimum_eval = __DBL_MAX__;
+    double minimum_volume = __DBL_MAX__;
 
     double Q_perf = the_network->Q_perf;
     double p_perf = the_network->p_perf;
@@ -170,9 +168,17 @@ SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
     double delta_p = p_perf - p_term;
 
     // Get a reference to the local optimization function
-    bool using_local_optimization = the_network->using_local_optimization;
     set_local_optimization_function_fn *local_optimization_fn = local_opt_config->function;
+    bool using_local_optimization = the_network->using_local_optimization;
 
+    double min_degrees_limit;
+    get_parameter_value_from_map(config->params,"min_degrees_limit",&min_degrees_limit);
+    double max_degrees_limit;
+    get_parameter_value_from_map(config->params,"max_degrees_limit",&max_degrees_limit);
+    double u[3], v[3];
+    double angle_degrees;
+
+    // For each feasible segment try to make a connection
     for (uint32_t i = 0; i < feasible_segments.size(); i++)
     {
         struct segment_node *iconn = feasible_segments[i];
@@ -200,19 +206,24 @@ SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
 
             // 1) Check the cost function of the first configuration
             double volume = calc_tree_volume(the_network);
-            double eval = calc_segment_custom_function_with_level_penalty(volume,iconn);
+
+            // 2) Calculate bifurcation angle
+            calc_unitary_vector(iconn,u);
+            calc_unitary_vector(inew,v);
+            angle_degrees = calc_angle_between_vectors(u,v);
 
             // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn'
             //                      and if do not intersect any triangle face from the obstacle object (if it is given). 
             struct segment_list *s_list = the_network->segment_list;
             bool has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
             bool has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
+            bool has_angle_requirement = check_angle_restriction(angle_degrees,min_degrees_limit,max_degrees_limit);
             
-            bool point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision;
+            bool point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision || !has_angle_requirement;
 
-            if (eval < minimum_eval && !point_is_not_ok)
+            if (volume < minimum_volume && !point_is_not_ok)
             {
-                minimum_eval = eval;
+                minimum_volume = volume;
                 best = iconn;
 
                 // The best position of the best segment will be stored inside the 
@@ -221,9 +232,9 @@ SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
                 local_opt_config->best_pos[1] = best_pos[1];
                 local_opt_config->best_pos[2] = best_pos[2];
 
-                printf("[cost_function] Best segment = %d -- Eval = %g -- Best position = (%g,%g,%g) -- middle point\n",\
+                printf("[cost_function] Best segment = %d -- Volume = %g -- Best position = (%g,%g,%g)\n",\
                                 best->id,\
-                                minimum_eval,\
+                                minimum_volume,\
                                 local_opt_config->best_pos[0],\
                                 local_opt_config->best_pos[1],\
                                 local_opt_config->best_pos[2]);
@@ -236,6 +247,8 @@ SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
 
             for (uint32_t j = 0; j < test_positions.size(); j++)
             {
+                // TODO: Test the bifurcation placement -> bool VerificaPosicaoBif()
+
                 // Change the position of the bifurcation point 
                 double new_biff_pos[3];
                 new_biff_pos[0] = test_positions[j].x;
@@ -247,21 +260,24 @@ SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
 
                 recalculate_radius(the_network);
 
-                // 1) Check the cost function of the first configuration
                 double volume = calc_tree_volume(the_network);
-                double eval = calc_segment_custom_function_with_level_penalty(volume,iconn);
+
+                calc_unitary_vector(iconn,u);
+                calc_unitary_vector(inew,v);
+                angle_degrees = calc_angle_between_vectors(u,v);
 
                 // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn' and 'ibiff'
                 //                      and if do not intersect any triangle face from the obstacle object (if it is given).
                 s_list = the_network->segment_list;
                 has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
                 has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
+                has_angle_requirement = check_angle_restriction(angle_degrees,min_degrees_limit,max_degrees_limit);
 
-                point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision;
+                point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision || !has_angle_requirement;
 
-                if (eval < minimum_eval && !point_is_not_ok)
+                if (volume < minimum_volume && !point_is_not_ok)
                 {
-                    minimum_eval = eval;
+                    minimum_volume = volume;
                     best = iconn;
 
                     // The best position of the best segment will be stored inside the 'local_optimization' structure
@@ -269,9 +285,9 @@ SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
                     local_opt_config->best_pos[1] = new_biff_pos[1];
                     local_opt_config->best_pos[2] = new_biff_pos[2];
 
-                    printf("[cost_function] Best segment = %d -- Eval = %g -- Best position = (%g,%g,%g)\n",\
+                    printf("[cost_function] Best segment = %d -- Volume = %g -- Best position = (%g,%g,%g)\n",\
                                     best->id,\
-                                    minimum_eval,\
+                                    minimum_volume,\
                                     local_opt_config->best_pos[0],\
                                     local_opt_config->best_pos[1],\
                                     local_opt_config->best_pos[2]);
@@ -290,18 +306,24 @@ SET_COST_FUNCTION (minimize_tree_volume_with_level_penalty)
         else
         {
             double volume = calc_tree_volume(the_network);
-            double eval = calc_segment_custom_function_with_level_penalty(volume,iconn);
 
-            // Collision detection
-            //struct segment_list *s_list = the_network->segment_list;
-            //bool point_is_not_ok = has_collision(s_list,iconn,new_pos,log_file);
+            calc_unitary_vector(iconn,u);
+            calc_unitary_vector(inew,v);
+            angle_degrees = calc_angle_between_vectors(u,v);
 
-            if (eval < minimum_eval)
+            struct segment_list *s_list = the_network->segment_list;
+            bool has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
+            bool has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
+            bool has_angle_requirement = check_angle_restriction(angle_degrees,min_degrees_limit,max_degrees_limit);
+
+            bool point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision || has_angle_requirement;
+
+            if (volume < minimum_volume && !point_is_not_ok)
             {
-                minimum_eval = eval;
+                minimum_volume = volume;
                 best = iconn;
 
-                printf("[cost_function] Best segment = %d -- Eval = %g\n",best->id,minimum_eval);
+                printf("[cost_function] Best segment = %d -- Volume = %g\n",best->id,minimum_volume);
             }
 
             restore_state_tree(the_network,iconn);

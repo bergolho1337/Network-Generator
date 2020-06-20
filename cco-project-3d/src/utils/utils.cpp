@@ -81,6 +81,16 @@ void generate_cloud_points (struct random_generator *the_generator, std::vector<
     }
 }
 
+void create_directory (const char *path)
+{
+    if (!mkdir(path,0770))
+        printf("[INFO] Output directory created at:> %s\n",path);
+    else
+    {
+        fprintf(stderr,"[ERROR] Fail on creating output directory!\n");
+    }
+}
+
 double euclidean_norm (const double x1, const double y1, const double z1,\
                     const double x2, const double y2, const double z2)
 {
@@ -367,14 +377,20 @@ void print_terminal_activation_time (struct cco_network *the_network,\
 void write_to_vtk (struct cco_network *the_network)
 {
     uint32_t num_points = the_network->point_list->num_nodes;
+    uint32_t num_segments = the_network->segment_list->num_nodes;
+    uint32_t nterm = the_network->N_term;
     struct point_list *p_list = the_network->point_list;
     struct point_node *p_tmp = p_list->list_nodes;
-    uint32_t num_segments = the_network->segment_list->num_nodes;
     struct segment_list *s_list = the_network->segment_list;
     struct segment_node *s_tmp = s_list->list_nodes;
+    char *output_dir = the_network->output_dir;
+    
+    uint32_t size = strlen(output_dir) + 30;
+    char *filename = new char[size];
+    sprintf(filename,"%s/tree_nterm_%u.vtk",output_dir,nterm);
 
-    FILE *file = fopen("output/cco_tree_cm.vtk","w+");
-    FILE *file_converted = fopen("output/cco_tree_um.vtk","w+");
+    FILE *file = fopen(filename,"w+");
+    //FILE *file_converted = fopen("output/cco_tree_um.vtk","w+");
 
     // Write the header
     // File number 1 {cm}
@@ -384,40 +400,45 @@ void write_to_vtk (struct cco_network *the_network)
     fprintf(file,"DATASET POLYDATA\n");
     fprintf(file,"POINTS %u float\n",num_points);
     // File number 2 {um}
+    /*
     fprintf(file_converted,"# vtk DataFile Version 3.0\n");
     fprintf(file_converted,"Tree converted\n");
     fprintf(file_converted,"ASCII\n");
     fprintf(file_converted,"DATASET POLYDATA\n");
     fprintf(file_converted,"POINTS %u float\n",num_points);
+    */
     while (p_tmp != NULL)
     {
         fprintf(file,"%g %g %g\n",p_tmp->value->x,p_tmp->value->y,p_tmp->value->z);
-        fprintf(file_converted,"%g %g %g\n",p_tmp->value->x*CM_TO_UM,p_tmp->value->y*CM_TO_UM,p_tmp->value->z*CM_TO_UM);
+        //fprintf(file_converted,"%g %g %g\n",p_tmp->value->x*CM_TO_UM,p_tmp->value->y*CM_TO_UM,p_tmp->value->z*CM_TO_UM);
         p_tmp = p_tmp->next;
     }
 
     fprintf(file,"LINES %u %u\n",num_segments,num_segments*3);
-    fprintf(file_converted,"LINES %u %u\n",num_segments,num_segments*3);
+    //fprintf(file_converted,"LINES %u %u\n",num_segments,num_segments*3);
     while (s_tmp != NULL)
     {
         fprintf(file,"2 %u %u\n",s_tmp->value->src->id,s_tmp->value->dest->id);
-        fprintf(file_converted,"2 %u %u\n",s_tmp->value->src->id,s_tmp->value->dest->id);
+        //fprintf(file_converted,"2 %u %u\n",s_tmp->value->src->id,s_tmp->value->dest->id);
         s_tmp = s_tmp->next;
     }
     fprintf(file,"CELL_DATA %u\n",num_segments);
     fprintf(file,"SCALARS radius float\n");
     fprintf(file,"LOOKUP_TABLE default\n");
+    /*
     fprintf(file_converted,"CELL_DATA %u\n",num_segments);
     fprintf(file_converted,"SCALARS radius float\n");
     fprintf(file_converted,"LOOKUP_TABLE default\n");
+    */
     s_tmp = s_list->list_nodes;
     while (s_tmp != NULL)
     {
         fprintf(file,"%g\n",s_tmp->value->radius * 1000.0);
-        fprintf(file_converted,"%g\n",s_tmp->value->radius * 1000.0);
+        //fprintf(file_converted,"%g\n",s_tmp->value->radius * 1000.0);
         s_tmp = s_tmp->next;
     }
     fclose(file);
+    free(filename);
 }
 
 void write_to_vtk_iteration (struct cco_network *the_network)

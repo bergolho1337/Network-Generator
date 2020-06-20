@@ -23,6 +23,7 @@
 #include "../utils/utils.h"
 
 void calc_middle_point_segment (struct segment_node *s, double pos[]);
+void calc_unitary_vector (struct segment_node *s, double u[]);
 void calc_relative_resistance_term (struct segment_node *iterm);
 void calc_relative_resistance_subtree (struct segment_node *ibiff, struct segment_node *iconn, struct segment_node *inew);
 void calc_pressure_drop_term (struct segment_node *iterm, const double Q_term);
@@ -57,6 +58,7 @@ double calc_segment_custom_function_with_level_penalty (const double eval, struc
 bool has_deviation (struct segment_list *s_list, struct segment_node *inew,\
                     const double new_at, const double limit,\
                     const double G, const double Cf, const double tau_f);
+bool check_angle_restriction (const double angle, const double min_angle, const double max_angle);
 bool is_terminal (struct segment_node *s);
 
 #endif

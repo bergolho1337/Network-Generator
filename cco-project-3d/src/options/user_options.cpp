@@ -25,6 +25,7 @@ void free_user_options (struct user_options *options)
 
     free_local_optimization_config(options->local_opt_config);
     
+    free(options->output_dir);
     free(options);
 }
 
@@ -123,6 +124,13 @@ int parse_config_file(void *user, const char *section, const char *name, const c
         else if (MATCH_NAME("start_radius"))
         {
             pconfig->start_radius = strtof(value, NULL);
+        }
+    }
+    else if (SECTION_STARTS_WITH(SAVE_NETWORK_SECTION))
+    {
+        if (MATCH_NAME("output_dir"))
+        {
+            pconfig->output_dir = strdup(value);
         }
     }
     else if (SECTION_STARTS_WITH(CLOUD_SECTION))

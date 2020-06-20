@@ -270,6 +270,19 @@ double calc_custom_function (struct cco_network *the_network, const double beta,
     return total_eval;
 }
 
+void calc_unitary_vector (struct segment_node *s, double u[])
+{
+    struct point *src = s->value->src->value;
+    struct point *dest = s->value->dest->value;
+    double norm = euclidean_norm(src->x,src->y,src->z,dest->x,dest->y,dest->z);
+    if (norm < 1.0e-08)
+        norm = 1.0e-08;
+
+    u[0] = (dest->x - src->x) / norm;
+    u[1] = (dest->y - src->y) / norm;
+    u[2] = (dest->z - src->z) / norm;
+}
+
 bool has_deviation (struct segment_list *s_list, struct segment_node *inew,\
                     const double new_at, const double limit,\
                     const double G, const double Cf, const double tau_f)
@@ -296,4 +309,9 @@ bool is_terminal (struct segment_node *s)
         return true;
     else
         return false;
+}
+
+bool check_angle_restriction (const double angle, const double min_angle, const double max_angle)
+{
+    return (angle > min_angle && angle < max_angle);
 }

@@ -10,6 +10,8 @@
 #include <cstdbool>
 #include <cstdint>
 #include <cmath>
+#include <sys/stat.h> 
+#include <sys/types.h> 
 
 #include <vtkRegularPolygonSource.h>
 #include <vtkXMLPolyDataWriter.h>
@@ -51,6 +53,8 @@ struct random_generator* new_random_generator ();
 void free_random_generator (struct random_generator *the_generator);
 void generate_random_array (struct random_generator *the_generator);
 double get_value (struct random_generator *the_generator);
+
+void create_directory (const char *path);
 
 double generate_random_number_default ();
 

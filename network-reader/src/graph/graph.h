@@ -72,9 +72,10 @@ public:
 	~Graph ();
 
     void print ();
+	double calculate_branch_size (const int parents[], const int ref_index, int &level);
 	void write_VTK (const char filename[]);
 	void write_pmj_config_file (const char filename[]);
-	void write_largest_segment (const int parents[], const int ref_index);
+	void write_longest_segment (const int parents[], const int ref_index);
 	//void printterm ();
     void error (const char msg[]);
 	void depth_first_search ();

@@ -6,6 +6,7 @@
 #define MONOALG3D_INI_FILE_HEADERS_H
 
 #define MAIN_SECTION "main"
+#define SAVE_NETWORK_SECTION "save_network"
 #define CLOUD_SECTION "cloud_points"
 #define LOCAL_OPT_SECTION "local_optimization"
 #define COST_FUNCTION_SECTION "cost_function"

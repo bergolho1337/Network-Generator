@@ -1,5 +1,6 @@
 set(SOURCE_FILES_UTILS utils.h utils.cpp
-    dSFMT.cpp dSFMT.h dSFMT-params.h dSFMT-params19937.h)
+    dSFMT.cpp dSFMT.h dSFMT-params.h dSFMT-params19937.h
+    stop_watch.cpp stop_watch.h)
 
 ADD_LIBRARY(utils STATIC ${SOURCE_FILES_UTILS})
 

@@ -365,7 +365,7 @@ Node* Graph::search_node (const int id)
             return tmp;
         tmp = tmp->next;
     }
-    fprintf(stderr,"[-] ERROR! Node %d not found!\n",id);
+    //fprintf(stderr,"[-] ERROR! Node %d not found!\n",id);
 
     return NULL;
 }
@@ -599,15 +599,68 @@ void Graph::breadth_first_search ()
         printf(" (%d)\n",nodes_per_level[i]);
     }
 
-    //write_largest_segment(parents,3954);  // Elizabeth LV
+    // Discover the branch with the longest size
+    double max_size = __DBL_MIN__;
+    int max_num_biff = 0;
+    int max_index = -1;
+    Node *tmp = this->list_nodes;
+    while (tmp != NULL)
+    {
+        double size = 0.0;
+        int num_biff = 0;
+        if (is_terminal(tmp))
+        {
+            size = calculate_branch_size(parents,tmp->index,num_biff);
+            if (num_biff > max_num_biff)
+            {
+                max_size = size;
+                max_index = tmp->index;
+                max_num_biff = num_biff;
+            }
+        }
+             
+        tmp = tmp->next;
+    }
+
+    write_longest_segment(parents,max_index);
+    printf("Longest segment %d -- Number of bifurcations %d -- Size = %g\n",max_index,max_num_biff,max_size);
 
     delete [] parents;
 }
 
-void Graph::write_largest_segment (const int parents[], const int ref_index)
+double Graph::calculate_branch_size (const int parents[], const int ref_index, int &num_biff)
+{
+    double size = 0.0;
+    int counter = 0;
+    int current_index = ref_index;
+    int prev_index = ref_index;
+    while (current_index != -1)
+    {
+
+        prev_index = current_index;
+        current_index = parents[current_index];
+
+        Node *prev = search_node(prev_index);
+        Node *cur = search_node(current_index);
+
+        if (prev && cur)
+            size += calc_norm(prev->x,prev->y,prev->z,cur->x,cur->y,cur->z);
+        
+        if (prev->num_edges == 2)
+            counter++;
+        
+    }
+    
+    num_biff = counter;
+
+    return size;
+}
+
+void Graph::write_longest_segment (const int parents[], const int ref_index)
 {
     int counter = 0;
     int current_index = ref_index;
+    int prev_index = ref_index;
     while (current_index != -1)
     {
         //printf("Node %d -- Parent %d\n",current_index,parents[current_index]);
@@ -615,7 +668,9 @@ void Graph::write_largest_segment (const int parents[], const int ref_index)
         counter++;
     }
 
-    FILE *file = fopen("outputs/largest_segment.vtk","w+");
+    char filename[200];
+    sprintf(filename,"outputs/longest_segment_%d.vtk",ref_index);
+    FILE *file = fopen(filename,"w+");
 
     fprintf(file,"# vtk DataFile Version 3.0\n");
     fprintf(file,"Graph\n");
@@ -623,13 +678,16 @@ void Graph::write_largest_segment (const int parents[], const int ref_index)
     fprintf(file,"DATASET POLYDATA\n");
     fprintf(file,"POINTS %d float\n",counter);
     
+    
     current_index = ref_index;
     while (current_index != -1)
     {
-        Node *tmp = search_node(current_index);
-        fprintf(file,"%g %g %g\n",tmp->x,tmp->y,tmp->z);
-
+        prev_index = current_index;
         current_index = parents[current_index];
+
+        Node *prev = search_node(prev_index);
+        fprintf(file,"%g %g %g\n",prev->x,prev->y,prev->z);    
+
     }
 
     fprintf(file,"LINES %d %d\n",counter-1,(counter-1)*3);    
@@ -637,6 +695,7 @@ void Graph::write_largest_segment (const int parents[], const int ref_index)
         fprintf(file,"2 %d %d\n",i,i+1);
 
     fclose(file);
+
 }
 
 void print_stars (const int number)

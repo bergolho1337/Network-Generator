@@ -1,6 +1,10 @@
-- Create a script to merge the LV tree to the RV tree by creating the His-Bundle 
+- Add a pruning library
 
-- Check the units for the electric
+- Create a structure to manage the program output
+
+- Create a function to save the logfile and the original configuration to reproduce the simulation
+
+- Create a script to merge the LV tree to the RV tree by creating the His-Bundle 
 
 - Write a documentation to use the program
 
@@ -8,4 +12,3 @@
     - Pruning
     - Obstacles
     - PMJ Locations
-========================================================================================================================

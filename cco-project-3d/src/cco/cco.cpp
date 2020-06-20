@@ -9,12 +9,15 @@ struct cco_network* new_cco_network (struct user_options *options)
     struct cco_network *result = (struct cco_network*)malloc(sizeof(struct cco_network));
 
     set_parameters(result,options);
+    set_save_network(result,options);
     set_cost_function_name(result,options);
     set_cloud_points_name(result,options);
     set_obstacle_name(result,options);
     set_pmj_location_name(result,options);
     set_local_optimization_function_name(result,options);
     set_pruning_function(result,options);
+
+    create_directory(result->output_dir);
 
     return result;
 }
@@ -24,6 +27,7 @@ void free_cco_network (struct cco_network *the_network)
     free_point_list(the_network->point_list);
     free_segment_list(the_network->segment_list);
     free(the_network->cost_function_name);
+    free(the_network->output_dir);
     if (the_network->using_cloud_points)
         free(the_network->cloud_points_filename);
     if (the_network->using_obstacle)
@@ -76,6 +80,14 @@ void set_cost_function_name (struct cco_network *the_network, struct user_option
     the_network->cost_function_name = (char*)malloc(sizeof(char)*size);
     strcpy(the_network->cost_function_name,options->config->function_name);
     printf("[cco] Cost function name = %s\n",the_network->cost_function_name);
+}
+
+void set_save_network (struct cco_network *the_network, struct user_options *options)
+{
+    uint32_t size = strlen(options->output_dir) + 1;
+    the_network->output_dir = (char*)malloc(sizeof(char)*size);
+    strcpy(the_network->output_dir,options->output_dir);
+    printf("[cco] Output directory = %s\n",the_network->output_dir);
 }
 
 void set_cloud_points_name (struct cco_network *the_network, struct user_options *options)
@@ -172,6 +184,9 @@ void set_pruning_function (struct cco_network *the_network, struct user_options 
 
 void grow_tree (struct cco_network *the_network, struct user_options *options)
 {
+    struct stop_watch solver_time;
+	init_stop_watch(&solver_time);
+
     printf("\n[cco] Growing CCO network !\n");
 
     std::vector<struct point> cloud_points;
@@ -200,10 +215,19 @@ void grow_tree (struct cco_network *the_network, struct user_options *options)
         read_pmj_location_points(the_network->pmj_location_filename,pmj_points);
     }
     
+    start_stop_watch(&solver_time);
+
     grow_tree_using_cloud_points(the_network,options,cloud_points,obstacle_faces,pmj_points);
+    
+    long res_time = stop_stop_watch(&solver_time);
+	double conv_rate = 1000.0*1000.0*60.0;
 
     // Unitary test
     check_bifurcation_rule(the_network);
+    
+    // Print some information about the network
+    print_network_info(the_network);
+    printf("[INFO] Resolution time = %ld μs (%g min)\n",res_time,res_time/conv_rate);
 
 }
 
@@ -509,9 +533,9 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
     else
     {
         // Assymetric
-        //double value = generate_random_number_default();
+        //double value = 0.5;
         //double r_par = iconn->value->radius;
-        //double r_left = value * powf( 0.5*powf(r_par,GAMMA), 1.0/GAMMA);
+        //double r_left = value *  powf(0.5,1.0/GAMMA) * r_par;
         //double r_right = powf( powf(r_par,GAMMA) - powf(r_left,GAMMA), 1.0/GAMMA);
 
         // Symmetric
@@ -519,15 +543,15 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
         double r_left = pow(0.5, 1.0/GAMMA) * r_par;
         double r_right = pow(0.5, 1.0/GAMMA) * r_par;
 
-        radius_ratio = r_left / r_right;
+        //radius_ratio = r_left / r_right;
 
         // TODO: Use Murray law in some way ...
         // Fix a bifurcation ratio (Decrease the radius at each level of the tree by fixed factor)
-        double level = calc_segment_level(iconn);
-        double ratio;
-        ratio = 0.999;
-        inew->value->beta = ratio;
-        iconn->value->beta = ratio;
+        //double level = calc_segment_level(iconn);
+        //double ratio;
+        //ratio = 0.999;
+        inew->value->beta = r_left / r_par;
+        iconn->value->beta = r_right / r_par;
     }
 
     // ibiff: Calculate resistance using (2.5) and pressure drop using (2.7)
@@ -582,25 +606,27 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
         else
         {
             // Assymetric
-            //double value = generate_random_number_default();
+            //double value = 0.5;
             //double r_par = ipar->value->radius;
-            //double r_left = value * powf( 0.5*powf(r_par,GAMMA), 1.0/GAMMA);
+            //double r_left = value *  powf(0.5,1.0/GAMMA) * r_par;
             //double r_right = powf( powf(r_par,GAMMA) - powf(r_left,GAMMA), 1.0/GAMMA);
 
             // Symmetric
             double r_par = ipar->value->radius;
             double r_left = pow(0.5, 1.0/GAMMA) * r_par;
             double r_right = pow(0.5, 1.0/GAMMA) * r_par;
+            ipar_left->value->beta = r_left / r_par;
+            ipar_right->value->beta = r_right / r_par;
             
             radius_ratio = r_left / r_right;
 
             // TODO: Use Murray law in some way ...
             // Fix a bifurcation ratio (Decrease the radius at each level of the tree by fixed factor)
-            double level = calc_segment_level(ipar_right);
-            double ratio;
-            ratio = 0.999;
-            ipar_left->value->beta = ratio;
-            ipar_right->value->beta = ratio;
+            //double level = calc_segment_level(ipar_right);
+            //double ratio;
+            //ratio = 0.999;
+            //ipar_left->value->beta = ratio;
+            //ipar_right->value->beta = ratio;
         }
 
         // Recalculate resistance using (2.5) and pressure drop using (2.7)
@@ -1429,6 +1455,41 @@ void prune_tree (struct cco_network *the_network)
         tmp = tmp_next;
     }
 
+}
+
+void print_network_info (struct cco_network *the_network)
+{
+    struct segment_node *tmp = the_network->segment_list->list_nodes;
+    double mean_biff_angle = 0.0;
+    double mean_segment_length = 0.0;
+    uint32_t biff_counter = 0;
+    uint32_t num_segments = the_network->segment_list->num_nodes;
+
+    double u[3], v[3];
+    double angle;
+    while (tmp != NULL)
+    {
+        mean_segment_length += tmp->value->length;
+        
+        if (tmp->value->left != NULL && tmp->value->right != NULL)
+        {   
+            calc_unitary_vector(tmp->value->left,u);
+            calc_unitary_vector(tmp->value->right,v);
+            //printf("u = (%g,%g,%g) -- v = (%g,%g,%g)\n",u[0],u[1],u[2],v[0],v[1],v[2]);
+            angle = calc_angle_between_vectors(u,v);
+
+            mean_biff_angle += angle;
+            biff_counter++;
+        }
+        tmp = tmp->next;
+    }
+    mean_segment_length /= (double)num_segments;
+    mean_biff_angle /= (double)biff_counter;
+
+    printf("[INFO] Total number of segment = %u\n",num_segments);
+    printf("[INFO] Mean segment length = %g\n",mean_segment_length);
+    printf("[INFO] Total number of bifurcations = %u\n",biff_counter);
+    printf("[INFO] Mean bifurcation angle = %g\n",mean_biff_angle);
 }
 
 void usage (const char pname[])

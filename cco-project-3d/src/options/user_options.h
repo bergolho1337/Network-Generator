@@ -52,6 +52,8 @@ struct user_options
     bool use_local_optimization;
     struct local_optimization_config *local_opt_config;
 
+    char *output_dir;
+
     bool use_pruning;
     double a, b, c;
 

@@ -19,6 +19,7 @@
 #include "../face-list/face-list.h"
 #include "../options/user_options.h"
 #include "../utils/utils.h"
+#include "../utils/stop_watch.h"
 
 #include "cco_helper.h"
 #include "pruning.h"
@@ -72,6 +73,8 @@ struct cco_network
 
     char *cost_function_name;
 
+    char *output_dir;
+
     bool using_pruning;
     double A, B, C;
 
@@ -84,6 +87,7 @@ struct cco_network* new_cco_network (struct user_options *options);
 void free_cco_network (struct cco_network *the_network);
 
 void set_parameters (struct cco_network *the_network, struct user_options *options);
+void set_save_network (struct cco_network *the_network, struct user_options *options);
 void set_cost_function_name (struct cco_network *the_network, struct user_options *options);
 void set_cloud_points_name (struct cco_network *the_network, struct user_options *options);
 void set_obstacle_name (struct cco_network *the_network, struct user_options *options);
@@ -152,5 +156,7 @@ void read_obstacle_faces (const char filename[], std::vector<struct face> &obsta
 void read_face (FILE *file, std::vector<struct face> &faces);
 
 void read_pmj_location_points (const char filename[], std::vector<struct point> &pmj_points);
+
+void print_network_info (struct cco_network *the_network);
 
 #endif

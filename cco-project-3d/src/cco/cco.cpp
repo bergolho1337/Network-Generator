@@ -17,8 +17,6 @@ struct cco_network* new_cco_network (struct user_options *options)
     set_local_optimization_function_name(result,options);
     set_pruning_function(result,options);
 
-    create_directory(result->output_dir);
-
     return result;
 }
 
@@ -54,7 +52,6 @@ void set_parameters (struct cco_network *the_network, struct user_options *optio
     the_network->V_perf = options->v_perf;
     the_network->r_perf = calc_perfusion_radius(options->v_perf);
     the_network->r_supp = the_network->r_perf;                            // When we consider a fixed perfusion volume
-    the_network->log_file = fopen("output.log","w+");
 
     the_network->using_only_murray_law = options->use_only_murray;
     if (options->use_only_murray)
@@ -87,7 +84,20 @@ void set_save_network (struct cco_network *the_network, struct user_options *opt
     uint32_t size = strlen(options->output_dir) + 1;
     the_network->output_dir = (char*)malloc(sizeof(char)*size);
     strcpy(the_network->output_dir,options->output_dir);
+    
+    create_directory(the_network->output_dir);
     printf("[cco] Output directory = %s\n",the_network->output_dir);
+
+    size += 20;
+    char *log_filename = (char*)malloc(sizeof(char)*size);
+    sprintf(log_filename,"%s/output.log",the_network->output_dir);
+    the_network->log_file = fopen(log_filename,"w+");
+    if (!the_network->log_file)
+    {
+        fprintf(stderr,"[-] ERROR! Opening logfile!\n");
+        exit(EXIT_FAILURE);
+    }
+    free(log_filename);
 }
 
 void set_cloud_points_name (struct cco_network *the_network, struct user_options *options)
@@ -413,12 +423,16 @@ bool has_intersect_obstacle (const double x_prox[], const double x_new[], std::v
     return false;
 }
 
+bool has_valid_segment_sizes (const double iconn_size, const double ibiff_size, const double inew_size)
+{
+    return (iconn_size > EPSILON && ibiff_size > EPSILON && inew_size > EPSILON);
+}
+
 bool check_collisions_and_fill_feasible_segments (struct cco_network *the_network, const double new_pos[],\
                     std::vector<struct segment_node*> &feasible_segments)
 {
     FILE *log_file = the_network->log_file;
 
-    //printf("[!] Checking collisions!\n");
     fprintf(log_file,"[!] Checking collisions!\n");
 
     struct segment_list *s_list = the_network->segment_list;
@@ -1465,18 +1479,33 @@ void print_network_info (struct cco_network *the_network)
     uint32_t biff_counter = 0;
     uint32_t num_segments = the_network->segment_list->num_nodes;
 
+    size_t size = strlen(the_network->output_dir) + 100;
+    char *filename = (char*)malloc(sizeof(char)*size);
+
+    FILE *file_segments_length, *file_bifurcations;
     double u[3], v[3];
     double angle;
+
+    sprintf(filename,"%s/segments_length.dat",the_network->output_dir);
+    file_segments_length = fopen(filename,"w+");
+    sprintf(filename,"%s/bifurcations_angle.dat",the_network->output_dir);
+    file_bifurcations = fopen(filename,"w+");
+
     while (tmp != NULL)
     {
-        mean_segment_length += tmp->value->length;
+        // Segment length calculus
+        double length = euclidean_norm(tmp->value->src->value->x,tmp->value->src->value->y,tmp->value->src->value->z,\
+                                        tmp->value->dest->value->x,tmp->value->dest->value->y,tmp->value->dest->value->z);
+        mean_segment_length += length;
+        fprintf(file_segments_length,"%g\n",length);
         
         if (tmp->value->left != NULL && tmp->value->right != NULL)
         {   
+            // Bifurcation angle calculus
             calc_unitary_vector(tmp->value->left,u);
             calc_unitary_vector(tmp->value->right,v);
-            //printf("u = (%g,%g,%g) -- v = (%g,%g,%g)\n",u[0],u[1],u[2],v[0],v[1],v[2]);
             angle = calc_angle_between_vectors(u,v);
+            fprintf(file_bifurcations,"%g\n",angle);
 
             mean_biff_angle += angle;
             biff_counter++;
@@ -1486,10 +1515,28 @@ void print_network_info (struct cco_network *the_network)
     mean_segment_length /= (double)num_segments;
     mean_biff_angle /= (double)biff_counter;
 
+    // Convert the length to {mm}
+    mean_segment_length *= 1000;
+
+    fclose(file_segments_length);
+    fclose(file_bifurcations);
+
     printf("[INFO] Total number of segment = %u\n",num_segments);
-    printf("[INFO] Mean segment length = %g\n",mean_segment_length);
+    printf("[INFO] Mean segment length = %g mm\n",mean_segment_length);
     printf("[INFO] Total number of bifurcations = %u\n",biff_counter);
-    printf("[INFO] Mean bifurcation angle = %g\n",mean_biff_angle);
+    printf("[INFO] Mean bifurcation angle = %g degrees\n",mean_biff_angle);
+
+    sprintf(filename,"%s/network_info.dat",the_network->output_dir);
+    FILE *file_info = fopen(filename,"w+");
+
+    fprintf(file_info,"total_num_segments %u\n",num_segments);
+    fprintf(file_info,"mean_segment_length %g\n",mean_segment_length);
+    fprintf(file_info,"total_num_bifurcations %u\n",biff_counter);
+    fprintf(file_info,"mean_bifurcation_angle %g\n",mean_biff_angle);
+
+    free(filename);
+    fclose(file_info);
+
 }
 
 void usage (const char pname[])

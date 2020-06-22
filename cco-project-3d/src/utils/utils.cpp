@@ -83,12 +83,10 @@ void generate_cloud_points (struct random_generator *the_generator, std::vector<
 
 void create_directory (const char *path)
 {
-    if (!mkdir(path,0770))
+    if (mkdir(path,S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1)
         printf("[INFO] Output directory created at:> %s\n",path);
     else
-    {
         fprintf(stderr,"[ERROR] Fail on creating output directory!\n");
-    }
 }
 
 double euclidean_norm (const double x1, const double y1, const double z1,\

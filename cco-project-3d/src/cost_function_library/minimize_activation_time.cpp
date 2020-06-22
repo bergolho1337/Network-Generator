@@ -1,6 +1,6 @@
 #include "minimize_activation_time.h"
 
-// THIS IMPLEMENTATION IS NOT WORKING !!!!!!!!!!!!!!!!!
+// TODO: Need more test ....
 SET_COST_FUNCTION (minimize_tree_activation_time)
 {
     FILE *log_file = the_network->log_file;
@@ -28,17 +28,16 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
     double deviation_limit = __DBL_MAX__;
     ret = get_parameter_value_from_map(config->params,"deviation_limit",&deviation_limit);    
 
-    //printf("Feasible segment %u\n",feasible_segments.size());
+    // For each feasible segment try to make a connection
     for (uint32_t i = 0; i < feasible_segments.size(); i++)
     {
-
         struct segment_node *iconn = feasible_segments[i];
 
         struct segment_node *inew = build_segment(the_network,local_opt_config,iconn->id,new_pos);
 
         struct segment_node *ibiff = iconn->value->parent;
 
-        //  WITH LOCAL OPTIMIZATION
+        // WITH LOCAL OPTIMIZATION
         if (using_local_optimization)
         {
             // Save the original position of the bifurcation
@@ -49,14 +48,15 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
             double best_pos[3];
             initialize_best_position_as_middle_point(best_pos,ori_pos);
 
-            //printf("[cost_function] Original bifurcation position = (%g,%g,%g)\n",\
-                                                        best_pos[0],\
-                                                        best_pos[1],\
-                                                        best_pos[2]);
-
-            // 1) Check the cost function of the first configuration
-            //double activation_time = calc_terminal_activation_time(inew,G,Cf,tau_f);
+            // [EVALUATE COST FUNCTION]
             double activation_time = calc_total_activation_time(the_network,G,Cf,tau_f);
+
+            // [RESTRICTION SECTION]
+            // Bifurcation size
+            double iconn_size = calc_segment_size(iconn);
+            double ibiff_size = calc_segment_size(ibiff);
+            double inew_size = calc_segment_size(inew);
+            bool has_minimum_segment_size = has_valid_segment_sizes(iconn_size,ibiff_size,inew_size);
 
             // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn'
             //                      and if do not intersect any triangle face from the obstacle object (if it is given). 
@@ -64,7 +64,8 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
             bool has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
             bool has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
             
-            bool point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision;
+            //bool point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision;
+            bool point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision || !has_minimum_segment_size;
 
             if (activation_time < minimum_activation_time && !point_is_not_ok)
             {
@@ -86,14 +87,12 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
 
             }
 
-            // 2) Now, call the local optimization function and fill the 'test_positions' array
+            // Now, call the local optimization function and fill the 'test_positions' array
             std::vector<struct point> test_positions;
             local_optimization_fn(iconn,ibiff,inew,test_positions);
 
             for (uint32_t j = 0; j < test_positions.size(); j++)
             {
-                // TODO: Test the bifurcation placement -> bool VerificaPosicaoBif()
-
                 // Change the position of the bifurcation point 
                 double new_biff_pos[3];
                 new_biff_pos[0] = test_positions[j].x;
@@ -105,6 +104,7 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
 
                 recalculate_radius(the_network);
 
+                // [EVALUATE COST FUNCTION]
                 double activation_time = calc_total_activation_time(the_network,G,Cf,tau_f);
 
                 // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn' and 'ibiff'
@@ -146,7 +146,6 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
         else
         {
             // Evaluate the cost function
-            //double activation_time = calc_terminal_activation_time(inew,G,Cf,tau_f);
             double activation_time = calc_total_activation_time(the_network,G,Cf,tau_f);
 
             if (activation_time < minimum_activation_time)
@@ -166,10 +165,6 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
         // Set off the 'first_call' flag
         local_opt_config->first_call = false;
     }
-
-    // DEBUG
-    //printf("[cost_function] Best AT = %g ms\n",minimum_at);
-    //print_terminal_activation_time(the_network,c,cm,rc,rm);
 
     return best;
 }

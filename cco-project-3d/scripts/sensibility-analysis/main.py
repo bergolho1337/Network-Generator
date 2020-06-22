@@ -7,21 +7,22 @@ from monoalg3d_sections import write_monoalg_config_file
 
 def main():
 	
-    seeds = [1562046115,1562013988,1562042299,1562005513,1562009134,1562009769,1562044567,1562008424,1562036996,1562020974,1562049673,1562023024,1562025823,1562007596,1562028813,1562005553,1562017900,1562034865,1562047507,1562011558,1562051289,1562006177,1562002894,1562002891,1562018879,1562021648,1562035947,1562008172,1562043344,1562021993]
+    #seeds = [1562046115,1562013988,1562042299,1562005513,1562009134,1562009769,1562044567,1562008424,1562036996,1562020974,1562049673,1562023024,1562025823,1562007596,1562028813,1562005553,1562017900,1562034865,1562047507,1562011558,1562051289,1562006177,1562002894,1562002891,1562018879,1562021648,1562035947,1562008172,1562043344,1562021993]
+    seeds = [1562046115,1562013988,1562042299,1562005513,1562009134,1562009769]
 
     #rand_offsets = [2,3,4,5,6,7,8,9,10]
-    rand_offsets = [9]
+    rand_offsets = [2]
 
     start_radius = 0.1
 
     for seed in seeds:
         for rand_offset in rand_offsets:
-            #write_cco_config_file(seed,rand_offset)
+            write_cco_config_file(seed,rand_offset)
             #write_monoalg_config_file(seed,rand_offset,1)
             #write_co_config_file(seed,rand_offset)
             #write_monoalg_config_file(seed,rand_offset,2)
-            write_co_activation_time_config_file(seed,rand_offset,start_radius)
-            write_monoalg_config_file(seed,rand_offset,3)
+            #write_co_activation_time_config_file(seed,rand_offset,start_radius)
+            #write_monoalg_config_file(seed,rand_offset,3)
 
 if __name__ == "__main__":
 	main()

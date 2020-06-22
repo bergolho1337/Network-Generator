@@ -28,7 +28,6 @@ atlassian-ide-plugin.xml
 
 # Others
 bin/
-shared-libs/
 .vscode/
 build/
 *~
@@ -36,10 +35,4 @@ build/
 *.json
 outputs/
 *.log
-inputs/cco*
-inputs/co*
-clouds/private
-clouds/generated-clouds
-clouds/obstacles/rabbit*
-pmjs/private
-saved-networks/elizabeth*
+inputs/private

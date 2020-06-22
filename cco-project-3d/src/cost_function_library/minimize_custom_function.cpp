@@ -16,12 +16,13 @@ SET_COST_FUNCTION (minimize_custom_function)
     bool using_local_optimization = the_network->using_local_optimization;
     set_local_optimization_function_fn *local_optimization_fn = local_opt_config->function;
 
+    // Get cost function parameters
     double beta;
     get_parameter_value_from_map(config->params,"beta",&beta);
-
     double alpha;
     get_parameter_value_from_map(config->params,"alpha",&alpha);
 
+    // For each feasible segment try to make a connection
     for (uint32_t i = 0; i < feasible_segments.size(); i++)
     {
         struct segment_node *iconn = feasible_segments[i];
@@ -30,7 +31,7 @@ SET_COST_FUNCTION (minimize_custom_function)
 
         struct segment_node *ibiff = iconn->value->parent;
 
-        //  WITH LOCAL OPTIMIZATION
+        // WITH LOCAL OPTIMIZATION
         if (using_local_optimization)
         {
             // Save the original position of the bifurcation
@@ -41,17 +42,22 @@ SET_COST_FUNCTION (minimize_custom_function)
             double best_pos[3];
             initialize_best_position_as_middle_point(best_pos,ori_pos);
 
-            //printf("[cost_function] Original bifurcation position = (%g,%g,%g)\n",\
-                                                        best_pos[0],\
-                                                        best_pos[1],\
-                                                        best_pos[2]);
-
-            // 1) Check the cost function of the first configuration
+            // [EVALUATE COST FUNCTION]
             double eval = calc_custom_function(the_network,beta,alpha);
+
+            // [RESTRICTION SECTION]
+            // Bifurcation size
+            double iconn_size = calc_segment_size(iconn);
+            double ibiff_size = calc_segment_size(ibiff);
+            double inew_size = calc_segment_size(inew);
+            bool has_minimum_segment_size = has_valid_segment_sizes(iconn_size,ibiff_size,inew_size);
 
             // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn'
             struct segment_list *s_list = the_network->segment_list;
-            bool point_is_not_ok = has_collision(s_list,iconn,ibiff,inew,log_file);
+            bool has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
+            bool has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
+
+            bool point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision || !has_minimum_segment_size;
 
             if (eval < minimum_eval && !point_is_not_ok)
             {
@@ -73,7 +79,7 @@ SET_COST_FUNCTION (minimize_custom_function)
 
             }
 
-            // 2) Now, call the local optimization function and fill the 'test_positions' array
+            // Now, call the local optimization function and fill the 'test_positions' array
             std::vector<struct point> test_positions;
             local_optimization_fn(iconn,ibiff,inew,test_positions);
 
@@ -90,11 +96,15 @@ SET_COST_FUNCTION (minimize_custom_function)
 
                 recalculate_radius(the_network);
 
+                // [EVALUATE COST FUNCTION]
                 double eval = calc_custom_function(the_network,beta,alpha);
 
                 // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn' and 'ibiff'
                 s_list = the_network->segment_list;
-                point_is_not_ok = has_collision(s_list,iconn,ibiff,inew,log_file);
+                has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
+                has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
+
+                point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision;
 
                 if (eval < minimum_eval && !point_is_not_ok)
                 {
@@ -166,6 +176,7 @@ SET_COST_FUNCTION (minimize_custom_function_with_angle_restriction)
     bool using_local_optimization = the_network->using_local_optimization;
     set_local_optimization_function_fn *local_optimization_fn = local_opt_config->function;
 
+    // Get cost function parameters
     double beta;
     get_parameter_value_from_map(config->params,"beta",&beta);
     double alpha;
@@ -196,20 +207,28 @@ SET_COST_FUNCTION (minimize_custom_function_with_angle_restriction)
             double best_pos[3];
             initialize_best_position_as_middle_point(best_pos,ori_pos);
 
-            // 1) Check the cost function of the first configuration
+            // [EVALUATE COST FUNCTION]
             double eval = calc_custom_function(the_network,beta,alpha);
 
-            // 2) Calculate bifurcation angle
+            // [RESTRICTION SECTION]
+            // Check bifurcation size and angle
             calc_unitary_vector(iconn,u);
             calc_unitary_vector(inew,v);
             angle_degrees = calc_angle_between_vectors(u,v);
+            bool has_angle_requirement = check_angle_restriction(angle_degrees,min_degrees_limit,max_degrees_limit);
+
+            double iconn_size = calc_segment_size(iconn);
+            double ibiff_size = calc_segment_size(ibiff);
+            double inew_size = calc_segment_size(inew);
+            bool has_minimum_segment_size = has_valid_segment_sizes(iconn_size,ibiff_size,inew_size);
 
             // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn'
             struct segment_list *s_list = the_network->segment_list;
             bool has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
-            bool has_angle_requirement = check_angle_restriction(angle_degrees,min_degrees_limit,max_degrees_limit);
-            bool point_is_not_ok = has_segment_segment_collision || !has_angle_requirement;
+            bool has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
 
+            bool point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision || !has_minimum_segment_size || !has_angle_requirement;
+            
             if (eval < minimum_eval && !point_is_not_ok)
             {
                 minimum_eval = eval;
@@ -247,18 +266,22 @@ SET_COST_FUNCTION (minimize_custom_function_with_angle_restriction)
 
                 recalculate_radius(the_network);
 
+                // [EVALUATE COST FUNCTION]
                 double eval = calc_custom_function(the_network,beta,alpha);
 
-                // 2) Calculate bifurcation angle
+                // [RESTRICTION SECTION]
+                // Check bifurcation angle
                 calc_unitary_vector(iconn,u);
                 calc_unitary_vector(inew,v);
                 angle_degrees = calc_angle_between_vectors(u,v);
+                has_angle_requirement = check_angle_restriction(angle_degrees,min_degrees_limit,max_degrees_limit);
 
                 // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn' and 'ibiff'
                 s_list = the_network->segment_list;
                 has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
-                has_angle_requirement = check_angle_restriction(angle_degrees,min_degrees_limit,max_degrees_limit);
-                point_is_not_ok = has_segment_segment_collision || !has_angle_requirement;
+                has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
+                
+                point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision || !has_angle_requirement;
 
                 if (eval < minimum_eval && !point_is_not_ok)
                 {
@@ -291,13 +314,17 @@ SET_COST_FUNCTION (minimize_custom_function_with_angle_restriction)
         else
         {
             double eval = calc_custom_function(the_network,beta,alpha);
-            struct segment_list *s_list = the_network->segment_list;
-            bool point_is_not_ok = has_collision(s_list,iconn,ibiff,inew,log_file);
-            point_is_not_ok &= check_angle_restriction(angle_degrees,min_degrees_limit,max_degrees_limit);
 
             calc_unitary_vector(iconn,u);
             calc_unitary_vector(inew,v);
             angle_degrees = calc_angle_between_vectors(u,v);
+            bool has_angle_requirement = check_angle_restriction(angle_degrees,min_degrees_limit,max_degrees_limit);
+
+            struct segment_list *s_list = the_network->segment_list;
+            bool has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
+            bool has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
+
+            bool point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision || !has_angle_requirement;
 
             if (eval < minimum_eval && !point_is_not_ok)
             {

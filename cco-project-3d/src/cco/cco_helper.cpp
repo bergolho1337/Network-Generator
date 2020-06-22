@@ -283,6 +283,15 @@ void calc_unitary_vector (struct segment_node *s, double u[])
     u[2] = (dest->z - src->z) / norm;
 }
 
+double calc_segment_size (struct segment_node *s)
+{
+    struct point *src = s->value->src->value;
+    struct point *dest = s->value->dest->value;
+    double norm = euclidean_norm(src->x,src->y,src->z,dest->x,dest->y,dest->z);
+
+    return norm;
+}
+
 bool has_deviation (struct segment_list *s_list, struct segment_node *inew,\
                     const double new_at, const double limit,\
                     const double G, const double Cf, const double tau_f)

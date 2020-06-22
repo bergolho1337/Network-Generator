@@ -34,6 +34,7 @@ double calc_radius_ratio (struct segment_node *iconn, struct segment_node *inew,
 double calc_radius (struct cco_network *the_network, struct segment_node *s);
 double calc_tree_volume (struct cco_network *the_network);
 double calc_segment_volume (struct segment_node *s);
+double calc_segment_size (struct segment_node *s);
 double calc_assymetric_ratio (struct segment_node *right, struct segment_node *left);
 
 double calc_terminal_activation_time (struct segment_node *s,\
@@ -53,7 +54,6 @@ double calc_segment_level (struct segment_node *iconn);
 double calc_custom_function (struct cco_network *the_network, const double beta, const double alpha);
 double calc_segment_custom_function (struct segment_node *s, const double beta, const double alpha);
 double calc_segment_custom_function_with_level_penalty (const double eval, struct segment_node *iconn);
-
 
 bool has_deviation (struct segment_list *s_list, struct segment_node *inew,\
                     const double new_at, const double limit,\

@@ -38,6 +38,7 @@
 #define PRINT_STARS "******************************************************************************"
 
 static const double EPSILON = 1.0e-02;                   // Tolerance for comparing real numbers
+static const double MAX_SEGMENT_SIZE = 0.015;             // Tolerance for maximum segment size            
 static const uint32_t RAND_ARRAY_SIZE = 8000000;         // Size of randomic vector
 static const uint32_t RAND_SEED = 1;                     // Random seed
 static const uint32_t TOTAL_CLOUD_POINTS_SIZE = 2500000; // Total number of points in the generated cloud of points

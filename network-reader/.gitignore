@@ -37,3 +37,4 @@ build/
 output/
 *.log
 inputs/elizabeth*
+pmjs/private/*

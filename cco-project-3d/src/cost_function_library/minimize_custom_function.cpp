@@ -104,7 +104,13 @@ SET_COST_FUNCTION (minimize_custom_function)
                 has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
                 has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
 
-                point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision;
+                // [RESTRICTION ZONE]
+                double iconn_size = calc_segment_size(iconn);
+                double ibiff_size = calc_segment_size(ibiff);
+                double inew_size = calc_segment_size(inew);
+                bool has_minimum_segment_size = has_valid_segment_sizes_2(iconn_size,ibiff_size,inew_size);
+
+                point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision || !has_minimum_segment_size;
 
                 if (eval < minimum_eval && !point_is_not_ok)
                 {
@@ -276,12 +282,17 @@ SET_COST_FUNCTION (minimize_custom_function_with_angle_restriction)
                 angle_degrees = calc_angle_between_vectors(u,v);
                 has_angle_requirement = check_angle_restriction(angle_degrees,min_degrees_limit,max_degrees_limit);
 
+                double iconn_size = calc_segment_size(iconn);
+                double ibiff_size = calc_segment_size(ibiff);
+                double inew_size = calc_segment_size(inew);
+                has_minimum_segment_size = has_valid_segment_sizes_2(iconn_size,ibiff_size,inew_size);
+
                 // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn' and 'ibiff'
                 s_list = the_network->segment_list;
                 has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
                 has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
                 
-                point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision || !has_angle_requirement;
+                point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision || !has_angle_requirement || !has_minimum_segment_size;
 
                 if (eval < minimum_eval && !point_is_not_ok)
                 {

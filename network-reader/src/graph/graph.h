@@ -72,7 +72,9 @@ public:
 	~Graph ();
 
     void print ();
+	void write_network_info ();
 	double calculate_branch_size (const int parents[], const int ref_index, int &level);
+	void check_duplicates ();
 	void write_VTK (const char filename[]);
 	void write_pmj_config_file (const char filename[]);
 	void write_longest_segment (const int parents[], const int ref_index);
@@ -87,6 +89,8 @@ public:
 	Node* get_list_nodes () { return list_nodes; }
 	Node* get_last_node () { return last_node; }
 	//double* get_dist () { return dist; }
+	void build_unitary_vector (Node *u, Node *v, double d[]);
+	double calc_angle_between_vectors (const double u[], const double v[]);
 
 	void insert_node_graph (const double pos[]);
 	void insert_edge_graph (const int id_1, const int id_2);
@@ -120,6 +124,7 @@ void print_stars (const int number);
 double calc_norm (double x1, double y1, double z1, double x2, double y2, double z2);
 bool check_file_extension (const char filename[], const char extension_name[]);
 bool is_terminal (Node *u);
+bool is_bifurcation (Node *u);
 // =============================================================================================================
 
 #endif

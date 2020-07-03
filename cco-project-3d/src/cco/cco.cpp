@@ -428,6 +428,11 @@ bool has_valid_segment_sizes (const double iconn_size, const double ibiff_size, 
     return (iconn_size > EPSILON && ibiff_size > EPSILON && inew_size > EPSILON);
 }
 
+bool has_valid_segment_sizes_2 (const double iconn_size, const double ibiff_size, const double inew_size)
+{
+    return (iconn_size < MAX_SEGMENT_SIZE && ibiff_size < MAX_SEGMENT_SIZE && inew_size < MAX_SEGMENT_SIZE);
+}
+
 bool check_collisions_and_fill_feasible_segments (struct cco_network *the_network, const double new_pos[],\
                     std::vector<struct segment_node*> &feasible_segments)
 {

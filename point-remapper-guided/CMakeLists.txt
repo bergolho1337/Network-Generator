@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.0.1)
+project(PointRemapperGuided)
+
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/shared-libs)
+
+FIND_PACKAGE(VTK REQUIRED)
+INCLUDE(${VTK_USE_FILE})
+
+ADD_SUBDIRECTORY(src/reader)
+
+ADD_EXECUTABLE(PointRemapperGuided src/main.cpp)
+
+ADD_DEPENDENCIES(PointRemapperGuided reader)
+
+TARGET_LINK_LIBRARIES(PointRemapperGuided ${VTK_LIBRARIES} reader dl m)

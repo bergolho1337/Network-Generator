@@ -110,13 +110,14 @@ void Graph::read_graph_from_vtk (const char filename[])
     {
         fscanf(file,"%u %u %u",&tmp,&dir[0],&dir[1]);
         insert_edge_graph(dir[0],dir[1]);
+        //insert_edge_graph(dir[1],dir[0]);
     }
 
     fclose(file);
 
     // Unitary test
-    assert(num_nodes == total_nodes);
-    assert(num_edges == total_edges);
+    //assert(num_nodes == total_nodes);
+    //assert(num_edges == total_edges);
 }
 
 void Graph::free_list_edges (Node *node)
@@ -484,6 +485,14 @@ bool is_terminal (Node *u)
         return false;
 }
 
+bool is_bifurcation (Node *u)
+{
+    if (u->num_edges == 2)
+        return true;
+    else
+        return false;
+}
+
 double calc_norm (const double x1, const double y1, const double z1,\
                   const double x2, const double y2, const double z2)
 {
@@ -696,6 +705,88 @@ void Graph::write_longest_segment (const int parents[], const int ref_index)
 
     fclose(file);
 
+}
+
+void Graph::check_duplicates ()
+{
+
+    // Check duplicates
+    Node *tmp = this->get_list_nodes();
+    while (tmp != NULL)
+    {
+        Node *tmp2 = this->get_list_nodes();
+        while (tmp2 != NULL)
+        {
+            if (tmp->x == tmp2->x && tmp->y == tmp2->y && tmp->z == tmp2->z && tmp->index != tmp2->index)
+            {
+                printf("[purkinje] Duplicates are indexes: %u and %u --> (%g,%g,%g) x (%g,%g,%g)\n",tmp->index,tmp2->index,tmp->x,tmp->y,tmp->z,tmp2->x,tmp2->y,tmp2->z);
+                printf("\t|| %u has %u edges || %u has %u edges ||\n",tmp->index,tmp->num_edges,tmp2->index,tmp2->num_edges);
+                remove_node_graph(tmp2->index);
+            }
+            tmp2 = tmp2->next;
+        }
+        tmp = tmp->next;
+    }
+}
+
+void Graph::build_unitary_vector (Node *u, Node *v, double d[])
+{
+    double norm = calc_norm(u->x,u->y,u->z,v->x,v->y,v->z);
+    if (norm < 1.0e-08)
+        norm = 1.0e-08;
+
+    d[0] = (v->x - u->x) / norm;
+    d[1] = (v->y - u->y) / norm;
+    d[2] = (v->z - u->z) / norm;
+}
+
+double Graph::calc_angle_between_vectors (const double u[], const double v[])
+{
+    double dot_product = u[0]*v[0] + u[1]*v[1] + u[2]*v[2];
+
+    double angle_radians = acos(dot_product);
+
+    // Return the angle in degrees
+    return angle_radians * 180.0 / M_PI;
+}
+
+void Graph::write_network_info ()
+{
+    // [SEGMENTS]
+    FILE *file = fopen("outputs/segments_length.dat","w+");
+    Node *u = this->get_list_nodes();
+    while (u != NULL)
+    {
+        Edge *v = u->list_edges;
+        while (v != NULL)
+        {
+            fprintf(file,"%g\n",v->length);
+            v = v->next;
+        }
+
+        u = u->next;
+    }
+    fclose(file);
+
+    file = fopen("outputs/bifurcations_angle.dat","w+");
+    u = this->get_list_nodes();
+    while (u != NULL)
+    {
+        if (is_bifurcation(u))
+        {
+            Edge *v1 = u->list_edges;
+            Edge *v2 = u->list_edges->next;
+
+            double u1[3], u2[3];
+            build_unitary_vector(u,v1->dest,u1);
+            build_unitary_vector(u,v2->dest,u2);
+
+            double angle = calc_angle_between_vectors(u1,u2);
+            fprintf(file,"%g\n",angle);
+        }
+        u = u->next;
+    }
+    fclose(file);
 }
 
 void print_stars (const int number)

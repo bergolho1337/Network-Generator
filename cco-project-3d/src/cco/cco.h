@@ -119,6 +119,7 @@ bool has_collision (struct segment_list *s_list, struct segment_node *iconn, str
 bool has_intersect_obstacle (struct segment_node *inew, std::vector<struct face> obstacle_faces);
 bool has_intersect_obstacle (const double x_prox[], const double x_new[], std::vector<struct face> obstacle_faces);
 bool has_valid_segment_sizes (const double iconn_size, const double ibiff_size, const double inew_size);
+bool has_valid_segment_sizes_2 (const double iconn_size, const double ibiff_size, const double inew_size);
 
 bool connection_search (struct cco_network *the_network, const double pos[], const double d_threash);
 bool distance_criterion (struct segment_node *s, const double pos[], const double d_threash);

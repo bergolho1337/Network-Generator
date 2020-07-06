@@ -324,3 +324,39 @@ bool check_angle_restriction (const double angle, const double min_angle, const 
 {
     return (angle > min_angle && angle < max_angle);
 }
+
+void read_initial_network (const char filename[], std::vector<struct cco_point> &the_points, std::vector<struct cco_segment> &the_segments)
+{
+    FILE *file = fopen(filename,"r");
+    if (!file)
+    {
+        fprintf(stderr,"[cco] ERROR! Reading initial network '%s'\n",filename);
+        exit(EXIT_FAILURE);
+    }
+
+    uint32_t num_points;
+    fscanf(file,"%u",&num_points);
+    
+    std::vector<struct cco_point> points;
+    for (uint32_t i = 0; i < num_points; i++)
+    {
+        struct cco_point p;
+        fscanf(file,"%lf %lf %lf",&p.x,&p.y,&p.z);
+
+        the_points.push_back(p);
+    }
+    uint32_t num_segments;
+    fscanf(file,"%u",&num_segments);
+
+    std::vector<struct cco_segment> segments;
+    for (uint32_t i = 0; i < num_segments; i++)
+    {
+        struct cco_segment s;
+        fscanf(file,"%d %d %d",&s.parent_id,&s.left_offspring_id,&s.right_offspring_id);
+        fscanf(file,"%d %d",&s.src_id,&s.dest_id);
+
+        the_segments.push_back(s);
+    }
+
+    fclose(file);
+}

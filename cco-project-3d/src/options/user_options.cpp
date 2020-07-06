@@ -10,6 +10,7 @@ struct user_options* new_user_options (int argc, char *argv[])
     result->use_only_murray = false;
     result->use_pruning = false;
     result->use_pmj_location = false;
+    result->use_initial_network = false;
     result->start_radius = -1;
     result->seed = 1;                           // Default value
     result->max_rand_offset = 1;                // Default value
@@ -124,6 +125,22 @@ int parse_config_file(void *user, const char *section, const char *name, const c
         else if (MATCH_NAME("start_radius"))
         {
             pconfig->start_radius = strtof(value, NULL);
+        }
+        else if (MATCH_NAME("use_initial_network"))
+        {
+            if (strcmp(value,"true") == 0 || strcmp(value,"yes") == 0)
+                pconfig->use_initial_network = true;
+            else if (strcmp(value,"false") == 0 || strcmp(value,"no") == 0)
+                pconfig->use_initial_network = false;
+            else
+            {
+                fprintf(stderr,"[user_options] Error reading configuration file! Invalid option in \"main\" section\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+        else if (MATCH_NAME("initial_network_filename"))
+        {
+            pconfig->initial_network_filename = strdup(value);
         }
     }
     else if (SECTION_STARTS_WITH(SAVE_NETWORK_SECTION))

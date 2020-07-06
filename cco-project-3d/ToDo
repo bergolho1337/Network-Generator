@@ -1,6 +1,6 @@
-- Add a pruning library
+- Refactor the "cco.cpp" source file (divide into other module if it possible)
 
-- Create a structure to manage the program output
+- Add a pruning library
 
 - Create a function to save the logfile and the original configuration to reproduce the simulation
 

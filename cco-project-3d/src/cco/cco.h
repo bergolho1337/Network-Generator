@@ -79,6 +79,9 @@ struct cco_network
     bool using_pruning;
     double A, B, C;
 
+    bool using_initial_network;
+    char *initial_network_filename;
+
     FILE *log_file;
 };
 
@@ -137,6 +140,7 @@ void generate_terminal_using_pmj_points(struct cco_network *the_network,\
                                           std::vector<struct face> obstacle_faces);
 
 void make_root_using_cloud_points (struct cco_network *the_network, std::vector<struct point> cloud_points, std::vector<struct face> obstacle_faces);
+void make_root_using_initial_network (struct cco_network *the_network);
                         
 void generate_terminal_using_cloud_points(struct cco_network *the_network,\
                                           struct cost_function_config *config,\

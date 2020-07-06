@@ -7,4 +7,4 @@ data = np.genfromtxt(filename)
 mean = np.mean(data)
 std = np.std(data)
 
-print("%g +/- %g" % (mean,std))
+print("%g+/-%g" % (mean,std))

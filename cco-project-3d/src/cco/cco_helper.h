@@ -22,6 +22,21 @@
 #include "../options/user_options.h"
 #include "../utils/utils.h"
 
+struct cco_point
+{
+    double x, y, z;
+};
+
+struct cco_segment
+{
+    int parent_id;
+    int left_offspring_id;
+    int right_offspring_id;
+
+    int src_id;
+    int dest_id;
+};
+
 void calc_middle_point_segment (struct segment_node *s, double pos[]);
 void calc_unitary_vector (struct segment_node *s, double u[]);
 void calc_relative_resistance_term (struct segment_node *iterm);
@@ -60,5 +75,7 @@ bool has_deviation (struct segment_list *s_list, struct segment_node *inew,\
                     const double G, const double Cf, const double tau_f);
 bool check_angle_restriction (const double angle, const double min_angle, const double max_angle);
 bool is_terminal (struct segment_node *s);
+
+void read_initial_network (const char filename[], std::vector<struct cco_point> &the_points, std::vector<struct cco_segment> &the_segments);
 
 #endif

@@ -69,6 +69,15 @@ void set_parameters (struct cco_network *the_network, struct user_options *optio
     the_network->seed = options->seed;
     the_network->max_rand_offset = options->max_rand_offset;
     srand(the_network->seed);
+
+    the_network->using_initial_network = options->use_initial_network;
+    if (options->use_initial_network)
+    {
+        uint32_t size = strlen(options->initial_network_filename) + 1;
+        the_network->initial_network_filename = (char*)malloc(sizeof(char)*size);
+        strcpy(the_network->initial_network_filename,options->initial_network_filename);
+        printf("[cco] Using initial network = %s\n",the_network->initial_network_filename);
+    }
 }
 
 void set_cost_function_name (struct cco_network *the_network, struct user_options *options)
@@ -261,7 +270,16 @@ void grow_tree_using_cloud_points (struct cco_network *the_network,\
     struct point_list *p_list = the_network->point_list;
     struct segment_list *s_list = the_network->segment_list;
 
-    make_root_using_cloud_points(the_network,cloud_points,obstacle_faces);
+    // ROOT PLACEMENT
+    bool using_initial_network = the_network->using_initial_network;
+    if (using_initial_network)
+    {
+        make_root_using_initial_network(the_network);
+    }
+    else
+    {
+        make_root_using_cloud_points(the_network,cloud_points,obstacle_faces);
+    }   
     
     // MAIN ITERATION LOOP
     while (the_network->num_terminals < the_network->N_term)
@@ -274,7 +292,7 @@ void grow_tree_using_cloud_points (struct cco_network *the_network,\
         generate_terminal_using_cloud_points(the_network,config,local_opt_config,cloud_points,obstacle_faces);
 
         // DEBUG
-        //write_to_vtk_iteration(the_network);
+        write_to_vtk_iteration(the_network);
 
         printf("%s\n",PRINT_LINE);
         fprintf(log_file,"%s\n",PRINT_LINE);
@@ -953,6 +971,100 @@ void make_root_using_cloud_points (struct cco_network *the_network, std::vector<
     rescale_root(iroot_node,Q_perf,delta_p,using_only_murray_law);
     the_network->num_terminals = 1;
 
+}
+
+void make_root_using_initial_network (struct cco_network *the_network)
+{
+    printf("[cco] Building root using initial network '%s' ...\n",the_network->initial_network_filename);
+
+    int N_term = the_network->N_term;
+    double Q_perf = the_network->Q_perf;
+    double p_perf = the_network->p_perf;
+    double p_term = the_network->p_term;
+    double r_perf = the_network->r_perf;
+    double V_perf = the_network->V_perf;
+    double delta_p = p_perf - p_term;
+
+    struct point_list *p_list = the_network->point_list;
+    struct segment_list *s_list = the_network->segment_list;    
+
+    std::vector<struct cco_point> the_points;
+    std::vector<struct cco_segment> the_segments;
+    read_initial_network(the_network->initial_network_filename,the_points,the_segments);
+
+    // Insert the points
+    for (uint32_t i = 0; i < the_points.size(); i++)
+    {
+        double pos[3];
+        pos[0] = the_points[i].x;
+        pos[1] = the_points[i].y;
+        pos[2] = the_points[i].z;
+
+        struct point_node *new_p = insert_point(p_list,pos);
+    }
+    // Insert the segments
+    for (uint32_t i = 0; i < the_segments.size(); i++)
+    {
+        int ids[2];
+        ids[0] = the_segments[i].src_id;
+        ids[1] = the_segments[i].dest_id;
+
+        struct point_node *src = search_node(p_list,ids[0]);
+        struct point_node *dest = search_node(p_list,ids[1]);
+
+        struct segment *new_seg = new_segment(src,dest,NULL,NULL,NULL,Q_perf,p_perf);
+        struct segment_node *new_seg_node = insert_segment_node(s_list,new_seg);
+    }
+    // Set segment pointers
+    struct segment_node *tmp = s_list->list_nodes;
+    for (uint32_t i = 0; i < the_segments.size(); i++)
+    {
+        int links[3];
+        links[0] = the_segments[i].parent_id;
+        links[1] = the_segments[i].left_offspring_id;
+        links[2] = the_segments[i].right_offspring_id;
+
+        struct segment_node *parent = NULL;
+        struct segment_node *left = NULL;
+        struct segment_node *right = NULL;
+
+        if (links[0] != -1)
+            parent = search_segment_node(s_list,links[0]);
+        if (links[1] != -1)
+            left = search_segment_node(s_list,links[1]);
+        if (links[2] != -1)
+            right = search_segment_node(s_list,links[2]);
+
+        tmp->value->parent = parent;
+        tmp->value->left = left;
+        tmp->value->right = right;
+
+        tmp = tmp->next;
+    }
+    // Update "ndist" from every terminal
+    tmp = s_list->list_nodes;
+    for (uint32_t i = 0; i < the_segments.size(); i++)
+    {
+        tmp->value->ndist = 0;
+        tmp->value->radius = 0.00102269;            // TODO: This information must come from the input file
+        if (is_terminal(tmp))
+        {
+            struct segment_node *tmp_2 = tmp;
+
+            if (tmp_2 != NULL)
+            {
+                while (tmp_2->value->parent != NULL)
+                {
+                    tmp_2->value->ndist++;
+                    tmp_2 = tmp_2->value->parent;
+                }
+                // At the root ...
+                tmp_2->value->ndist++;
+            }
+            the_network->num_terminals++;
+        }
+        tmp = tmp->next;
+    }
 }
 
 void generate_terminal_using_cloud_points(struct cco_network *the_network,\

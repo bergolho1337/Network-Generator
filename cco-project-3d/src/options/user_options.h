@@ -57,6 +57,9 @@ struct user_options
     bool use_pruning;
     double a, b, c;
 
+    bool use_initial_network;
+    char *initial_network_filename;
+
 };
 
 struct user_options* new_user_options (int argc, char *argv[]);

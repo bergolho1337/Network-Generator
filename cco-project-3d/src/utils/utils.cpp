@@ -448,9 +448,12 @@ void write_to_vtk_iteration (struct cco_network *the_network)
     uint32_t num_segments = the_network->segment_list->num_nodes;
     struct segment_list *s_list = the_network->segment_list;
     struct segment_node *s_tmp = s_list->list_nodes;
+    char *output_dir = the_network->output_dir;
+    
+    uint32_t size = strlen(output_dir) + 30;
+    char *filename = new char[size];
+    sprintf(filename,"%s/tree_nterm_%u.vtk",output_dir,num_terminals);
 
-    char filename[MAX_FILENAME_SIZE];
-    sprintf(filename,"output/cco_tree_cm_iter_%d.vtk",num_terminals);
     FILE *file = fopen(filename,"w+");
 
     // Write the header

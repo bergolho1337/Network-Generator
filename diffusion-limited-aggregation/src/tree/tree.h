@@ -28,6 +28,7 @@
 
 #include "walker.h"
 #include "segment.h"
+#include "network.h"
 
 #include "../options/user_options.h"
 #include "../utils/stop_watch.h"
@@ -43,10 +44,12 @@ struct dla_tree
 struct dla_tree* new_dla_tree ();
 void free_dla_tree (struct dla_tree *the_tree);
 
+void make_root_default (struct dla_tree *the_tree, struct user_options *the_options);
+void make_root_using_initial_network (struct dla_tree *the_tree, struct user_options *the_options);
 void grow_tree (struct dla_tree *the_tree, struct user_options *the_options);
+
 void write_to_vtk (struct dla_tree *the_tree);
 void write_tree_to_vtk (struct dla_tree *the_tree);
-
 void write_root (struct walker_list *l);
 
 void print_dla_tree (struct dla_tree *the_tree);

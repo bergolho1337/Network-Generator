@@ -25,6 +25,9 @@ struct user_options
 
     double root_pos[3];
 
+    bool use_initial_network;
+    char *initial_network_filename;
+
     struct walker_config *walker_config;
 };
 

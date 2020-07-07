@@ -20,6 +20,8 @@
 
 void usage (const char pname[]);
 double calculate_distance (const double p1[], const double p2[]);
+double calculate_euclidean_norm (const double x1, const double y1, const double z1,\
+                                const double x2, const double y2, const double z2);
 double generate_random_number ();
 bool get_parameter_value_from_map (std::map<std::string,double> *params,\
                                 const std::string key, double *value);

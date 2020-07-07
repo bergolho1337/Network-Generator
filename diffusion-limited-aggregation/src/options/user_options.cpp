@@ -4,6 +4,8 @@ struct user_options* new_user_options (int argc, char *argv[])
 {
     struct user_options *result = (struct user_options*)malloc(sizeof(struct user_options));
 
+    result->use_initial_network = false;
+
     read_config_file(result,argv[1]);
 
     return result;    
@@ -74,6 +76,11 @@ int parse_config_file(void *user, const char *section, const char *name, const c
         else if (MATCH_NAME("root_pos_z"))
         {
             pconfig->root_pos[2] = (double)strtod(value, NULL);
+        }
+        else if (MATCH_NAME("initial_network_filename"))
+        {
+            pconfig->use_initial_network = true;
+            pconfig->initial_network_filename = strdup(value);
         }
     }
     else if (SECTION_STARTS_WITH(WALKER_SECTION))

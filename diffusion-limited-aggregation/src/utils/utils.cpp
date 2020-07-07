@@ -5,6 +5,12 @@ double calculate_distance (const double p1[], const double p2[])
     return (p2[0] - p1[0])*(p2[0] - p1[0]) + (p2[1] - p1[1])*(p2[1] - p1[1]) + (p2[2] - p1[2])*(p2[2] - p1[2]);
 }
 
+double calculate_euclidean_norm (const double x1, const double y1, const double z1,\
+                                const double x2, const double y2, const double z2)
+{
+    return sqrt( pow(x2-x1,2) + pow(y2-y1,2) + pow(z2-z1,2) ); 
+}
+
 double generate_random_number ()
 {
     uint8_t sign = rand() % 2;

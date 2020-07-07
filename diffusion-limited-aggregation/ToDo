@@ -1,3 +1,4 @@
+- Add an option to pass an initial network
 - Create a script to generate the "point_to_face_map" and write into a file
 - Create a file format to read the "point_to_face_map" directly from file
 - Change the linked list structure to vector

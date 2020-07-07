@@ -28,6 +28,7 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
     uint32_t max_num_walker = the_options->max_num_walkers;
     uint32_t seed = the_options->seed;
     double *root_pos = the_options->root_pos;
+    bool use_initial_network = the_options->use_initial_network;
 
     // Get the radius of the walkers
     double walker_radius = 6.0;
@@ -42,9 +43,14 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
 
 //********* MAIN CONFIGURATION BEGIN **********************************************
     // Make the root
-    struct walker *root = new_walker(root_pos[0],root_pos[1],root_pos[2],walker_radius);
-    insert_walker_node(the_point_list,root);
-
+    if (use_initial_network)
+    {
+        make_root_using_initial_network(the_tree,the_options);
+    }
+    else
+    {
+        make_root_default(the_tree,the_options);
+    }
 
     // DEBUG
     write_root(the_point_list);
@@ -110,7 +116,7 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
 
                 order_list(the_others);
 
-                //write_to_vtk(the_tree);
+                write_to_vtk(the_tree);
             }
 
             if (!has_deleted)
@@ -143,6 +149,94 @@ void grow_tree (struct dla_tree *the_tree, struct user_options *the_options)
 
     // Free the walker list
     free_walker_list(the_others);
+}
+
+void make_root_default (struct dla_tree *the_tree, struct user_options *the_options)
+{
+    struct walker_list *the_point_list = the_tree->point_list;
+    struct segment_list *the_segment_list = the_tree->segment_list;
+
+    double *root_pos = the_options->root_pos;
+    
+    // Get the radius of the walkers
+    double walker_radius = 6.0;
+    get_parameter_value_from_map(the_options->walker_config->params,"walker_radius",&walker_radius);
+
+    struct walker *root = new_walker(root_pos[0],root_pos[1],root_pos[2],walker_radius);
+    insert_walker_node(the_point_list,root);
+}
+
+void make_root_using_initial_network (struct dla_tree *the_tree, struct user_options *the_options)
+{
+    char *initial_network_filename = the_options->initial_network_filename;
+    struct walker_list *the_point_list = the_tree->point_list;
+    struct segment_list *the_segment_list = the_tree->segment_list;
+
+    double walker_radius = 6.0;
+    get_parameter_value_from_map(the_options->walker_config->params,"walker_radius",&walker_radius);
+
+    std::vector<struct network_point> points;
+    std::vector<struct network_line> lines;
+
+    read_initial_network_file(initial_network_filename,points,lines);
+
+    // Points
+    uint32_t counter_points = 0;
+    std::vector<uint32_t> mapping;
+    mapping.assign(points.size(),0);
+    for (uint32_t i = 0; i < lines.size(); i++)
+    {
+        uint32_t src_id = lines[i].src;
+        uint32_t dest_id = lines[i].dest;
+
+        struct network_point src = points[src_id];
+        struct network_point dest = points[dest_id];
+
+        double u[3], norm;
+        calculate_unitary_vector(src.x,src.y,src.z,dest.x,dest.y,dest.z,\
+                                u,norm);
+        
+        uint32_t cur_index = mapping[src_id];
+        uint32_t num_walkers_in_line = norm / walker_radius;
+        for (uint32_t k = 0; k < num_walkers_in_line; k++)
+        {
+            double pos[3];
+            pos[0] = src.x + k*u[0]*walker_radius;
+            pos[1] = src.y + k*u[1]*walker_radius;
+            pos[2] = src.z + k*u[2]*walker_radius;
+
+            struct walker *w = new_walker(pos[0],pos[1],pos[2],walker_radius);
+            w->stuck_counter = 1;
+            insert_walker_node(the_point_list,w);
+            counter_points++;
+
+        }
+        mapping[dest_id] = counter_points-1;
+    }
+    // Segments
+    counter_points = 0;
+    for (uint32_t i = 0; i < lines.size(); i++)
+    {
+        uint32_t src_id = lines[i].src;
+        uint32_t dest_id = lines[i].dest;
+
+        struct network_point src = points[src_id];
+        struct network_point dest = points[dest_id];
+
+        double u[3], norm;
+        calculate_unitary_vector(src.x,src.y,src.z,dest.x,dest.y,dest.z,\
+                                u,norm);
+        
+        uint32_t cur_index = mapping[src_id];
+        uint32_t num_walkers_in_line = norm / walker_radius;
+        for (uint32_t k = 0; k < num_walkers_in_line; k++)
+        {
+            struct segment *the_segment = new_segment(cur_index,counter_points);
+            insert_segment_node(the_segment_list,the_segment);
+            cur_index = counter_points;
+            counter_points++;
+        }
+    }
 }
 
 void print_dla_tree (struct dla_tree *the_tree)

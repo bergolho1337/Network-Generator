@@ -48,9 +48,9 @@ void make_root_default (struct dla_tree *the_tree, struct user_options *the_opti
 void make_root_using_initial_network (struct dla_tree *the_tree, struct user_options *the_options);
 void grow_tree (struct dla_tree *the_tree, struct user_options *the_options);
 
-void write_to_vtk (struct dla_tree *the_tree);
-void write_tree_to_vtk (struct dla_tree *the_tree);
-void write_root (struct walker_list *l);
+void write_tree_to_vtk (struct dla_tree *the_tree, const char output_dir[]);
+void write_current_tree_to_vtk (struct dla_tree *the_tree, const char output_dir[]);
+void write_root (struct walker_list *l, const char output_dir[]);
 
 void print_dla_tree (struct dla_tree *the_tree);
 

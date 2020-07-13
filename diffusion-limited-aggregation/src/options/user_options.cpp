@@ -4,6 +4,9 @@ struct user_options* new_user_options (int argc, char *argv[])
 {
     struct user_options *result = (struct user_options*)malloc(sizeof(struct user_options));
 
+    result->walker_config = NULL;
+    result->output_dir = NULL;
+    result->initial_network_filename = NULL;
     result->use_initial_network = false;
 
     read_config_file(result,argv[1]);
@@ -83,6 +86,13 @@ int parse_config_file(void *user, const char *section, const char *name, const c
             pconfig->initial_network_filename = strdup(value);
         }
     }
+    else if (SECTION_STARTS_WITH(SAVE_RESULT_SECTION))
+    {
+        if (MATCH_NAME("output_dir"))
+        {
+            pconfig->output_dir = strdup(value);
+        }
+    }
     else if (SECTION_STARTS_WITH(WALKER_SECTION))
     {
         if (!pconfig->walker_config)
@@ -113,11 +123,20 @@ int parse_config_file(void *user, const char *section, const char *name, const c
     return 1;
 }
 
+void create_directory (const char folder_path[])
+{
+    if (mkdir(folder_path,S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != -1)
+        printf("[INFO] Output directory created at:> %s\n",folder_path);
+    else
+        fprintf(stderr,"[ERROR] Fail on creating output directory!\n");
+}
+
 void print_user_options (struct user_options *the_options)
 {
     printf("%s\n",PRINT_LINE);
     printf("[user_options] number_of_iterations = %u\n",the_options->max_num_iter);
     printf("[user_options] number_of_walker = %u\n",the_options->max_num_walkers);
+    printf("[user_options] output_dir = %s\n",the_options->output_dir);
     printf("%s\n",PRINT_DOTS);
     if (the_options->walker_config)
         print_walker_config(the_options->walker_config);

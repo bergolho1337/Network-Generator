@@ -7,6 +7,7 @@
 
 #define MAIN_SECTION "main"
 #define WALKER_SECTION "walker"
+#define SAVE_RESULT_SECTION "save_result"
 
 #define MATCH_SECTION_AND_NAME(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
 #define MATCH_SECTION(s) strcmp(section, s) == 0

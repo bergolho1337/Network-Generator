@@ -80,6 +80,7 @@ SET_WALKER_RESPAWN_FUNCTION (respawn)
     {
         uint32_t face_index = rand() % mesh_faces.size();
         uint32_t vertex_index = rand() % 3;
+        //printf("%u %u\n",face_index,vertex_index);
         switch (vertex_index)
         {
             // Vertex 1
@@ -90,7 +91,7 @@ SET_WALKER_RESPAWN_FUNCTION (respawn)
                             pos[1] = mesh_faces[face_index].v1->y;
                             pos[2] = mesh_faces[face_index].v1->z;
 
-                            mesh_faces[face_index].v1->is_taken = true;
+                            //mesh_faces[face_index].v1->is_taken = true;
 
                             point_is_not_ok = false;
                         }
@@ -104,7 +105,7 @@ SET_WALKER_RESPAWN_FUNCTION (respawn)
                             pos[1] = mesh_faces[face_index].v2->y;
                             pos[2] = mesh_faces[face_index].v2->z;
 
-                            mesh_faces[face_index].v2->is_taken = true;
+                            //mesh_faces[face_index].v2->is_taken = true;
 
                             point_is_not_ok = false;
                         }
@@ -119,7 +120,7 @@ SET_WALKER_RESPAWN_FUNCTION (respawn)
                             pos[1] = mesh_faces[face_index].v3->y;
                             pos[2] = mesh_faces[face_index].v3->z;
 
-                            mesh_faces[face_index].v3->is_taken = true;
+                            //mesh_faces[face_index].v3->is_taken = true;
 
                             point_is_not_ok = false;
                         }
@@ -128,7 +129,6 @@ SET_WALKER_RESPAWN_FUNCTION (respawn)
                     }
         }
     }while (point_is_not_ok);
-
 }
 
 SET_WALKER_DOMAIN_DRAW_FUNCTION (draw)

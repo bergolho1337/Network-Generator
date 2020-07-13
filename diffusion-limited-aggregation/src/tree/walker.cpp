@@ -22,19 +22,31 @@ struct walker* new_walker (struct user_options *the_options)
 
 struct walker* new_walker (struct user_options *the_options, struct walker_list *l)
 {
+    //printf("Current = %u || Max = %u\n",l->num_nodes,the_options->max_num_walkers);
     struct walker *result = (struct walker*)malloc(sizeof(struct walker));
 
     // Get the reference to the library respawn function
     set_walker_respawn_function_fn *respawn_function_ptr = the_options->walker_config->respawn_function; 
+
+    // Call the respawn library function
+    respawn_function_ptr(the_options->walker_config,result->pos);
 
     // Generate a new walker position
     uint32_t counter = 0;
     bool point_is_not_ok = false;
     do
     {
+        //printf("%u\n",counter);
         // WARNING
         if (counter > MAX_RESPAWN_TRIES)
+        {
+            uint32_t cur_number_walkers = l->num_nodes;
+            uint32_t total_number_walkers = the_options->max_num_walkers;
+            printf("[!] Warning! Reducing the number of walker to %u! Previous was %u\n",cur_number_walkers,total_number_walkers);
+
+            the_options->max_num_walkers = cur_number_walkers;
             return NULL;
+        }
 
         // Call the respawn library function
         respawn_function_ptr(the_options->walker_config,result->pos);

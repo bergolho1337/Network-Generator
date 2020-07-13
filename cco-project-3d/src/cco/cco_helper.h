@@ -44,7 +44,7 @@ void calc_relative_resistance_subtree (struct segment_node *ibiff, struct segmen
 void calc_pressure_drop_term (struct segment_node *iterm, const double Q_term);
 void calc_pressure_drop_subtree (struct segment_node *iconn, const double Q_term);
 void calc_radius_term (struct segment_node *iterm, const double Q_term, const double delta_p);
-double calc_bifurcation_ratio (const double radius_ratio, bool sign);
+double calc_bifurcation_ratio (const double gamma, const double radius_ratio, bool sign);
 double calc_radius_ratio (struct segment_node *iconn, struct segment_node *inew, const double Q_term);
 double calc_radius (struct cco_network *the_network, struct segment_node *s);
 double calc_tree_volume (struct cco_network *the_network);

@@ -2,7 +2,7 @@ import sys
 import chaospy as cp
 from cco_sections import write_cco_config_file
 from co_sections import write_co_config_file
-#from co_sections import write_co_activation_time_config_file
+from co_activation_time_sections import write_co_activation_time_config_file
 from monoalg3d_sections import write_monoalg_config_file
 
 def main():
@@ -20,9 +20,9 @@ def main():
             #write_cco_config_file(seed,rand_offset)
             #write_monoalg_config_file(seed,rand_offset,1)
             #write_co_config_file(seed,rand_offset)
-            write_monoalg_config_file(seed,rand_offset,2)
-            #write_co_activation_time_config_file(seed,rand_offset,start_radius)
-            #write_monoalg_config_file(seed,rand_offset,3)
+            #write_monoalg_config_file(seed,rand_offset,2)
+            write_co_activation_time_config_file(seed,rand_offset)
+            write_monoalg_config_file(seed,rand_offset,3)
 
 if __name__ == "__main__":
 	main()

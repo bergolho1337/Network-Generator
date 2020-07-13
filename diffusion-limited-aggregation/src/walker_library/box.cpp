@@ -139,7 +139,7 @@ SET_WALKER_DOMAIN_DRAW_FUNCTION (draw)
     unstructured_grid->InsertNextCell(hex->GetCellType(), hex->GetPointIds());
 
     vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
-    writer->SetFileName("output/box_walker_region.vtu");
+    writer->SetFileName("outputs/box_walker_region.vtu");
     #if VTK_MAJOR_VERSION <= 5
     writer->SetInput(unstructured_grid);
     #else

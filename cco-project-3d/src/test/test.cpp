@@ -162,6 +162,7 @@ void test3 (struct cco_network *the_network)
 void check_bifurcation_rule (struct cco_network *the_network)
 {
     FILE *log_file = the_network->log_file;
+    double gamma = the_network->gamma;
 
     //printf("[!] Checking bifurcation rule!\n");
     fprintf(log_file,"[!] Checking bifurcation rule!\n");
@@ -177,9 +178,9 @@ void check_bifurcation_rule (struct cco_network *the_network)
 
         if (tmp_left && tmp_right)
         {
-            double r = pow(tmp->value->radius,GAMMA);
-            double r_left = pow(tmp_left->value->radius,GAMMA);
-            double r_right = pow(tmp_right->value->radius,GAMMA);
+            double r = pow(tmp->value->radius,gamma);
+            double r_left = pow(tmp_left->value->radius,gamma);
+            double r_right = pow(tmp_right->value->radius,gamma);
 
             double diff = r_left + r_right - r;
             if (diff > TOLERANCE)

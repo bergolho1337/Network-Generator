@@ -78,6 +78,9 @@ void set_parameters (struct cco_network *the_network, struct user_options *optio
         strcpy(the_network->initial_network_filename,options->initial_network_filename);
         printf("[cco] Using initial network = %s\n",the_network->initial_network_filename);
     }
+
+    the_network->gamma = options->gamma;
+    printf("[cco] Gamma = %g\n",the_network->gamma);
 }
 
 void set_cost_function_name (struct cco_network *the_network, struct user_options *options)
@@ -292,7 +295,7 @@ void grow_tree_using_cloud_points (struct cco_network *the_network,\
         generate_terminal_using_cloud_points(the_network,config,local_opt_config,cloud_points,obstacle_faces);
 
         // DEBUG
-        write_to_vtk_iteration(the_network);
+        //write_to_vtk_iteration(the_network);
 
         printf("%s\n",PRINT_LINE);
         fprintf(log_file,"%s\n",PRINT_LINE);
@@ -534,7 +537,7 @@ void rescale_root (struct segment_node *iroot, const double Q_perf, const double
 }
 
 void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struct segment_node *inew,\
-                 const double Q_perf, const double delta_p, const int num_terminals, const bool use_only_murray)
+                 const double Q_perf, const double delta_p, const double gamma, const int num_terminals, const bool use_only_murray)
 {
 
     double Q_term = Q_perf / num_terminals;
@@ -563,8 +566,8 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
         radius_ratio = calc_radius_ratio(iconn,inew,Q_term);
 
         // iconn + inew: Calculate bifurcation ratio using (2.31)
-        inew->value->beta = calc_bifurcation_ratio(radius_ratio,false);
-        iconn->value->beta = calc_bifurcation_ratio(radius_ratio,true);
+        inew->value->beta = calc_bifurcation_ratio(gamma,radius_ratio,false);
+        iconn->value->beta = calc_bifurcation_ratio(gamma,radius_ratio,true);
     }
     // [FRACTAL] Compute the radius ratio using only Murray's law
     else
@@ -577,8 +580,8 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
 
         // Symmetric
         double r_par = iconn->value->radius;
-        double r_left = pow(0.5, 1.0/GAMMA) * r_par;
-        double r_right = pow(0.5, 1.0/GAMMA) * r_par;
+        double r_left = pow(0.5, 1.0/gamma) * r_par;
+        double r_right = pow(0.5, 1.0/gamma) * r_par;
 
         //radius_ratio = r_left / r_right;
 
@@ -601,7 +604,7 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
     {
         struct segment_node *ipar_left = ipar->value->left;
         struct segment_node *ipar_right = ipar->value->right;
-        rescale_until_root(ipar,ipar_left,ipar_right,Q_perf,delta_p,num_terminals,use_only_murray);
+        rescale_until_root(ipar,ipar_left,ipar_right,Q_perf,delta_p,gamma,num_terminals,use_only_murray);
     }
     // We are already at the root
     else
@@ -616,7 +619,7 @@ void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struc
 }
 
 void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_left, struct segment_node *ipar_right,\
-                        const double Q_perf, const double delta_p, const int num_terminals, const bool use_only_murray)
+                        const double Q_perf, const double delta_p, const double gamma, const int num_terminals, const bool use_only_murray)
 {
 
     // Reach the root
@@ -636,8 +639,8 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
             radius_ratio = calc_radius_ratio(ipar_right,ipar_left,Q_term);
 
             // Recalculate bifurcation ratios for the offsprings using (2.31)
-            ipar_left->value->beta = calc_bifurcation_ratio(radius_ratio,false);
-            ipar_right->value->beta = calc_bifurcation_ratio(radius_ratio,true);
+            ipar_left->value->beta = calc_bifurcation_ratio(gamma,radius_ratio,false);
+            ipar_right->value->beta = calc_bifurcation_ratio(gamma,radius_ratio,true);
         }
         // [FRACTAL] Compute the radius ratio using only Murray's law
         else
@@ -650,8 +653,8 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
 
             // Symmetric
             double r_par = ipar->value->radius;
-            double r_left = pow(0.5, 1.0/GAMMA) * r_par;
-            double r_right = pow(0.5, 1.0/GAMMA) * r_par;
+            double r_left = pow(0.5, 1.0/gamma) * r_par;
+            double r_right = pow(0.5, 1.0/gamma) * r_par;
             ipar_left->value->beta = r_left / r_par;
             ipar_right->value->beta = r_right / r_par;
             
@@ -675,7 +678,7 @@ void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_le
             rescale_until_root(ipar->value->parent,\
                                ipar->value->parent->value->left,\
                                ipar->value->parent->value->right,\
-                               Q_perf,delta_p,num_terminals,use_only_murray);
+                               Q_perf,delta_p,gamma,num_terminals,use_only_murray);
         else
         {
             // Recalculate the root radius when we reach this segment using (2.19)
@@ -698,6 +701,7 @@ struct segment_node* build_segment (struct cco_network *the_network, struct loca
     double p_perf = the_network->p_perf;
     double p_term = the_network->p_term;
     double delta_p = p_perf - p_term;
+    double gamma = the_network->gamma;
     bool using_local_optimization = the_network->using_local_optimization;
 
     // TODO: Pass the pointer directly here ...
@@ -772,7 +776,7 @@ struct segment_node* build_segment (struct cco_network *the_network, struct loca
     tmp->value->ndist++;
     the_network->num_terminals = tmp->value->ndist;
 
-    rescale_tree(ibiff_node,iconn_node,inew_node,Q_perf,delta_p,the_network->num_terminals,the_network->using_only_murray_law);
+    rescale_tree(ibiff_node,iconn_node,inew_node,Q_perf,delta_p,gamma,the_network->num_terminals,the_network->using_only_murray_law);
 
     recalculate_radius(the_network);
 
@@ -805,6 +809,7 @@ void restore_state_tree (struct cco_network *the_network,\
                         struct segment_node *iconn)
 {
 
+    double gamma = the_network->gamma;
     double Q_perf = the_network->Q_perf;
     double p_perf = the_network->p_perf;
     double p_term = the_network->p_term;
@@ -878,7 +883,7 @@ void restore_state_tree (struct cco_network *the_network,\
         struct segment_node *ipar_right = ipar->value->right;
 
         rescale_until_root(ipar,ipar_left,ipar_right,\
-                        Q_perf,delta_p,the_network->num_terminals,use_only_murray);
+                        Q_perf,delta_p,gamma,the_network->num_terminals,use_only_murray);
         
     }
     else
@@ -1453,6 +1458,7 @@ void sort_point_from_cloud_v4 (double pos[], std::vector<struct point> cloud_poi
 void prune_tree_segment (struct cco_network *the_network, struct segment_node *inew)
 {
 
+    double gamma = the_network->gamma;
     double Q_perf = the_network->Q_perf;
     double p_perf = the_network->p_perf;
     double p_term = the_network->p_term;
@@ -1533,7 +1539,7 @@ void prune_tree_segment (struct cco_network *the_network, struct segment_node *i
         struct segment_node *ipar_right = ipar->value->right;
 
         rescale_until_root(ipar,ipar_left,ipar_right,\
-                        Q_perf,delta_p,the_network->num_terminals,use_only_murray);
+                        Q_perf,delta_p,gamma,the_network->num_terminals,use_only_murray);
     }
     else
     {

@@ -14,6 +14,7 @@ struct user_options* new_user_options (int argc, char *argv[])
     result->start_radius = -1;
     result->seed = 1;                           // Default value
     result->max_rand_offset = 1;                // Default value
+    result->gamma = 3.0;                        // Default value
 
     read_config_file(result,argv[1]);
     
@@ -109,6 +110,10 @@ int parse_config_file(void *user, const char *section, const char *name, const c
         else if (MATCH_NAME("max_rand_offset"))
         {
             pconfig->max_rand_offset = (uint32_t)strtol(value, NULL, 10);
+        }
+        else if (MATCH_NAME("gamma"))
+        {
+            pconfig->gamma = strtof(value, NULL);
         }
         else if (MATCH_NAME("use_only_murray"))
         {

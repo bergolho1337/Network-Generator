@@ -1,13 +1,13 @@
 #include "minimize_activation_time.h"
 
-// TODO: Need more test ....
-SET_COST_FUNCTION (minimize_tree_activation_time)
+SET_COST_FUNCTION (minimize_activation_time)
 {
     FILE *log_file = the_network->log_file;
 
     struct segment_node *best = NULL;
     double minimum_activation_time = __DBL_MAX__;
 
+    double gamma = the_network->gamma;
     double Q_perf = the_network->Q_perf;
     double p_perf = the_network->p_perf;
     double p_term = the_network->p_term;
@@ -100,7 +100,7 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
                 new_biff_pos[2] = test_positions[j].z;
                 move_bifurcation_location(iconn,ibiff,inew,new_biff_pos);
 
-                rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,the_network->num_terminals,the_network->using_only_murray_law);
+                rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,gamma,the_network->num_terminals,the_network->using_only_murray_law);
 
                 recalculate_radius(the_network);
 
@@ -113,7 +113,13 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
                 has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
                 has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
 
-                point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision;
+                // [RESTRICTION ZONE]
+                double iconn_size = calc_segment_size(iconn);
+                double ibiff_size = calc_segment_size(ibiff);
+                double inew_size = calc_segment_size(inew);
+                bool has_minimum_segment_size = has_valid_segment_sizes_2(iconn_size,ibiff_size,inew_size);
+
+                point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision || !has_minimum_segment_size;
 
                 if (activation_time < minimum_activation_time && !point_is_not_ok)
                 {
@@ -169,13 +175,14 @@ SET_COST_FUNCTION (minimize_tree_activation_time)
     return best;
 }
 
-/*
-SET_COST_FUNCTION (minimize_tree_activation_time_with_angle_restriction_and_level_restriction)
+SET_COST_FUNCTION (minimize_activation_time_with_angle_restriction)
 {
+    FILE *log_file = the_network->log_file;
+
     struct segment_node *best = NULL;
-    double minimum_at = __DBL_MAX__;
     double minimum_eval = __DBL_MAX__;
 
+    double gamma = the_network->gamma;
     double Q_perf = the_network->Q_perf;
     double p_perf = the_network->p_perf;
     double p_term = the_network->p_term;
@@ -185,27 +192,25 @@ SET_COST_FUNCTION (minimize_tree_activation_time_with_angle_restriction_and_leve
     bool using_local_optimization = the_network->using_local_optimization;
     set_local_optimization_function_fn *local_optimization_fn = local_opt_config->function;
 
-
     // Get cost function parameters
     bool ret;
-    double c;
-    get_parameter_value_from_map(config->params,"c",&c);
-    double cm;
-    get_parameter_value_from_map(config->params,"cm",&cm);
-    double rc;
-    get_parameter_value_from_map(config->params,"rc",&rc);
-    double rm;
-    get_parameter_value_from_map(config->params,"rm",&rm);
+    double G;
+    ret = get_parameter_value_from_map(config->params,"G",&G);
+    double Cf;
+    ret = get_parameter_value_from_map(config->params,"Cf",&Cf);
+    double tau_f;
+    ret = get_parameter_value_from_map(config->params,"tauf",&tau_f);
     double deviation_limit = __DBL_MAX__;
     ret = get_parameter_value_from_map(config->params,"deviation_limit",&deviation_limit);
-    double min_angle_limit = 0.0;
-    ret = get_parameter_value_from_map(config->params,"min_angle_limit",&min_angle_limit);
-    double max_angle_limit = 360.0;
-    ret = get_parameter_value_from_map(config->params,"max_angle_limit",&max_angle_limit);
+    double min_degrees_limit;
+    get_parameter_value_from_map(config->params,"min_degrees_limit",&min_degrees_limit);
+    double max_degrees_limit;
+    get_parameter_value_from_map(config->params,"max_degrees_limit",&max_degrees_limit);
+    double u[3], v[3];
+    double angle_degrees;
 
     for (uint32_t i = 0; i < feasible_segments.size(); i++)
     {
-
         struct segment_node *iconn = feasible_segments[i];
 
         struct segment_node *inew = build_segment(the_network,local_opt_config,iconn->id,new_pos);
@@ -215,53 +220,48 @@ SET_COST_FUNCTION (minimize_tree_activation_time_with_angle_restriction_and_leve
         //  WITH LOCAL OPTIMIZATION
         if (using_local_optimization)
         {
-
             // Save the original position of the bifurcation
             double ori_pos[3];
-            save_original_bifurcation_position(iconn,ori_pos);
+            save_original_bifurcation_position(ibiff,ori_pos);
 
             // Initialize the best position as middle point of the segment
             double best_pos[3];
             initialize_best_position_as_middle_point(best_pos,ori_pos);
 
-            //printf("[cost_function] Original bifurcation position = (%g,%g,%g)\n",\
-                                                        best_pos[0],\
-                                                        best_pos[1],\
-                                                        best_pos[2]);
+            // [EVALUATE COST FUNCTION]
+            double eval = calc_total_activation_time(the_network,G,Cf,tau_f);
 
-            // 1) Check the cost function of the first configuration
-            double at = calc_terminal_activation_time(inew,c,cm,rc,rm);
-            double eval = calc_segment_activation_time_using_level(at,iconn);
+            // [RESTRICTION SECTION]
+            // Check bifurcation size and angle
+            calc_unitary_vector(iconn,u);
+            calc_unitary_vector(inew,v);
+            angle_degrees = calc_angle_between_vectors(u,v);
+            bool has_angle_requirement = check_angle_restriction(angle_degrees,min_degrees_limit,max_degrees_limit);
 
-            // Calculate bifurcation angle
-            struct point *src = iconn->value->src->value;
-            struct point *dest = iconn->value->dest->value;
+            double iconn_size = calc_segment_size(iconn);
+            double ibiff_size = calc_segment_size(ibiff);
+            double inew_size = calc_segment_size(inew);
+            bool has_minimum_segment_size = has_valid_segment_sizes(iconn_size,ibiff_size,inew_size);
 
-            double middle_pos[3];
-            calc_middle_point_segment(iconn,middle_pos);
+            // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn'
+            struct segment_list *s_list = the_network->segment_list;
+            bool has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
+            bool has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
 
-            double u[3], v[3];
-            build_unitary_vector(u,middle_pos[0],middle_pos[1],middle_pos[2],\
-                                dest->x,dest->y,dest->z);
-            build_unitary_vector(v,middle_pos[0],middle_pos[1],middle_pos[2],\
-                                new_pos[0],new_pos[1],new_pos[2]);
-
-            double angle = calc_angle_between_vectors(u,v);
-
-            if (eval < minimum_eval && \
-            !has_deviation(the_network->segment_list,inew,at,deviation_limit,c,cm,rc,rm) && \
-            angle >= min_angle_limit && angle <= max_angle_limit)
+            bool point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision || !has_minimum_segment_size || !has_angle_requirement;
+            
+            if (eval < minimum_eval && !point_is_not_ok)
             {
                 minimum_eval = eval;
                 best = iconn;
 
-                // The best position of the best segment will be stored inside the
+                // The best position of the best segment will be stored inside the 
                 // 'local_optimization' structure
                 local_opt_config->best_pos[0] = best_pos[0];
                 local_opt_config->best_pos[1] = best_pos[1];
                 local_opt_config->best_pos[2] = best_pos[2];
 
-                printf("[cost_function] Best segment = %d -- Cost function = %g -- Best position = (%g,%g,%g)\n",\
+                printf("[cost_function] Best segment = %d -- Eval = %g -- Best position = (%g,%g,%g)\n",\
                                 best->id,\
                                 minimum_eval,\
                                 local_opt_config->best_pos[0],\
@@ -276,39 +276,40 @@ SET_COST_FUNCTION (minimize_tree_activation_time_with_angle_restriction_and_leve
 
             for (uint32_t j = 0; j < test_positions.size(); j++)
             {
-                //printf("Test position = (%g,%g,%g)\n",test_positions[j].x,test_positions[j].y,test_positions[j].z);
-
-                // Change the position of the bifurcation point
+                // Change the position of the bifurcation point 
                 double new_biff_pos[3];
                 new_biff_pos[0] = test_positions[j].x;
                 new_biff_pos[1] = test_positions[j].y;
                 new_biff_pos[2] = test_positions[j].z;
                 move_bifurcation_location(iconn,ibiff,inew,new_biff_pos);
-                rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,the_network->num_terminals);
+
+                rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,gamma,the_network->num_terminals,the_network->using_only_murray_law);
+
                 recalculate_radius(the_network);
 
-                // Evaluate cost function for the current configuration
-                double at = calc_terminal_activation_time(inew,c,cm,rc,rm);
-                double eval = calc_segment_activation_time_using_level(at,iconn);
+                // [EVALUATE COST FUNCTION]
+                double eval = calc_total_activation_time(the_network,G,Cf,tau_f);
 
-                // Calculate bifurcation angle
-                struct point *src = iconn->value->src->value;
-                struct point *dest = iconn->value->dest->value;
+                // [RESTRICTION SECTION]
+                // Check bifurcation angle
+                calc_unitary_vector(iconn,u);
+                calc_unitary_vector(inew,v);
+                angle_degrees = calc_angle_between_vectors(u,v);
+                has_angle_requirement = check_angle_restriction(angle_degrees,min_degrees_limit,max_degrees_limit);
 
-                double middle_pos[3];
-                calc_middle_point_segment(iconn,middle_pos);
+                double iconn_size = calc_segment_size(iconn);
+                double ibiff_size = calc_segment_size(ibiff);
+                double inew_size = calc_segment_size(inew);
+                has_minimum_segment_size = has_valid_segment_sizes_2(iconn_size,ibiff_size,inew_size);
 
-                double u[3], v[3];
-                build_unitary_vector(u,middle_pos[0],middle_pos[1],middle_pos[2],\
-                                    dest->x,dest->y,dest->z);
-                build_unitary_vector(v,middle_pos[0],middle_pos[1],middle_pos[2],\
-                                    new_pos[0],new_pos[1],new_pos[2]);
+                // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn' and 'ibiff'
+                s_list = the_network->segment_list;
+                has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
+                has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
+                
+                point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision || !has_angle_requirement || !has_minimum_segment_size;
 
-                double angle = calc_angle_between_vectors(u,v);
-
-                if (eval < minimum_eval && \
-            !has_deviation(the_network->segment_list,inew,at,deviation_limit,c,cm,rc,rm) && \
-            angle >= min_angle_limit && angle <= max_angle_limit)
+                if (eval < minimum_eval && !point_is_not_ok)
                 {
                     minimum_eval = eval;
                     best = iconn;
@@ -318,14 +319,13 @@ SET_COST_FUNCTION (minimize_tree_activation_time_with_angle_restriction_and_leve
                     local_opt_config->best_pos[1] = new_biff_pos[1];
                     local_opt_config->best_pos[2] = new_biff_pos[2];
 
-                    printf("[cost_function] Best segment = %d -- Cost function = %g -- Best position = (%g,%g,%g)\n",\
+                    printf("[cost_function] Best segment = %d -- Eval = %g -- Best position = (%g,%g,%g)\n",\
                                     best->id,\
                                     minimum_eval,\
                                     local_opt_config->best_pos[0],\
                                     local_opt_config->best_pos[1],\
                                     local_opt_config->best_pos[2]);
                 }
-
             }
 
             // Move the bifurcation to the original position
@@ -335,42 +335,34 @@ SET_COST_FUNCTION (minimize_tree_activation_time_with_angle_restriction_and_leve
 
             // Clear the array for the next segment
             test_positions.clear();
- 
         }
         // NO LOCAL OPTIMIZATION
         else
         {
-            // Evaluate the cost function
-            double at = calc_terminal_activation_time(inew,c,cm,rc,rm);
-            double eval = calc_segment_activation_time_using_level(at,iconn);
+            double eval = calc_total_activation_time(the_network,G,Cf,tau_f);
 
-            // Calculate bifurcation angle
-            struct point *src = iconn->value->src->value;
-            struct point *dest = iconn->value->dest->value;
+            calc_unitary_vector(iconn,u);
+            calc_unitary_vector(inew,v);
+            angle_degrees = calc_angle_between_vectors(u,v);
+            bool has_angle_requirement = check_angle_restriction(angle_degrees,min_degrees_limit,max_degrees_limit);
 
-            double middle_pos[3];
-            calc_middle_point_segment(iconn,middle_pos);
+            struct segment_list *s_list = the_network->segment_list;
+            bool has_segment_segment_collision = has_collision(s_list,iconn,ibiff,inew,log_file);
+            bool has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces);
 
-            double u[3], v[3];
-            build_unitary_vector(u,middle_pos[0],middle_pos[1],middle_pos[2],\
-                                dest->x,dest->y,dest->z);
-            build_unitary_vector(v,middle_pos[0],middle_pos[1],middle_pos[2],\
-                                new_pos[0],new_pos[1],new_pos[2]);
+            bool point_is_not_ok = has_segment_segment_collision || has_segment_triangle_collision || !has_angle_requirement;
 
-            double angle = calc_angle_between_vectors(u,v);
-
-            if (eval < minimum_eval && \
-            !has_deviation(the_network->segment_list,inew,at,deviation_limit,c,cm,rc,rm) && \
-            angle >= min_angle_limit && angle <= max_angle_limit)
+            if (eval < minimum_eval && !point_is_not_ok)
             {
                 minimum_eval = eval;
                 best = iconn;
 
-                printf("[cost_function] Best segment = %d -- Cost function evaluation = %g\n",best->id,minimum_eval);
+                printf("[cost_function] Best segment = %d -- Eval = %g\n",best->id,minimum_eval);
             }
 
             restore_state_tree(the_network,iconn);
         }
+
     }
 
     if (using_local_optimization)
@@ -379,10 +371,6 @@ SET_COST_FUNCTION (minimize_tree_activation_time_with_angle_restriction_and_leve
         local_opt_config->first_call = false;
     }
 
-    // DEBUG
-    //printf("[cost_function] Best AT = %g ms\n",minimum_at);
-    //print_terminal_activation_time(the_network,c,cm,rc,rm);
-
     return best;
 }
-*/
+

@@ -50,7 +50,7 @@ SET_WALKER_DOMAIN_DRAW_FUNCTION (draw)
     polygonSource->SetCenter(root_pos[0],root_pos[1],root_pos[2]);
 
     vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-    writer->SetFileName("output/circle_walker_region.vtp");
+    writer->SetFileName("outputs/circle_walker_region.vtp");
     writer->SetInputConnection(polygonSource->GetOutputPort());
     writer->Write();
 }

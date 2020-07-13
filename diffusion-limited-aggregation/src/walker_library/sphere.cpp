@@ -54,7 +54,7 @@ SET_WALKER_DOMAIN_DRAW_FUNCTION (draw)
     sphereSource->SetThetaResolution(100);
 
     vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-    writer->SetFileName("output/sphere_walker_region.vtp");
+    writer->SetFileName("outputs/sphere_walker_region.vtp");
     writer->SetInputConnection(sphereSource->GetOutputPort());
     writer->Write();
 }

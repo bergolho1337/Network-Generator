@@ -11,6 +11,9 @@
 #include <cstdint>
 #include <cstring>
 
+#include <sys/stat.h> 
+#include <sys/types.h> 
+
 #include "../ini_parser/ini.h"
 #include "../ini_parser/ini_file_sections.h"
 #include "../utils/utils.h"
@@ -25,6 +28,8 @@ struct user_options
 
     double root_pos[3];
 
+    char *output_dir;
+
     bool use_initial_network;
     char *initial_network_filename;
 
@@ -36,6 +41,8 @@ void free_user_options (struct user_options *the_options);
 
 void read_config_file (struct user_options *the_options, const char filename[]);
 int parse_config_file(void *user, const char *section, const char *name, const char *value);
+
+void create_directory (const char folder_path[]);
 
 void print_user_options (struct user_options *the_options);
 

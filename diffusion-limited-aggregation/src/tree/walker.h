@@ -16,7 +16,7 @@
 #include "../utils/utils.h"
 #include "../options/user_options.h"
 
-const uint32_t MAX_RESPAWN_TRIES = 5000;
+const uint32_t MAX_RESPAWN_TRIES = 500000;
 
 struct walker
 {

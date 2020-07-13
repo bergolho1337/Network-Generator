@@ -7,6 +7,7 @@ SET_COST_FUNCTION (minimize_custom_function)
     struct segment_node *best = NULL;
     double minimum_eval = __DBL_MAX__;
 
+    double gamma = the_network->gamma;
     double Q_perf = the_network->Q_perf;
     double p_perf = the_network->p_perf;
     double p_term = the_network->p_term;
@@ -92,7 +93,7 @@ SET_COST_FUNCTION (minimize_custom_function)
                 new_biff_pos[2] = test_positions[j].z;
                 move_bifurcation_location(iconn,ibiff,inew,new_biff_pos);
 
-                rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,the_network->num_terminals,the_network->using_only_murray_law);
+                rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,gamma,the_network->num_terminals,the_network->using_only_murray_law);
 
                 recalculate_radius(the_network);
 
@@ -173,6 +174,7 @@ SET_COST_FUNCTION (minimize_custom_function_with_angle_restriction)
     struct segment_node *best = NULL;
     double minimum_eval = __DBL_MAX__;
 
+    double gamma = the_network->gamma;
     double Q_perf = the_network->Q_perf;
     double p_perf = the_network->p_perf;
     double p_term = the_network->p_term;
@@ -268,7 +270,7 @@ SET_COST_FUNCTION (minimize_custom_function_with_angle_restriction)
                 new_biff_pos[2] = test_positions[j].z;
                 move_bifurcation_location(iconn,ibiff,inew,new_biff_pos);
 
-                rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,the_network->num_terminals,the_network->using_only_murray_law);
+                rescale_tree(ibiff,iconn,inew,Q_perf,delta_p,gamma,the_network->num_terminals,the_network->using_only_murray_law);
 
                 recalculate_radius(the_network);
 

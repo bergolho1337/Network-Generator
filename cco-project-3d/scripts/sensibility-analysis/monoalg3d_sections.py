@@ -17,7 +17,8 @@ def write_monoalg_update_monodomain (file,use_cluster=False):
 def write_monoalg_save_result_section (file,seed,rand_offset,algorithm_number,use_cluster=False):
     file.write("[save_result]\n")
     file.write("print_rate = 25\n")
-    file.write("output_dir = ./outputs/elizabeth_co:min_length_seed:%u\n" % (seed))
+    #file.write("output_dir = ./outputs/elizabeth_co:min_length_seed:%u\n" % (seed))
+    file.write("output_dir = ./outputs/elizabeth_co:min_at_seed:%u\n" % (seed))
     file.write("init_function=init_save_purkinje_coupling_with_activation_times\n")
     file.write("end_function=end_save_purkinje_coupling_with_activation_times\n")
     file.write("main_function=save_purkinje_coupling_with_activation_times\n")
@@ -93,7 +94,7 @@ def write_monoalg_purkinje_section (file,seed,rand_offset,algorithm_number,use_c
     file.write("nmin_pmj=10\n")
     file.write("nmax_pmj=30\n")
     file.write("retro_propagation=true\n")
-    file.write("network_file=networks/03_Lucas/01_SRN/02_CO_Length/seed:%u.vtk\n" % (seed))
+    file.write("network_file=networks/03_Lucas/01_SRN/03_CO_Activation_Time/seed:%u.vtk\n" % (seed))
     file.write("pmj_location_file=networks/03_Lucas/01_SRN/01_Gold_Standart/elizabeth_pmj_full_um.vtk\n")
     file.write("main_function = initialize_purkinje_coupling_with_custom_mesh\n")
     file.write("library_file = shared_libs/libdefault_purkinje.so\n")
@@ -226,7 +227,8 @@ def write_monoalg_stimulus_section (file,use_cluster=False):
 '''
 
 def write_monoalg_config_file (seed,rand_offset,algorithm_number):
-    filename = "monoalg3d/co_min:length_seed-%u_nterm:650.ini" % (seed)
+    #filename = "monoalg3d/co_min:length_seed-%u_nterm:650.ini" % (seed)
+    filename = "monoalg3d/co_min:at_seed-%u_nterm:650.ini" % (seed)
     file = open(filename,"w")
 
     write_monoalg_main_section(file,seed,rand_offset)

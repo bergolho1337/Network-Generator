@@ -27,10 +27,10 @@
 // CONSTANTS AND MACROS 
 // =================================================================
 static const double ETA = 3.6e-03;                  // Blood viscosity 
-static const double GAMMA = 3.0;                    // Bifurcation expoent
+//static const double GAMMA = 3.0;                    // Bifurcation expoent
 static const uint32_t NTOSS = 10;                   // Number of tosses for a new terminal
 static const double FACTOR = 0.95;                  // Reduction factor for the distance criterion
-static const double EPISON = 1.0e-16;                // Minimum size for a segment
+static const double EPISON = 1.0e-16;                // Minimum size for a segment      CHANGE
 
 #define PRINT_LINE "========================================================================================================"
 // =================================================================
@@ -41,6 +41,8 @@ struct cco_network
     uint32_t max_rand_offset;           // Maximum offset for the random generator
 
     int num_terminals;                      
+
+    double gamma;                       // Bifurcation expoent
 
     int N_term;                         // Total number of terminals 
     double Q_perf;                      // Root perfusion
@@ -104,9 +106,9 @@ struct segment_node* build_segment (struct cco_network *the_network, struct loca
 
 void rescale_root (struct segment_node *iroot, const double Q_perf, const double delta_p, const bool using_only_murray);
 void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struct segment_node *inew,\
-                 const double Q_perf, const double delta_p, const int num_terminals, const bool use_only_murray);
+                 const double Q_perf, const double delta_p, const double gamma, const int num_terminals, const bool use_only_murray);
 void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_left, struct segment_node *ipar_right,\
-                        const double Q_perf, const double delta_p, const int num_terminals, const bool use_only_murray);
+                        const double Q_perf, const double delta_p, const double gamma, const int num_terminals, const bool use_only_murray);
 
 void recalculate_radius (struct cco_network *the_network);
 

@@ -104,7 +104,7 @@ SET_WALKER_DOMAIN_DRAW_FUNCTION (draw)
     polydata->SetLines(lines);
 
     vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-    writer->SetFileName("output/square_walker_region.vtp");
+    writer->SetFileName("outputs/square_walker_region.vtp");
     writer->SetInputData(polydata);
     writer->Write();
 }

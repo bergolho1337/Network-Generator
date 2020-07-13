@@ -64,15 +64,15 @@ double calc_radius_ratio (struct segment_node *iconn, struct segment_node *inew,
     return ratio;
 }
 
-double calc_bifurcation_ratio (const double radius_ratio, const bool sign)
+double calc_bifurcation_ratio (const double gamma, const double radius_ratio, const bool sign)
 {
-    static const double expoent = -1.0/GAMMA;
+    static const double expoent = -1.0/gamma;
     double base = radius_ratio;
 
     if (sign)
-        return pow( 1.0 + ( pow( base, -GAMMA) ) , expoent);
+        return pow( 1.0 + ( pow( base, -gamma) ) , expoent);
     else
-        return pow( 1.0 + ( pow( base, GAMMA) ) , expoent);
+        return pow( 1.0 + ( pow( base, gamma) ) , expoent);
 }
 
 double calc_segment_volume (struct segment_node *s)

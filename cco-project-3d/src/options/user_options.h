@@ -32,6 +32,7 @@ struct user_options
     double p_perf;
     double p_term;
     double v_perf;
+    double gamma;
 
     double root_pos[3];
 

@@ -33,7 +33,8 @@
 #include "../options/user_options.h"
 #include "../utils/stop_watch.h"
 
-const uint32_t MAX_NUMBER_OF_NODES = 1000;
+// Maximum number of nodes that are allow to be in the DLA tree
+const uint32_t MAX_NUMBER_OF_NODES = 5000;
 
 struct dla_tree
 {
@@ -48,10 +49,15 @@ void make_root_default (struct dla_tree *the_tree, struct user_options *the_opti
 void make_root_using_initial_network (struct dla_tree *the_tree, struct user_options *the_options);
 void grow_tree (struct dla_tree *the_tree, struct user_options *the_options);
 
+void build_graph_from_lists (struct walker_list *p_list, struct segment_list *s_list, std::vector< std::vector<uint32_t> > &graph);
+
 void write_tree_to_vtk (struct dla_tree *the_tree, const char output_dir[]);
 void write_current_tree_to_vtk (struct dla_tree *the_tree, const char output_dir[]);
 void write_root (struct walker_list *l, const char output_dir[]);
 
 void print_dla_tree (struct dla_tree *the_tree);
+void print_dla_tree_info (struct dla_tree *the_tree, const char output_dir[]);
+
+bool check_dla_tree (struct dla_tree *the_tree);
 
 #endif

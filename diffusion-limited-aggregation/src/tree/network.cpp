@@ -45,7 +45,11 @@ void calculate_unitary_vector(const double x1, const double y1, const double z1,
                                 double u[], double &norm)
 {
     norm = calculate_euclidean_norm(x1,y1,z1,x2,y2,z2);
+    if (norm < 1.0e-08)
+        norm = 1.0e-08;
+    
     u[0] = (x2-x1)/norm;
     u[1] = (y2-y1)/norm;
     u[2] = (z2-z1)/norm;   
+
 }

@@ -124,6 +124,19 @@ bool is_empty (struct segment_list *l)
     return (l->list_nodes == NULL) ? true : false;
 }
 
+void order_list (struct segment_list *l)
+{
+    uint32_t cont = 0;
+    struct segment_node *tmp = l->list_nodes;
+    while (tmp != NULL)
+    {
+        tmp->id = cont;
+
+        cont++;
+        tmp = tmp->next;
+    }
+}
+
 struct segment_node* new_segment_node (uint32_t id, struct segment *s)
 {
     struct segment_node *tmp = (struct segment_node*)malloc(sizeof(struct segment_node));

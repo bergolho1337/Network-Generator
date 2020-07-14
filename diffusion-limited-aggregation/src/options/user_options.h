@@ -22,6 +22,7 @@
 
 struct user_options
 {
+    bool use_respawn;
     uint32_t max_num_iter;
     uint32_t max_num_walkers;
     uint32_t seed;

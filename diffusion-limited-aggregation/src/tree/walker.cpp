@@ -20,7 +20,7 @@ struct walker* new_walker (struct user_options *the_options)
     return result;
 }
 
-struct walker* new_walker (struct user_options *the_options, struct walker_list *l)
+struct walker* new_walker (struct user_options *the_options, struct walker_list *l, const uint32_t iter)
 {
     //printf("Current = %u || Max = %u\n",l->num_nodes,the_options->max_num_walkers);
     struct walker *result = (struct walker*)malloc(sizeof(struct walker));
@@ -36,13 +36,13 @@ struct walker* new_walker (struct user_options *the_options, struct walker_list 
     bool point_is_not_ok = false;
     do
     {
-        //printf("%u\n",counter);
+
         // WARNING
         if (counter > MAX_RESPAWN_TRIES)
         {
             uint32_t cur_number_walkers = l->num_nodes;
             uint32_t total_number_walkers = the_options->max_num_walkers;
-            printf("[!] Warning! Reducing the number of walker to %u! Previous was %u\n",cur_number_walkers,total_number_walkers);
+            printf("[!] Warning! Reducing the number of walker to %u from %u\n",cur_number_walkers,total_number_walkers);
 
             the_options->max_num_walkers = cur_number_walkers;
             return NULL;
@@ -99,25 +99,43 @@ void free_walker (struct walker *the_walker)
 uint32_t is_stuck (struct walker_list *the_tree, struct walker *the_other)
 {   
     struct walker_node *tmp = the_tree->list_nodes;
+    double min_dist = __DBL_MAX__;
+    uint32_t min_index = the_tree->num_nodes+1;
+    
+    // Pass through all the nodes already in the tree
     while (tmp != NULL)
     {
-        struct walker *cur_walker = tmp->value;
-        double walker_radius = cur_walker->radius;
+        struct walker *cur_node = tmp->value;
+        double node_radius = cur_node->radius;
+        uint32_t stuck_counter = cur_node->stuck_counter;
 
-        double d = calculate_distance(the_other->pos,cur_walker->pos);
+        // Calculate the distance between the center of the current node and the walker
+        double d = calculate_distance(the_other->pos,cur_node->pos);
+        // Calculate the euclidean distance between the center of the current node and the walker
+        double norm = calculate_euclidean_norm(cur_node->pos[0],cur_node->pos[1],cur_node->pos[2],\
+                                            the_other->pos[0],the_other->pos[1],the_other->pos[2]);
 
-        // No trifurcations are allowed here ...
-        // Collisions to close are also not allowed
-        if (d < walker_radius * walker_radius * 4.0 && tmp->value->stuck_counter < 2)
+        // [RESTRICTION ZONE]
+        bool is_inside = (d < node_radius * node_radius * 4.0);
+        bool is_not_trifurcation = (stuck_counter < 2);
+
+        if (is_inside && is_not_trifurcation)
         {
-            //the_other->stuck = true;
-            tmp->value->stuck_counter++;
-            return tmp->id;
+            // Save the node which has the minimum distance to the current walker
+            if (norm < min_dist)
+            {
+                min_dist = norm;
+                min_index = tmp->id;
+            }
         }
-
         tmp = tmp->next;
     }
-    return the_tree->num_nodes+1;
+
+    // If the minimum distance is zero do not stuck the walker to the tree
+    if (min_dist == 0.0)
+        return the_tree->num_nodes+1;
+    else
+        return min_index;
 }
 
 void print_walker (struct walker *the_walker)

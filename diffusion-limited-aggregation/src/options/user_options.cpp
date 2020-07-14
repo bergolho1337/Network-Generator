@@ -7,6 +7,7 @@ struct user_options* new_user_options (int argc, char *argv[])
     result->walker_config = NULL;
     result->output_dir = NULL;
     result->initial_network_filename = NULL;
+    result->use_respawn = true;
     result->use_initial_network = false;
 
     read_config_file(result,argv[1]);
@@ -89,7 +90,7 @@ int parse_config_file(void *user, const char *section, const char *name, const c
     else if (SECTION_STARTS_WITH(SAVE_RESULT_SECTION))
     {
         if (MATCH_NAME("output_dir"))
-        {
+        {    
             pconfig->output_dir = strdup(value);
         }
     }
@@ -112,6 +113,11 @@ int parse_config_file(void *user, const char *section, const char *name, const c
         {
             pconfig->walker_config->map_filename = strdup(value);
         }
+        else if (MATCH_NAME("use_respawn"))
+        {
+            if (strcmp(value,"false") == 0 || strcmp(value,"no") == 0)
+                pconfig->use_respawn = false;
+        }
         else
         {
             std::string key(name);
@@ -125,10 +131,19 @@ int parse_config_file(void *user, const char *section, const char *name, const c
 
 void create_directory (const char folder_path[])
 {
-    if (mkdir(folder_path,S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != -1)
-        printf("[INFO] Output directory created at:> %s\n",folder_path);
+    struct stat sb;
+    if (!(stat(folder_path, &sb) == 0 && S_ISDIR(sb.st_mode)))
+    {
+        if (mkdir(folder_path,S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != -1)
+            printf("[INFO] Output directory created at:> %s\n",folder_path);
+        else
+            fprintf(stderr,"[ERROR] Fail on creating output directory!\n");
+    }
     else
-        fprintf(stderr,"[ERROR] Fail on creating output directory!\n");
+    {
+        printf("[INFO] Folder '%s' already exists!\n",folder_path);
+    }
+    
 }
 
 void print_user_options (struct user_options *the_options)

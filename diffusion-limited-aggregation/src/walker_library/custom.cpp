@@ -29,6 +29,8 @@ SET_WALKER_MOVE_FUNCTION (move)
                     the_walker->pos[0] = mesh_faces[dest_face_index].v1->x;
                     the_walker->pos[1] = mesh_faces[dest_face_index].v1->y;
                     the_walker->pos[2] = mesh_faces[dest_face_index].v1->z;
+                    
+                    mesh_faces[dest_face_index].v1->is_taken = true;
                     break;
                 }
         // Vertex 2
@@ -36,6 +38,8 @@ SET_WALKER_MOVE_FUNCTION (move)
                     the_walker->pos[0] = mesh_faces[dest_face_index].v2->x;
                     the_walker->pos[1] = mesh_faces[dest_face_index].v2->y;
                     the_walker->pos[2] = mesh_faces[dest_face_index].v2->z;
+
+                    mesh_faces[dest_face_index].v2->is_taken = true;
                     break;
                 }
         // Vertex 3
@@ -43,9 +47,19 @@ SET_WALKER_MOVE_FUNCTION (move)
                     the_walker->pos[0] = mesh_faces[dest_face_index].v3->x;
                     the_walker->pos[1] = mesh_faces[dest_face_index].v3->y;
                     the_walker->pos[2] = mesh_faces[dest_face_index].v3->z;
+
+                    mesh_faces[dest_face_index].v3->is_taken = true;
                     break;
                 }
     }
+
+    // Set the previous walker position as free
+    if (mesh_faces[src_point_index].v1->is_taken)
+        mesh_faces[src_point_index].v1->is_taken = false;
+    if (mesh_faces[src_point_index].v2->is_taken)
+        mesh_faces[src_point_index].v2->is_taken = false;
+    if (mesh_faces[src_point_index].v3->is_taken)
+        mesh_faces[src_point_index].v3->is_taken = false;
 }
 
 SET_WALKER_RESPAWN_FUNCTION (respawn)
@@ -91,7 +105,7 @@ SET_WALKER_RESPAWN_FUNCTION (respawn)
                             pos[1] = mesh_faces[face_index].v1->y;
                             pos[2] = mesh_faces[face_index].v1->z;
 
-                            //mesh_faces[face_index].v1->is_taken = true;
+                            mesh_faces[face_index].v1->is_taken = true;
 
                             point_is_not_ok = false;
                         }
@@ -105,7 +119,7 @@ SET_WALKER_RESPAWN_FUNCTION (respawn)
                             pos[1] = mesh_faces[face_index].v2->y;
                             pos[2] = mesh_faces[face_index].v2->z;
 
-                            //mesh_faces[face_index].v2->is_taken = true;
+                            mesh_faces[face_index].v2->is_taken = true;
 
                             point_is_not_ok = false;
                         }
@@ -120,7 +134,7 @@ SET_WALKER_RESPAWN_FUNCTION (respawn)
                             pos[1] = mesh_faces[face_index].v3->y;
                             pos[2] = mesh_faces[face_index].v3->z;
 
-                            //mesh_faces[face_index].v3->is_taken = true;
+                            mesh_faces[face_index].v3->is_taken = true;
 
                             point_is_not_ok = false;
                         }
@@ -150,13 +164,10 @@ void read_face (FILE *file, std::vector<Face_Custom> &faces)
     fscanf(file,"%s",str); fscanf(file,"%s",str);
     fscanf(file,"%s",str);
     fscanf(file,"%lf %lf %lf",&a[0],&a[1],&a[2]);
-    //printf("%g %g %g\n",a[0],a[1],a[2]);
     fscanf(file,"%s",str);
     fscanf(file,"%lf %lf %lf",&b[0],&b[1],&b[2]);
-    //printf("%g %g %g\n",b[0],b[1],b[2]);
     fscanf(file,"%s",str);
     fscanf(file,"%lf %lf %lf",&c[0],&c[1],&c[2]);
-    //printf("%g %g %g\n\n",c[0],c[1],c[2]);
     fscanf(file,"%s",str); fscanf(file,"%s",str);
 
     Point_Custom *v1 = new Point_Custom(a[0],a[1],a[2]);

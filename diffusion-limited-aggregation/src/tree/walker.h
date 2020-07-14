@@ -16,7 +16,8 @@
 #include "../utils/utils.h"
 #include "../options/user_options.h"
 
-const uint32_t MAX_RESPAWN_TRIES = 500000;
+// Maximum number of tries the respawn function can be called
+const uint32_t MAX_RESPAWN_TRIES = 25000;
 
 struct walker
 {
@@ -40,7 +41,7 @@ struct walker_list
 };
 
 struct walker* new_walker (struct user_options *the_options);
-struct walker* new_walker (struct user_options *the_options, struct walker_list *l);
+struct walker* new_walker (struct user_options *the_options, struct walker_list *l, const uint32_t iter);
 struct walker* new_walker (const double x, const double y, const double z, const double walker_radius);
 void free_walker (struct walker *the_walker);
 

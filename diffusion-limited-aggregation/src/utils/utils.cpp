@@ -11,6 +11,17 @@ double calculate_euclidean_norm (const double x1, const double y1, const double 
     return sqrt( pow(x2-x1,2) + pow(y2-y1,2) + pow(z2-z1,2) ); 
 }
 
+double calculate_angle_between_vectors (const double u[], const double v[])
+{
+    double dot_product = u[0]*v[0] + u[1]*v[1] + u[2]*v[2];
+
+    double angle_radians = acos(dot_product);
+
+    // Return the angle in degrees
+    return angle_radians * 180.0 / M_PI;
+
+}
+
 double generate_random_number ()
 {
     uint8_t sign = rand() % 2;

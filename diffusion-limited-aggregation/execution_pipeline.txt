@@ -1,0 +1,24 @@
+./bin/DLA inputs/03_Lucas/01_SRN/03_DLA/dla_seed-1562002891.ini
+./bin/DLA inputs/03_Lucas/01_SRN/03_DLA/dla_seed-1562002894.ini
+./bin/DLA inputs/03_Lucas/01_SRN/03_DLA/dla_seed-1562005513.ini
+./bin/DLA inputs/03_Lucas/01_SRN/03_DLA/dla_seed-1562005553.ini
+./bin/DLA inputs/03_Lucas/01_SRN/03_DLA/dla_seed-1562006177.ini
+./bin/DLA inputs/03_Lucas/01_SRN/03_DLA/dla_seed-1562007596.ini
+./bin/DLA inputs/03_Lucas/01_SRN/03_DLA/dla_seed-1562008172.ini
+./bin/DLA inputs/03_Lucas/01_SRN/03_DLA/dla_seed-1562008424.ini
+./bin/DLA inputs/03_Lucas/01_SRN/03_DLA/dla_seed-1562009134.ini
+./bin/DLA inputs/03_Lucas/01_SRN/03_DLA/dla_seed-1562009769.ini
+
+
+
+./bin/TransformFilter ../../outputs/01_SRN/03_DLA/seed:1562002891/dla_tree.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/04_DLA/seed:1562002891.vtk &
+./bin/TransformFilter ../../outputs/01_SRN/03_DLA/seed:1562002894/dla_tree.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/04_DLA/seed:1562002894.vtk &
+./bin/TransformFilter ../../outputs/01_SRN/03_DLA/seed:1562005513/dla_tree.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/04_DLA/seed:1562005513.vtk &
+./bin/TransformFilter ../../outputs/01_SRN/03_DLA/seed:1562005553/dla_tree.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/04_DLA/seed:1562005553.vtk &
+./bin/TransformFilter ../../outputs/01_SRN/03_DLA/seed:1562006177/dla_tree.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/04_DLA/seed:1562006177.vtk &
+./bin/TransformFilter ../../outputs/01_SRN/03_DLA/seed:1562007596/dla_tree.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/04_DLA/seed:1562007596.vtk &
+./bin/TransformFilter ../../outputs/01_SRN/03_DLA/seed:1562008172/dla_tree.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/04_DLA/seed:1562008172.vtk &
+./bin/TransformFilter ../../outputs/01_SRN/03_DLA/seed:1562008424/dla_tree.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/04_DLA/seed:1562008424.vtk &
+./bin/TransformFilter ../../outputs/01_SRN/03_DLA/seed:1562009134/dla_tree.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/04_DLA/seed:1562009134.vtk &
+./bin/TransformFilter ../../outputs/01_SRN/03_DLA/seed:1562009769/dla_tree.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/04_DLA/seed:1562009769.vtk &
+

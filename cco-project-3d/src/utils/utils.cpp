@@ -158,7 +158,7 @@ void draw_perfusion_volume (const double radius)
     sphere_source->SetThetaResolution(100);
 
     vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-    writer->SetFileName("output/perfusion_volume.vtp");
+    writer->SetFileName("outputs/perfusion_volume.vtp");
     writer->SetInputConnection(sphere_source->GetOutputPort());
     writer->Write();
 }
@@ -436,7 +436,7 @@ void write_to_vtk (struct cco_network *the_network)
         s_tmp = s_tmp->next;
     }
     fclose(file);
-    free(filename);
+    delete [] filename;
 }
 
 void write_to_vtk_iteration (struct cco_network *the_network)

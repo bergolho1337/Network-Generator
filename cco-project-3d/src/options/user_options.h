@@ -19,6 +19,7 @@
 
 #include "cost_function_config.h"
 #include "local_optimization_config.h"
+#include "pruning_config.h"
 
 static const uint32_t MAX_FILENAME_SIZE = 200;
 
@@ -56,7 +57,7 @@ struct user_options
     char *output_dir;
 
     bool use_pruning;
-    double a, b, c;
+    struct pruning_config *pruning_config;
 
     bool use_initial_network;
     char *initial_network_filename;

@@ -26,8 +26,14 @@ void free_user_options (struct user_options *options)
     free_cost_function_config(options->config);
 
     free_local_optimization_config(options->local_opt_config);
+
+    if (options->use_pruning)
+        free_pruning_config(options->pruning_config);
     
     free(options->output_dir);
+    if (options->use_initial_network)
+        free(options->initial_network_filename);
+
     free(options);
 }
 
@@ -57,6 +63,10 @@ void read_config_file (struct user_options *options, const char filename[])
     // Set the local optimization function pointer
     if (options->use_local_optimization)
         set_local_optimization_function(options->local_opt_config);
+    
+    // Set the pruning function pointer
+    if (options->pruning_config)
+        set_pruning_function(options->pruning_config);
 
     printf("%s\n",PRINT_LINE);
 
@@ -249,6 +259,11 @@ int parse_config_file(void *user, const char *section, const char *name, const c
     }
     else if (SECTION_STARTS_WITH(PRUNING_SECTION))
     {
+        if (!pconfig->pruning_config)
+        {
+            pconfig->pruning_config = new_pruning_config();
+        }
+
         if (MATCH_NAME("use_pruning"))
         {
             if (strcmp(value,"true") == 0 || strcmp(value,"yes") == 0)
@@ -256,17 +271,15 @@ int parse_config_file(void *user, const char *section, const char *name, const c
             else
                 pconfig->use_pruning = false;
         }
-        else if (MATCH_NAME("A"))
+        else if (MATCH_NAME("pruning_function"))
         {
-            pconfig->a = strtof(value, NULL);
+            pconfig->pruning_config->name = strdup(value);
         }
-        else if (MATCH_NAME("B"))
+        else
         {
-            pconfig->b = strtof(value, NULL);
-        }
-        else if (MATCH_NAME("C"))
-        {
-            pconfig->c = strtof(value, NULL);
+            std::string key(name);
+        
+            pconfig->pruning_config->params->insert(std::pair<std::string,double>(key,atof(value)));
         }
     }
 

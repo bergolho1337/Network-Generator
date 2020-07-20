@@ -1,10 +1,9 @@
 #!/bin/bash
-PNAME="./bin/Cco"
-#CONFIG_FILE="inputs/simple_cco_minimize_volume.ini"
-CONFIG_FILE="inputs/simple_cco_minimize_volume_with_local_optimization.ini"
+PNAME="./bin/Cco_3D"
+CONFIG_FILE="inputs/01_Basics/minimize_volume_using_cloud_points.ini"
 
 if [ ! -f $PNAME ]; then
 	./recompile_project.sh
 fi
 
-valgrind --leak-check=full --show-leak-kinds=all ./$PNAME $CONFIG_FILE
+valgrind --leak-check=full --show-leak-kinds=all $PNAME $CONFIG_FILE

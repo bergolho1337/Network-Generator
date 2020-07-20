@@ -27,7 +27,6 @@
 // CONSTANTS AND MACROS 
 // =================================================================
 static const double ETA = 3.6e-03;                  // Blood viscosity 
-//static const double GAMMA = 3.0;                    // Bifurcation expoent
 static const uint32_t NTOSS = 10;                   // Number of tosses for a new terminal
 static const double FACTOR = 0.95;                  // Reduction factor for the distance criterion
 static const double EPISON = 1.0e-16;                // Minimum size for a segment      CHANGE
@@ -79,7 +78,7 @@ struct cco_network
     char *output_dir;
 
     bool using_pruning;
-    double A, B, C;
+    char *pruning_function_name;
 
     bool using_initial_network;
     char *initial_network_filename;
@@ -150,7 +149,7 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
                                           std::vector<struct point> cloud_points,\
                                           std::vector<struct face> obstacle_faces);
 
-void prune_tree (struct cco_network *the_network);
+void prune_tree (struct cco_network *the_network, struct pruning_config *config);
 void prune_tree_segment (struct cco_network *the_network, struct segment_node *inew);
 
 void sort_point_from_cloud_v1 (double pos[], std::vector<struct point> cloud_points);

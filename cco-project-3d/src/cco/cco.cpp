@@ -30,6 +30,14 @@ void free_cco_network (struct cco_network *the_network)
         free(the_network->cloud_points_filename);
     if (the_network->using_obstacle)
         free(the_network->obstacle_filename);
+    if (the_network->using_local_optimization)
+        free(the_network->local_optimization_function_name);
+    if (the_network->using_pmj_location)
+        free(the_network->pmj_location_filename);
+    if (the_network->using_initial_network)
+        free(the_network->initial_network_filename);
+    if (the_network->using_pruning)
+        free(the_network->pruning_function_name);
     fclose(the_network->log_file);
 
     free(the_network);
@@ -189,7 +197,7 @@ void set_local_optimization_function_name (struct cco_network *the_network, stru
     {
         the_network->using_local_optimization = false;
 
-        printf("[cco] No local optimization provided\n");
+        printf("[cco] No local optimization function provided\n");
     }
 }
 
@@ -198,9 +206,16 @@ void set_pruning_function (struct cco_network *the_network, struct user_options 
     the_network->using_pruning = options->use_pruning;
     if (options->use_pruning)
     {
-        the_network->A = options->a;
-        the_network->B = options->b;
-        the_network->C = options->c;
+        uint32_t size = strlen(options->pruning_config->name) + 1;
+        the_network->pruning_function_name = (char*)malloc(sizeof(char)*size);
+        strcpy(the_network->pruning_function_name,options->pruning_config->name);
+
+        printf("[cco] Using pruning\n");
+        printf("[cco] Pruning function name :> \"%s\"\n",the_network->pruning_function_name);
+    }
+    else
+    {
+        printf("[cco] No pruning function provided\n");
     }
 }
 
@@ -263,6 +278,7 @@ void grow_tree_using_cloud_points (struct cco_network *the_network,\
 
     struct cost_function_config *config = options->config;
     struct local_optimization_config *local_opt_config = options->local_opt_config;
+    struct pruning_config *pruning_config = options->pruning_config;
 
     double Q_perf = the_network->Q_perf;
     double p_perf = the_network->p_perf;
@@ -301,17 +317,18 @@ void grow_tree_using_cloud_points (struct cco_network *the_network,\
         fprintf(log_file,"%s\n",PRINT_LINE);
     }
 
-    // PRUNNING
+    // PRUNING
     if (the_network->using_pruning)
-        prune_tree(the_network);
+        prune_tree(the_network,pruning_config);
 
-    // If some terminal was eliminated by the pruning process, add the remaining ones
+    // If some terminals were eliminated by the pruning process, add remaining ones
     while (the_network->num_terminals != the_network->N_term)
     {
         printf("%s\n",PRINT_LINE);
         printf("[cco] Working on terminal number %d after pruning\n",the_network->num_terminals);
         fprintf(log_file,"%s\n",PRINT_LINE);
         fprintf(log_file,"[cco] Working on terminal number %d after pruning\n",the_network->num_terminals);
+        printf("%s\n",PRINT_LINE);
 
         generate_terminal_using_cloud_points(the_network,config,local_opt_config,cloud_points,obstacle_faces);
     }
@@ -1560,12 +1577,10 @@ void prune_tree_segment (struct cco_network *the_network, struct segment_node *i
 
 }
 
-void prune_tree (struct cco_network *the_network)
+void prune_tree (struct cco_network *the_network, struct pruning_config *config)
 {
     // User parameters for the pruning function
-    double A = the_network->A;
-    double B = the_network->B;
-    double C = the_network->C;
+    set_pruning_function_fn *pruning_fn = config->function;
     
     struct segment_node *tmp = the_network->segment_list->list_nodes;
     while (tmp != NULL)
@@ -1574,11 +1589,13 @@ void prune_tree (struct cco_network *the_network)
         struct segment_node *tmp_next = tmp->next;
 
         // We only prune terminal segments
-        if (is_terminal(tmp) && tmp->id < the_network->N_term)
+        if (is_terminal(tmp) && tmp->id < the_network->segment_list->num_nodes)
         {
+            // Calculate the segment level
             double level = calc_segment_level(tmp);
-
-            double eval = pruning_function(level,A,B,C);
+            
+            // Call the pruning function
+            double eval = pruning_fn(config,level);
             
             double r = ((double)rand() / (double)RAND_MAX) * 100.0;
 

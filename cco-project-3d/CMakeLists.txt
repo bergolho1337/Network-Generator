@@ -18,6 +18,7 @@ ADD_SUBDIRECTORY(src/cco)
 
 ADD_SUBDIRECTORY(src/cost_function_library)
 ADD_SUBDIRECTORY(src/local_optimization_library)
+ADD_SUBDIRECTORY(src/pruning_library)
 
 ADD_EXECUTABLE(Cco_3D src/main.cpp)
 

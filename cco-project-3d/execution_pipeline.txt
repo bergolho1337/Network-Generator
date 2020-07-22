@@ -1,3 +1,5 @@
+
+
 ./bin/Cco_3D inputs/05_Lucas/01_SRN/02_CO_Activation_Time/co_min:at_seed-1562002891_nterm:650.ini
 ./bin/Cco_3D inputs/05_Lucas/01_SRN/02_CO_Activation_Time/co_min:at_seed-1562002894_nterm:650.ini
 ./bin/Cco_3D inputs/05_Lucas/01_SRN/02_CO_Activation_Time/co_min:at_seed-1562005513_nterm:650.ini
@@ -19,4 +21,48 @@
 ./bin/TransformFilter ../../outputs/01_SRN_Purkinje/02_CO_Activation_Time/seed:1562008424/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/03_CO_Activation_Time/seed:1562008424.vtk &
 ./bin/TransformFilter ../../outputs/01_SRN_Purkinje/02_CO_Activation_Time/seed:1562009134/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/03_CO_Activation_Time/seed:1562009134.vtk &
 ./bin/TransformFilter ../../outputs/01_SRN_Purkinje/02_CO_Activation_Time/seed:1562009769/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/03_CO_Activation_Time/seed:1562009769.vtk &
+
+./bin/Cco_3D inputs/05_Lucas/01_SRN/04_CO_Length_With_Pruning/co_min:length_seed-1562002891_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/04_CO_Length_With_Pruning/co_min:length_seed-1562002894_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/04_CO_Length_With_Pruning/co_min:length_seed-1562005513_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/04_CO_Length_With_Pruning/co_min:length_seed-1562005553_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/04_CO_Length_With_Pruning/co_min:length_seed-1562006177_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/04_CO_Length_With_Pruning/co_min:length_seed-1562007596_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/04_CO_Length_With_Pruning/co_min:length_seed-1562008172_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/04_CO_Length_With_Pruning/co_min:length_seed-1562008424_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/04_CO_Length_With_Pruning/co_min:length_seed-1562009134_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/04_CO_Length_With_Pruning/co_min:length_seed-1562009769_nterm:650.ini
+
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/04_CO_Length_With_Pruning/seed:1562002891/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/05_CO_Length_With_Pruning/seed:1562002891.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/04_CO_Length_With_Pruning/seed:1562002894/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/05_CO_Length_With_Pruning/seed:1562002894.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/04_CO_Length_With_Pruning/seed:1562005513/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/05_CO_Length_With_Pruning/seed:1562005513.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/04_CO_Length_With_Pruning/seed:1562005553/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/05_CO_Length_With_Pruning/seed:1562005553.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/04_CO_Length_With_Pruning/seed:1562006177/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/05_CO_Length_With_Pruning/seed:1562006177.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/04_CO_Length_With_Pruning/seed:1562007596/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/05_CO_Length_With_Pruning/seed:1562007596.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/04_CO_Length_With_Pruning/seed:1562008172/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/05_CO_Length_With_Pruning/seed:1562008172.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/04_CO_Length_With_Pruning/seed:1562008424/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/05_CO_Length_With_Pruning/seed:1562008424.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/04_CO_Length_With_Pruning/seed:1562009134/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/05_CO_Length_With_Pruning/seed:1562009134.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/04_CO_Length_With_Pruning/seed:1562009769/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/05_CO_Length_With_Pruning/seed:1562009769.vtk &
+
+./bin/Cco_3D inputs/05_Lucas/01_SRN/05_CO_Activation_Time_With_Pruning/co_min:at_with_pruning_seed-1562002891_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/05_CO_Activation_Time_With_Pruning/co_min:at_with_pruning_seed-1562002894_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/05_CO_Activation_Time_With_Pruning/co_min:at_with_pruning_seed-1562005513_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/05_CO_Activation_Time_With_Pruning/co_min:at_with_pruning_seed-1562005553_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/05_CO_Activation_Time_With_Pruning/co_min:at_with_pruning_seed-1562006177_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/05_CO_Activation_Time_With_Pruning/co_min:at_with_pruning_seed-1562007596_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/05_CO_Activation_Time_With_Pruning/co_min:at_with_pruning_seed-1562008172_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/05_CO_Activation_Time_With_Pruning/co_min:at_with_pruning_seed-1562008424_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/05_CO_Activation_Time_With_Pruning/co_min:at_with_pruning_seed-1562009134_nterm:650.ini
+./bin/Cco_3D inputs/05_Lucas/01_SRN/05_CO_Activation_Time_With_Pruning/co_min:at_with_pruning_seed-1562009769_nterm:650.ini
+
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/05_CO_Activation_Time_With_Pruning/seed:1562002891/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/06_CO_Activation_Time_With_Pruning/seed:1562002891.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/05_CO_Activation_Time_With_Pruning/seed:1562002894/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/06_CO_Activation_Time_With_Pruning/seed:1562002894.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/05_CO_Activation_Time_With_Pruning/seed:1562005513/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/06_CO_Activation_Time_With_Pruning/seed:1562005513.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/05_CO_Activation_Time_With_Pruning/seed:1562005553/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/06_CO_Activation_Time_With_Pruning/seed:1562005553.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/05_CO_Activation_Time_With_Pruning/seed:1562006177/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/06_CO_Activation_Time_With_Pruning/seed:1562006177.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/05_CO_Activation_Time_With_Pruning/seed:1562007596/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/06_CO_Activation_Time_With_Pruning/seed:1562007596.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/05_CO_Activation_Time_With_Pruning/seed:1562008172/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/06_CO_Activation_Time_With_Pruning/seed:1562008172.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/05_CO_Activation_Time_With_Pruning/seed:1562008424/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/06_CO_Activation_Time_With_Pruning/seed:1562008424.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/05_CO_Activation_Time_With_Pruning/seed:1562009134/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/06_CO_Activation_Time_With_Pruning/seed:1562009134.vtk &
+./bin/TransformFilter ../../outputs/01_SRN_Purkinje/05_CO_Activation_Time_With_Pruning/seed:1562009769/tree_nterm_650.vtk /home/berg/Github/MonoAlg3D_C/networks/03_Lucas/01_SRN/06_CO_Activation_Time_With_Pruning/seed:1562009769.vtk &
 

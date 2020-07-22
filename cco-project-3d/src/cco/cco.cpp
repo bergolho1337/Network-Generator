@@ -319,7 +319,11 @@ void grow_tree_using_cloud_points (struct cco_network *the_network,\
 
     // PRUNING
     if (the_network->using_pruning)
-        prune_tree(the_network,pruning_config);
+    {
+        for (uint32_t k = 0; k < PRUNING_PASSES; k++)
+            prune_tree(the_network,pruning_config);
+    }
+        
 
     // If some terminals were eliminated by the pruning process, add remaining ones
     while (the_network->num_terminals != the_network->N_term)

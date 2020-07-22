@@ -29,6 +29,13 @@ COST_FUNCTION_NAME = "minimize_custom_function_with_angle_restriction"
 MIN_DEGREES_LIMIT = 1.0
 MAX_DEGREES_LIMIT = 63.0
 
+USE_PRUNING = True
+PRUNING_FUNCTION_NAME = "hyperbolic_tangent"
+PRUNING_PARAM_A = 50.0
+PRUNING_PARAM_B = -0.25
+PRUNING_PARAM_C = 3.0
+PRUNING_PARAM_D = 50.0
+
 def write_co_main_section (file,seed,rand_offset):
     file.write("[main]\n")
     file.write("Q_perf = %g\n" % Q_PERF)
@@ -47,7 +54,8 @@ def write_co_main_section (file,seed,rand_offset):
 
 def write_co_save_network (file,seed):
     file.write("[save_network]\n")
-    file.write("output_dir = outputs/01_SRN/01_CO_Length/seed:%d\n" % (seed))
+    #file.write("output_dir = outputs/01_SRN_Purkinje/01_CO_Length/seed:%d\n" % (seed))
+    file.write("output_dir = outputs/01_SRN_Purkinje/04_CO_Length_With_Pruning/seed:%d\n" % (seed))
     file.write("\n")
 
 def write_co_cloud_points_section (file):
@@ -74,24 +82,19 @@ def write_co_custom_cost_function_section (file):
     file.write("max_degrees_limit = %g\n" % (MAX_DEGREES_LIMIT))
     file.write("\n")
 
-'''
-def write_co_activation_time_cost_function_section (file):
-    file.write("[cost_function]\n")
-    file.write("library_name = shared-libs/libminimize_activation_time.so\n")
-    file.write("function_name = minimize_tree_activation_time\n")
-    file.write("G = 7.9\n")
-    file.write("Cf = 3.4\n")
-    file.write("tauf = 0.1\n")
-    file.write("\n")
-'''
-
 def write_co_pruning_section (file):
     file.write("[pruning]\n")
-    file.write("use_pruning = false\n")
+    file.write("use_pruning = true\n")
+    file.write("pruning_function = %s\n" % (PRUNING_FUNCTION_NAME))
+    file.write("A = %s\n" % (PRUNING_PARAM_A))
+    file.write("B = %s\n" % (PRUNING_PARAM_B))
+    file.write("C = %s\n" % (PRUNING_PARAM_C))
+    file.write("D = %s\n" % (PRUNING_PARAM_D))
     file.write("\n")
 
 def write_co_config_file (seed,rand_offset):
-    filename = "ieee/co_min:length_seed-%u_nterm:650.ini" % (seed)
+    #filename = "ieee/co_min:length_seed-%u_nterm:650.ini" % (seed)
+    filename = "ieee/co_min:length_with_pruning_seed-%u_nterm:650.ini" % (seed)
     file = open(filename,"w")
 
     write_co_main_section(file,seed,rand_offset)    
@@ -99,20 +102,7 @@ def write_co_config_file (seed,rand_offset):
     write_co_cloud_points_section(file)
     write_co_local_optimization_section(file)
     write_co_custom_cost_function_section(file)
-    write_co_pruning_section(file)
+    if (USE_PRUNING):
+        write_co_pruning_section(file)
 
     file.close()
-
-'''
-def write_co_activation_time_config_file (seed,rand_offset,start_radius):
-    filename = "cco_config/elizabeth_purkinje_co_activation_time_seed-%u_offset-%u_nterm-130.ini" % (seed,rand_offset)
-    file = open(filename,"w")
-
-    write_co_main_section(file,seed,rand_offset,start_radius)    
-    write_cco_cloud_points_section(file)
-    write_cco_local_optimization_section(file)
-    write_co_activation_time_cost_function_section(file)
-    write_cco_pruning_section(file)
-
-    file.close()
-'''

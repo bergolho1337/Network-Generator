@@ -22,7 +22,6 @@
 #include "../utils/stop_watch.h"
 
 #include "cco_helper.h"
-#include "pruning.h"
 
 // CONSTANTS AND MACROS 
 // =================================================================
@@ -30,7 +29,7 @@ static const double ETA = 3.6e-03;                  // Blood viscosity
 static const uint32_t NTOSS = 10;                   // Number of tosses for a new terminal
 static const double FACTOR = 0.95;                  // Reduction factor for the distance criterion
 static const double EPISON = 1.0e-16;                // Minimum size for a segment      CHANGE
-
+static const uint32_t PRUNING_PASSES = 5;           // Number of times the pruning procedure will be called
 #define PRINT_LINE "========================================================================================================"
 // =================================================================
 

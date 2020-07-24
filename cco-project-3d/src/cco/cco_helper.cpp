@@ -192,6 +192,7 @@ double calc_segment_activation_time (struct segment_node *s,\
 
     diameter *= 1000;                           // um
     delta_s *= CM_TO_M;                         // m
+    //delta_s *= 1.0;
 
     double velocity = calc_propagation_velocity(diameter,G,Cf,tau_f);
     //double velocity = 3.0;
@@ -290,6 +291,31 @@ double calc_segment_size (struct segment_node *s)
     double norm = euclidean_norm(src->x,src->y,src->z,dest->x,dest->y,dest->z);
 
     return norm;
+}
+
+uint32_t calc_closest_pmj_site (struct segment_node *s, std::vector<struct pmj_lat> lat_points)
+{
+    uint32_t closest_id = lat_points.size()+1;
+    double closest_dist = __DBL_MAX__;
+
+    double x1 = s->value->dest->value->x;
+    double y1 = s->value->dest->value->y;
+    double z1 = s->value->dest->value->z;
+    for (uint32_t i = 0; i < lat_points.size(); i++)
+    {
+        double x2 = lat_points[i].x;
+        double y2 = lat_points[i].y;
+        double z2 = lat_points[i].z;
+
+        double dist = euclidean_norm(x1,y1,z1,x2,y2,z2);
+        if (dist < closest_dist)
+        {
+            closest_dist = dist;
+            closest_id = i;
+        }
+    }
+
+    return closest_id;
 }
 
 bool has_deviation (struct segment_list *s_list, struct segment_node *inew,\

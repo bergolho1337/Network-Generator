@@ -76,6 +76,26 @@ void read_points (const char *filename, vector<Point> &points)
     fclose(file);
 }
 
+void read_scalars (const char *filename, vector<double> &scalars)
+{
+    char str[200];
+    uint32_t num_points;
+    double value;
+
+    FILE *file = fopen(filename,"r");
+
+    fscanf(file,"%u",&num_points);
+    
+    for (uint32_t i = 0; i < num_points; i++)
+    {
+        fscanf(file,"%lf",&value);
+
+        scalars.push_back(value);
+    }
+
+    fclose(file);
+}
+
 void print_points (vector<Point> points)
 {
     for (int i = 0; i < (int)points.size(); i++)
@@ -91,6 +111,23 @@ void write_points_to_pts (vector<Point> points)
     fprintf(file,"%lu\n",points.size());
     for (uint32_t i = 0; i < points.size(); i++)
         fprintf(file,"%lf %lf %lf\n",points[i].x,points[i].y,points[i].z);
+    
+    fclose(file);
+}
+
+void write_point_scalars_to_txt (vector<Point> points, vector<double> scalars)
+{
+    char filename[200];
+    sprintf(filename,"outputs/remapped_points_scalars.txt");
+    FILE *file = fopen(filename,"w+");
+
+    fprintf(file,"%lu\n",points.size());
+    for (uint32_t i = 0; i < points.size(); i++)
+    {
+        uint32_t index = points[i].id;
+        fprintf(file,"%g\n",scalars[index]);
+    }
+        
     
     fclose(file);
 }
@@ -141,6 +178,36 @@ void write_remapped_points_to_vtk (vector<Point> points, const uint32_t iter)
     fprintf(file,"VERTICES %lu %lu\n",points.size(),points.size()*2);
     for (uint32_t i = 0; i < points.size(); i++)
         fprintf(file,"1 %u\n",i);
+    
+    fclose(file);
+}
+
+void write_point_and_scalars_to_vtk (vector<Point> points, vector<double> scalars)
+{
+    char filename[200];
+    sprintf(filename,"outputs/remapped_points_scalars.vtk");
+    FILE *file = fopen(filename,"w+");
+
+    fprintf(file,"# vtk DataFile Version 3.0\n");
+    fprintf(file,"Cloud\n");
+    fprintf(file,"ASCII\n");
+    fprintf(file,"DATASET POLYDATA\n");
+    fprintf(file,"POINTS %lu float\n",points.size());
+    for (uint32_t i = 0; i < points.size(); i++)
+        fprintf(file,"%lf %lf %lf\n",points[i].x,points[i].y,points[i].z);
+    fprintf(file,"VERTICES %lu %lu\n",points.size(),points.size()*2);
+    for (uint32_t i = 0; i < points.size(); i++)
+        fprintf(file,"1 %u\n",i);
+    fprintf(file,"POINT_DATA %u\n",points.size());
+    fprintf(file,"SCALARS Scalars_ float\n");
+    fprintf(file,"LOOKUP_TABLE default\n");
+
+    for (uint32_t i = 0; i < points.size(); i++)
+    {
+        uint32_t index = points[i].id;
+        fprintf(file,"%g\n",scalars[index]);
+    }
+        
     
     fclose(file);
 }
@@ -336,7 +403,7 @@ void remap_points_inside_ellipsoid(const double center[], const double radius, c
     }
 }
 
-void remap_points_from_root_v2 (vector<Point> &points, const uint32_t root_index)
+void remap_points_from_root_v2 (vector<Point> &points, vector<double> scalars, const uint32_t root_index)
 {
     vector<Point> remapped_points;
     vector<bool> points_taken;
@@ -371,38 +438,40 @@ void remap_points_from_root_v2 (vector<Point> &points, const uint32_t root_index
 
         char filename[200];
         sprintf(filename,"outputs/ellipsoids/ellipsoid_%d.vtk",iter);
-        draw_ellipsoid(filename,center,radius,a,b,c);
+        //draw_ellipsoid(filename,center,radius,a,b,c);
 
         remap_points_inside_ellipsoid(center,radius,a,b,c,points,remapped_points,points_taken);
         
-        write_points_to_vtk(points,points_taken,iter);
-        write_remapped_points_to_vtk(remapped_points,iter);
+        //write_points_to_vtk(points,points_taken,iter);
+        //write_remapped_points_to_vtk(remapped_points,iter);
 
     }
     write_points_to_pts(remapped_points);
+    write_point_scalars_to_txt(remapped_points,scalars);
+    write_point_and_scalars_to_vtk(remapped_points,scalars);
 }
 
 int main (int argc, char *argv[])
 {
-    if (argc-1 != 2)
+    if (argc-1 != 3)
     {
-        printf("----------------------------------------------------------------------------\n");
-        printf("Usage:> %s <input_filename> <root_point_index>\n",argv[0]);
-        printf("----------------------------------------------------------------------------\n");
+        printf("---------------------------------------------------------------------------------------------\n");
+        printf("Usage:> %s <input_filename_points> <input_filename_scalars> <root_point_index>\n",argv[0]);
+        printf("---------------------------------------------------------------------------------------------\n");
         printf("Example:\n");
-        printf("\t%s inputs/paraboloid_exterior_cloud_points.pts 90000\n",argv[0]);
-        printf("\t%s inputs/elizabeth_exterior_LV.pts 1200\n",argv[0]);
-        printf("----------------------------------------------------------------------------\n");
+        printf("---------------------------------------------------------------------------------------------\n");
         exit(EXIT_FAILURE);   
     }
 
     vector<Point> points;
+    vector<double> scalars;
     read_points(argv[1],points);
+    read_scalars(argv[2],scalars);
     //print_points(points);
 
-    uint32_t root_index = atoi(argv[2]);
+    uint32_t root_index = atoi(argv[3]);
 
-    remap_points_from_root_v2(points,root_index);
+    remap_points_from_root_v2(points,scalars,root_index);
 
 
     return 0;

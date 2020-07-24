@@ -14,6 +14,7 @@ struct cco_network* new_cco_network (struct user_options *options)
     set_cloud_points_name(result,options);
     set_obstacle_name(result,options);
     set_pmj_location_name(result,options);
+    set_lat_name(result,options);
     set_local_optimization_function_name(result,options);
     set_pruning_function(result,options);
 
@@ -34,6 +35,8 @@ void free_cco_network (struct cco_network *the_network)
         free(the_network->local_optimization_function_name);
     if (the_network->using_pmj_location)
         free(the_network->pmj_location_filename);
+    if (the_network->using_lat)
+        free(the_network->lat_filename);
     if (the_network->using_initial_network)
         free(the_network->initial_network_filename);
     if (the_network->using_pruning)
@@ -181,6 +184,26 @@ void set_pmj_location_name (struct cco_network *the_network, struct user_options
     }
 }
 
+void set_lat_name (struct cco_network *the_network, struct user_options *options)
+{
+    if (options->use_lat)
+    {
+        the_network->using_lat = true;
+        uint32_t size = strlen(options->lat_filename) + 1;
+        the_network->lat_filename = (char*)malloc(sizeof(char)*size);
+        strcpy(the_network->lat_filename,options->lat_filename);
+
+        printf("[cco] Using LAT from PMJs\n");
+        printf("[cco] LAT filename :> \"%s\"\n",the_network->lat_filename);
+    }
+    else
+    {
+        the_network->using_pmj_location = false;
+
+        printf("[cco] No LAT provided\n");
+    }
+}
+
 void set_local_optimization_function_name (struct cco_network *the_network, struct user_options *options)
 {
     if (options->use_local_optimization)
@@ -251,10 +274,17 @@ void grow_tree (struct cco_network *the_network, struct user_options *options)
     {
         read_pmj_location_points(the_network->pmj_location_filename,pmj_points);
     }
+
+    // LAT section
+    std::vector<struct pmj_lat> lat_points;
+    if (the_network->using_lat)
+    {
+        read_lat_points(the_network->lat_filename,lat_points);
+    }
     
     start_stop_watch(&solver_time);
 
-    grow_tree_using_cloud_points(the_network,options,cloud_points,obstacle_faces,pmj_points);
+    grow_tree_using_cloud_points(the_network,options,cloud_points,obstacle_faces,pmj_points,lat_points);
     
     long res_time = stop_stop_watch(&solver_time);
 	double conv_rate = 1000.0*1000.0*60.0;
@@ -272,7 +302,8 @@ void grow_tree_using_cloud_points (struct cco_network *the_network,\
                                    struct user_options *options,\
                                    std::vector<struct point> cloud_points,\
                                    std::vector<struct face> obstacle_faces,\
-                                   std::vector<struct point> pmj_points)
+                                   std::vector<struct point> pmj_points,\
+                                   std::vector<struct pmj_lat> lat_points)
 {
     FILE *log_file = the_network->log_file;
 
@@ -308,7 +339,7 @@ void grow_tree_using_cloud_points (struct cco_network *the_network,\
         fprintf(log_file,"%s\n",PRINT_LINE);
         fprintf(log_file,"[cco] Working on terminal number %d\n",the_network->num_terminals);
 
-        generate_terminal_using_cloud_points(the_network,config,local_opt_config,cloud_points,obstacle_faces);
+        generate_terminal_using_cloud_points(the_network,config,local_opt_config,cloud_points,obstacle_faces,lat_points);
 
         // DEBUG
         //write_to_vtk_iteration(the_network);
@@ -334,7 +365,7 @@ void grow_tree_using_cloud_points (struct cco_network *the_network,\
         fprintf(log_file,"[cco] Working on terminal number %d after pruning\n",the_network->num_terminals);
         printf("%s\n",PRINT_LINE);
 
-        generate_terminal_using_cloud_points(the_network,config,local_opt_config,cloud_points,obstacle_faces);
+        generate_terminal_using_cloud_points(the_network,config,local_opt_config,cloud_points,obstacle_faces,lat_points);
     }
 
     // PMJ's locations
@@ -343,10 +374,8 @@ void grow_tree_using_cloud_points (struct cco_network *the_network,\
         uint32_t num_pmj_points = pmj_points.size();
 
         for (uint32_t i = 0; i < num_pmj_points; i++)
-            generate_terminal_using_pmj_points(the_network,config,local_opt_config,pmj_points,obstacle_faces);
+            generate_terminal_using_pmj_points(the_network,config,local_opt_config,pmj_points,obstacle_faces,lat_points);
     }
-        
-        
         
     // Write to the logfile
     fprintf(log_file,"%s\n",PRINT_LINE);
@@ -1097,7 +1126,8 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
                                           struct cost_function_config *config,\
                                           struct local_optimization_config *local_opt_config,\
                                           std::vector<struct point> cloud_points,\
-                                          std::vector<struct face> obstacle_faces)
+                                          std::vector<struct face> obstacle_faces,\
+                                          std::vector<struct pmj_lat> lat_points)
 {
 
     FILE *log_file = the_network->log_file;
@@ -1167,7 +1197,7 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
             //printf("total bifurcations = %u\n",feasible_segments.size());
 
             // COST FUNCTION
-            iconn = cost_function_fn(the_network,config,local_opt_config,new_pos,feasible_segments,obstacle_faces);
+            iconn = cost_function_fn(the_network,config,local_opt_config,new_pos,feasible_segments,obstacle_faces,lat_points);
             if (iconn == NULL)
             {
                 //fprintf(stderr,"[cco] Error! No feasible segment found!\n");
@@ -1207,7 +1237,8 @@ void generate_terminal_using_pmj_points(struct cco_network *the_network,\
                                           struct cost_function_config *config,\
                                           struct local_optimization_config *local_opt_config,\
                                           std::vector<struct point> pmj_points,\
-                                          std::vector<struct face> obstacle_faces)
+                                          std::vector<struct face> obstacle_faces,\
+                                          std::vector<struct pmj_lat> lat_points)
 {
 
     FILE *log_file = the_network->log_file;
@@ -1276,7 +1307,7 @@ void generate_terminal_using_pmj_points(struct cco_network *the_network,\
             //printf("total bifurcations = %u\n",feasible_segments.size());
 
             // COST FUNCTION
-            iconn = cost_function_fn(the_network,config,local_opt_config,new_pos,feasible_segments,obstacle_faces);
+            iconn = cost_function_fn(the_network,config,local_opt_config,new_pos,feasible_segments,obstacle_faces,lat_points);
             if (iconn == NULL)
             {
                 //fprintf(stderr,"[cco] Error! No feasible segment found!\n");
@@ -1347,6 +1378,28 @@ void read_pmj_location_points (const char filename[], std::vector<struct point> 
         fscanf(file,"%lf %lf %lf",&point.x,&point.y,&point.z);
 
         pmj_points.push_back(point);
+    }
+
+    fclose(file);
+}
+
+void read_lat_points (const char filename[], std::vector<struct pmj_lat> &lat_points)
+{
+    printf("[cco] Reading LAT from '%s' !\n",filename);
+
+    char str[200];
+    FILE *file = fopen(filename,"r");
+
+    uint32_t num_points;
+    fscanf(file,"%u",&num_points);
+
+    for (uint32_t i = 0; i < num_points; i++)
+    {
+        struct pmj_lat point;
+        fscanf(file,"%lf %lf %lf %lf",&point.x,&point.y,&point.z,&point.at);
+        point.is_active = true;
+
+        lat_points.push_back(point);
     }
 
     fclose(file);

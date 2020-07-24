@@ -37,6 +37,13 @@ struct cco_segment
     int dest_id;
 };
 
+struct pmj_lat
+{
+    bool is_active;
+    double x, y, z;
+    double at;
+};
+
 void calc_middle_point_segment (struct segment_node *s, double pos[]);
 void calc_unitary_vector (struct segment_node *s, double u[]);
 void calc_relative_resistance_term (struct segment_node *iterm);
@@ -69,6 +76,8 @@ double calc_segment_level (struct segment_node *iconn);
 double calc_custom_function (struct cco_network *the_network, const double beta, const double alpha);
 double calc_segment_custom_function (struct segment_node *s, const double beta, const double alpha);
 double calc_segment_custom_function_with_level_penalty (const double eval, struct segment_node *iconn);
+
+uint32_t calc_closest_pmj_site (struct segment_node *s, std::vector<struct pmj_lat> lat_points);
 
 bool has_deviation (struct segment_list *s_list, struct segment_node *inew,\
                     const double new_at, const double limit,\

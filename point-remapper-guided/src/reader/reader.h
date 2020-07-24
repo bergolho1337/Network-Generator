@@ -8,7 +8,9 @@
 
 using namespace std;
 
-#define RADIUS 0.001
+//#define RADIUS 0.001
+#define RADIUS 0.01
+
 
 class Reader
 {

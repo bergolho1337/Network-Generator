@@ -7,8 +7,8 @@
 # Variables
 FILENAME="frames/frame"
 FRAME_RATE="10"
-END_FRAME="125"
-OUTPUT_VIDEO_FILENAME="videos/oxford_network_3"
+END_FRAME="88"
+OUTPUT_VIDEO_FILENAME="videos/rafa_sebastian_guided_link_PMJ"
 RESOLUTION="1980x1024"
 
 # Execute the converting command using FFMPEG

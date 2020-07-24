@@ -46,6 +46,9 @@ struct user_options
     bool use_pmj_location;
     char *pmj_location_filename;
 
+    bool use_lat;
+    char *lat_filename;
+
     bool use_only_murray;
     double start_radius;
 

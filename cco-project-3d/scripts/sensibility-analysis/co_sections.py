@@ -12,9 +12,9 @@ ROOT_X = -0.004
 ROOT_Y = 0.02
 ROOT_Z = 0.0265
 START_RADIUS = 0.00102269
-A = 100.0
-B = -0.25
-C = 0.0
+
+SAVE_NETWORK_PATH = "outputs/01_SRN_Purkinje/04_CO_Length_With_Pruning"
+# SAVE_NETWORK_PATH = "outputs/01_SRN_Purkinje/01_CO_Length" 
 
 USE_CLOUD_POINTS = True
 CLOUD_POINTS_FILENAME = "clouds/private/elizabeth_remapped_guided_3.pts"
@@ -54,8 +54,7 @@ def write_co_main_section (file,seed,rand_offset):
 
 def write_co_save_network (file,seed):
     file.write("[save_network]\n")
-    #file.write("output_dir = outputs/01_SRN_Purkinje/01_CO_Length/seed:%d\n" % (seed))
-    file.write("output_dir = outputs/01_SRN_Purkinje/04_CO_Length_With_Pruning/seed:%d\n" % (seed))
+    file.write("output_dir = %s/seed:%d\n" % (SAVE_NETWORK_PATH,seed))
     file.write("\n")
 
 def write_co_cloud_points_section (file):
@@ -93,8 +92,7 @@ def write_co_pruning_section (file):
     file.write("\n")
 
 def write_co_config_file (seed,rand_offset):
-    #filename = "ieee/co_min:length_seed-%u_nterm:650.ini" % (seed)
-    filename = "ieee/co_min:length_with_pruning_seed-%u_nterm:650.ini" % (seed)
+    filename = "network/co_min:length_with_pruning_seed-%u_nterm:650.ini" % (seed)
     file = open(filename,"w")
 
     write_co_main_section(file,seed,rand_offset)    

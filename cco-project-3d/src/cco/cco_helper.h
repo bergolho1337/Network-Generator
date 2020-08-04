@@ -72,6 +72,7 @@ double calc_tau_m (const double cm, const double rm);
 
 double calc_segment_activation_time_using_level (const double at, struct segment_node *iconn);
 double calc_segment_level (struct segment_node *iconn);
+double calc_level_threashold (const uint32_t num_terminals);
 
 double calc_custom_function (struct cco_network *the_network, const double beta, const double alpha);
 double calc_segment_custom_function (struct segment_node *s, const double beta, const double alpha);

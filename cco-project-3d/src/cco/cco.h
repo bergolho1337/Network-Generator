@@ -29,7 +29,7 @@ static const double ETA = 3.6e-03;                  // Blood viscosity
 static const uint32_t NTOSS = 10;                   // Number of tosses for a new terminal
 static const double FACTOR = 0.95;                  // Reduction factor for the distance criterion
 static const double EPISON = 1.0e-16;                // Minimum size for a segment      CHANGE
-static const uint32_t PRUNING_PASSES = 5;           // Number of times the pruning procedure will be called
+static const uint32_t PRUNING_PASSES = 1;           // Number of times the pruning procedure will be called
 #define PRINT_LINE "========================================================================================================"
 // =================================================================
 
@@ -126,6 +126,7 @@ bool has_intersect_obstacle (struct segment_node *inew, std::vector<struct face>
 bool has_intersect_obstacle (const double x_prox[], const double x_new[], std::vector<struct face> obstacle_faces);
 bool has_valid_segment_sizes (const double iconn_size, const double ibiff_size, const double inew_size);
 bool has_valid_segment_sizes_2 (const double iconn_size, const double ibiff_size, const double inew_size);
+bool has_level (struct segment_node *inew, const uint32_t num_terminals);
 
 bool connection_search (struct cco_network *the_network, const double pos[], const double d_threash);
 bool distance_criterion (struct segment_node *s, const double pos[], const double d_threash);

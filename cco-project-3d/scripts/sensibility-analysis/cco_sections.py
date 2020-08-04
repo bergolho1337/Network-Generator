@@ -1,3 +1,8 @@
+# =====================================================================================================
+# This library configures the solver to generate Purkinje network that follows the cost function:
+#   MINIMIZE TOTAL VOLUME WITH ANGLE RESTRICTION (the same one used on the IEEE paper from 2018)
+# =====================================================================================================
+
 Q_PERF = 8.33e-06
 P_PERF = 1.33e+04
 P_TERM = 9.58e+03
@@ -7,9 +12,8 @@ ROOT_X = -0.004
 ROOT_Y = 0.02
 ROOT_Z = 0.0265
 START_RADIUS = 0.00102269
-A = 100.0
-B = -0.25
-C = 0.0
+
+SAVE_NETWORK_PATH = "outputs"
 
 USE_CLOUD_POINTS = True
 CLOUD_POINTS_FILENAME = "clouds/private/elizabeth_exterior_LV_remapped.pts"
@@ -22,6 +26,13 @@ LOCAL_OPTIMIZATION_FUNCTION = "rafael_local_optimization"
 
 COST_FUNCTION_LIBRARY_NAME = "shared-libs/libminimize_volume.so"
 COST_FUNCTION_NAME = "minimize_tree_volume_default"
+
+USE_PRUNING = False
+PRUNING_FUNCTION_NAME = "hyperbolic_tangent"
+PRUNING_PARAM_A = 50.0
+PRUNING_PARAM_B = -0.25
+PRUNING_PARAM_C = 3.0
+PRUNING_PARAM_D = 50.0
 
 def write_cco_main_section (file,seed,rand_offset):
     file.write("[main]\n")
@@ -41,7 +52,7 @@ def write_cco_main_section (file,seed,rand_offset):
 
 def write_cco_save_network_section(file,seed,rand_offset):
     file.write("[save_network]\n")
-    file.write("output_dir = outputs/elizabeth_minimize_volume_seed:%u_offset:%u\n" % (seed,rand_offset))
+    file.write("output_dir = %s/elizabeth_minimize_volume_seed:%u_offset:%u\n" % (SAVE_NETWORK_PATH,seed,rand_offset))
     file.write("\n")
 
 def write_cco_cloud_points_section (file):
@@ -69,13 +80,15 @@ def write_cco_cost_function_section (file):
 def write_cco_pruning_section (file):
     file.write("[pruning]\n")
     file.write("use_pruning = true\n")
-    file.write("A = %g\n" % A)
-    file.write("B = %g\n" % B)
-    file.write("C = %g\n" % C)
+    file.write("pruning_function = %s\n" % (PRUNING_FUNCTION_NAME))
+    file.write("A = %s\n" % (PRUNING_PARAM_A))
+    file.write("B = %s\n" % (PRUNING_PARAM_B))
+    file.write("C = %s\n" % (PRUNING_PARAM_C))
+    file.write("D = %s\n" % (PRUNING_PARAM_D))
     file.write("\n")
 
 def write_cco_config_file (seed,rand_offset):
-    filename = "minimize_volume/elizabeth_seed-%u_offset-%u.ini" % (seed,rand_offset)
+    filename = "network/elizabeth_seed-%u_offset-%u.ini" % (seed,rand_offset)
     file = open(filename,"w")
 
     write_cco_main_section(file,seed,rand_offset)
@@ -83,6 +96,7 @@ def write_cco_config_file (seed,rand_offset):
     write_cco_cloud_points_section(file)
     write_cco_local_optimization_section(file)
     write_cco_cost_function_section(file)
-    write_cco_pruning_section(file)
+    if (USE_PRUNING):
+        write_cco_pruning_section(file)
 
     file.close()

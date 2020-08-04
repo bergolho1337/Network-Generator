@@ -54,7 +54,8 @@ int main (int argc, char *argv[])
     {
         vtkSmartPointer<vtkPolyData> input_polydata = reader->GetPolyDataOutput();
 
-        // Transform filter from CCO domain to MonoAlg3D domain !!!
+        // ELIZABETH: Transform filter from CCO domain to MonoAlg3D domain !!!
+    /*
         double t1[3] = {140,160,160};
         double t2[3] = {35,-40,40};
         double t3[3] = {20000,27500,27500};
@@ -76,6 +77,18 @@ int main (int argc, char *argv[])
         writer->SetFileName(output_filename.c_str());
         writer->SetInputData(polydata_4);
         writer->Write();
+    */
+
+        // OXFORD
+        double t1[3] = {0,0,0};
+        double s1[3] = {1.0e+05,1.0e+05,1.0e+05};
+
+        vtkSmartPointer<vtkPolyData> polydata_1 = transform_polydata(input_polydata,t1,0,s1);
+
+        vtkSmartPointer<vtkPolyDataWriter> writer = vtkSmartPointer<vtkPolyDataWriter>::New();
+        writer->SetFileName(output_filename.c_str());
+        writer->SetInputData(polydata_1);
+        writer->Write();    
     }
     else
     {

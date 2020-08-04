@@ -198,7 +198,7 @@ void set_lat_name (struct cco_network *the_network, struct user_options *options
     }
     else
     {
-        the_network->using_pmj_location = false;
+        the_network->using_lat = false;
 
         printf("[cco] No LAT provided\n");
     }
@@ -355,7 +355,6 @@ void grow_tree_using_cloud_points (struct cco_network *the_network,\
             prune_tree(the_network,pruning_config);
     }
         
-
     // If some terminals were eliminated by the pruning process, add remaining ones
     while (the_network->num_terminals != the_network->N_term)
     {
@@ -502,6 +501,14 @@ bool has_valid_segment_sizes (const double iconn_size, const double ibiff_size, 
 bool has_valid_segment_sizes_2 (const double iconn_size, const double ibiff_size, const double inew_size)
 {
     return (iconn_size < MAX_SEGMENT_SIZE && ibiff_size < MAX_SEGMENT_SIZE && inew_size < MAX_SEGMENT_SIZE);
+}
+
+bool has_level (struct segment_node *inew, const uint32_t num_terminals)
+{
+    uint32_t level = calc_segment_level(inew);
+    uint32_t level_threashold = calc_level_threashold(num_terminals);
+
+    return (level >= level_threashold);
 }
 
 bool check_collisions_and_fill_feasible_segments (struct cco_network *the_network, const double new_pos[],\
@@ -1331,6 +1338,10 @@ void generate_terminal_using_pmj_points(struct cco_network *the_network,\
                 d_threash *= FACTOR;
                 tosses = 0;
             }
+
+            // GIVE UP !!!!
+            if (d_threash < 1.0e-100)
+                return;
         }
         // The point is a valid one and we can eliminate it from the cloud
         else
@@ -1648,11 +1659,12 @@ void prune_tree (struct cco_network *the_network, struct pruning_config *config)
         // We only prune terminal segments
         if (is_terminal(tmp) && tmp->id < the_network->segment_list->num_nodes)
         {
-            // Calculate the segment level
+            // Calculate the segment level and length
             double level = calc_segment_level(tmp);
+            double length = calc_segment_size(tmp);
             
             // Call the pruning function
-            double eval = pruning_fn(config,level);
+            double eval = pruning_fn(config,level,length);
             
             double r = ((double)rand() / (double)RAND_MAX) * 100.0;
 

@@ -14,7 +14,7 @@ struct pruning_config;
 #define EXPORT_FN
 
 // Template for a local optimization function
-#define SET_PRUNING_FUNCTION(name) EXPORT_FN double name(struct pruning_config *config, const double level)
+#define SET_PRUNING_FUNCTION(name) EXPORT_FN double name(struct pruning_config *config, const double level, const double length)
 typedef SET_PRUNING_FUNCTION(set_pruning_function_fn);
 
 struct pruning_config

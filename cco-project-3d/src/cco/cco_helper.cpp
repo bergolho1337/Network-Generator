@@ -191,8 +191,8 @@ double calc_segment_activation_time (struct segment_node *s,\
     double diameter = radius * 2.0;             // mm
 
     diameter *= 1000;                           // um
-    delta_s *= CM_TO_M;                         // m
-    //delta_s *= 1.0;
+    //delta_s *= CM_TO_M;                         // m
+    delta_s *= 1;
 
     double velocity = calc_propagation_velocity(diameter,G,Cf,tau_f);
     //double velocity = 3.0;
@@ -230,6 +230,14 @@ double calc_segment_level (struct segment_node *iconn)
     }
 
     return level;
+}
+
+double calc_level_threashold (const uint32_t num_terminals)
+{
+    if (num_terminals < 80)
+        return 0.0;
+    else
+        return 20.0;
 }
 
 double calc_segment_custom_function_with_level_penalty (const double eval, struct segment_node *iconn)
@@ -317,6 +325,8 @@ uint32_t calc_closest_pmj_site (struct segment_node *s, std::vector<struct pmj_l
 
     return closest_id;
 }
+
+
 
 bool has_deviation (struct segment_list *s_list, struct segment_node *inew,\
                     const double new_at, const double limit,\

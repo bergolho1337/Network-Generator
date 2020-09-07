@@ -249,7 +249,11 @@ int parse_config_file(void *user, const char *section, const char *name, const c
         }
         else if (MATCH_NAME("local_optimization_function"))
         {
-            pconfig->local_opt_config->name = strdup(value);
+            pconfig->local_opt_config->function_name = strdup(value);
+        }
+        else if (MATCH_NAME("library_name"))
+        {
+            pconfig->local_opt_config->library_name = strdup(value);
         }
     }
     else if (SECTION_STARTS_WITH(COST_FUNCTION_SECTION))
@@ -290,7 +294,11 @@ int parse_config_file(void *user, const char *section, const char *name, const c
         }
         else if (MATCH_NAME("pruning_function"))
         {
-            pconfig->pruning_config->name = strdup(value);
+            pconfig->pruning_config->function_name = strdup(value);
+        }
+        else if (MATCH_NAME("library_name"))
+        {
+            pconfig->pruning_config->library_name = strdup(value);
         }
         else
         {

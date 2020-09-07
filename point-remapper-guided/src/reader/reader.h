@@ -8,8 +8,14 @@
 
 using namespace std;
 
-//#define RADIUS 0.001
-#define RADIUS 0.005
+// Elizabeth RV config
+#define RADIUS 0.007
+#define SCALE_RATIO 0.25
+
+// Rafa Sebastina config
+//#define RADIUS 4.0
+//#define SCALE_RATIO 0.001
+
 
 
 class Reader

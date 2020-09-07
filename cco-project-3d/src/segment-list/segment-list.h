@@ -14,13 +14,15 @@
 
 struct segment
 {
-    double Q;
+    double Q;             // Flux passing through the segment
     double delta_p;       // Pressure drop of the segment 
     double radius;        // Radius of the segment
     double beta;          // Relative radius (ratio between my radius and parent radius = beta)
     double resistance;    // Relative resistance R*
-    double length;
-    uint32_t ndist;
+    double length;        // Size of the segment
+    uint32_t ndist;       // Number of terminals below this segment
+
+    bool prune;             // Flag to prune the segment
 
     struct point_node *src;
     struct point_node *dest;

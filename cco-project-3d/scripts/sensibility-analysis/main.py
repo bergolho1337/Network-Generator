@@ -17,8 +17,9 @@ def main():
 
     for seed in seeds:
         for rand_offset in rand_offsets:
-            write_co_activation_time_config_file(seed,rand_offset)
-            write_monoalg_config_file(seed,rand_offset,3)
+            write_co_config_file(seed,rand_offset)
+            #write_co_activation_time_config_file(seed,rand_offset)
+            #write_monoalg_config_file(seed,rand_offset,3)
 
 if __name__ == "__main__":
 	main()

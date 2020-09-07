@@ -5,7 +5,8 @@ struct pruning_config* new_pruning_config ()
     struct pruning_config *result = (struct pruning_config*)malloc(sizeof(struct pruning_config));
 
     result->handle = NULL;
-    result->name = NULL;
+    result->function_name = NULL;
+    result->library_name = NULL;
     result->function = NULL;
     
     result->params = new std::map<std::string,double>();
@@ -16,8 +17,11 @@ struct pruning_config* new_pruning_config ()
 void free_pruning_config (struct pruning_config *config)
 {
     //delete config->params;
-    if (config->name)
-        free(config->name);
+    if (config->library_name)
+        free(config->library_name);
+
+    if (config->function_name)
+        free(config->function_name);
 
     if (config->handle)
         dlclose(config->handle);
@@ -29,7 +33,11 @@ void set_pruning_function (struct pruning_config *config)
 {
     assert(config);
 
-    char library_path[200] = "./shared-libs/libdefault_pruning.so";
+    char library_path[200];
+    if (config->library_name)
+        strcpy(library_path,config->library_name);
+    else
+        strcpy(library_path,"./shared-libs/libdefault_pruning.so");
 
     config->handle = dlopen(library_path,RTLD_LAZY);
     if (!config->handle) 
@@ -42,7 +50,7 @@ void set_pruning_function (struct pruning_config *config)
         fprintf(stdout,"\n[pruning] Pruning library \"%s\" opened with sucess\n",library_path);
     }
     
-    char *pruning_function_name = config->name;
+    char *pruning_function_name = config->function_name;
 
     config->function = (set_pruning_function_fn*)dlsym(config->handle,pruning_function_name);
     if (dlerror() != NULL)  
@@ -58,7 +66,7 @@ void set_pruning_function (struct pruning_config *config)
 
 void print_pruning_function_config (struct pruning_config *config)
 {
-    printf("Pruning function name = \"%s\"\n",config->name);
+    printf("Pruning function name = \"%s\"\n",config->function_name);
 
     if (!config->params->empty())
     {

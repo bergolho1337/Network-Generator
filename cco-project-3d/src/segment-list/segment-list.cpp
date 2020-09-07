@@ -149,6 +149,7 @@ struct segment* new_segment (struct point_node *src, struct point_node *dest,\
     tmp->delta_p = p;
     tmp->ndist = 1;
     tmp->beta = -1;
+    tmp->prune = false;
     return tmp;
 }
 

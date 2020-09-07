@@ -80,8 +80,20 @@ int main (int argc, char *argv[])
     */
 
         // OXFORD
+    /*
         double t1[3] = {0,0,0};
         double s1[3] = {1.0e+05,1.0e+05,1.0e+05};
+
+        vtkSmartPointer<vtkPolyData> polydata_1 = transform_polydata(input_polydata,t1,0,s1);
+
+        vtkSmartPointer<vtkPolyDataWriter> writer = vtkSmartPointer<vtkPolyDataWriter>::New();
+        writer->SetFileName(output_filename.c_str());
+        writer->SetInputData(polydata_1);
+        writer->Write();    
+    */
+        // ELIZABETH BIVENTRICULAR
+        double t1[3] = {-18226.2,-18226.2,-28226.2};
+        double s1[3] = {4.0e+06,4.0e+06,4.0e+06};
 
         vtkSmartPointer<vtkPolyData> polydata_1 = transform_polydata(input_polydata,t1,0,s1);
 

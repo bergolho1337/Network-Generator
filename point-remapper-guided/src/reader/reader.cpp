@@ -18,6 +18,7 @@ void Reader::remap_points_using_graph ()
     int *parents = new int[total_nodes]();
 
     int source_index = 0;
+    //int source_index = 142;
     Node *source_node = this->the_network->search_node(source_index);
     parents[source_index] = -1;
 
@@ -117,7 +118,8 @@ void Reader::write_remapped_points_to_vtk ()
     fprintf(file,"DATASET POLYDATA\n");
     fprintf(file,"POINTS %lu float\n",this->the_cloud->the_remapped_points.size());
     for (uint32_t i = 0; i < this->the_cloud->the_remapped_points.size(); i++)
-        fprintf(file,"%lf %lf %lf\n",this->the_cloud->the_remapped_points[i].x,this->the_cloud->the_remapped_points[i].y,this->the_cloud->the_remapped_points[i].z);
+        fprintf(file,"%lf %lf %lf\n",this->the_cloud->the_remapped_points[i].x*SCALE_RATIO,this->the_cloud->the_remapped_points[i].y*SCALE_RATIO,this->the_cloud->the_remapped_points[i].z*SCALE_RATIO);
+        //fprintf(file,"%lf %lf %lf\n",this->the_cloud->the_remapped_points[i].x,this->the_cloud->the_remapped_points[i].y,this->the_cloud->the_remapped_points[i].z);
     fprintf(file,"VERTICES %lu %lu\n",this->the_cloud->the_remapped_points.size(),this->the_cloud->the_remapped_points.size()*2);
     for (uint32_t i = 0; i < this->the_cloud->the_remapped_points.size(); i++)
         fprintf(file,"1 %u\n",i);
@@ -133,7 +135,8 @@ void Reader::write_points_to_pts ()
 
     fprintf(file,"%lu\n",this->the_cloud->the_remapped_points.size());
     for (uint32_t i = 0; i < this->the_cloud->the_remapped_points.size(); i++)
-        fprintf(file,"%lf %lf %lf\n",this->the_cloud->the_remapped_points[i].x,this->the_cloud->the_remapped_points[i].y,this->the_cloud->the_remapped_points[i].z);
+        fprintf(file,"%lf %lf %lf\n",this->the_cloud->the_remapped_points[i].x*SCALE_RATIO,this->the_cloud->the_remapped_points[i].y*SCALE_RATIO,this->the_cloud->the_remapped_points[i].z*SCALE_RATIO);
+        //fprintf(file,"%lf %lf %lf\n",this->the_cloud->the_remapped_points[i].x*0.0005,this->the_cloud->the_remapped_points[i].y*0.0005,this->the_cloud->the_remapped_points[i].z*0.0005);
     
     fclose(file);
 }

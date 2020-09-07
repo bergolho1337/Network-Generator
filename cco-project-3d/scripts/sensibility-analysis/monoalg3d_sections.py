@@ -20,7 +20,10 @@ def write_monoalg_save_result_section (file,seed,rand_offset,algorithm_number,us
     #file.write("output_dir = ./outputs/Oxford/min:terminals_seed:%u\n" % (seed))
     #file.write("output_dir = ./outputs/Oxford/min:total_seed:%u\n" % (seed))
     #file.write("output_dir = ./outputs/Oxford/min:terminals-linked_seed:%u\n" % (seed))
-    file.write("output_dir = ./outputs/Oxford/min:total-linked_seed:%u\n" % (seed))
+    #file.write("output_dir = ./outputs/Oxford/min:total-linked_seed:%u\n" % (seed))
+    #file.write("output_dir = ./outputs/Oxford/min:terminals-linked-soft-pruning_seed:%u\n" % (seed))
+    #file.write("output_dir = ./outputs/Oxford/min:terminals-linked-moderate-pruning_seed:%u\n" % (seed))
+    file.write("output_dir = ./outputs/Oxford/min:terminals-linked-heavy-pruning_seed:%u\n" % (seed))
     file.write("init_function=init_save_purkinje_coupling_with_activation_times\n")
     file.write("end_function=end_save_purkinje_coupling_with_activation_times\n")
     file.write("main_function=save_purkinje_coupling_with_activation_times\n")
@@ -95,7 +98,10 @@ def write_monoalg_purkinje_section (file,seed,rand_offset,algorithm_number,use_c
     #file.write("network_file = networks/03_Lucas/02_Oxford/01_Basics/01_Minimize_Terminals/seed:%u.vtk\n" % (seed))
     #file.write("network_file = networks/03_Lucas/02_Oxford/01_Basics/02_Minimize_Total/seed:%u.vtk\n" % (seed))
     #file.write("network_file = networks/03_Lucas/02_Oxford/01_Basics/03_Minimize_Terminals_Linked/seed:%u.vtk\n" % (seed))
-    file.write("network_file = networks/03_Lucas/02_Oxford/01_Basics/04_Minimize_Total_Linked/seed:%u.vtk\n" % (seed))
+    #file.write("network_file = networks/03_Lucas/02_Oxford/01_Basics/04_Minimize_Total_Linked/seed:%u.vtk\n" % (seed))
+    #file.write("network_file = networks/03_Lucas/02_Oxford/01_Basics/05_Minimize_Terminals_Linked_Soft_Pruning/seed:%u.vtk\n" % (seed))
+    #file.write("network_file = networks/03_Lucas/02_Oxford/01_Basics/06_Minimize_Terminals_Linked_Moderate_Pruning/seed:%u.vtk\n" % (seed))
+    file.write("network_file = networks/03_Lucas/02_Oxford/01_Basics/07_Minimize_Terminals_Linked_Heavy_Pruning/seed:%u.vtk\n" % (seed))
     file.write("pmj_location_file = networks/03_Lucas/02_Oxford/01_Basics/00_Reference/reference_pmjs.vtk\n")
     file.write("main_function = initialize_purkinje_coupling_with_custom_mesh\n")
     file.write("library_file = shared_libs/libdefault_purkinje.so\n")
@@ -136,7 +142,7 @@ def write_monoalg_stimulus_section (file,use_cluster=False):
 
 
 def write_monoalg_config_file (seed,rand_offset,algorithm_number):
-    filename = "monoalg3d/min:total-linked_seed-%u.ini" % (seed)
+    filename = "monoalg3d/min:terminals-linked-heavy_seed-%u.ini" % (seed)
     file = open(filename,"w")
 
     write_monoalg_main_section(file,seed,rand_offset)

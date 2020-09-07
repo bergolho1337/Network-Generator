@@ -156,6 +156,7 @@ void generate_terminal_using_cloud_points(struct cco_network *the_network,\
                                           std::vector<struct pmj_lat> lat_points);
 
 void prune_tree (struct cco_network *the_network, struct pruning_config *config);
+void prune_tree_2 (struct cco_network *the_network, struct pruning_config *config);
 void prune_tree_segment (struct cco_network *the_network, struct segment_node *inew);
 
 void sort_point_from_cloud_v1 (double pos[], std::vector<struct point> cloud_points);

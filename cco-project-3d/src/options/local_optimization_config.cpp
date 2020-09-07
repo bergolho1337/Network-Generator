@@ -5,7 +5,8 @@ struct local_optimization_config* new_local_optimization_config ()
     struct local_optimization_config *result = (struct local_optimization_config*)malloc(sizeof(struct local_optimization_config));
 
     result->handle = NULL;
-    result->name = NULL;
+    result->function_name = NULL;
+    result->library_name = NULL;
     result->function = NULL;
 
     result->first_call = true;
@@ -18,8 +19,11 @@ struct local_optimization_config* new_local_optimization_config ()
 void free_local_optimization_config (struct local_optimization_config *config)
 {
     //delete config->params;
-    if (config->name)
-        free(config->name);
+    if (config->library_name)
+        free(config->library_name);
+
+    if (config->function_name)
+        free(config->function_name);
 
     if (config->handle)
         dlclose(config->handle);
@@ -31,7 +35,11 @@ void set_local_optimization_function (struct local_optimization_config *config)
 {
     assert(config);
 
-    char library_path[MAX_FILENAME_SIZE] = "./shared-libs/libdefault_local_optimization.so";
+    char library_path[200];
+    if (!config->library_name)
+        strcpy(library_path,"./shared-libs/libdefault_local_optimization.so");
+    else
+        strcpy(library_path,config->library_name);
 
     config->handle = dlopen(library_path,RTLD_LAZY);
     if (!config->handle) 
@@ -44,7 +52,7 @@ void set_local_optimization_function (struct local_optimization_config *config)
         fprintf(stdout,"\n[local_optimization] Local optimization library \"%s\" opened with sucess\n",library_path);
     }
     
-    char *local_optimiztion_function_name = config->name;
+    char *local_optimiztion_function_name = config->function_name;
 
     config->function = (set_local_optimization_function_fn*)dlsym(config->handle,local_optimiztion_function_name);
     if (dlerror() != NULL)  
@@ -60,7 +68,7 @@ void set_local_optimization_function (struct local_optimization_config *config)
 
 void print_local_optimization_function_config (struct local_optimization_config *config)
 {
-    printf("Local optimization function name = \"%s\"\n",config->name);
+    printf("Local optimization function name = \"%s\"\n",config->function_name);
 
     /*
     if (!config->params->empty())

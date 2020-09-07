@@ -35,17 +35,17 @@ SEEDS=( 1562002891 1562002894 1562005513 1562005553 1562006177 1562007596 156200
 # ========================================================================================================================
 # 3) MINIMIZE TERMINALS LINKED
 # ========================================================================================================================
-PROGRAM_PATH="/home/berg/Github/Network-Generator/cco-project-3d/bin/Cco_3D"
-INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d/inputs/05_Lucas/02_Oxford/03_Minimize_Terminals_Linked"
+#PROGRAM_PATH="/home/berg/Github/Network-Generator/cco-project-3d/bin/Cco_3D"
+#INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d/inputs/05_Lucas/02_Oxford/03_Minimize_Terminals_Linked"
 
-TRANFORM_PROGRAM_PATH="/home/berg/Github/Network-Generator/cco-project-3d/scripts/transform-filter/bin/TransformFilter"
-TRANSFORM_INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d/outputs/02_Oxford/03_Minimize_Terminal_Linked"
-TRANSFORM_OUTPUT_PATH="/home/berg/Github/MonoAlg3D_C/networks/03_Lucas/02_Oxford/01_Basics/03_Minimize_Terminal_Linked"
+#TRANFORM_PROGRAM_PATH="/home/berg/Github/Network-Generator/cco-project-3d/scripts/transform-filter/bin/TransformFilter"
+#TRANSFORM_INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d/outputs/02_Oxford/03_Minimize_Terminal_Linked"
+#TRANSFORM_OUTPUT_PATH="/home/berg/Github/MonoAlg3D_C/networks/03_Lucas/02_Oxford/01_Basics/03_Minimize_Terminal_Linked"
 
-for SEED in "${SEEDS[@]}"; do
-    ${PROGRAM_PATH} ${INPUT_PATH}/min\:terminals-linked_seed-${SEED}.ini
-    ${TRANFORM_PROGRAM_PATH} ${TRANSFORM_INPUT_PATH}/seed\:${SEED}/tree_nterm_80.vtk ${TRANSFORM_OUTPUT_PATH}/seed\:${SEED}.vtk 
-done
+#for SEED in "${SEEDS[@]}"; do
+#    ${PROGRAM_PATH} ${INPUT_PATH}/min\:terminals-linked_seed-${SEED}.ini
+#    ${TRANFORM_PROGRAM_PATH} ${TRANSFORM_INPUT_PATH}/seed\:${SEED}/tree_nterm_80.vtk ${TRANSFORM_OUTPUT_PATH}/seed\:${SEED}.vtk 
+#done
 
 # ========================================================================================================================
 # 4) MINIMIZE TOTAL LINKED
@@ -61,3 +61,48 @@ done
 #    ${PROGRAM_PATH} ${INPUT_PATH}/min\:total-linked_seed-${SEED}.ini
 #    ${TRANFORM_PROGRAM_PATH} ${TRANSFORM_INPUT_PATH}/seed\:${SEED}/tree_nterm_80.vtk ${TRANSFORM_OUTPUT_PATH}/seed\:${SEED}.vtk 
 #done
+
+# ========================================================================================================================
+# 5) MINIMIZE TERMINALS LINKED WITH SOFT PRUNING
+# ========================================================================================================================
+#PROGRAM_PATH="/home/berg/Github/Network-Generator/cco-project-3d/bin/Cco_3D"
+#INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d/inputs/05_Lucas/02_Oxford/05_Minimize_Terminals_Linked_Soft_Pruning"
+
+#TRANFORM_PROGRAM_PATH="/home/berg/Github/Network-Generator/cco-project-3d/scripts/transform-filter/bin/TransformFilter"
+#TRANSFORM_INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d/outputs/02_Oxford/05_Minimize_Terminals_Linked_Soft_Pruning"
+#TRANSFORM_OUTPUT_PATH="/home/berg/Github/MonoAlg3D_C/networks/03_Lucas/02_Oxford/01_Basics/05_Minimize_Terminals_Linked_Soft_Pruning"
+
+#for SEED in "${SEEDS[@]}"; do
+#    ${PROGRAM_PATH} ${INPUT_PATH}/min\:terminals-linked-soft_seed-${SEED}.ini
+#    ${TRANFORM_PROGRAM_PATH} ${TRANSFORM_INPUT_PATH}/seed\:${SEED}/tree_nterm_80.vtk ${TRANSFORM_OUTPUT_PATH}/seed\:${SEED}.vtk 
+#done
+
+# ========================================================================================================================
+# 6) MINIMIZE TERMINALS LINKED WITH MODERATE PRUNING
+# ========================================================================================================================
+PROGRAM_PATH="/home/berg/Github/Network-Generator/cco-project-3d/bin/Cco_3D"
+INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d/inputs/05_Lucas/02_Oxford/06_Minimize_Terminals_Linked_Moderate_Pruning"
+
+TRANFORM_PROGRAM_PATH="/home/berg/Github/Network-Generator/cco-project-3d/scripts/transform-filter/bin/TransformFilter"
+TRANSFORM_INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d/outputs/02_Oxford/06_Minimize_Terminals_Linked_Moderate_Pruning"
+TRANSFORM_OUTPUT_PATH="/home/berg/Github/MonoAlg3D_C/networks/03_Lucas/02_Oxford/01_Basics/06_Minimize_Terminals_Linked_Moderate_Pruning"
+
+for SEED in "${SEEDS[@]}"; do
+    ${PROGRAM_PATH} ${INPUT_PATH}/min\:terminals-linked-moderate_seed-${SEED}.ini
+    ${TRANFORM_PROGRAM_PATH} ${TRANSFORM_INPUT_PATH}/seed\:${SEED}/tree_nterm_80.vtk ${TRANSFORM_OUTPUT_PATH}/seed\:${SEED}.vtk 
+done
+
+# ========================================================================================================================
+# 5) MINIMIZE TERMINALS LINKED WITH SOFT PRUNING
+# ========================================================================================================================
+PROGRAM_PATH="/home/berg/Github/Network-Generator/cco-project-3d/bin/Cco_3D"
+INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d/inputs/05_Lucas/02_Oxford/07_Minimize_Terminals_Linked_Heavy_Pruning"
+
+TRANFORM_PROGRAM_PATH="/home/berg/Github/Network-Generator/cco-project-3d/scripts/transform-filter/bin/TransformFilter"
+TRANSFORM_INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d/outputs/02_Oxford/07_Minimize_Terminals_Linked_Heavy_Pruning"
+TRANSFORM_OUTPUT_PATH="/home/berg/Github/MonoAlg3D_C/networks/03_Lucas/02_Oxford/01_Basics/07_Minimize_Terminals_Linked_Heavy_Pruning"
+
+for SEED in "${SEEDS[@]}"; do
+    ${PROGRAM_PATH} ${INPUT_PATH}/min\:terminals-linked-heavy_seed-${SEED}.ini
+    ${TRANFORM_PROGRAM_PATH} ${TRANSFORM_INPUT_PATH}/seed\:${SEED}/tree_nterm_80.vtk ${TRANSFORM_OUTPUT_PATH}/seed\:${SEED}.vtk 
+done

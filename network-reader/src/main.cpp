@@ -69,12 +69,12 @@ int main (int argc, char *argv[])
 	Graph *g1 = new Graph(argv[1]);
 	//g1->print();
 
-	//g1->check_duplicates();
+	g1->check_duplicates();
 	//g1->remove_node_graph(121);
 
 	//g1->depth_first_search();
 
-	//g1->breadth_first_search();
+	g1->breadth_first_search();
 
 	//g1->write_VTK("outputs/elizabeth_LV.vtk");
 	
@@ -87,14 +87,14 @@ int main (int argc, char *argv[])
 	//g2->remove_node_graph(1);
 	//g2->write_VTK("output/graph-2-3.vtk");
 
-	//g1->write_network_info();
+	g1->write_network_info();
 
 	// ==============================================================
 	// PMJ
-	vector<PMJ> pmjs;
-	read_pmjs_from_file(pmjs);
+	//vector<PMJ> pmjs;
+	//read_pmjs_from_file(pmjs);
 
-	link_pmjs_to_graph(g1,pmjs);
+	//link_pmjs_to_graph(g1,pmjs);
 
 	//g1->write_pmj_config_file("outputs/pmj_config.txt");
 

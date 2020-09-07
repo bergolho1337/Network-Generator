@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <cmath>
 #include <map>
 #include <dlfcn.h>
@@ -21,7 +22,8 @@ struct pruning_config
 {
     void *handle;
 
-    char *name;
+    char *function_name;
+    char *library_name;
     std::map<std::string,double> *params;       // Parameters of the pruning function
 
     set_pruning_function_fn *function;          // Reference to the pruning function

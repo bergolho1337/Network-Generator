@@ -14,7 +14,7 @@ ROOT_Z = 0.0005
 START_RADIUS = 0.1
 GAMMA = 19.0
 
-SAVE_NETWORK_PATH = "outputs/02_Oxford/04_Minimize_Total_Linked"
+SAVE_NETWORK_PATH = "outputs/02_Oxford/07_Minimize_Terminals_Linked_Heavy_Pruning"
 
 USE_CLOUD_POINTS = True
 CLOUD_POINTS_FILENAME = "clouds/generated-clouds/slab_coordinates_guided.pts"
@@ -27,18 +27,16 @@ LOCAL_OPTIMIZATION_FUNCTION = "rafael_local_optimization"
 
 COST_FUNCTION_LIBRARY = "shared-libs/libminimize_activation_time.so"
 COST_FUNCTION_NAME = "minimize_weighted_activation_time_with_angle_restriction"
-W = 0.0
+W = 1.0
 MIN_DEGREES_LIMIT = 1.0
 MAX_DEGREES_LIMIT = 63.0
 
-USE_PRUNING = False
+USE_PRUNING = True
 PRUNING_FUNCTION_NAME = "hyperbolic_tangent"
 PRUNING_PARAM_A = 50.0
 PRUNING_PARAM_B = -0.25
-PRUNING_PARAM_C = 3.0
+PRUNING_PARAM_C = 5.0
 PRUNING_PARAM_D = 50.0
-#PRUNING_FUNCTION_NAME = "length"
-#PRUNING_PARAM_LENGTH_LIMIT = 0.01
 
 def write_co_main_section (file,seed,rand_offset):
     file.write("[main]\n")
@@ -96,7 +94,6 @@ def write_co_pruning_section (file):
     file.write("[pruning]\n")
     file.write("use_pruning = true\n")
     file.write("pruning_function = %s\n" % (PRUNING_FUNCTION_NAME))
-    #file.write("length_limit = %g\n" % (PRUNING_PARAM_LENGTH_LIMIT))
     file.write("A = %s\n" % (PRUNING_PARAM_A))
     file.write("B = %s\n" % (PRUNING_PARAM_B))
     file.write("C = %s\n" % (PRUNING_PARAM_C))
@@ -105,7 +102,7 @@ def write_co_pruning_section (file):
 
 def write_co_activation_time_config_file (seed,rand_offset):
 
-    filename = "network/min:total-linked_seed-%u.ini" % (seed)
+    filename = "network/min:terminals-linked-heavy_seed-%u.ini" % (seed)
     file = open(filename,"w")
 
     write_co_main_section(file,seed,rand_offset)    

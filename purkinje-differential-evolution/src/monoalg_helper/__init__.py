@@ -1,0 +1,3 @@
+from monoalg_helper.config import *
+
+# Additional functions can be placed here ...

@@ -13,8 +13,11 @@ def eval_murray (d_start,gamma,nlevel):
 	return d
 
 gammas = range(10,20)
-nlevel = 20
+nlevel = 200
 d_start = 200.0
+gamma = 99
+gamma_lv = 19
+gamma_rv = 99
 
 #for gamma in gammas:
 	#level = range(nlevel)
@@ -24,13 +27,15 @@ d_start = 200.0
 	#print
 
 level = range(nlevel)
-d = eval_murray(d_start,19,nlevel)
-plt.title(r"Murray law: $r_{1}^{\gamma} = r_{21}^{\gamma} + r_{22}^{\gamma}$")
-plt.xlim([0,20])
+d_lv = eval_murray(d_start,gamma_lv,nlevel)
+d_rv = eval_murray(d_start,gamma_rv,nlevel)
+plt.title(r"Murray's law: $d_{1}^{\gamma} = d_{21}^{\gamma} + d_{22}^{\gamma}$")
 plt.ylabel(r"$d (\mu m)$",fontsize=15)
 plt.xlabel(r"level",fontsize=15)
-plt.grid()
-plt.plot(level,d,marker='o',label=r'$\gamma$ = 19')
+#plt.grid()
+#plt.plot(level,d_lv,marker='o',label=r'$\gamma$ = %.1lf' % (gamma_lv))
+plt.plot(level,d_lv,label=r'$\gamma$ = %.0lf' % (gamma_lv),linewidth=3.0)
+plt.plot(level,d_rv,label=r'$\gamma$ = %.0lf' % (gamma_rv),linewidth=3.0)
 plt.legend(loc=0)
 #plt.show()
-plt.savefig("purkinje-murray.pdf")
+plt.savefig("murray_law.svg")

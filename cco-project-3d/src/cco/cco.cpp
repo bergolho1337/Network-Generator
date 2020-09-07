@@ -209,9 +209,9 @@ void set_local_optimization_function_name (struct cco_network *the_network, stru
     if (options->use_local_optimization)
     {
         the_network->using_local_optimization = true;
-        uint32_t size = strlen(options->local_opt_config->name) + 1;
+        uint32_t size = strlen(options->local_opt_config->function_name) + 1;
         the_network->local_optimization_function_name = (char*)malloc(sizeof(char)*size);
-        strcpy(the_network->local_optimization_function_name,options->local_opt_config->name);
+        strcpy(the_network->local_optimization_function_name,options->local_opt_config->function_name);
 
         printf("[cco] Using local optimization\n");
         printf("[cco] Local optimization function name :> \"%s\"\n",the_network->local_optimization_function_name);
@@ -229,9 +229,9 @@ void set_pruning_function (struct cco_network *the_network, struct user_options 
     the_network->using_pruning = options->use_pruning;
     if (options->use_pruning)
     {
-        uint32_t size = strlen(options->pruning_config->name) + 1;
+        uint32_t size = strlen(options->pruning_config->function_name) + 1;
         the_network->pruning_function_name = (char*)malloc(sizeof(char)*size);
-        strcpy(the_network->pruning_function_name,options->pruning_config->name);
+        strcpy(the_network->pruning_function_name,options->pruning_config->function_name);
 
         printf("[cco] Using pruning\n");
         printf("[cco] Pruning function name :> \"%s\"\n",the_network->pruning_function_name);
@@ -352,10 +352,12 @@ void grow_tree_using_cloud_points (struct cco_network *the_network,\
     if (the_network->using_pruning)
     {
         for (uint32_t k = 0; k < PRUNING_PASSES; k++)
-            prune_tree(the_network,pruning_config);
+            //prune_tree(the_network,pruning_config);
+            prune_tree_2(the_network,pruning_config);
     }
         
     // If some terminals were eliminated by the pruning process, add remaining ones
+ /*
     while (the_network->num_terminals != the_network->N_term)
     {
         printf("%s\n",PRINT_LINE);
@@ -366,7 +368,7 @@ void grow_tree_using_cloud_points (struct cco_network *the_network,\
 
         generate_terminal_using_cloud_points(the_network,config,local_opt_config,cloud_points,obstacle_faces,lat_points);
     }
-
+*/
     // PMJ's locations
     if (the_network->using_pmj_location)
     {
@@ -1677,7 +1679,49 @@ void prune_tree (struct cco_network *the_network, struct pruning_config *config)
 
         tmp = tmp_next;
     }
+}
 
+void prune_tree_2 (struct cco_network *the_network, struct pruning_config *config)
+{
+    // User parameters for the pruning function
+    set_pruning_function_fn *pruning_fn = config->function;
+    
+    struct segment_node *tmp = the_network->segment_list->list_nodes;
+    while (tmp != NULL)
+    {
+
+        // We only prune terminal segments
+        if (is_terminal(tmp) && tmp->id < the_network->segment_list->num_nodes)
+        {
+            // Calculate the segment level and length
+            double level = calc_segment_level(tmp);
+            double length = calc_segment_size(tmp);
+            
+            // Call the pruning function
+            double eval = pruning_fn(config,level,length);
+            
+            double r = ((double)rand() / (double)RAND_MAX) * 100.0;
+
+            if (r <= eval)
+            {
+                printf("[!] Pruning segment %u!\n",tmp->id);
+                tmp->value->prune = true;
+            }       
+        }
+        tmp = tmp->next;
+    }
+
+    tmp = the_network->segment_list->list_nodes;
+    while (tmp != NULL)
+    {
+        if (tmp->value->prune)
+        {
+            printf("[!] Segment %u has been pruned!\n",tmp->id);
+            prune_tree_segment(the_network,tmp);
+            tmp = the_network->segment_list->list_nodes;
+        }
+        tmp = tmp->next;
+    }
 }
 
 void print_network_info (struct cco_network *the_network)

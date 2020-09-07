@@ -24,7 +24,8 @@ struct local_optimization_config
 {
     void *handle;
 
-    char *name;
+    char *function_name;
+    char *library_name;
     //std::map<std::string,double> *params;    // Parameters of the local optimization function
 
     bool first_call;

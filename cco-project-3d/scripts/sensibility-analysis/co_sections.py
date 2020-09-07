@@ -7,17 +7,16 @@ Q_PERF = 8.33e-06
 P_PERF = 1.33e+04
 P_TERM = 9.58e+03
 V_PERF = 1.0e-04
-N_TERM = 650
-ROOT_X = -0.004
-ROOT_Y = 0.02
-ROOT_Z = 0.0265
+N_TERM = 1100
+ROOT_X = 0.051
+ROOT_Y = 0.062453
+ROOT_Z = 0.01925
 START_RADIUS = 0.00102269
 
-SAVE_NETWORK_PATH = "outputs/01_SRN_Purkinje/04_CO_Length_With_Pruning"
-# SAVE_NETWORK_PATH = "outputs/01_SRN_Purkinje/01_CO_Length" 
+SAVE_NETWORK_PATH = "outputs/04_Elizabeth/01_CO_Length"
 
 USE_CLOUD_POINTS = True
-CLOUD_POINTS_FILENAME = "clouds/private/elizabeth_remapped_guided_3.pts"
+CLOUD_POINTS_FILENAME = "clouds/private/01_Elizabeth_Cherry/elizabeth_guided_cloud_RV_rescale.pts"
 USE_OBSTACLE = False
 USE_PMJ_LOCATION = False
 
@@ -29,7 +28,7 @@ COST_FUNCTION_NAME = "minimize_custom_function_with_angle_restriction"
 MIN_DEGREES_LIMIT = 1.0
 MAX_DEGREES_LIMIT = 63.0
 
-USE_PRUNING = True
+USE_PRUNING = False
 PRUNING_FUNCTION_NAME = "hyperbolic_tangent"
 PRUNING_PARAM_A = 50.0
 PRUNING_PARAM_B = -0.25
@@ -92,7 +91,7 @@ def write_co_pruning_section (file):
     file.write("\n")
 
 def write_co_config_file (seed,rand_offset):
-    filename = "network/co_min:length_with_pruning_seed-%u_nterm:650.ini" % (seed)
+    filename = "network/co_min:length_seed-%u_nterm:1100.ini" % (seed)
     file = open(filename,"w")
 
     write_co_main_section(file,seed,rand_offset)    

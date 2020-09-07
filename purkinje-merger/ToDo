@@ -1,0 +1,2 @@
+- Include the Relative size of cable, Gap_junction_resistance and Intracellular_conductivity 
+on the outputted VTK file (use SCALARS).

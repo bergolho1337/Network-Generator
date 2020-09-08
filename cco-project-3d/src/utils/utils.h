@@ -27,6 +27,7 @@
 #define UM_TO_CM 0.0001
 #define CM_TO_UM 10000.0
 #define MM_TO_UM 1000.0
+#define M_TO_UM 1000000.0
 #define MS_TO_S 0.001
 #define S_TO_MS 1000.0
 #define CM_S_TO_M_S 0.01

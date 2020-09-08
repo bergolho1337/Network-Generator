@@ -54,9 +54,9 @@ p_term = 9580
 p_perf = 13300
 V_perf = 0.0001
 N_term = 650
-root_x = -0.004
-root_y = 0.02
-root_z = 0.0265
+root_x = 0.0393  
+root_y = 0.0595
+root_z = 0.0138
 max_rand_offset = 2
 seed = %d
 use_only_murray = true
@@ -68,10 +68,10 @@ output_dir = outputs/04_Elizabeth/03_CO_Activation_Time_Linking/LV_seed:%d
 
 [cloud_points]
 use_cloud_points = true
-cloud_points_filename = clouds/private/elizabeth_remapped_guided_3.pts
+cloud_points_filename = clouds/private/01_Elizabeth_Cherry/elizabeth_guided_cloud_LV_r:0.007.pts
 use_obstacle = false
 use_pmj_location = true
-pmj_location_filename = clouds/private/elizabeth_exterior_LV_pmjs.pts
+pmj_location_filename = clouds/private/01_Elizabeth_Cherry/elizabeth_pmjs_rescale_LV.pts
 
 [local_optimization]
 use_local_optimization = true

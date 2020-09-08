@@ -186,17 +186,16 @@ double calc_segment_activation_time (struct segment_node *s,\
     double length = euclidean_norm(src->x,src->y,src->z,\
                                   dest->x,dest->y,dest->z);
 
-    double delta_s = length;                    // cm
-    double radius = s->value->radius;           // mm 
-    double diameter = radius * 2.0;             // mm
+    double delta_s = length;                    // m
+    double radius = s->value->radius;           // m 
+    double diameter = radius * 2.0;             // m
 
-    diameter *= 1000;                           // um
-    //delta_s *= CM_TO_M;                         // m
-    delta_s *= 1;
+    diameter *= 100000.0;                       // um
+    //diameter *= 1000;                         // um
+    //delta_s *= 1;
 
     double velocity = calc_propagation_velocity(diameter,G,Cf,tau_f);
-    //double velocity = 3.0;
-
+    
     // The output will be on {s}
     double at = delta_s / velocity * S_TO_MS;
     

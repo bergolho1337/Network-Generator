@@ -13,7 +13,7 @@ def eval_murray (d_start,gamma,nlevel):
 	return d
 
 gammas = range(10,20)
-nlevel = 200
+nlevel = 50
 d_start = 200.0
 gamma = 99
 gamma_lv = 19
@@ -34,8 +34,8 @@ plt.ylabel(r"$d (\mu m)$",fontsize=15)
 plt.xlabel(r"level",fontsize=15)
 #plt.grid()
 #plt.plot(level,d_lv,marker='o',label=r'$\gamma$ = %.1lf' % (gamma_lv))
-plt.plot(level,d_lv,label=r'$\gamma$ = %.0lf' % (gamma_lv),linewidth=3.0)
-plt.plot(level,d_rv,label=r'$\gamma$ = %.0lf' % (gamma_rv),linewidth=3.0)
+plt.plot(level,d_lv,label=r'$\gamma$ = %.0lf' % (gamma_lv),linewidth=3.0,color="black")
+#plt.plot(level,d_rv,label=r'$\gamma$ = %.0lf' % (gamma_rv),linewidth=3.0)
 plt.legend(loc=0)
 #plt.show()
 plt.savefig("murray_law.svg")

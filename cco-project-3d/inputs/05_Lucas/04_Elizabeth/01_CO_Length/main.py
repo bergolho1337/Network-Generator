@@ -1,5 +1,3 @@
-# Root = (0.04 0.06 0.015)
-
 seeds = [1562002891,1562002894,1562005513,1562005553,1562006177,1562007596,1562008172,1562008424,1562009134,1562009769]
 
 # RV
@@ -24,7 +22,7 @@ output_dir = outputs/04_Elizabeth/01_CO_Length/RV_seed:%d
 
 [cloud_points]
 use_cloud_points = true
-cloud_points_filename = clouds/private/01_Elizabeth_Cherry/elizabeth_guided_cloud_RV_r:0.007.pts
+cloud_points_filename = clouds/private/01_Elizabeth_Cherry/elizabeth_guided_cloud_RV_r:0.006.pts
 use_obstacle = false
 use_pmj_location = false
 
@@ -38,7 +36,7 @@ function_name = minimize_custom_function_with_angle_restriction
 beta = 1.0
 alpha = 0.0
 min_degrees_limit = 1
-max_degrees_limit = 70
+max_degrees_limit = 85
 ''' % (seed,seed))
     file.close()
 
@@ -52,9 +50,9 @@ p_term = 9580
 p_perf = 13300
 V_perf = 0.0001
 N_term = 650
-root_x = 0.0393  
-root_y = 0.0595
-root_z = 0.0138
+root_x = 0.04  
+root_y = 0.061
+root_z = 0.013
 max_rand_offset = 2
 seed = %d
 use_only_murray = false
@@ -64,7 +62,7 @@ output_dir = outputs/04_Elizabeth/01_CO_Length/LV_seed:%d
 
 [cloud_points]
 use_cloud_points = true
-cloud_points_filename = clouds/private/01_Elizabeth_Cherry/elizabeth_guided_cloud_LV_r:0.007.pts
+cloud_points_filename = clouds/private/01_Elizabeth_Cherry/elizabeth_guided_cloud_LV_r:0.006.pts
 use_obstacle = false
 use_pmj_location = false
 

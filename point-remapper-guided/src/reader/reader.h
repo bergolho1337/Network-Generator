@@ -26,6 +26,8 @@ public:
 public:
     Reader (int argc, char *argv[]);
     void remap_points_using_graph ();
+    void depth_first_search (const uint32_t source_index);
+    void dfs (Node *u, vector<int> &dfs_num);
     void check_cloud_points_inside_node (Node *u);
     void write_remapped_points_to_vtk ();
     void write_points_to_pts ();

@@ -49,6 +49,10 @@ void Reader::remap_points_using_graph ()
             v = v->next;
         }
     }
+// DFS
+/*
+    depth_first_search(source_index);
+
     // Only the network pathways
     write_remapped_points_to_vtk();
     write_points_to_pts();
@@ -68,6 +72,7 @@ void Reader::remap_points_using_graph ()
     // All cloud of points remapped
     //write_remapped_points_to_vtk();
     //write_points_to_pts();
+*/
 }
 
 void Reader::check_cloud_points_inside_node (Node *u)
@@ -139,4 +144,37 @@ void Reader::write_points_to_pts ()
         //fprintf(file,"%lf %lf %lf\n",this->the_cloud->the_remapped_points[i].x*0.0005,this->the_cloud->the_remapped_points[i].y*0.0005,this->the_cloud->the_remapped_points[i].z*0.0005);
     
     fclose(file);
+}
+
+
+void Reader::depth_first_search (const uint32_t source_index)
+{
+    Node *source_node = this->the_network->search_node(source_index);
+    uint32_t total_nodes = this->the_network->get_total_nodes();
+
+    vector<int> dfs_num;
+    dfs_num.assign(total_nodes,DFS_WHITE);
+
+    dfs(source_node,dfs_num);
+}
+
+void Reader::dfs (Node *u, vector<int> &dfs_num)
+{
+    int u_index = u->index;
+    Edge *v = u->list_edges;
+
+    check_cloud_points_inside_node(u);
+
+    dfs_num[u_index] = DFS_BLACK;
+    //printf("[depth_first_search] Current on index %d\n",u_index);
+
+    while (v != NULL)
+    {
+        int v_index = v->index;
+        if (dfs_num[v_index] == DFS_WHITE)
+        {
+            dfs(v->dest,dfs_num);
+        }
+        v = v->next;
+    }
 }

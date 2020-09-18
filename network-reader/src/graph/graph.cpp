@@ -552,8 +552,8 @@ void Graph::breadth_first_search ()
 {
     int *parents = new int[total_nodes]();
 
-    int source_index = 0;
-    //int source_index = 142;
+    //int source_index = 0;
+    int source_index = 142;
     Node *source_node = search_node(source_index);
     parents[source_index] = -1;
 

@@ -162,7 +162,7 @@ void insert_points_from_faces_to_map (vector<Face> faces, map<Point,uint32_t> &u
     {
         // Check if the current point matches one of the 3 points from the faces
         uint32_t cur_id = it->second;
-        printf("Point %u -- (%lf %lf %lf)\n",it->second,it->first.x,it->first.y,it->first.z);
+        //printf("Point %u -- (%lf %lf %lf)\n",it->second,it->first.x,it->first.y,it->first.z);
 
         for (uint32_t j = 0; j < faces.size(); j++)
         {
@@ -187,7 +187,7 @@ void insert_points_from_faces_to_map (vector<Face> faces, map<Point,uint32_t> &u
             }
         }
     }
-    
+    /*
     for (uint32_t i = 0; i < points_to_faces.size(); i++)
     {
         printf("Point %u -- ",i);
@@ -197,6 +197,7 @@ void insert_points_from_faces_to_map (vector<Face> faces, map<Point,uint32_t> &u
         }
         printf("\n");
     }
+    */
     //printf("Point %u -- (%lf %lf %lf)\n",it->second,it->first.x,it->first.y,it->first.z);   
 } 
 
@@ -242,6 +243,32 @@ void generate_grid_stl (const uint32_t nx, const uint32_t ny)
     fclose(file);
 }
 
+void print_data_geodesic_library (vector<Face> faces, map<Point,uint32_t> unique_points)
+{
+    FILE *file = fopen("mesh.txt","w+");
+    fprintf(file,"%u %u\n",unique_points.size(),faces.size());
+    for (uint32_t i = 0; i < unique_points.size(); i++)
+    {
+        for (auto it = unique_points.begin(); it != unique_points.end(); ++it)
+        {
+            if (it->second == i)
+                fprintf(file,"%g %g %g\n",it->first.x,it->first.y,it->first.z,it->second);
+        }
+    }
+    for (uint32_t i = 0; i < faces.size(); i++)
+    {
+        Point *v1 = faces[i].v1;
+        Point *v2 = faces[i].v2;
+        Point *v3 = faces[i].v3;
+
+        auto it1 = unique_points.find(*v1);
+        auto it2 = unique_points.find(*v2);
+        auto it3 = unique_points.find(*v3);
+
+        fprintf(file,"%u %u %u\n",it1->second,it2->second,it3->second);
+    }
+}
+
 int main (int argc, char *argv[])
 {
     if (argc-1 != 1)
@@ -250,15 +277,17 @@ int main (int argc, char *argv[])
         exit(EXIT_FAILURE);   
     }
 
-    const uint32_t n = 50;
-    generate_grid_stl(n,n);
+    //const uint32_t n = 50;
+    //generate_grid_stl(n,n);
 
-    //vector<Face> faces;
-    //read_faces(argv[1],faces);
+    vector<Face> faces;
+    read_faces(argv[1],faces);
     //print_faces(faces);
 
-    //map<Point,uint32_t> unique_points;
-    //insert_points_from_faces_to_map(faces,unique_points);
+    map<Point,uint32_t> unique_points;
+    insert_points_from_faces_to_map(faces,unique_points);
+
+    print_data_geodesic_library(faces,unique_points);
     
     return 0;
 }

@@ -22,6 +22,7 @@ const double INF = __DBL_MAX__;				// The value of infinity is set to be the max
 const double TOLERANCE_DUPLICATE = 1.0e-20;		// Distance tolerance to consider two Nodes equal
 const int DFS_WHITE = -1;
 const int DFS_BLACK = 1;
+const double SCALE_FACTOR = 0.25;
 
 class Edge;
 class Node;

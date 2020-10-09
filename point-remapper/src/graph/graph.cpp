@@ -624,7 +624,7 @@ void write_mapped_points_to_pts (vector<Node> mapped_points)
 
     fprintf(file,"%lu\n",mapped_points.size());
     for (uint32_t i = 0; i < mapped_points.size(); i++)
-        fprintf(file,"%lf %lf %lf\n",mapped_points[i].x,mapped_points[i].y,mapped_points[i].z);
+        fprintf(file,"%lf %lf %lf\n",mapped_points[i].x*SCALE_FACTOR,mapped_points[i].y*SCALE_FACTOR,mapped_points[i].z*SCALE_FACTOR);
 
     fclose(file);
 }

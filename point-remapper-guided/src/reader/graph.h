@@ -72,6 +72,7 @@ public:
 	~Graph ();
 
     void print ();
+	void print_terminals ();
 	double calculate_branch_size (const int parents[], const int ref_index, int &level);
 	void write_VTK (const char filename[]);
 	void write_pmj_config_file (const char filename[]);

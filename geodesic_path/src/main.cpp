@@ -23,7 +23,7 @@
 
 using namespace std;
 
-const double SCALE_FACTOR = 0.25;
+const double SCALE_FACTOR = 1.0;
 
 class Point
 {

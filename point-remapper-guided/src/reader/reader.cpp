@@ -5,6 +5,7 @@ Reader::Reader (int argc, char *argv[])
     char *network_filename = argv[1];
     this->the_network = new Graph(network_filename);
     //this->the_network->print();
+    this->the_network->print_terminals();
 
     char *cloud_points_filename = argv[2];
     this->the_cloud = new Cloud_Point(cloud_points_filename);
@@ -68,11 +69,12 @@ void Reader::remap_points_using_graph ()
             this->the_cloud->the_remapped_points.push_back(point);
         }
     }
+*/
 
     // All cloud of points remapped
-    //write_remapped_points_to_vtk();
-    //write_points_to_pts();
-*/
+    write_remapped_points_to_vtk();
+    write_points_to_pts();
+
 }
 
 void Reader::check_cloud_points_inside_node (Node *u)

@@ -620,6 +620,23 @@ void Graph::breadth_first_search ()
     delete [] parents;
 }
 
+void Graph::print_terminals ()
+{
+    uint32_t counter = 0;
+    Node *tmp = this->list_nodes;
+    while (tmp != NULL)
+    {
+        if (is_terminal(tmp))
+        {
+            printf("%g %g %g\n",tmp->index,tmp->x,tmp->y,tmp->z);
+            counter++;
+        }
+             
+        tmp = tmp->next;
+    }
+    printf("Total number of terminals = %u\n",counter);
+}
+
 double Graph::calculate_branch_size (const int parents[], const int ref_index, int &num_biff)
 {
     double size = 0.0;

@@ -239,7 +239,7 @@ SET_COST_FUNCTION (minimize_activation_time_with_angle_restriction)
             double iconn_size = calc_segment_size(iconn);
             double ibiff_size = calc_segment_size(ibiff);
             double inew_size = calc_segment_size(inew);
-            bool has_minimum_segment_size = has_valid_segment_sizes(iconn_size,ibiff_size,inew_size);
+            bool has_minimum_segment_size = has_valid_segment_sizes_2(iconn_size,ibiff_size,inew_size);
 
             // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn'
             struct segment_list *s_list = the_network->segment_list;
@@ -631,8 +631,9 @@ SET_COST_FUNCTION (minimize_weighted_activation_time_with_angle_restriction)
 
             // [EVALUATE COST FUNCTION]
             // 1) Calculates terminal activation time
-            double eval_1 = calc_terminal_activation_time(inew,G,Cf,tau_f);
-            
+            //double eval_1 = calc_terminal_activation_time(inew,G,Cf,tau_f);
+            double eval_1 = calc_total_terminal_activation_time(the_network,G,Cf,tau_f);
+
             //uint32_t closest_pmj_index = calc_closest_pmj_site(inew,lat_points);
             //eval_1 = fabs(eval_1 - lat_points[closest_pmj_index].at);                       // F = | terminal_at - target_at |
 
@@ -652,7 +653,7 @@ SET_COST_FUNCTION (minimize_weighted_activation_time_with_angle_restriction)
             double iconn_size = calc_segment_size(iconn);
             double ibiff_size = calc_segment_size(ibiff);
             double inew_size = calc_segment_size(inew);
-            bool has_minimum_segment_size = has_valid_segment_sizes(iconn_size,ibiff_size,inew_size);
+            bool has_minimum_segment_size = has_valid_segment_sizes_2(iconn_size,ibiff_size,inew_size);
 
             // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn'
             struct segment_list *s_list = the_network->segment_list;
@@ -703,7 +704,8 @@ SET_COST_FUNCTION (minimize_weighted_activation_time_with_angle_restriction)
 
                 // [EVALUATE COST FUNCTION]
                 // 1) Calculates terminal activation time
-                double eval_1 = calc_terminal_activation_time(inew,G,Cf,tau_f);
+                //double eval_1 = calc_terminal_activation_time(inew,G,Cf,tau_f);
+                double eval_1 = calc_total_terminal_activation_time(the_network,G,Cf,tau_f);
 
                 //uint32_t closest_pmj_index = calc_closest_pmj_site(inew,lat_points);
                 //eval_1 = fabs(eval_1 - lat_points[closest_pmj_index].at);                       // F = | terminal_at - target_at |

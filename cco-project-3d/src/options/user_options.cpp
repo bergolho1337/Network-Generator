@@ -16,6 +16,10 @@ struct user_options* new_user_options (int argc, char *argv[])
     result->seed = 1;                           // Default value
     result->max_rand_offset = 1;                // Default value
     result->gamma = 3.0;                        // Default value
+    result->q_perf = 8.33e-06;                  // Default value
+    result->p_perf = 13300;                     // Default value
+    result->p_term = 9580;                      // Default value
+    result->v_perf = 0.0001;                    // Default value
 
     read_config_file(result,argv[1]);
     

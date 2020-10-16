@@ -335,14 +335,14 @@ void grow_tree_using_cloud_points (struct cco_network *the_network,\
     while (the_network->num_terminals < the_network->N_term)
     {
         printf("%s\n",PRINT_LINE);
-        printf("[cco] Working on terminal number %d\n",the_network->num_terminals);
+        printf("[cco] Working on terminal number %d\n",the_network->num_terminals+1);
         fprintf(log_file,"%s\n",PRINT_LINE);
         fprintf(log_file,"[cco] Working on terminal number %d\n",the_network->num_terminals);
 
         generate_terminal_using_cloud_points(the_network,config,local_opt_config,cloud_points,obstacle_faces,lat_points);
 
         // DEBUG
-        //write_to_vtk_iteration(the_network);
+        write_to_vtk_iteration(the_network);
 
         printf("%s\n",PRINT_LINE);
         fprintf(log_file,"%s\n",PRINT_LINE);

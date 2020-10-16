@@ -63,6 +63,8 @@ double calc_terminal_activation_time (struct segment_node *s,\
                         const double G, const double Cf, const double tau_f);
 double calc_total_activation_time (struct cco_network *the_network,\
                             const double G, const double Cf, const double tau_f);
+double calc_total_terminal_activation_time (struct cco_network *the_network,\
+                        const double G, const double Cf, const double tau_f);
 double calc_segment_activation_time (struct segment_node *s,\
                         const double G, const double Cf, const double tau_f);
 double calc_propagation_velocity (const double d,\

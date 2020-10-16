@@ -70,13 +70,13 @@ int main (int argc, char *argv[])
 	//g1->print();
 
 	g1->check_duplicates();
-	//g1->remove_node_graph(121);
+	//g1->remove_node_graph(95);
 
-	//g1->depth_first_search();
+	g1->depth_first_search();
 
-	g1->breadth_first_search();
+	//g1->breadth_first_search();
 
-	//g1->write_VTK("outputs/elizabeth_LV.vtk");
+	g1->write_VTK("elizabeth_RV.vtk");
 	
 	//g1->remove_edge_graph(4,5);
 	//g1->write_VTK("output/graph-1-2.vtk");
@@ -87,7 +87,9 @@ int main (int argc, char *argv[])
 	//g2->remove_node_graph(1);
 	//g2->write_VTK("output/graph-2-3.vtk");
 
-	g1->write_network_info();
+	//g1->write_network_info();
+
+	//g1->print_terminals();
 
 	// ==============================================================
 	// PMJ

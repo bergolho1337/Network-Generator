@@ -520,13 +520,21 @@ bool check_file_extension (const char filename[], const char extension_name[])
 
 void Graph::depth_first_search ()
 {
-    uint32_t source_index = 0;
+    uint32_t source_index = 142;
     Node *source_node = search_node(source_index);
 
     vector<int> dfs_num;
     dfs_num.assign(total_nodes,DFS_WHITE);
 
     dfs(source_node,dfs_num);
+
+    for (uint32_t i = 0; i < dfs_num.size(); i++)
+    {
+        if (dfs_num[i] == DFS_WHITE)
+        {
+            printf("%u\n",i);
+        }
+    }
 }
 
 void Graph::dfs (Node *u, vector<int> &dfs_num)
@@ -788,6 +796,23 @@ void Graph::write_network_info ()
         u = u->next;
     }
     fclose(file);
+}
+
+void Graph::print_terminals ()
+{
+    uint32_t counter = 0;
+    Node *tmp = this->get_list_nodes();
+    while (tmp != NULL)
+    {
+        if (is_terminal(tmp))
+        {
+            printf("%g %g %g\n",tmp->x,tmp->y,tmp->z);
+            counter++;
+        }
+            
+        tmp = tmp->next;
+    }
+    printf("%u\n",counter);
 }
 
 void print_stars (const int number)

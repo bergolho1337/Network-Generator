@@ -159,6 +159,27 @@ double calc_terminal_activation_time (struct segment_node *s,\
     return at;
 }
 
+double calc_total_terminal_activation_time (struct cco_network *the_network,\
+                        const double G, const double Cf, const double tau_f)
+{
+    struct segment_list *s_list = the_network->segment_list;
+    struct segment_node *tmp = s_list->list_nodes;
+
+    double total_activation_time = 0.0;
+
+    while (tmp != NULL)
+    {
+        if (is_terminal(tmp))
+        {
+            total_activation_time += calc_terminal_activation_time(tmp,G,Cf,tau_f);
+        }
+
+        tmp = tmp->next;
+    }
+
+    return total_activation_time;
+}
+
 double calc_total_activation_time (struct cco_network *the_network,\
                             const double G, const double Cf, const double tau_f)
 {
@@ -190,7 +211,7 @@ double calc_segment_activation_time (struct segment_node *s,\
     double radius = s->value->radius;           // m 
     double diameter = radius * 2.0;             // m
 
-    diameter *= 100000.0;                       // um
+    diameter *= 1000.0;                       // um
     //diameter *= 1000;                         // um
     //delta_s *= 1;
 

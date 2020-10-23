@@ -1,0 +1,4 @@
+- Implement Dijkstra
+- Move some functions to other libraries
+- Move the PMJ code to a module
+- Add command line options

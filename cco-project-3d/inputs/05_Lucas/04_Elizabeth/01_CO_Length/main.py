@@ -4,10 +4,10 @@ seeds = [1562002891,1562002894,1562005513,1562005553,1562006177,1562007596,15620
 for seed in seeds:
     file = open("elizabeth_biventricular_coupled_co:length_seed:%d_RV.ini" % (seed),"w")
     file.write('''[main]
-N_term = 140
-root_x = 0.051
-root_y = 0.062453
-root_z = 0.01925
+N_term = 496
+root_x = 0.05275
+root_y = 0.0605	
+root_z = 0.0185
 max_rand_offset = 2
 seed = %d
 use_only_murray = false
@@ -17,7 +17,7 @@ output_dir = outputs/04_Elizabeth/01_CO_Length/RV_seed:%d
 
 [cloud_points]
 use_cloud_points = true
-cloud_points_filename = clouds/private/01_Elizabeth_Cherry/elizabeth_cloud_remapped_650term_RV.pts
+cloud_points_filename = clouds/private/01_Elizabeth_Cherry/elizabeth_cloud_remapped_496term.pts
 use_obstacle = false
 use_pmj_location = false
 

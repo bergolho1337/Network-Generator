@@ -1,26 +1,13 @@
 #include "graph.h"
 
-void usage (const char pname[])
-{
-    printf("%s\n",PRINT_LINE);
-    printf("Usage:> %s <input_file>\n",pname);
-    printf("\t<input_file> = Input file with the graph configuration\n");
-    printf("%s\n",PRINT_LINE);
-}
-
 Graph::Graph ()
 {
-    last_node = NULL;
-    list_nodes = NULL;
     total_nodes = 0;
     total_edges = 0;
 }
 
 Graph::Graph (const char filename[])
 {
-    last_node = NULL;
-    list_nodes = NULL;
-
     // Test file format
     bool is_vtk = check_file_extension(filename,"vtk");
     bool is_txt = check_file_extension(filename,"txt");
@@ -34,7 +21,6 @@ Graph::Graph (const char filename[])
         read_graph_from_vtk(filename);
     else if (is_txt)
         read_graph_from_txt(filename);
-    
 }
 
 void Graph::read_graph_from_txt (const char filename[])
@@ -51,21 +37,39 @@ void Graph::read_graph_from_txt (const char filename[])
     uint32_t dir[2];
     char str[200];
     
-    // Read POINTS
+    // Read number of nodes
     fscanf(file,"%u",&num_nodes);
+
+    // Initialize the list of nodes
+    list_nodes.assign(num_nodes,Node());
+
+    // Read the nodes data
     for (uint32_t i = 0; i < num_nodes; i++)
     {
         fscanf(file,"%lf %lf %lf",&pos[0],&pos[1],&pos[2]);
-        insert_node_graph(pos);
+        
+        list_nodes[i].set_node(i,pos);
     }
 
-    // Find the EDGES 
+    // Read the edges data
     while (fscanf(file,"%u %u",&dir[0],&dir[1]) != EOF)
     {
-        insert_edge_graph(dir[0],dir[1]);
+        uint32_t src_id = dir[0];
+        uint32_t dest_id = dir[1];
+        double length = calc_norm(list_nodes[src_id].x,list_nodes[src_id].y,list_nodes[src_id].z,\
+                                list_nodes[dest_id].x,list_nodes[dest_id].y,list_nodes[dest_id].z);
+
+        Edge src_edge(dest_id,length);
+        //Edge dest_edge(src_id,length);                        // Return edge
+        list_nodes[src_id].list_edges.push_back(src_edge);
+        //list_nodes[dest_id].list_edges.push_back(dest_edge);  // Return edge
     }
 
     fclose(file);
+
+    // Unitary test
+    assert(total_nodes == list_nodes.size());
+    assert(!check_duplicates());
 }
 
 void Graph::read_graph_from_vtk (const char filename[])
@@ -89,12 +93,20 @@ void Graph::read_graph_from_vtk (const char filename[])
             break;
     }
     
-    // Read POINTS
+    // Read number of nodes
     fscanf(file,"%u %s",&num_nodes,str);
+
+    // Initialize the list of nodes
+    list_nodes.assign(num_nodes,Node());
+
+    // Read the nodes data
     for (uint32_t i = 0; i < num_nodes; i++)
     {
         fscanf(file,"%lf %lf %lf",&pos[0],&pos[1],&pos[2]);
-        insert_node_graph(pos);
+        
+        list_nodes[i].set_node(i,pos);
+
+        total_nodes++;
     }
 
     // Find the LINES section
@@ -104,22 +116,191 @@ void Graph::read_graph_from_vtk (const char filename[])
             break;
     }
 
-    // Read LINES
+    // Read the edges data
     fscanf(file,"%u %u",&num_edges,&tmp);
     for (uint32_t i = 0; i < num_edges; i++)
     {
         fscanf(file,"%u %u %u",&tmp,&dir[0],&dir[1]);
-        insert_edge_graph(dir[0],dir[1]);
-        //insert_edge_graph(dir[1],dir[0]);
+        
+        uint32_t src_id = dir[0];
+        uint32_t dest_id = dir[1];
+        double length = calc_norm(list_nodes[src_id].x,list_nodes[src_id].y,list_nodes[src_id].z,\
+                                list_nodes[dest_id].x,list_nodes[dest_id].y,list_nodes[dest_id].z);
+
+        Edge src_edge(dest_id,length);
+        list_nodes[src_id].list_edges.push_back(src_edge);
+        total_edges++;
+
+        Edge dest_edge(src_id,length);                        // Return edge
+        list_nodes[dest_id].list_edges.push_back(dest_edge);  // Return edge
+        //total_edges++;
     }
 
     fclose(file);
 
     // Unitary test
-    //assert(num_nodes == total_nodes);
-    //assert(num_edges == total_edges);
+    assert(total_nodes == list_nodes.size());
+    assert(!check_duplicates());
 }
 
+void Graph::print ()
+{
+    printf("======================= PRINTING GRAPH ================================\n");
+    for (uint32_t i = 0; i < list_nodes.size(); i++)
+	{
+        printf("|| %u (%g %g %g) [%u] {%d} ||",list_nodes[i].index,list_nodes[i].x,list_nodes[i].y,list_nodes[i].z,list_nodes[i].list_edges.size(),list_nodes[i].is_pmj);
+        for (uint32_t j = 0; j < list_nodes[i].list_edges.size(); j++)
+        {
+			printf(" --> || %u %g ||",list_nodes[i].list_edges[j].dest_index,list_nodes[i].list_edges[j].length);
+		}
+		printf("\n");
+	}
+	printf("=======================================================================\n");
+    printf("Number of nodes = %d\n",total_nodes);
+    printf("Number of edges = %d\n",total_edges);
+}
+
+void Graph::write_network_info ()
+{
+    FILE *file = fopen("outputs/segments_length.dat","w+");
+    for (uint32_t i = 0; i < list_nodes.size(); i++)
+	{
+        for (uint32_t j = 0; j < list_nodes[i].list_edges.size(); j++)
+        {
+			double length = list_nodes[i].list_edges[j].length;
+            fprintf(file,"%g\n",length);
+		}
+	}
+    fclose(file);
+
+    file = fopen("outputs/bifurcations_angle.dat","w+");
+    for (uint32_t i = 0; i < list_nodes.size(); i++)
+	{
+        if (is_bifurcation(list_nodes[i]))
+        {
+            uint32_t src_id = i;
+            uint32_t dest_id_1 = list_nodes[i].list_edges[0].dest_index;
+            uint32_t dest_id_2 = list_nodes[i].list_edges[1].dest_index;
+
+            double u1[3], u2[3];
+            build_unitary_vector(u1,src_id,dest_id_1);
+            build_unitary_vector(u2,src_id,dest_id_2);
+
+            double angle = calc_angle_between_vectors(u1,u2);
+            fprintf(file,"%g\n",angle);
+        }
+	}
+    fclose(file);
+}
+
+void Graph::set_terminals ()
+{
+    number_of_terminals = 0;
+    for (uint32_t i = 0; i < list_nodes.size(); i++)
+    {
+        if (list_nodes[i].list_edges.size() == 1)
+        {
+            list_nodes[i].is_pmj = true;
+            number_of_terminals++;
+        }
+    }
+}
+
+void Graph::write_terminals ()
+{
+    set_terminals();
+
+    FILE *file = fopen("outputs/terminals.vtk","w+");
+    fprintf(file,"# vtk DataFile Version 3.0\n");
+    fprintf(file,"Terminals\n");
+    fprintf(file,"ASCII\n");
+    fprintf(file,"DATASET POLYDATA\n");
+    fprintf(file,"POINTS %u float\n",number_of_terminals);
+    for (uint32_t i = 0; i < list_nodes.size(); i++)
+    {
+        if (list_nodes[i].list_edges.size() == 1)
+        {
+            fprintf(file,"%g %g %g\n",list_nodes[i].x,list_nodes[i].y,list_nodes[i].z);
+        }
+    }
+    fprintf(file,"VERTICES %u %u\n",number_of_terminals,number_of_terminals*2);
+    for (uint32_t i = 0; i < number_of_terminals; i++)
+        fprintf(file,"1 %u\n",i);
+
+    fclose(file);
+}
+
+void Graph::build_unitary_vector (double d[], const uint32_t src_id, const uint32_t dest_id)
+{
+    double norm = calc_norm(list_nodes[src_id].x,list_nodes[src_id].y,list_nodes[src_id].z,\
+                        list_nodes[dest_id].x,list_nodes[dest_id].y,list_nodes[dest_id].z);
+    if (norm < 1.0e-08)
+        norm = 1.0e-08;
+
+    d[0] = (list_nodes[dest_id].x - list_nodes[src_id].x) / norm;
+    d[1] = (list_nodes[dest_id].y - list_nodes[src_id].y) / norm;
+    d[2] = (list_nodes[dest_id].z - list_nodes[src_id].z) / norm;
+}
+
+void Graph::depth_first_search (const uint32_t src_id)
+{
+    std::vector<bool> dfs_num;
+    dfs_num.assign(total_nodes,false);
+
+    dfs(src_id,dfs_num);
+
+    for (uint32_t i = 0; i < dfs_num.size(); i++)
+    {
+        if (dfs_num[i] == DFS_WHITE)
+        {
+            printf("%u\n",i);
+        }
+    }
+}
+
+void Graph::dfs (const uint32_t src_id, std::vector<bool> &dfs_num)
+{
+    dfs_num[src_id] = true;
+    //printf("[depth_first_search] Current on index %d\n",src_id);
+
+    for (uint32_t i = 0; i < list_nodes[src_id].list_edges.size(); i++)
+    {
+        uint32_t dest_id = list_nodes[src_id].list_edges[i].dest_index;
+        if (dfs_num[dest_id] == false)
+        {
+            dfs(dest_id,dfs_num);
+        }
+    }
+}
+
+bool Graph::check_duplicates ()
+{
+    bool ret = false;
+    for (uint32_t i = 0; i < list_nodes.size(); i++)
+    {
+        for (uint32_t j = 0; j < list_nodes.size(); j++)
+        {
+            if (i != j)
+            {
+                double dist = calc_norm(list_nodes[i].x,list_nodes[i].y,list_nodes[i].z,\
+                            list_nodes[j].x,list_nodes[j].y,list_nodes[j].z);
+                if (dist < TOLERANCE_DUPLICATE)
+                {
+                    fprintf(stderr,"[-] ERROR! Nodes '%u' and '%u' are duplicates!\n",i,j);
+                    ret = true;
+                }
+            }
+        }
+    }
+    return ret;
+}
+
+bool Graph::is_bifurcation (Node u)
+{
+    return (u.list_edges.size() == 2) ? true : false;
+}
+
+/*
 void Graph::free_list_edges (Node *node)
 {
     Edge *e1 = node->list_edges;
@@ -493,31 +674,6 @@ bool is_bifurcation (Node *u)
         return false;
 }
 
-double calc_norm (const double x1, const double y1, const double z1,\
-                  const double x2, const double y2, const double z2)
-{
-    return sqrt(pow(x2-x1,2) + pow(y2-y1,2) + pow(z2-z1,2));
-}
-
-void get_file_extension (const char filename[], char extension_name[])
-{
-    uint32_t size = strlen(filename);
-    for (uint32_t i = size-3, j = 0; i < size; i++, j++)
-        extension_name[j] = filename[i];
-    extension_name[size-1] = '\0';
-}
-
-bool check_file_extension (const char filename[], const char extension_name[])
-{
-    char file_extension[4];
-    get_file_extension(filename,file_extension);
-    
-    if (strcmp(file_extension,extension_name) == 0)
-        return true;
-    else
-        return false;
-}
-
 void Graph::depth_first_search ()
 {
     uint32_t source_index = 142;
@@ -821,7 +977,6 @@ void print_stars (const int number)
         printf("*"); 
 }
 
-/*
 
 bool Graph::is_duplicate (const double pos[])
 {

@@ -9,9 +9,10 @@ INCLUDE(${VTK_USE_FILE})
 
 ADD_SUBDIRECTORY(src/graph)
 ADD_SUBDIRECTORY(src/pmj)
+ADD_SUBDIRECTORY(src/utils)
 
 ADD_EXECUTABLE(NetworkReader src/main.cpp)
 
-ADD_DEPENDENCIES(NetworkReader graph pmj)
+ADD_DEPENDENCIES(NetworkReader graph pmj utils)
 
-TARGET_LINK_LIBRARIES(NetworkReader ${VTK_LIBRARIES} graph pmj dl m)
+TARGET_LINK_LIBRARIES(NetworkReader ${VTK_LIBRARIES} graph pmj utils dl m)

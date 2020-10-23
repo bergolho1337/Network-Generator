@@ -20,6 +20,7 @@
 
 using namespace std;
 
+/*
 void link_pmjs_to_graph(Graph *g, vector<PMJ> pmjs)
 {
 	for (uint32_t i = 0; i < pmjs.size(); i++)
@@ -57,6 +58,7 @@ void link_pmjs_to_graph(Graph *g, vector<PMJ> pmjs)
 
 	g->write_VTK("outputs/pmj_graph.vtk");
 }
+*/
 
 int main (int argc, char *argv[])
 {
@@ -69,36 +71,10 @@ int main (int argc, char *argv[])
 	Graph *g1 = new Graph(argv[1]);
 	//g1->print();
 
-	g1->check_duplicates();
-	//g1->remove_node_graph(95);
+	g1->depth_first_search(0);
 
-	g1->depth_first_search();
-
-	//g1->breadth_first_search();
-
-	g1->write_VTK("elizabeth_RV.vtk");
-	
-	//g1->remove_edge_graph(4,5);
-	//g1->write_VTK("output/graph-1-2.vtk");
-
-	//g2->remove_edge_graph(1,3);
-	//g2->write_VTK("output/graph-2-2.vtk");
-
-	//g2->remove_node_graph(1);
-	//g2->write_VTK("output/graph-2-3.vtk");
-
-	//g1->write_network_info();
-
-	//g1->print_terminals();
-
-	// ==============================================================
-	// PMJ
-	//vector<PMJ> pmjs;
-	//read_pmjs_from_file(pmjs);
-
-	//link_pmjs_to_graph(g1,pmjs);
-
-	//g1->write_pmj_config_file("outputs/pmj_config.txt");
+	g1->write_network_info();
+	g1->write_terminals();
 
 	delete g1;
 

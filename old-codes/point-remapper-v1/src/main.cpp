@@ -351,9 +351,9 @@ void remap_points_from_root_v2 (vector<Point> &points, const uint32_t root_index
     double ratios[3];
     calculate_dimension_ratios(points,ratios);
 
-    double initial_radius = 1;
-    double max_radius = 300;
-    double offset = 2;
+    double initial_radius = 0.1;
+    double max_radius = 100;
+    double offset = 0.5;
     double a = ratios[0];         // X axis: || > 1 (decrease) || < 1 (increase)
     double b = ratios[1];         // Y axis: || > 1 (decrease) || < 1 (increase)
     double c = ratios[2];         // Z axis: || > 1 (decrease) || < 1 (increase)

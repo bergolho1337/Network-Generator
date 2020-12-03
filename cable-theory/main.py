@@ -5,6 +5,10 @@ Gi = 7.9
 Cf = 3.4
 tauf = 0.1
 
+#Gi = 4.8
+#Cf = 3.4
+#tauf = 0.1
+
 def Gm (d):
     return 0.005*d + 0.2
 
@@ -25,5 +29,5 @@ plt.plot(d,s,color='black',linewidth=3.0)
 plt.title("Cable equation - Purkinje fiber")
 plt.xlabel(r"d ($\mu m$)",fontsize=15)
 plt.ylabel(r"v ($m/s$)",fontsize=15)
-#plt.show()
-plt.savefig("cable_equation.svg")
+plt.show()
+#plt.savefig("cable_equation.svg")

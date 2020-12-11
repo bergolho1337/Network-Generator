@@ -1,0 +1,23 @@
+- Draw a sketch of the whole system
+
+- Refactor all the code
+
+save_state/load_state:
+    - Create a function to save/load the state of a network in a file.
+    - Think of a format to enable this
+
+options:
+    - Receive more than one configuration file as input (RV generation)
+
+main:
+    - Generate all the networks from the input files and store them as an array
+
+cco:
+    - Create a function that print the pathway from one terminal to the root in VTK.
+    - Create a function to save the logfile and the original configuration to reproduce the simulation
+
+linker:
+    - Create a function which will link different networks by passing the connection coordinates (Terminal-Linker)
+    - Implement a funciton to merge the His-Bundle, LV and RV (Purkinje-Merger)
+
+- Write a documentation to use the program

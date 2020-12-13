@@ -58,6 +58,7 @@ double calc_angle_between_vectors (const double u[], const double v[])
     double dot_product = u[0]*v[0] + u[1]*v[1] + u[2]*v[2];
 
     double angle_radians = acos(dot_product);
+    if (isnan(angle_radians)) angle_radians = 0.0;
 
     // Return the angle in degrees
     return angle_radians * 180.0 / M_PI;

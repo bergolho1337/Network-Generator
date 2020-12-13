@@ -84,25 +84,22 @@ void RafaelOptimization::optimize (Segment *iconn, Segment *ibiff, Segment *inew
     {
         for (uint32_t j = 1; j <= i; j++)
         {
-            if (!is_vertex(i,j))
-            {
-                double neta = (npts - i) * d_neta;
-                double eta = (j - 1) * d_eta;
-                double phi = (1 - eta - neta);
+            double neta = (npts - i) * d_neta;
+            double eta = (j - 1) * d_eta;
+            double phi = (1 - eta - neta);
 
-                double pos[3];
-                pos[0] = (phi * G[0]) + (eta * F[0]) + (neta * E[0]);
-                pos[1] = (phi * G[1]) + (eta * F[1]) + (neta * E[1]);
-                pos[2] = (phi * G[2]) + (eta * F[2]) + (neta * E[2]);
+            double pos[3];
+            pos[0] = (phi * G[0]) + (eta * F[0]) + (neta * E[0]);
+            pos[1] = (phi * G[1]) + (eta * F[1]) + (neta * E[1]);
+            pos[2] = (phi * G[2]) + (eta * F[2]) + (neta * E[2]);
 
-                Point *p = new Point(counter);
-                p->setCoordinate(pos);
-                p->setActive(false);
-                p->setLAT(0.0);
-                
-                test_positions.push_back(p);
-                counter++;
-            }
+            Point *p = new Point(counter);
+            p->setCoordinate(pos);
+            p->setActive(false);
+            p->setLAT(0.0);
+            
+            test_positions.push_back(p);
+            counter++;
         }
     }
 }

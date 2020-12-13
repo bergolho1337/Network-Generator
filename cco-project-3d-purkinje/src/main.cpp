@@ -103,19 +103,6 @@ int main (int argc, char *argv[])
             term_6 = linked_network->get_terminal(term_pos_6);
 
             // Link the segments
-            //double dist_1 = euclidean_norm(term_1->dest->x,term_1->dest->y,term_1->dest->z,\
-                                           term_2->src->x,term_2->src->y,term_2->src->z) * M_TO_UM;
-            //double dist_2 = euclidean_norm(term_3->dest->x,term_3->dest->y,term_3->dest->z,\
-                                           term_4->src->x,term_4->src->y,term_4->src->z) * M_TO_UM;
-            //double dist_3 = euclidean_norm(term_5->dest->x,term_5->dest->y,term_5->dest->z,\
-                                           term_6->src->x,term_6->src->y,term_6->src->z) * M_TO_UM;
-            //printf("1--2 --> Dist=%g, LAT=%g\n",dist_1,dist_1/1900.0);
-            //printf("3--4 --> Dist=%g, LAT=%g\n",dist_2,dist_2/1900.0);
-            //printf("5--6 --> Dist=%g, LAT=%g\n",dist_3,dist_3/1900.0);
-            printf("back_top --> LAT offset = %g\n",network_array[0]->lat_offset);
-            printf("front_top --> LAT offset = %g\n",network_array[1]->lat_offset);
-            printf("front_bottom --> LAT offset = %g\n",network_array[2]->lat_offset);
-            printf("back_bottom --> LAT offset = %g\n",network_array[3]->lat_offset);
             linked_network->link_segments(term_1,term_2);
             linked_network->link_segments(term_3,term_4);
             linked_network->link_segments(term_5,term_6);

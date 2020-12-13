@@ -15,9 +15,9 @@ LocalOptimizationConfig::~LocalOptimizationConfig ()
 
 void LocalOptimizationConfig::save_original_bifurcation_position (Segment *s, double ori_pos[])
 {
-    ori_pos[0] = s->src->x;
-    ori_pos[1] = s->src->y;
-    ori_pos[2] = s->src->z;
+    ori_pos[0] = s->dest->x;
+    ori_pos[1] = s->dest->y;
+    ori_pos[2] = s->dest->z;
 }
 
 void LocalOptimizationConfig::update_bifurcation_position (Point *p)

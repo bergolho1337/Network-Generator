@@ -26,6 +26,8 @@
 #include "../local_optimization_library/local_optimization.h"
 #include "../cost_function_library/cost_function.h"
 
+#include "cloud_points.h"
+
 //#include "cco_helper.h"
 //#include "cco_config.h"
 //#include "cco_reader.h"
@@ -36,14 +38,11 @@
 // =================================================================
 static const double ETA = 3.6e-03;                  // Blood viscosity 
 static const uint32_t NTOSS = 10;                   // Number of tosses for a new terminal
+static const uint32_t NCONN = 20;
 static const double FACTOR = 0.95;                  // Reduction factor for the distance criterion
 static const double D_THREASH_LIMIT = 1.0e-05;      // Limit for the d_threash
 static const uint32_t PRUNING_PASSES = 1;           // Number of times the pruning procedure will be called
-static const double LAT_ERROR_LIMIT = 2.0;          // Limit for the LAT error at the PMJ's
-static const double REGION_RADIUS = 0.002;          // Region radius for trying to connect a PMJ
-static const uint32_t MAX_PMJ_CONNECTION_TRIES = 1; // Maximum number of times that we try to connect the PMJ
-static const uint32_t PMJ_LINK_RATE = 13;            // Link rate for PMJ connection
-static const uint32_t PMJ_MAX_LINK_TRIES = 50;     // Maximum number of tries for PMJ connection
+static const uint32_t PMJ_LOOSE_THREASHOLD = 10.0;  // Threashold for loosening the LAT error tolerance
 // =================================================================
 
 class CCO_Network
@@ -74,6 +73,7 @@ public:
 
     bool using_cloud_points;
     std::string cloud_points_filename;
+    std::vector<bool> cloud_points_connected;
     std::vector<Point*> cloud_points;
 
     bool using_obstacle;
@@ -116,6 +116,7 @@ public:
     void grow_tree (User_Options *options);
     Segment* build_segment (LocalOptimizationConfig *local_opt_config, const uint32_t index, Point *new_term);
     Segment* get_terminal (const double pos[]);
+    Segment* get_terminal_2 (const double pos[]);
     double calc_terminal_local_activation_time (Segment *term);
     CCO_Network* copy ();
     CCO_Network* concatenate (CCO_Network *input);
@@ -147,7 +148,7 @@ private:
     void update_segment_pointers (Segment *iconn, Segment *ibiff, Segment *inew, const bool is_restore);
     void update_ndist (Segment *ibiff, const bool is_restore); 
     bool generate_terminal_using_cloud_points (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
-    bool generate_terminal_using_pmj_locations (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point);
+    bool generate_terminal_using_pmj_locations (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point, const bool evaluate);
     bool connection_search (Point *p, const double d_threash);
     bool distance_criterion (Segment *s, const double pos[], const double d_threash);
     bool check_null_segments ();
@@ -159,6 +160,7 @@ private:
     bool attempt_pmj_connection (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
     bool attempt_connect_using_region_radius (Point *pmj_point, CostFunctionConfig *cost_function_config);
     bool force_pmj_connection (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point);
+    bool force_connection_to_closest_segment (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point);
     Point* generate_bifurcation_node (Segment *iconn, LocalOptimizationConfig *local_opt_config);
     Point* generate_terminal_node (Point *p);
     Point* search_point (const uint32_t index);
@@ -167,122 +169,7 @@ private:
     void prune_segment (Segment *inew);
     void order_point_list ();
     void order_segment_list ();
-    void sort_point_from_cloud (Point *p);
+    uint32_t sort_point_from_cloud (Point *p);
 };
-
-struct cco_network
-{
-    uint32_t seed;                      // Random seed
-    uint32_t max_rand_offset;           // Maximum offset for the random generator
-
-    int num_terminals;                      
-
-    double gamma;                       // Bifurcation expoent
-
-    int N_term;                         // Total number of terminals 
-    double Q_perf;                      // Root perfusion
-    double p_perf;                      // Perfusion pressure over the root
-    double p_term;                      // Perfusion pressure over the terminals
-    double r_perf;                      // Perfusion radius
-    double r_supp;                                            
-
-    double A_perf;
-    double V_perf;                      // Perfusion volume (sphere)
-
-    double Q_term;                      // Terminals perfusion
-    double delta_p;                     // Pressure drop
-
-    double root_pos[3];
-
-    struct point_list *point_list;
-    struct segment_list *segment_list;
-
-    bool using_cloud_points;
-    char *cloud_points_filename;
-    bool using_obstacle;
-    char *obstacle_filename;
-    bool using_pmj_location;
-    char *pmj_location_filename;
-    bool using_lat;
-    char *lat_filename;
-
-    bool using_local_optimization;
-    char *local_optimization_function_name;
-
-    bool using_only_murray_law;
-    double start_radius;
-
-    char *cost_function_name;
-
-    char *output_dir;
-
-    bool using_pruning;
-    char *pruning_function_name;
-
-    bool using_initial_network;
-    char *initial_network_filename;
-
-    FILE *log_file;
-};
-
-void usage (const char pname[]);
-
-/*
-struct cco_network* new_cco_network (struct user_options *options);
-void free_cco_network (struct cco_network *the_network);
-
-struct segment_node* build_segment (struct cco_network *the_network, struct local_optimization_config *local_opt_config,\
-                                const uint32_t index, const double new_pos[], const double lat, const bool is_active);
-
-void rescale_root (struct segment_node *iroot, const double Q_perf, const double delta_p, const bool using_only_murray);
-void rescale_tree (struct segment_node *ibiff, struct segment_node *iconn, struct segment_node *inew,\
-                 const double Q_perf, const double delta_p, const double gamma, const int num_terminals, const bool use_only_murray);
-void rescale_until_root (struct segment_node *ipar, struct segment_node *ipar_left, struct segment_node *ipar_right,\
-                        const double Q_perf, const double delta_p, const double gamma, const int num_terminals, const bool use_only_murray);
-
-void recalculate_radius (struct cco_network *the_network);
-
-void restore_state_tree (struct cco_network *the_network,\
-                        struct segment_node *iconn);
-
-void grow_tree (struct cco_network *the_network, struct user_options *options);
-void grow_tree_using_cloud_points (struct cco_network *the_network,\
-                                   struct user_options *options,\
-                                   std::vector<struct point> cloud_points,\
-                                   std::vector<struct face> obstacle_faces,\
-                                   std::vector<struct point> pmj_points);
-
-bool generate_terminal_using_pmj_points(struct cco_network *the_network,\
-                                          struct cost_function_config *config,\
-                                          struct local_optimization_config *local_opt_config,\
-                                          struct point pmj_point, const uint32_t pmj_id,\
-                                          std::vector<struct face> obstacle_faces);
-bool generate_terminal_using_cloud_points(struct cco_network *the_network,\
-                                          struct cost_function_config *config,\
-                                          struct local_optimization_config *local_opt_config,\
-                                          std::vector<struct point> cloud_points,\
-                                          std::vector<struct face> obstacle_faces);
-bool generate_terminal_using_pmj_points_brute_force(struct cco_network *the_network,\
-                                          struct cost_function_config *config,\
-                                          struct local_optimization_config *local_opt_config,\
-                                          struct point pmj_point, const uint32_t pmj_id,\
-                                          std::vector<struct face> obstacle_faces);
-bool generate_terminal_using_pmj_points_2(struct cco_network *the_network,\
-                                          struct cost_function_config *config,\
-                                          struct local_optimization_config *local_opt_config,\
-                                          struct point pmj_point, const uint32_t pmj_id,\
-                                          std::vector<struct face> obstacle_faces);
-
-void make_root_using_cloud_points (struct cco_network *the_network, std::vector<struct point> cloud_points, std::vector<struct face> obstacle_faces);
-void make_root_using_initial_network (struct cco_network *the_network);
-
-void sort_point_from_cloud_v1 (double pos[], std::vector<struct point> cloud_points);
-void sort_point_from_cloud_v2 (double pos[], std::vector<struct point> cloud_points);
-void sort_point_from_cloud_v3 (double pos[], std::vector<struct point> cloud_points);
-void sort_point_from_cloud_v4 (double pos[], double &ref_lat, bool &is_active, std::vector<struct point> cloud_points, uint32_t max_rand_offset);
-
-void print_network_info (struct cco_network *the_network);
-void print_pathway (struct segment_node *s, const uint32_t id);
-*/
 
 #endif

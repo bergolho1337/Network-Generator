@@ -88,7 +88,7 @@ Segment* CustomFunction::eval (CCO_Network *the_network,\
                 // 'local_optimization' structure
                 memcpy(local_opt_config->best_pos,best_pos,sizeof(double)*3);
 
-                printf("[cost_function] Best segment = %d -- Eval = %g -- Best position = (%g,%g,%g)\n",\
+                //printf("[cost_function] Best segment = %d -- Eval = %g -- Best position = (%g,%g,%g)\n",\
                                 best->id,\
                                 minimum_eval,\
                                 local_opt_config->best_pos[0],\
@@ -124,7 +124,7 @@ Segment* CustomFunction::eval (CCO_Network *the_network,\
                     // The best position of the best segment will be stored inside the 'local_optimization' structure
                     local_opt_config->update_bifurcation_position(test_positions[j]);
 
-                    printf("[cost_function] Best segment = %d -- Eval = %g -- Best position = (%g,%g,%g)\n",\
+                    //printf("[cost_function] Best segment = %d -- Eval = %g -- Best position = (%g,%g,%g)\n",\
                                     best->id,\
                                     minimum_eval,\
                                     local_opt_config->best_pos[0],\

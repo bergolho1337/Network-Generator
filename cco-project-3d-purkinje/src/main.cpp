@@ -39,6 +39,9 @@ int main (int argc, char *argv[])
             std::vector<User_Options*> options_array;
             std::vector<CCO_Network*> network_array;
 
+            // Propagation velocity
+            const double cv = 1900.0;
+
             // Define the terminals for the network linking
             double term_pos_1[3] = {54943.5,49193.5,12943.5};
             double term_pos_2[3] = {55943.5,48955.2,12693.5};
@@ -47,12 +50,10 @@ int main (int argc, char *argv[])
             double term_pos_5[3] = {57694,53943,27193};
             double term_pos_6[3] = {57943.5,50693.5,25883.5};
 
-            //double link_1_offset = 0.556824;
-            //double link_2_offset = 1.88936;
-            //double link_3_offset = 1.55924;
-            double link_1_offset = 0;
-            double link_2_offset = 0;
-            double link_3_offset = 0;
+            double middle_pos[3], dist;
+            double link_1_offset;
+            double link_2_offset;
+            double link_3_offset;
 
             for (uint32_t i = 0; i < 4; i++)
             {
@@ -69,7 +70,16 @@ int main (int argc, char *argv[])
             // Grow 'back_top' network and update the 'lat_offset' from the 'front_top' and 'front_bottom' networks
             network_array[0]->grow_tree(options_array[0]);
             Segment *term_1 = network_array[0]->get_terminal(term_pos_1);
+            term_1->calc_middle_point(middle_pos);
+            dist = euclidean_norm(middle_pos[0]*M_TO_UM,middle_pos[1]*M_TO_UM,middle_pos[2]*M_TO_UM,\
+                                term_pos_2[0],term_pos_2[1],term_pos_2[2]);
+            link_1_offset = dist / cv;
+
             Segment *term_2 = network_array[0]->get_terminal(term_pos_3);
+            term_2->calc_middle_point(middle_pos);
+            dist = euclidean_norm(middle_pos[0]*M_TO_UM,middle_pos[1]*M_TO_UM,middle_pos[2]*M_TO_UM,\
+                                term_pos_4[0],term_pos_4[1],term_pos_4[2]);
+            link_2_offset = dist / cv;
             network_array[1]->lat_offset = his_lat_offset + network_array[0]->calc_terminal_local_activation_time(term_1) + link_1_offset;
             network_array[2]->lat_offset = his_lat_offset + network_array[0]->calc_terminal_local_activation_time(term_2) + link_2_offset;
 
@@ -79,7 +89,11 @@ int main (int argc, char *argv[])
 
             // Update the 'lat_offset' from the 'back_bottom'
             Segment *term_3 = network_array[2]->get_terminal(term_pos_5);
-            network_array[3]->lat_offset = his_lat_offset + network_array[0]->calc_terminal_local_activation_time(term_2) + network_array[2]->calc_terminal_local_activation_time(term_3) + link_3_offset;
+            term_3->calc_middle_point(middle_pos);
+            dist = euclidean_norm(middle_pos[0]*M_TO_UM,middle_pos[1]*M_TO_UM,middle_pos[2]*M_TO_UM,\
+                                term_pos_6[0],term_pos_6[1],term_pos_6[2]);
+            link_3_offset = dist / cv;
+            network_array[3]->lat_offset = his_lat_offset + network_array[0]->calc_terminal_local_activation_time(term_2) + network_array[2]->calc_terminal_local_activation_time(term_3) + link_2_offset + link_3_offset;
 
             // Grow 'back_bottom'
             network_array[3]->grow_tree(options_array[3]);

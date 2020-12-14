@@ -42,7 +42,7 @@ static const uint32_t NCONN = 20;
 static const double FACTOR = 0.95;                  // Reduction factor for the distance criterion
 static const double D_THREASH_LIMIT = 1.0e-05;      // Limit for the d_threash
 static const uint32_t PRUNING_PASSES = 1;           // Number of times the pruning procedure will be called
-static const uint32_t PMJ_LOOSE_THREASHOLD = 10.0;  // Threashold for loosening the LAT error tolerance
+static const uint32_t PMJ_LOOSE_THREASHOLD = 5.0;  // Threashold for loosening the LAT error tolerance and forcing the PMJ connection
 // =================================================================
 
 class CCO_Network
@@ -138,6 +138,7 @@ private:
     void set_local_optimization_function_name ();
     void get_segment_length (std::vector<double> &segments);
     void get_bifurcation_angles(std::vector<double> &angles);
+    void get_electric_error ();
     void read_cloud_points ();
     void read_pmj_locations ();
     void grow_tree_using_cloud_points (User_Options *options);

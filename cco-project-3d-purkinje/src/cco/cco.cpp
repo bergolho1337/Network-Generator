@@ -236,6 +236,7 @@ void CCO_Network::read_pmj_locations ()
         this->total_num_pmjs_connected = 0;
         this->pmjs_connected.assign(this->pmj_points.size(),false);
         this->pmj_error.assign(this->pmj_points.size(),__DBL_MAX__);
+        this->pmj_aprox.assign(this->pmj_points.size(),0);
     }
 }
 
@@ -290,6 +291,8 @@ void CCO_Network::grow_tree_using_cloud_points (User_Options *options)
         printf("%s\n",PRINT_LINE);
         fprintf(log_file,"%s\n",PRINT_LINE);
     }
+
+    printf("Number of connected PMJ's: %u/%u\n",this->total_num_pmjs_connected,this->pmjs_connected.size());
 
     if (this->using_pmj_location)
     {
@@ -698,6 +701,7 @@ bool CCO_Network::generate_terminal_using_pmj_locations (CostFunctionConfig *cos
         // Compute the LAT error for the current PMJ
         double lat_error = (lat - pmj_point->lat);
         this->pmj_error[pmj_point->id] = lat_error;
+        this->pmj_aprox[pmj_point->id] = lat;
         
         // Mark this PMJ as untouchable
         inew->can_touch = false;
@@ -874,6 +878,7 @@ bool CCO_Network::evaluate_pmj_local_activation_time (Segment *inew, Point *pmj_
         sucess = true;
         inew->can_touch = false;
         this->pmj_error[pmj_point->id] = lat_error;
+        this->pmj_aprox[pmj_point->id] = lat;
         //write_pathway(pmj_point);
     }
     else
@@ -1333,6 +1338,7 @@ bool CCO_Network::attempt_connect_using_region_radius (Point *pmj_point, CostFun
             {
                 sucess = true;
                 this->pmj_error[pmj_point->id] = lat_error;
+                this->pmj_aprox[pmj_point->id] = lat;
                 //print_pathway(tmp,pmj_id);
 
                 return sucess;
@@ -1428,6 +1434,7 @@ bool CCO_Network::force_connection_to_closest_segment (CostFunctionConfig *cost_
     double lat = calc_terminal_local_activation_time(closest) + this->lat_offset;
     double lat_error = fabs(lat-pmj_point->lat);
     this->pmj_error[pmj_point->id] = lat_error;
+    this->pmj_aprox[pmj_point->id] = lat;
     
     return true;
 }
@@ -1546,6 +1553,9 @@ CCO_Network* CCO_Network::copy ()
     result->total_num_pmjs_connected = this->total_num_pmjs_connected;
     result->lat_offset = this->lat_offset;
     result->lat_error_tolerance = this->lat_error_tolerance;
+    memcpy(result->min_max_aprox_lat,this->min_max_aprox_lat,sizeof(double)*2);
+    memcpy(result->min_max_ref_lat,this->min_max_ref_lat,sizeof(double)*2);
+    result->max_lat_error = this->max_lat_error;
 
     result->output_dir = "outputs/copy";
     result->cost_function_name = this->cost_function_name;
@@ -1607,6 +1617,8 @@ CCO_Network* CCO_Network::copy ()
         Point *p = new Point(this->pmj_points[i]);
         result->pmj_points.push_back(p);
         result->pmjs_connected.push_back(this->pmjs_connected[i]);
+        result->pmj_error.push_back(this->pmj_error[i]);
+        result->pmj_aprox.push_back(this->pmj_aprox[i]);
     }
     
     return result;
@@ -1622,6 +1634,13 @@ CCO_Network* CCO_Network::concatenate (CCO_Network *input)
     result->num_terminals += input->num_terminals;
     result->using_pmj_location |= input->using_pmj_location;
     result->total_num_pmjs_connected += input->total_num_pmjs_connected;
+
+    // Adjust the Min/Max PMJ errors
+    result->min_max_aprox_lat[0] = (input->min_max_aprox_lat[0] < this->min_max_aprox_lat[0]) ? input->min_max_aprox_lat[0] : this->min_max_aprox_lat[0];
+    result->min_max_aprox_lat[1] = (input->min_max_aprox_lat[1] > this->min_max_aprox_lat[1]) ? input->min_max_aprox_lat[1] : this->min_max_aprox_lat[1];
+    result->min_max_ref_lat[0] = (input->min_max_ref_lat[0] < this->min_max_ref_lat[0]) ? input->min_max_ref_lat[0] : this->min_max_ref_lat[0];
+    result->min_max_ref_lat[1] = (input->min_max_ref_lat[1] > this->min_max_ref_lat[1]) ? input->min_max_ref_lat[1] : this->min_max_ref_lat[1];
+    result->max_lat_error = (input->max_lat_error > this->max_lat_error) ? input->max_lat_error : this->max_lat_error;
 
     // Concatenate points
     offset_points = result->point_list.size();
@@ -1677,10 +1696,12 @@ CCO_Network* CCO_Network::concatenate (CCO_Network *input)
     {
         Point *p = new Point(input->pmj_points[i]);
         bool connected = input->pmjs_connected[i];
+        double aprox = input->pmj_aprox[i];
         double error = input->pmj_error[i];
         p->id += offset_points;
         result->pmj_points.push_back(p);
         result->pmjs_connected.push_back(connected);
+        result->pmj_aprox.push_back(aprox);
         result->pmj_error.push_back(error);
     }
 
@@ -1742,18 +1763,11 @@ void CCO_Network::adjust_radius ()
 
 void CCO_Network::get_electric_error ()
 {
-    uint32_t counter = 0;
-    for (uint32_t i = 0; i < this->segment_list.size(); i++)
+    for (uint32_t i = 0; i < this->pmj_aprox.size(); i++)
     {
-        Segment *cur_segment = this->segment_list[i];
-        if (!cur_segment->is_touchable())
-        {
-            double lat = calc_terminal_local_activation_time(cur_segment) + this->lat_offset;
-            if (lat < this->min_max_aprox_lat[0]) this->min_max_aprox_lat[0] = lat;
-            if (lat > this->min_max_aprox_lat[1]) this->min_max_aprox_lat[1] = lat;
-            
-            counter++;
-        }
+        double lat = this->pmj_aprox[i];
+        if (lat < this->min_max_aprox_lat[0]) this->min_max_aprox_lat[0] = lat;
+        if (lat > this->min_max_aprox_lat[1]) this->min_max_aprox_lat[1] = lat;
     }
 
     for (uint32_t i = 0; i < this->pmj_points.size(); i++)

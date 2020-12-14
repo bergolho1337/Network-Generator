@@ -89,6 +89,7 @@ public:
     std::string pmj_location_filename;
     std::vector<bool> pmjs_connected;
     std::vector<double> pmj_error;
+    std::vector<double> pmj_aprox;
     std::vector<Point*> pmj_points;
 
     std::string cost_function_name;

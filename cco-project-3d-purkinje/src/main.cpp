@@ -122,7 +122,7 @@ int main (int argc, char *argv[])
             linked_network->link_segments(term_5,term_6);
 
             // Set the 'output_dir' and adjust the radius
-            linked_network->output_dir = "outputs/test_RV";
+            linked_network->output_dir = "outputs/full_RV";
             linked_network->adjust_radius();
             
             printf("%s\n",PRINT_DOTS);

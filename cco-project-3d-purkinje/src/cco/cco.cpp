@@ -1285,6 +1285,7 @@ bool CCO_Network::attempt_pmj_connection (CostFunctionConfig *cost_function_conf
                 
                 if (sucess)
                 {
+                    printf("\t[!] SUCESS!\n");
                     cur_num_connected_pmjs++;
                     this->total_num_pmjs_connected++;
                     write_to_vtk_iteration();

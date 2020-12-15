@@ -17,7 +17,7 @@ start_radius = 0.1
 gamma = 19
 
 [save_network]
-output_dir = outputs/01_PMJ_Final/LV_seed:%d
+output_dir = outputs/04_PMJ_Linktries:40/LV_seed:%d
 
 [cloud_points]
 use_cloud_points = true
@@ -25,7 +25,7 @@ cloud_points_filename = clouds/inactives/jesuliana_mesh_cloud_LV_m.vtk
 use_pmj_location = true
 pmj_location_filename = clouds/pmjs/jesuliana_mesh_active_pmjs_LV_m.vtk
 max_pmj_connection_tries = 50
-pmj_connection_rate = 520
+pmj_connection_rate = 13
 pmj_region_radius = 0.002
 lat_error_tolerance = 2.0
 lat_offset = 5.2135
@@ -62,7 +62,7 @@ start_radius = 0.1
 gamma = 19
 
 [save_network]
-output_dir = outputs/01_PMJ_Final/RV_back_top_seed:%d
+output_dir = outputs/04_PMJ_Linktries:40/RV_back_top_seed:%d
 
 [cloud_points]
 use_cloud_points = true
@@ -102,7 +102,7 @@ start_radius = 0.1
 gamma = 19
 
 [save_network]
-output_dir = outputs/01_PMJ_Final/RV_back_bottom_seed:%d
+output_dir = outputs/04_PMJ_Linktries:40/RV_back_bottom_seed:%d
 
 [cloud_points]
 use_cloud_points = true
@@ -110,7 +110,7 @@ cloud_points_filename = clouds/inactives/jesuliana_mesh_cloud_RV_back_bottom_m.v
 use_pmj_location = true
 pmj_location_filename = clouds/pmjs/jesuliana_mesh_active_pmjs_RV_back_bottom_m.vtk
 max_pmj_connection_tries = 200
-pmj_connection_rate = 40
+pmj_connection_rate = 1
 pmj_region_radius = 0.002
 lat_error_tolerance = 2.0
 use_obstacle = false
@@ -146,7 +146,7 @@ start_radius = 0.1
 gamma = 19
 
 [save_network]
-output_dir = outputs/01_PMJ_Final/RV_front_top_seed:%d
+output_dir = outputs/04_PMJ_Linktries:40/RV_front_top_seed:%d
 
 [cloud_points]
 use_cloud_points = true
@@ -190,7 +190,7 @@ start_radius = 0.1
 gamma = 19
 
 [save_network]
-output_dir = outputs/01_PMJ_Final/RV_front_bottom_seed:%d
+output_dir = outputs/04_PMJ_Linktries:40/RV_front_bottom_seed:%d
 
 [cloud_points]
 use_cloud_points = true
@@ -198,7 +198,7 @@ cloud_points_filename = clouds/inactives/jesuliana_mesh_cloud_RV_front_bottom_m.
 use_pmj_location = true
 pmj_location_filename = clouds/pmjs/jesuliana_mesh_active_pmjs_RV_front_bottom_m.vtk
 max_pmj_connection_tries = 200
-pmj_connection_rate = 40
+pmj_connection_rate = 1
 pmj_region_radius = 0.002
 lat_error_tolerance = 2.0
 use_obstacle = false
@@ -229,9 +229,8 @@ def print_config_RV (seeds):
 def main():
     
     #seeds = [1562002891,1562002894,1562005513,1562005553,1562006177,1562007596,1562008172,1562008424,1562009134,1562009769]
-    #seeds = [1562002891,1562002894,1562005513,1562005553,1562006177]
-    seeds = [1562005555]
-
+    seeds = [1562002891,1562002894,1562005513,1562005555,1562006177]
+    
     print_config_LV(seeds)
     print_config_RV(seeds)
 

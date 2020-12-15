@@ -10,13 +10,13 @@ using namespace std;
 
 int main (int argc, char *argv[])
 {
-    if (!(argc-1 == 1 || argc-1 == 4))
+    if (!(argc-1 == 1 || argc-1 == 5))
     {
         printf("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
         printf("Usage:> %s <input_config> [additional_config]\n",argv[0]);
         printf("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
         printf("Example:> %s input/test_LV.ini\n",argv[0]);
-        printf("          %s inputs/test_RV_back_top.ini inputs/test_RV_front_top.ini inputs/test_RV_front_bottom.ini inputs/test_RV_back_bottom.ini\n",argv[0]);
+        printf("          %s inputs/test_RV_back_top.ini inputs/test_RV_front_top.ini inputs/test_RV_front_bottom.ini inputs/test_RV_back_bottom.ini outputs/test_RV\n",argv[0]);
         printf("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
         exit(EXIT_FAILURE);
     }
@@ -36,6 +36,8 @@ int main (int argc, char *argv[])
         // Multiple networks case - Elizabeth RV
         else
         {
+            std::string output_dir = argv[5];
+
             std::vector<User_Options*> options_array;
             std::vector<CCO_Network*> network_array;
 
@@ -122,7 +124,7 @@ int main (int argc, char *argv[])
             linked_network->link_segments(term_5,term_6);
 
             // Set the 'output_dir' and adjust the radius
-            linked_network->output_dir = "outputs/full_RV";
+            linked_network->output_dir = output_dir;
             linked_network->adjust_radius();
             
             printf("%s\n",PRINT_DOTS);

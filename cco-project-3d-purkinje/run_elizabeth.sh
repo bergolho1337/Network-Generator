@@ -5,26 +5,28 @@
 # The output networks will be in the MonoAlg3D domain. 
 
 #SEEDS=( 1562002891 1562002894 1562005513 1562005553 1562006177 1562007596 1562008172 1562008424 1562009134 1562009769 )
-SEEDS=( 1562002891 1562002894 1562005513 1562005554 1562006177 )
+#SEEDS=( 1562002891 1562002894 1562005513 1562005554 1562006177 )
+SEEDS=( 1562005513 1562005554 1562006177 )
 # ========================================================================================================================
-# 1) MINIMIZE LENGTH (default)
+# 1) MINIMIZE LENGTH (linking PMJ's at the end)
 # ========================================================================================================================
 PROGRAM_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/bin/Cco_3D"
-INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/inputs/01_PMJ_Last"
-OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/outputs/01_PMJ_Last"
+INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/inputs/01_PMJ_Final"
+OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/outputs/01_PMJ_Final"
 PURKINJE_MERGER_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Purkinje-Merger"
 #MONOALG3D_PATH="/home/berg/Github/MonoAlg3D_C"
 
 # LEFT VENTRICLE
-for SEED in "${SEEDS[@]}"; do
-    ${PROGRAM_PATH} ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_LV.ini & 
-done
+#for SEED in "${SEEDS[@]}"; do
+#    ${PROGRAM_PATH} ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_LV.ini & 
+#done
 
 # RIGHT VENTRICLE
 for SEED in "${SEEDS[@]}"; do
-    ${PROGRAM_PATH} ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_back_top.ini ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_front_top.ini ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_front_bottom.ini ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_back_bottom.ini
-    cp ${OUTPUT_PATH}/full_RV/tree_nterm_192.vtk ${OUTPUT_PATH}/RV/elizabeth_total_length_seed:${SEED}_RV.vtk
+    ${PROGRAM_PATH} ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_back_top.ini ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_front_top.ini ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_front_bottom.ini ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_back_bottom.ini ${OUTPUT_PATH}/RV_seed:${SEED}
+    #cp ${OUTPUT_PATH}/full_RV/tree_nterm_192.vtk ${OUTPUT_PATH}/RV/elizabeth_total_length_seed:${SEED}_RV.vtk
 done
+
 
 # LEFT VENTRICLE (copying)
 #for SEED in "${SEEDS[@]}"; do
@@ -49,5 +51,5 @@ done
 #done
 
 # ========================================================================================================================
-# 2) MINIMIZE LENGTH (linking PMJ's at the end)
+# 2) MINIMIZE LENGTH (linking PMJ's at intervals)
 # ========================================================================================================================

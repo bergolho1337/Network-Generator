@@ -6,9 +6,9 @@
 
 # Variables
 FILENAME="frames/frame"
-FRAME_RATE="5"
-END_FRAME="100"
-OUTPUT_VIDEO_FILENAME="videos/sebastian_torso"
+FRAME_RATE="10"
+END_FRAME="649"
+OUTPUT_VIDEO_FILENAME="videos/elizabeth_pmj_linkrate_study"
 RESOLUTION="1980x1024"
 
 # Execute the converting command using FFMPEG

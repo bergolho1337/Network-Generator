@@ -126,8 +126,12 @@ public:
                                         std::vector<uint32_t> ref_term_ids, std::vector<uint32_t> aprox_term_ids,\
                                         double &rmse, double &rrmse, double &max_error);
     void compute_min_max_lat (std::vector<double> lat, std::vector<uint32_t> term_ids, double &min_value, double &max_value, uint32_t &min_id, uint32_t &max_id);
+    void compute_epsilon_percentage (std::vector<double> ref_lat, std::vector<double> aprox_lat,\
+                                    std::vector<uint32_t> ref_term_ids, std::vector<uint32_t> aprox_term_ids,\
+                                    const double epsilon, double &percentage);
     void print ();
     void write_terminals (const char filename[]);
+    void write_LAT (const char filename[]);
 };
 
 double adjust_propagation_velocity (const double ref_cv, const double ref_max_lat, const double aprox_max_lat, double &new_diameter);

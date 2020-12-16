@@ -242,6 +242,7 @@ void Graph::compute_errors (Graph *input, std::string pmj_filename)
     double ref_min_lat, ref_max_lat;
     uint32_t aprox_min_lat_id, aprox_max_lat_id;
     double aprox_min_lat, aprox_max_lat;
+    double percentage_2ms, percentage_5ms;
     double rmse, rrmse, max_error;
 
     std::vector<double> ref_lat = this->lat;
@@ -252,18 +253,24 @@ void Graph::compute_errors (Graph *input, std::string pmj_filename)
     compute_rmse_rrmse_maxerror(ref_lat,aprox_lat,ref_term_ids,aprox_term_ids,rmse,rrmse,max_error);
     compute_min_max_lat(ref_lat,ref_term_ids,ref_min_lat,ref_max_lat,ref_min_lat_id,ref_max_lat_id);
     compute_min_max_lat(aprox_lat,aprox_term_ids,aprox_min_lat,aprox_max_lat,aprox_min_lat_id,aprox_max_lat_id);
+    compute_epsilon_percentage(ref_lat,aprox_lat,ref_term_ids,aprox_term_ids,2,percentage_2ms);
+    compute_epsilon_percentage(ref_lat,aprox_lat,ref_term_ids,aprox_term_ids,5,percentage_5ms);
 
     double ref_dist_min_lat = this->dist[ref_min_lat_id];
     double ref_dist_max_lat = this->dist[ref_max_lat_id];
     double aprox_dist_min_lat = input->dist[aprox_min_lat_id];
     double aprox_dist_max_lat = input->dist[aprox_max_lat_id];
 
+    printf("========================================================================================================================================================================\n");
     printf("Max error PMJ's = %g ms\n",max_error);
     printf("RMSE PMJ's = %g ms\n",rmse);
     printf("RRMSE PMJ's = %g %%\n",rrmse*100.0);
+    printf("Epsilon < 2ms = %g %%\n",percentage_2ms);
+    printf("Epsilon < 5ms = %g %%\n",percentage_5ms);
     printf("[reference] Min. LAT PMJ's = %g || Max. LAT PMJ's = %g || Min. LAT cell id = %u || Max. LAT cell id = %u || Min. LAT dist = %g || Max. LAT dist = %g\n",ref_min_lat,ref_max_lat,ref_min_lat_id,ref_max_lat_id,ref_dist_min_lat,ref_dist_max_lat);
     printf("[aproximation] Min. LAT PMJ's = %g || Max. LAT PMJ's = %g || Min. LAT cell id = %u || Max. LAT cell id = %u || Min. LAT dist = %g || Max. LAT dist = %g\n",aprox_min_lat,aprox_max_lat,aprox_min_lat_id,aprox_max_lat_id,aprox_dist_min_lat,aprox_dist_max_lat);
-    printf("\n");
+    printf("%g %g %g %g %g %g %g\n",aprox_min_lat,aprox_max_lat,max_error,rmse,rrmse*100.0,percentage_2ms,percentage_5ms);
+    printf("========================================================================================================================================================================\n");
 
     // [GLOBAL] Recalculate the propagation velocity of the aproximation Purkinje network using proportion calculus
     double new_cv = aprox_dist_max_lat / ref_max_lat;
@@ -276,34 +283,37 @@ void Graph::compute_errors (Graph *input, std::string pmj_filename)
     std::vector<double> aprox_lat_2 = input->lat;
     compute_rmse_rrmse_maxerror(ref_lat,aprox_lat_2,ref_term_ids,aprox_term_ids,rmse,rrmse,max_error);
     compute_min_max_lat(aprox_lat_2,aprox_term_ids,aprox_min_lat,aprox_max_lat,aprox_min_lat_id,aprox_max_lat_id);
+    compute_epsilon_percentage(ref_lat,aprox_lat_2,ref_term_ids,aprox_term_ids,2,percentage_2ms);
+    compute_epsilon_percentage(ref_lat,aprox_lat_2,ref_term_ids,aprox_term_ids,5,percentage_5ms);
 
+    printf("========================================================================================================================================================================\n");
     printf("Max error PMJ's = %g ms\n",max_error);
     printf("RMSE PMJ's = %g ms\n",rmse);
     printf("RRMSE PMJ's = %g %%\n",rrmse*100.0);
+    printf("Epsilon < 2ms = %g %%\n",percentage_2ms);
+    printf("Epsilon < 5ms = %g %%\n",percentage_5ms);
     printf("[reference] Min. LAT PMJ's = %g || Max. LAT PMJ's = %g || Min. LAT cell id = %u || Max. LAT cell id = %u || Min. LAT dist = %g || Max. LAT dist = %g\n",ref_min_lat,ref_max_lat,ref_min_lat_id,ref_max_lat_id,ref_dist_min_lat,ref_dist_max_lat);
     printf("[aproximation] Min. LAT PMJ's = %g || Max. LAT PMJ's = %g || Min. LAT cell id = %u || Max. LAT cell id = %u || Min. LAT dist = %g || Max. LAT dist = %g\n",aprox_min_lat,aprox_max_lat,aprox_min_lat_id,aprox_max_lat_id,aprox_dist_min_lat,aprox_dist_max_lat);
-    printf("\n");
+    printf("%g %g %g %g %g %g %g\n",aprox_min_lat,aprox_max_lat,max_error,rmse,rrmse*100.0,percentage_2ms,percentage_5ms);
+    printf("========================================================================================================================================================================\n");
 
-    // [LOCAL] If the minimum LAT of our aproximation is greater than the reference one, adjust again using the minimum LAT
-    if (ref_min_lat < aprox_min_lat)
+}
+
+void Graph::compute_epsilon_percentage (std::vector<double> ref_lat, std::vector<double> aprox_lat,\
+                                    std::vector<uint32_t> ref_term_ids, std::vector<uint32_t> aprox_term_ids,\
+                                    const double epsilon, double &percentage)
+{
+    uint32_t counter = 0;
+    uint32_t n = ref_term_ids.size();
+    for (uint32_t i = 0; i < n; i++)
     {
-        // Find the first bifurcation node to the current terminal
-        uint32_t cur_index = aprox_min_lat_id;
-        while (input->list_nodes[cur_index].list_edges.size() != 2)
-        {
-            cur_index = input->parent[cur_index];
-        }    
-        uint32_t aprox_terminal_index = aprox_min_lat_id;
-        uint32_t aprox_bifurcation_index = cur_index;
-
-        double aprox_lat_terminal = aprox_min_lat;
-        double aprox_lat_bifurcation = input->dist[aprox_bifurcation_index] / new_cv;
-        printf("%g %g\n",aprox_lat_terminal,aprox_lat_bifurcation);
-        //double delta_s = (input->dist[aprox_terminal_index] - input->dist[aprox_bifurcation_index]);
-        //printf("%u %u\n",aprox_terminal_index,aprox_bifurcation_index);
-
-    }
-
+        uint32_t ref_index = ref_term_ids[i];
+        uint32_t aprox_index = aprox_term_ids[i];
+        double error = fabs(ref_lat[ref_index] - aprox_lat[aprox_index]);
+        if (error < epsilon)
+            counter++;
+    }    
+    percentage = (double)counter / (double)n * 100.0;
 }
 
 void Graph::compute_activation_times (const double cv)
@@ -348,7 +358,7 @@ void Graph::compute_rmse_rrmse_maxerror (std::vector<double> ref_lat, std::vecto
         uint32_t ref_index = ref_term_ids[i];
         uint32_t aprox_index = aprox_term_ids[i];
         double error = fabs(ref_lat[ref_index] - aprox_lat[aprox_index]);
-        printf("%u %g\n",i,error);
+        //printf("%u %g\n",i,error);
         if (error > max_error)
             max_error = error;
 
@@ -358,7 +368,7 @@ void Graph::compute_rmse_rrmse_maxerror (std::vector<double> ref_lat, std::vecto
     double l2_norm = sqrt(sum_den);
     rmse = sqrt(sum_num/(double)n);
     rrmse = sqrt(sum_num/sum_den);
-    printf("\n");
+    //printf("\n");
 }
 
 double calculate_diameter (const double cv)
@@ -420,5 +430,38 @@ void Graph::write_terminals (const char filename[])
         fprintf(file,"%g\n",this->lat[index]);
     }
 
+    fclose(file);
+}
+
+void Graph::write_LAT (const char filename[])
+{
+    FILE *file = fopen(filename,"w+");
+    fprintf(file,"# vtk DataFile Version 4.1\n");
+    fprintf(file,"vtk output\n");
+    fprintf(file,"ASCII\n");
+    fprintf(file,"DATASET POLYDATA\n");
+    
+    fprintf(file,"POINTS %u float\n",this->list_nodes.size());
+    for (uint32_t i = 0; i < this->list_nodes.size(); i++)
+    {
+        fprintf(file,"%g %g %g\n",this->list_nodes[i].x,this->list_nodes[i].y,this->list_nodes[i].z);
+    }
+    fprintf(file,"LINES %u %u\n",this->total_edges,this->total_edges*3);
+    for (uint32_t i = 0; i < this->list_nodes.size(); i++)
+    {
+        uint32_t u = this->list_nodes[i].id;
+        for (uint32_t j = 0; j < this->list_nodes[i].list_edges.size(); j++)
+        {
+            uint32_t v = this->list_nodes[i].list_edges[j].dest_id;
+            fprintf(file,"2 %u %u\n",u,v);
+        }
+    }
+    fprintf(file,"POINT_DATA %u\n",this->list_nodes.size());
+    fprintf(file,"SCALARS LAT float\n");
+    fprintf(file,"LOOKUP_TABLE default\n");
+    for (uint32_t i = 0; i < this->list_nodes.size(); i++)
+    {
+        fprintf(file,"%g\n",this->lat[i]);
+    }
     fclose(file);
 }

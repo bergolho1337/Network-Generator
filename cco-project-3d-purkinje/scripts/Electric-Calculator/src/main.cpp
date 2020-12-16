@@ -8,17 +8,18 @@
 
 int main (int argc, char *argv[])
 {
-    if (argc-1 != 3)
+    if (argc-1 != 4)
     {
-        printf("===============================================================================================\n");
-        printf("Usage:> %s <input_ref_purkinje_network> <input_aprox_purkinje_network> <input_active_pmj>\n",argv[0]);
-        printf("===============================================================================================\n");
+        printf("=============================================================================================================================\n");
+        printf("Usage:> %s <input_ref_purkinje_network> <input_aprox_purkinje_network> <input_active_pmj> <output_filename>\n",argv[0]);
+        printf("=============================================================================================================================\n");
         exit(EXIT_FAILURE);
     }
 
     std::string ref_filename = argv[1];
     std::string aprox_filename = argv[2];
     std::string pmj_filename = argv[3];
+    std::string output_filename = argv[4];
 
     // [PURKINJE]
     VTK_Reader *ref_reader = new VTK_Reader(ref_filename);
@@ -28,8 +29,11 @@ int main (int argc, char *argv[])
     Graph *aprox_network = new Graph(aprox_reader->the_points,aprox_reader->the_lines);    
 
     ref_network->compute_errors(aprox_network,pmj_filename);
-    ref_network->write_terminals("outputs/reference_terminals.vtk");
+    //ref_network->write_terminals("outputs/reference_terminals.vtk");
+    //ref_network->write_LAT("outputs/reference_LAT.vtk");
     
+    aprox_network->write_LAT(output_filename.c_str());
+
     return 0;
 }
 

@@ -13,6 +13,11 @@ PROGRAM_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/bin/Cc
 INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/inputs/01_PMJ_Final"
 OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/outputs/01_PMJ_Final"
 PURKINJE_MERGER_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Purkinje-Merger"
+PURKINJE_MERGER_INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Purkinje-Merger/inputs/01_PMJ_Final"
+PURKINJE_MERGER_OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Purkinje-Merger/outputs/01_PMJ_Final"
+ELECTRIC_ERROR_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Electric-Calculator"
+ELECTRIC_ERROR_INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Electric-Calculator/inputs/01_PMJ_Final"
+ELECTRIC_ERROR_OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Electric-Calculator/outputs/01_PMJ_Final"
 #MONOALG3D_PATH="/home/berg/Github/MonoAlg3D_C"
 
 # LEFT VENTRICLE
@@ -23,30 +28,22 @@ PURKINJE_MERGER_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinj
 # RIGHT VENTRICLE
 for SEED in "${SEEDS[@]}"; do
     ${PROGRAM_PATH} ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_back_top.ini ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_front_top.ini ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_front_bottom.ini ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_back_bottom.ini ${OUTPUT_PATH}/RV_seed:${SEED}
-    #cp ${OUTPUT_PATH}/full_RV/tree_nterm_192.vtk ${OUTPUT_PATH}/RV/elizabeth_total_length_seed:${SEED}_RV.vtk
 done
 
-
-# LEFT VENTRICLE (copying)
+# Copying
 #for SEED in "${SEEDS[@]}"; do
-#    cp ${OUTPUT_PATH}/LV/elizabeth_total_length_seed:${SEED}_LV/tree_nterm_650.vtk ${OUTPUT_PATH}/LV/elizabeth_total_length_seed:${SEED}_LV.vtk
+#    cp ${OUTPUT_PATH}/LV_seed:${SEED}/tree_nterm_650.vtk ${PURKINJE_MERGER_INPUT_PATH}/LV/LV_seed:${SEED}.vtk
+#    cp ${OUTPUT_PATH}/RV_seed:${SEED}/tree_nterm_192.vtk ${PURKINJE_MERGER_INPUT_PATH}/RV/RV_seed:${SEED}.vtk
 #done
 
-# RIGHT VENTRICLE (linking)
+# Merging
 #for SEED in "${SEEDS[@]}"; do
-#    cp ${OUTPUT_PATH}/RV/elizabeth_total_length_seed:${SEED}_RV_back_bottom/tree_nterm_50.vtk ${TERMINAL_LINKER_PATH}/inputs/elizabeth_min_length_back_bottom.vtk
-#    cp ${OUTPUT_PATH}/RV/elizabeth_total_length_seed:${SEED}_RV_back_top/tree_nterm_10.vtk ${TERMINAL_LINKER_PATH}/inputs/elizabeth_min_length_back_top.vtk
-#    cp ${OUTPUT_PATH}/RV/elizabeth_total_length_seed:${SEED}_RV_front_bottom/tree_nterm_150.vtk ${TERMINAL_LINKER_PATH}/inputs/elizabeth_min_length_front_bottom.vtk
-#    cp ${OUTPUT_PATH}/RV/elizabeth_total_length_seed:${SEED}_RV_front_top/tree_nterm_5.vtk ${TERMINAL_LINKER_PATH}/inputs/elizabeth_min_length_front_top.vtk
-#    ${TERMINAL_LINKER_PATH}/bin/TerminalLinker ${TERMINAL_LINKER_PATH}/inputs/elizabeth_min_length_back_top.vtk ${TERMINAL_LINKER_PATH}/inputs/elizabeth_min_length_back_bottom.vtk ${TERMINAL_LINKER_PATH}/inputs/elizabeth_min_length_front_top.vtk ${TERMINAL_LINKER_PATH}/inputs/elizabeth_min_length_front_bottom.vtk ${OUTPUT_PATH}/RV/elizabeth_total_length_seed:${SEED}_RV.vtk
+#    ${PURKINJE_MERGER_PATH}/bin/Purkinje-Merger ${PURKINJE_MERGER_INPUT_PATH}/His/his_bundle.vtk ${PURKINJE_MERGER_INPUT_PATH}/LV/LV_seed:${SEED}.vtk ${PURKINJE_MERGER_INPUT_PATH}/RV/RV_seed:${SEED}.vtk ${PURKINJE_MERGER_OUTPUT_PATH}/LVRV_seed:${SEED}.vtk
 #done
 
-# LVRV (merging)
+# Electric error
 #for SEED in "${SEEDS[@]}"; do
-#    cp ${OUTPUT_PATH}/LV/elizabeth_total_length_seed:${SEED}_LV.vtk ${PURKINJE_MERGER_PATH}/inputs/01_CO_Length/LV/elizabeth_total_length_seed:${SEED}_LV.vtk
-#    cp ${OUTPUT_PATH}/RV/elizabeth_total_length_seed:${SEED}_RV.vtk ${PURKINJE_MERGER_PATH}/inputs/01_CO_Length/RV/elizabeth_total_length_seed:${SEED}_RV.vtk
-#    ${PURKINJE_MERGER_PATH}/bin/Purkinje-Merger ${PURKINJE_MERGER_PATH}/inputs/01_CO_Length/His/elizabeth_min_length_his.vtk ${PURKINJE_MERGER_PATH}/inputs/01_CO_Length/LV/elizabeth_total_length_seed:${SEED}_LV.vtk ${PURKINJE_MERGER_PATH}/inputs/01_CO_Length/RV/elizabeth_total_length_seed:${SEED}_RV.vtk ${PURKINJE_MERGER_PATH}/outputs/01_CO_Length/elizabeth_total_length_seed:${SEED}_LVRV.vtk
-#    cp ${PURKINJE_MERGER_PATH}/outputs/01_CO_Length/elizabeth_total_length_seed:${SEED}_LVRV.vtk ${MONOALG3D_PATH}/networks/elizabeth_total_length_seed:${SEED}_LVRV.vtk
+#    ${ELECTRIC_ERROR_PATH}/bin/PurkinjeError ${ELECTRIC_ERROR_PATH}/inputs/elizabeth_gold_standart_LVRV.vtk ${ELECTRIC_ERROR_INPUT_PATH}/LVRV_seed:${SEED}.vtk ${ELECTRIC_ERROR_PATH}/inputs/elizabeth_pmjs_LVRV.txt ${ELECTRIC_ERROR_OUTPUT_PATH}/LVRV_LAT_seed:${SEED}.vtk
 #done
 
 # ========================================================================================================================

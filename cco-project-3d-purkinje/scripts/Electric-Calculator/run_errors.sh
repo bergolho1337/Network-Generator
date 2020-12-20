@@ -1,16 +1,15 @@
 #!/bin/bash
 
-#SEEDS=( 1562002891 1562002894 1562005513 1562005554 1562006177 1562007596 1562008172 1562008424 1562009134 1562009769 ) 
-SEEDS=( 1562002891 1562002894 1562005513 1562005554 1562006177 )
+SEEDS=( 1562002891 1562002894 1562005513 1562005555 1562006177 )
+RATES=( 10 20 40 )
 
-PROGRAM_PATH="/home/berg/Documentos/Elizabeth/Scripts/Purkinje-Error"
-#INPUT_FOLDER="/home/berg/Documentos/Elizabeth/Scripts/Purkinje-Error/inputs/01_CO_Length"
-#INPUT_FOLDER="/home/berg/Documentos/Elizabeth/Scripts/Purkinje-Error/inputs/02_CO_Length_PMJ_last"
-#INPUT_FOLDER="/home/berg/Documentos/Elizabeth/Scripts/Purkinje-Error/inputs/03_CO_Length_Multiobjective"
-INPUT_FOLDER="/home/berg/Documentos/Elizabeth/Scripts/Purkinje-Error/inputs/04_CO_Length_PMJ_interval_with_region_radius"
+INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Electric-Calculator/inputs"
+OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Electric-Calculator/outputs"
 
 for SEED in "${SEEDS[@]}"; do
-    echo "=========================================================================================================================="
-    ${PROGRAM_PATH}/bin/PurkinjeError inputs/elizabeth_gold_standart_LVRV.vtk ${INPUT_FOLDER}/elizabeth_total_length_seed\:${SEED}_LVRV.vtk inputs/elizabeth_pmjs_LVRV.txt
-    echo "=========================================================================================================================="
+    for LV_RATE in "${RATES[@]}"; do
+		for RV_RATE in "${RATES[@]}"; do
+			./bin/PurkinjeError inputs/elizabeth_gold_standart_LVRV.vtk inputs/Mixed/seed\:${SEED}_LV_linkrate\:${LV_RATE}__RV_linkrate\:${RV_RATE}.vtk inputs/elizabeth_pmjs_LVRV.txt outputs/Mixed/seed\:${SEED}_LV_linkrate:${LV_RATE}__RV_linkrate:${RV_RATE}.vtk
+        done
+    done
 done

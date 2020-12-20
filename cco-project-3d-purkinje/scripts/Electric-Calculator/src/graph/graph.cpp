@@ -261,7 +261,8 @@ void Graph::compute_errors (Graph *input, std::string pmj_filename)
     double aprox_dist_min_lat = input->dist[aprox_min_lat_id];
     double aprox_dist_max_lat = input->dist[aprox_max_lat_id];
 
-    printf("========================================================================================================================================================================\n");
+    //printf("========================================================================================================================================================================\n");
+    /*
     printf("Max error PMJ's = %g ms\n",max_error);
     printf("RMSE PMJ's = %g ms\n",rmse);
     printf("RRMSE PMJ's = %g %%\n",rrmse*100.0);
@@ -269,16 +270,17 @@ void Graph::compute_errors (Graph *input, std::string pmj_filename)
     printf("Epsilon < 5ms = %g %%\n",percentage_5ms);
     printf("[reference] Min. LAT PMJ's = %g || Max. LAT PMJ's = %g || Min. LAT cell id = %u || Max. LAT cell id = %u || Min. LAT dist = %g || Max. LAT dist = %g\n",ref_min_lat,ref_max_lat,ref_min_lat_id,ref_max_lat_id,ref_dist_min_lat,ref_dist_max_lat);
     printf("[aproximation] Min. LAT PMJ's = %g || Max. LAT PMJ's = %g || Min. LAT cell id = %u || Max. LAT cell id = %u || Min. LAT dist = %g || Max. LAT dist = %g\n",aprox_min_lat,aprox_max_lat,aprox_min_lat_id,aprox_max_lat_id,aprox_dist_min_lat,aprox_dist_max_lat);
-    printf("%g %g %g %g %g %g %g\n",aprox_min_lat,aprox_max_lat,max_error,rmse,rrmse*100.0,percentage_2ms,percentage_5ms);
-    printf("========================================================================================================================================================================\n");
+    */
+    printf("%.2lf\t%.2lf\t%.2lf\t%.2lf\t%.2lf\t%.2lf\t%.2lf\n",aprox_min_lat,aprox_max_lat,max_error,rmse,rrmse*100.0,percentage_2ms,percentage_5ms);
+    //printf("========================================================================================================================================================================\n");
 
     // [GLOBAL] Recalculate the propagation velocity of the aproximation Purkinje network using proportion calculus
     double new_cv = aprox_dist_max_lat / ref_max_lat;
     double new_diameter = calculate_diameter(new_cv);
     input->compute_activation_times(new_cv);
-    printf("New CV = %g um/mm\n",new_cv);
-    printf("New diameter = %g um\n",new_diameter);
-    printf("\n");
+    //printf("New CV = %g um/mm\n",new_cv);
+    //printf("New diameter = %g um\n",new_diameter);
+    //printf("\n");
 
     std::vector<double> aprox_lat_2 = input->lat;
     compute_rmse_rrmse_maxerror(ref_lat,aprox_lat_2,ref_term_ids,aprox_term_ids,rmse,rrmse,max_error);
@@ -286,7 +288,8 @@ void Graph::compute_errors (Graph *input, std::string pmj_filename)
     compute_epsilon_percentage(ref_lat,aprox_lat_2,ref_term_ids,aprox_term_ids,2,percentage_2ms);
     compute_epsilon_percentage(ref_lat,aprox_lat_2,ref_term_ids,aprox_term_ids,5,percentage_5ms);
 
-    printf("========================================================================================================================================================================\n");
+    //printf("========================================================================================================================================================================\n");
+    /*
     printf("Max error PMJ's = %g ms\n",max_error);
     printf("RMSE PMJ's = %g ms\n",rmse);
     printf("RRMSE PMJ's = %g %%\n",rrmse*100.0);
@@ -294,8 +297,9 @@ void Graph::compute_errors (Graph *input, std::string pmj_filename)
     printf("Epsilon < 5ms = %g %%\n",percentage_5ms);
     printf("[reference] Min. LAT PMJ's = %g || Max. LAT PMJ's = %g || Min. LAT cell id = %u || Max. LAT cell id = %u || Min. LAT dist = %g || Max. LAT dist = %g\n",ref_min_lat,ref_max_lat,ref_min_lat_id,ref_max_lat_id,ref_dist_min_lat,ref_dist_max_lat);
     printf("[aproximation] Min. LAT PMJ's = %g || Max. LAT PMJ's = %g || Min. LAT cell id = %u || Max. LAT cell id = %u || Min. LAT dist = %g || Max. LAT dist = %g\n",aprox_min_lat,aprox_max_lat,aprox_min_lat_id,aprox_max_lat_id,aprox_dist_min_lat,aprox_dist_max_lat);
-    printf("%g %g %g %g %g %g %g\n",aprox_min_lat,aprox_max_lat,max_error,rmse,rrmse*100.0,percentage_2ms,percentage_5ms);
-    printf("========================================================================================================================================================================\n");
+    */
+    //printf("%.2lf\t%.2lf\t%.2lf\t%.2lf\t%.2lf\t%.2lf\t%.2lf\n",aprox_min_lat,aprox_max_lat,max_error,rmse,rrmse*100.0,percentage_2ms,percentage_5ms);
+    //printf("========================================================================================================================================================================\n");
 
 }
 

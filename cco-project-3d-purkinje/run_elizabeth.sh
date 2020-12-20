@@ -10,14 +10,14 @@ SEEDS=( 1562002891 1562002894 1562005513 1562005555 1562006177 )
 # 1) MINIMIZE LENGTH (linking PMJ's at the end)
 # ========================================================================================================================
 PROGRAM_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/bin/Cco_3D"
-INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/inputs/01_PMJ_Final"
-OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/outputs/01_PMJ_Final"
+INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/inputs/03_PMJ_Linktries:20"
+OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/outputs/03_PMJ_Linktries:20"
 PURKINJE_MERGER_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Purkinje-Merger"
-PURKINJE_MERGER_INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Purkinje-Merger/inputs/01_PMJ_Final"
-PURKINJE_MERGER_OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Purkinje-Merger/outputs/01_PMJ_Final"
+PURKINJE_MERGER_INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Purkinje-Merger/inputs/04_PMJ_Linkrate:40"
+PURKINJE_MERGER_OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Purkinje-Merger/outputs/04_PMJ_Linkrate:40"
 ELECTRIC_ERROR_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Electric-Calculator"
-ELECTRIC_ERROR_INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Electric-Calculator/inputs/01_PMJ_Final"
-ELECTRIC_ERROR_OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Electric-Calculator/outputs/01_PMJ_Final"
+ELECTRIC_ERROR_INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Electric-Calculator/inputs/PMJ_Linkrate:40"
+ELECTRIC_ERROR_OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Electric-Calculator/outputs/PMJ_Linkrate:40"
 #MONOALG3D_PATH="/home/berg/Github/MonoAlg3D_C"
 
 # LEFT VENTRICLE
@@ -26,9 +26,9 @@ ELECTRIC_ERROR_OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-p
 #done
 
 # RIGHT VENTRICLE
-for SEED in "${SEEDS[@]}"; do
-    ${PROGRAM_PATH} ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_back_top.ini ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_front_top.ini ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_front_bottom.ini ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_back_bottom.ini ${OUTPUT_PATH}/RV_seed:${SEED}
-done
+#for SEED in "${SEEDS[@]}"; do
+#    ${PROGRAM_PATH} ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_back_top.ini ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_front_top.ini ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_front_bottom.ini ${INPUT_PATH}/elizabeth_biventricular_coupled_co:length_seed:${SEED}_RV_back_bottom.ini ${OUTPUT_PATH}/RV_seed:${SEED}
+#done
 
 # Copying
 #for SEED in "${SEEDS[@]}"; do

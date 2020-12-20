@@ -1,5 +1,9 @@
 /build
 /bin
 /clouds/*.stl
+/clouds/full/*.vtk
+/clouds/inactives/*.vtk
+/clouds/actives/*.vtk
+/clouds/networks/*.vtk
 /outputs
 /results

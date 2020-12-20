@@ -1,17 +1,16 @@
 #!/bin/bash
 
-SEEDS=( 1562002891 1562002894 1562005513 1562005553 1562006177 1562007596 1562008172 1562008424 1562009134 1562009769 ) 
+SEEDS=( 1562002891 1562002894 1562005513 1562005555 1562006177 )
+RATES=( 10 20 40 )
 
-INPUT_PATH="/home/berg/Documentos/Purkinje-Merger/inputs/01_CO_Length"
-OUTPUT_PATH="/home/berg/Documentos/Purkinje-Merger/outputs/01_CO_Length"
-
-for SEED in "${SEEDS[@]}"; do
-    ./bin/Purkinje-Merger ${INPUT_PATH}/His/His.vtk ${INPUT_PATH}/LV/LV_seed:${SEED}.vtk ${INPUT_PATH}/RV/RV_seed:${SEED}.vtk ${OUTPUT_PATH}/LVRV_seed:${SEED}.vtk 
-done
-
-INPUT_PATH="/home/berg/Documentos/Purkinje-Merger/inputs/02_CO_Activation_Time"
-OUTPUT_PATH="/home/berg/Documentos/Purkinje-Merger/outputs/02_CO_Activation_Time"
+INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Purkinje-Merger/inputs"
+OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Purkinje-Merger/outputs"
 
 for SEED in "${SEEDS[@]}"; do
-    ./bin/Purkinje-Merger ${INPUT_PATH}/His/His.vtk ${INPUT_PATH}/LV/LV_seed:${SEED}.vtk ${INPUT_PATH}/RV/RV_seed:${SEED}.vtk ${OUTPUT_PATH}/LVRV_seed:${SEED}.vtk 
+    for LV_RATE in "${RATES[@]}"; do
+		for RV_RATE in "${RATES[@]}"; do
+				./bin/Purkinje-Merger inputs/PMJ_Linkrate\:10/His/his_bundle.vtk inputs/PMJ_Linkrate\:${LV_RATE}/LV/LV_seed\:${SEED}.vtk inputs/PMJ_Linkrate\:${RV_RATE}/RV/RV_seed\:${SEED}.vtk outputs/Mixed/seed\:${SEED}_LV_linkrate:${LV_RATE}__RV_linkrate:${RV_RATE}.vtk
+		done
+    done
+    
 done

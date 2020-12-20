@@ -95,6 +95,28 @@ void write_points_to_pts (vector<Point> points)
     fclose(file);
 }
 
+void write_points_to_vtk (vector<Point> points)
+{
+    char filename[200];
+    sprintf(filename,"outputs/remapped_points.vtk");
+    FILE *file = fopen(filename,"w+");
+
+    fprintf(file,"# vtk DataFile Version 3.0\n");
+    fprintf(file,"Cloud\n");
+    fprintf(file,"ASCII\n");
+    fprintf(file,"DATASET POLYDATA\n");
+    fprintf(file,"POINTS %lu float\n",points.size());
+    for (uint32_t i = 0; i < points.size(); i++)
+    {
+        fprintf(file,"%lf %lf %lf\n",points[i].x,points[i].y,points[i].z);
+    }
+    fprintf(file,"VERTICES %lu %lu\n",points.size(),points.size()*2);
+    for (uint32_t i = 0; i < points.size(); i++)
+        fprintf(file,"1 %u\n",i);
+    
+    fclose(file);
+}
+
 void write_points_to_vtk (vector<Point> points, vector<bool> points_taken, const uint32_t iter)
 {
     uint32_t num_points_taken = 0;
@@ -353,13 +375,13 @@ void remap_points_from_root_v2 (vector<Point> &points, const uint32_t root_index
 
     double initial_radius = 0.1;
     double max_radius = 100;
-    double offset = 0.5;
-    double a = ratios[0];         // X axis: || > 1 (decrease) || < 1 (increase)
-    double b = ratios[1];         // Y axis: || > 1 (decrease) || < 1 (increase)
-    double c = ratios[2];         // Z axis: || > 1 (decrease) || < 1 (increase)
-    //double a = 2.0;  // LV rabbit
-    //double b = 1.0;  // LV rabbit
-    //double c = 1.0;  // LV rabbit
+    double offset = 0.25;
+    //double a = ratios[0];         // X axis: || > 1 (decrease) || < 1 (increase)
+    //double b = ratios[1];         // Y axis: || > 1 (decrease) || < 1 (increase)
+    //double c = ratios[2];         // Z axis: || > 1 (decrease) || < 1 (increase)
+    double a = 1.5;  // LV rabbit
+    double b = 1.0;  // LV rabbit
+    double c = 5.0;  // LV rabbit
     //double a = 0.5;  // RV rabbit
     //double b = 1.0;  // RV rabbit
     //double c = 5.0;  // RV rabbit
@@ -380,6 +402,7 @@ void remap_points_from_root_v2 (vector<Point> &points, const uint32_t root_index
 
     }
     write_points_to_pts(remapped_points);
+    write_points_to_vtk(remapped_points);
 }
 
 int main (int argc, char *argv[])

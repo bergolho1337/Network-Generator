@@ -104,7 +104,7 @@ int main (int argc, char *argv[])
             Segment *term_4 = network_array[1]->get_terminal(term_pos_2);
             Segment *term_5 = network_array[2]->get_terminal(term_pos_4);
             Segment *term_6 = network_array[3]->get_terminal(term_pos_6);
-
+            
             // Concatenate the networks
             CCO_Network *linked_network = network_array[0]->concatenate(network_array[1]);
             linked_network = linked_network->concatenate(network_array[2]);

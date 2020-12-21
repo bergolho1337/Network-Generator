@@ -1,5 +1,7 @@
 #include "utils.h"
 
+#include "../cco/cco.h"
+
 void create_directory (const char *path)
 {
     if (mkdir(path,S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != -1)

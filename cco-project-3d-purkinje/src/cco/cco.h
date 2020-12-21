@@ -17,7 +17,6 @@
 
 #include "../point/point.h"
 #include "../segment/segment.h"
-//#include "../face-list/face-list.h"
 #include "../options/user_options.h"
 #include "../utils/utils.h"
 #include "../utils/stop_watch.h"
@@ -27,12 +26,7 @@
 #include "../cost_function_library/cost_function.h"
 
 #include "cloud_points.h"
-
-//#include "cco_helper.h"
-//#include "cco_config.h"
-//#include "cco_reader.h"
-//#include "cco_checker.h"
-//#include "cco_pruner.h"
+#include "pmj.h"
 
 // CONSTANTS AND MACROS 
 // =================================================================
@@ -65,6 +59,7 @@ public:
     bool using_only_murray_law;
     double start_radius;
     double gamma;
+    double lat_offset;
 
     double root_pos[3];
 
@@ -80,17 +75,7 @@ public:
     //std::vector<Face> obstacles;
     
     bool using_pmj_location;
-    uint32_t total_num_pmjs_connected;
-    uint32_t max_pmj_connection_tries;
-    uint32_t pmj_connection_rate;
-    double pmj_region_radius;
-    double lat_offset;
-    double lat_error_tolerance;
-    std::string pmj_location_filename;
-    std::vector<bool> pmjs_connected;
-    std::vector<double> pmj_error;
-    std::vector<double> pmj_aprox;
-    std::vector<Point*> pmj_points;
+    PMJ *pmj_data;
 
     std::string cost_function_name;
     CostFunction *cost_fn;
@@ -141,7 +126,7 @@ private:
     void get_bifurcation_angles(std::vector<double> &angles);
     void get_electric_error ();
     void read_cloud_points ();
-    void read_pmj_locations ();
+    void read_pmj_locations (PMJConfig *config);
     void grow_tree_using_cloud_points (User_Options *options);
     void make_root_using_cloud_points ();
     void make_root_using_initial_network ();

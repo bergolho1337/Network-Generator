@@ -1,8 +1,8 @@
-set(SOURCE_FILES_CCO cco.h cco.cpp)
+set(SOURCE_FILES_CCO cco.h cco.cpp
+                     pmj.h pmj.cpp)
 
 ADD_LIBRARY(cco STATIC ${SOURCE_FILES_CCO})
 
-#TARGET_LINK_LIBRARIES(cco pointlist segmentlist utils)
 TARGET_LINK_LIBRARIES(cco costfunction localopt point segment utils)
 
 if(NOT MSVC)

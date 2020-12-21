@@ -20,6 +20,7 @@
 
 #include "cost_function_config.h"
 #include "local_optimization_config.h"
+#include "pmj_config.h"
 //#include "pruning_config.h"
 
 #define PRINT_LINE "====================================================================================="
@@ -37,6 +38,7 @@ public:
     bool use_only_murray;
     double start_radius;
     double gamma;
+    double lat_offset;
 
     bool use_cloud_points;
     std::string cloud_points_filename;
@@ -45,12 +47,7 @@ public:
     std::string obstacle_filename;
 
     bool use_pmj_location;
-    uint32_t max_pmj_connection_tries;
-    uint32_t pmj_connection_rate;
-    double pmj_region_radius;
-    double lat_offset;
-    double lat_error_tolerance;
-    std::string pmj_location_filename;
+    PMJConfig *pmj_config;
 
     bool use_initial_network;
     std::string initial_network_filename;

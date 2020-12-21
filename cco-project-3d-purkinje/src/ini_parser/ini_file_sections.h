@@ -9,6 +9,7 @@
 #define SAVE_NETWORK_SECTION "save_network"
 #define CLOUD_SECTION "cloud_points"
 #define LOCAL_OPT_SECTION "local_optimization"
+#define PMJ_SECTION "pmj"
 #define COST_FUNCTION_SECTION "cost_function"
 #define PRUNING_SECTION "pruning"
 

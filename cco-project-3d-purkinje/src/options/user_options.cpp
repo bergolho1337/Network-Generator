@@ -13,14 +13,10 @@ User_Options::User_Options (const char filename[])
     this->seed = 1;                             // Default value
     this->max_rand_offset = 1;                  // Default value
     this->gamma = 3.0;                          // Default value
-    this->pmj_connection_rate = __UINT32_MAX__; // Default value
-    this->max_pmj_connection_tries = 1;         // Default value
-    this->pmj_region_radius = 0.002;            // Default value
-    this->lat_offset = 0.0;                     // Default value
-    this->lat_error_tolerance = 2.0;            // Default value
 
     this->cost_function_config = NULL;
     this->local_opt_config = NULL;
+    this->pmj_config = NULL;
 
     read_config_file(filename);
 }
@@ -53,13 +49,6 @@ void User_Options::read_config_file (const char filename[])
         exit(EXIT_FAILURE);
     }
 
-    // Set the cost function pointer
-    //set_cost_function(options->config);
-
-    // Set the local optimization function pointer
-    //if (options->use_local_optimization)
-    //    set_local_optimization_function(options->local_opt_config);
-    
     // Set the pruning function pointer
     //if (options->pruning_config)
     //    set_pruning_function(options->pruning_config);
@@ -105,6 +94,10 @@ int parse_config_file (void *user, const char *section, const char *name, const 
         else if (MATCH_NAME("gamma"))
         {
             pconfig->gamma = strtof(value, NULL);
+        }
+        else if (MATCH_NAME("lat_offset"))
+        {
+            pconfig->lat_offset = strtof(value, NULL);
         }
         else if (MATCH_NAME("use_only_murray"))
         {
@@ -180,7 +173,15 @@ int parse_config_file (void *user, const char *section, const char *name, const 
         {
             pconfig->obstacle_filename = value;
         }
-        else if (MATCH_NAME("use_pmj_location"))
+    }
+    else if (SECTION_STARTS_WITH(PMJ_SECTION))
+    {
+        if (!pconfig->pmj_config)
+        {
+            pconfig->pmj_config = new PMJConfig();
+        }
+
+        if (MATCH_NAME("use_pmj_location"))
         {
             if (strcmp(value,"true") == 0 || strcmp(value,"yes") == 0)
                 pconfig->use_pmj_location = true;
@@ -194,27 +195,23 @@ int parse_config_file (void *user, const char *section, const char *name, const 
         }
         else if (MATCH_NAME("pmj_location_filename"))
         {
-            pconfig->pmj_location_filename = value;
+            pconfig->pmj_config->location_filename = value;
         }
         else if (MATCH_NAME("max_pmj_connection_tries"))
         {
-            pconfig->max_pmj_connection_tries = (uint32_t)strtol(value, NULL, 10);
+            pconfig->pmj_config->max_connection_tries = (uint32_t)strtol(value, NULL, 10);
         }
         else if (MATCH_NAME("pmj_connection_rate"))
         {
-            pconfig->pmj_connection_rate = (uint32_t)strtol(value, NULL, 10);
+            pconfig->pmj_config->connection_rate = (uint32_t)strtol(value, NULL, 10);
         }
         else if (MATCH_NAME("pmj_region_radius"))
         {
-            pconfig->pmj_region_radius = strtof(value, NULL);
-        }
-        else if (MATCH_NAME("lat_offset"))
-        {
-            pconfig->lat_offset = strtof(value, NULL);
+            pconfig->pmj_config->region_radius = strtof(value, NULL);
         }
         else if (MATCH_NAME("lat_error_tolerance"))
         {
-            pconfig->lat_error_tolerance = strtof(value, NULL);
+            pconfig->pmj_config->lat_error_tolerance = strtof(value, NULL);
         }
     }
     else if (SECTION_STARTS_WITH(LOCAL_OPT_SECTION))
@@ -318,10 +315,6 @@ void User_Options::print ()
         printf("obstacle_filename = %s\n",this->obstacle_filename.c_str());
     else
         printf("obstacle_filename = NULL\n");
-    if (this->use_pmj_location)
-        printf("PMJ location filename = %s\n",this->pmj_location_filename.c_str());
-    else
-        printf("PMJ location filename = NULL\n");
     if (this->use_initial_network)
         printf("Initial network filename = %s\n",this->initial_network_filename.c_str());
     else
@@ -333,5 +326,9 @@ void User_Options::print ()
         this->local_opt_config->print();
     else
         printf("Local optimization = FALSE\n");
+    if (this->use_pmj_location)
+        this->pmj_config->print();
+    else
+        printf("PMJ location = FALSE\n");
     printf("********************************************************\n");
 }

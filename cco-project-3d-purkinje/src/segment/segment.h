@@ -20,13 +20,11 @@ public:
     double radius;
     double beta;
     double length;
-    //double resistance;
-    //double Q;
-    //double delta_p;
     int ndist;
 
     bool can_touch;
     bool prune;
+    bool adjusted;
 
     Point *src;
     Point *dest;
@@ -49,6 +47,7 @@ public:
         this->radius = 0.0;
         this->prune = false;
         this->can_touch = true;
+        this->adjusted = false;
     }
     ~Segment ()
     {
@@ -90,6 +89,28 @@ public:
     {
         return (src->lat + dest->lat)/2.0;
     }
+    double calc_propagation_velocity ()
+    {
+        const double G = 7.9;
+        const double Cf = 3.4;
+        const double tauf = 0.1;
+
+        double d = this->radius*2.0 * 1000.0;   // {mm}->{um}
+    
+        // Output in {m/s}
+        return powf( (G*d)/(4.0*Cf*tauf) , 0.5 ) * 0.1;
+    }
+    double calc_pathway_length ()
+    {
+        double result = 0.0;
+        Segment *tmp = this;
+        while (tmp != NULL)
+        {
+            result += tmp->length;
+            tmp = tmp->parent;
+        }
+        return result;
+    }
     uint32_t calc_level ()
     {
         uint32_t result = 0;
@@ -113,6 +134,19 @@ public:
     bool is_touchable ()
     {
         return this->can_touch;
+    }
+    void update_radius (const double cv)
+    {
+        const double G = 7.9;
+        const double Cf = 3.4;
+        const double tauf = 0.1;
+
+        double cv_m_per_s = cv / 1000.0;
+        double new_diameter = (cv_m_per_s*cv_m_per_s*4.0*Cf*tauf) / (G) * 100.0; // {um}
+        new_diameter *= 1.0e-03;
+
+        this->radius = new_diameter/2.0;
+        this->adjusted = true;
     }
     void print ()
     {

@@ -403,13 +403,13 @@ void CCO_Network::rescale_tree (Segment *ibiff, Segment *iconn, Segment *inew)
     double r_right = pow(0.5, 1.0/this->gamma) * r_par;
 
     // Fix a bifurcation ratio (Decrease the radius at each level of the tree by fixed factor)
-    inew->beta = r_left / r_par;
-    iconn->beta = r_right / r_par;
+    //inew->beta = r_left / r_par;
+    //iconn->beta = r_right / r_par;
 
     // CONSTANT RADIUS
-    //double radius_ratio = r_left / r_right;
-    //inew->beta = radius_ratio;
-    //iconn->beta = radius_ratio;
+    double radius_ratio = r_left / r_right;
+    inew->beta = radius_ratio;
+    iconn->beta = radius_ratio;
 
     // Rescale the until we reach the root by using the "parent" pointer
     Segment *ipar = ibiff->parent;
@@ -437,13 +437,13 @@ void CCO_Network::rescale_until_root (Segment *ipar, Segment *ipar_left, Segment
         double r_par = ipar->radius;
         double r_left = pow(0.5, 1.0/gamma) * r_par;
         double r_right = pow(0.5, 1.0/gamma) * r_par;
-        ipar_left->beta = r_left / r_par;
-        ipar_right->beta = r_right / r_par;
+        //ipar_left->beta = r_left / r_par;
+        //ipar_right->beta = r_right / r_par;
         
         // CONSTANT RADIUS
-        //radius_ratio = r_left / r_right;
-        //ipar_left->beta = radius_ratio;
-        //ipar_right->beta = radius_ratio;
+        double radius_ratio = r_left / r_right;
+        ipar_left->beta = radius_ratio;
+        ipar_right->beta = radius_ratio;
 
         // Call the function recursively until we reach the root
         if (ipar->parent != NULL)
@@ -459,7 +459,8 @@ void CCO_Network::recalculate_radius ()
     {
         Segment *cur_segment = this->segment_list[i];
 
-        cur_segment->radius = cur_segment->calc_radius();
+        if (!cur_segment->adjusted)
+            cur_segment->radius = cur_segment->calc_radius();
     }
 }
 
@@ -674,16 +675,21 @@ bool CCO_Network::generate_terminal_using_pmj_locations (CostFunctionConfig *cos
     // [EVALUATE PMJ ACTIVATION]
     if (evaluate)
     {
-        // Step 1: Try to connect using normal CCO
+        // Step 1: Connect using normal CCO
         sucess = evaluate_pmj_local_activation_time(inew,pmj_point,cost_function_config);
-        //if (sucess) printf("[+] PMJ point %u was connected in step 1!\n",pmj_point->id);
+        if (sucess) printf("[+] PMJ point %u was connected in step 1!\n",pmj_point->id);
 
-        // Step 2: Try to connect using a region radius
+        // Step 2: Connect using normal CCO and region radius
         if (!sucess)
         {   
             sucess = attempt_connect_using_region_radius(pmj_point,cost_function_config);
-            //if (sucess) printf("[+] PMJ point %u was connected in step 2!\n",pmj_point->id);
+            if (sucess) printf("[+] PMJ point %u was connected in step 2!\n",pmj_point->id);
         }
+
+        // Step 3: Connect trying to maximize the LAT (inverse CCO)
+
+        // Step 4: Connect using inverse CCO and region radius
+
     }
     else
     {
@@ -853,31 +859,74 @@ bool CCO_Network::has_collision (Segment *s, Point *p)
 
 bool CCO_Network::evaluate_pmj_local_activation_time (Segment *inew, Point *pmj_point, CostFunctionConfig *cost_function_config)
 {
-    bool sucess = false;
-
-    // Calculate the LAT for the new PMJ point included in the network
+    // 1) Check if the LAT error is less then the absolute error tolerance
     double lat = calc_terminal_local_activation_time(inew) + this->lat_offset;
-
-    // Compute the LAT error for the current PMJ
-    double lat_error = (lat - pmj_point->lat);
-
-    // Rodrigo's suggestion
-    //if (error > LAT_ERROR_LIMIT)
-
+    double lat_error = (pmj_point->lat - lat);
     if (fabs(lat_error) < this->pmj_data->lat_error_tolerance)
     {
-        sucess = true;
         inew->can_touch = false;
         this->pmj_data->error[pmj_point->id] = lat_error;
         this->pmj_data->aprox[pmj_point->id] = lat;
+        return true;
+    }
+
+    // 2) Check if we can adjust the radius of the last segment
+    double original_radius = inew->radius;
+
+    // DEBUG
+    //printf("[PMJ %u] Ref: %g ms -- Aprox: %g ms -- Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
+
+    // The propagation velocity is too fast for that PMJ
+    if (lat_error > this->pmj_data->lat_error_tolerance)
+    {
+        // Try to adjust the diameter of the last segment by decreasing its velocity
+        double lat_parent = calc_terminal_local_activation_time(inew->parent) + this->lat_offset;
+        double delta_t_target = pmj_point->lat - lat_parent;
+        
+        // If the PMJ has been activated too soon we adjust the diameter in order to fit the reference LAT
+        if (delta_t_target > 0.0)
+        {
+            double delta_s_term = inew->calc_pathway_length()*M_TO_UM;
+            double delta_s_parent = inew->parent->calc_pathway_length()*M_TO_UM;
+            double new_cv = (delta_s_term - delta_s_parent) / delta_t_target;
+            
+            // We only update the segment diameter when the new CV is greater than 1000um/ms --> {1m/s}
+            if (new_cv > 1000.0)
+            {
+                inew->update_radius(new_cv);
+            
+                lat = calc_terminal_local_activation_time(inew) + this->lat_offset;
+                lat_error = (pmj_point->lat - lat);
+                printf("[PMJ %u] Adjusting diameter from %g um to %g um\n",pmj_point->id,original_radius*2.0*MM_TO_UM,inew->radius*2.0*MM_TO_UM);
+                printf("[PMJ %u] Ref: %g ms -- Aprox: %g ms -- Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
+
+                if (fabs(lat_error) < this->pmj_data->lat_error_tolerance)
+                {
+                    inew->can_touch = false;
+                    this->pmj_data->error[pmj_point->id] = lat_error;
+                    this->pmj_data->aprox[pmj_point->id] = lat;
+                    return true;
+                }
+            }
+            else
+            {
+                prune_segment(inew);
+            }
+        }
+        // We cannot increase the diameter, so prune this segment
+        else
+        {
+            prune_segment(inew);
+        }
+        
         //write_pathway(pmj_point);
     }
     else
     {
         prune_segment(inew);
     }
-
-    return sucess;
+    
+    return false;
 }
 
 Point* CCO_Network::generate_bifurcation_node (Segment *iconn, LocalOptimizationConfig *local_opt_config)
@@ -1055,21 +1104,21 @@ Segment* CCO_Network::build_segment (LocalOptimizationConfig *local_opt_config, 
 
 double CCO_Network::calc_terminal_local_activation_time (Segment *term)
 {
-    // TODO: Consider the case where we don't have a constant valocity
-    const double cv = 1900.0; // Conduction velocity across the Purkinje fiber {um/ms}
-
-    //double delta_s = term->length;   // During runtime the network length is given in {m}
-    double delta_s = 0.0;   // During runtime the network length is given in {m}
+    double result = 0.0;
     Segment *tmp = term;
     while (tmp != NULL)
     {
-        delta_s += tmp->length;
+        double cv = tmp->calc_propagation_velocity()*1000.0;    // {m/s}->{um/ms}
+        double dist = tmp->length;
+        double lat = dist*M_TO_UM/cv;
 
+        result += lat;
+        
         tmp = tmp->parent;
     }
 
     // Return the LAT in {ms}
-    return delta_s*M_TO_UM/cv; 
+    return result; 
 }
 
 uint32_t CCO_Network::sort_point_from_cloud (Point *p)
@@ -1296,7 +1345,7 @@ bool CCO_Network::attempt_pmj_connection (CostFunctionConfig *cost_function_conf
 bool CCO_Network::attempt_connect_using_region_radius (Point *pmj_point, CostFunctionConfig *cost_function_config)
 {
     bool sucess = false;
-    double center[3], ori_pos[3];
+    double center[3], ori_pos[3], original_radius;
     double radius = this->pmj_data->region_radius;
 
     center[0] = pmj_point->x;
@@ -1311,10 +1360,11 @@ bool CCO_Network::attempt_connect_using_region_radius (Point *pmj_point, CostFun
             // Try to connect the PMJ location directly to a segment by changing the destination node coordinates
             //printf("Segment %u is inside region for PMJ %u\n",cur_segment->id,pmj_point->id);
 
-            // Save the original position
+            // Save the original position and radius
             ori_pos[0] = cur_segment->dest->x;
             ori_pos[1] = cur_segment->dest->y;
             ori_pos[2] = cur_segment->dest->z;
+            original_radius = cur_segment->radius;
 
             // Change coordinate position
             cur_segment->dest->x = pmj_point->x;
@@ -1326,14 +1376,74 @@ bool CCO_Network::attempt_connect_using_region_radius (Point *pmj_point, CostFun
             double lat = calc_terminal_local_activation_time(cur_segment) + this->lat_offset;
             double lat_error = (lat - pmj_point->lat);
 
+            // 1) Check if the LAT error is less then the absolute error tolerance
             if (fabs(lat_error) < this->pmj_data->lat_error_tolerance)
             {
-                sucess = true;
+                cur_segment->can_touch = false;
                 this->pmj_data->error[pmj_point->id] = lat_error;
                 this->pmj_data->aprox[pmj_point->id] = lat;
-                //print_pathway(tmp,pmj_id);
+                return true;
+            }
 
-                return sucess;
+            // 2) Check if we can adjust the radius of the last segment
+            double original_radius = cur_segment->radius;
+
+            // The propagation velocity is too fast for that PMJ
+            if (lat_error > this->pmj_data->lat_error_tolerance)
+            {
+                // Try to adjust the diameter of the last segment by decreasing its velocity
+                double lat_parent = calc_terminal_local_activation_time(cur_segment->parent) + this->lat_offset;
+                double delta_t_target = pmj_point->lat - lat_parent;
+                
+                // If the PMJ has been activated too soon we adjust the diameter in order to fit the reference LAT
+                if (delta_t_target > 0.0)
+                {
+                    double delta_s_term = cur_segment->calc_pathway_length()*M_TO_UM;
+                    double delta_s_parent = cur_segment->parent->calc_pathway_length()*M_TO_UM;
+                    double new_cv = (delta_s_term - delta_s_parent) / delta_t_target;
+                    
+                    // We only update the segment diameter when the new CV is greater than 500um/ms --> {0.5m/s}
+                    if (new_cv > 500.0)
+                    {
+                        cur_segment->update_radius(new_cv);
+                    
+                        lat = calc_terminal_local_activation_time(cur_segment) + this->lat_offset;
+                        lat_error = (pmj_point->lat - lat);
+                        printf("[PMJ %u] Adjusting radius from %g um to %g um\n",pmj_point->id,original_radius*MM_TO_UM,cur_segment->radius*MM_TO_UM);
+                        printf("[PMJ %u] Ref: %g ms -- Aprox: %g ms -- Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
+
+                        if (fabs(lat_error) < this->pmj_data->lat_error_tolerance)
+                        {
+                            cur_segment->can_touch = false;
+                            this->pmj_data->error[pmj_point->id] = lat_error;
+                            this->pmj_data->aprox[pmj_point->id] = lat;
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        // Restore the state
+                        cur_segment->dest->x = ori_pos[0];
+                        cur_segment->dest->y = ori_pos[1];
+                        cur_segment->dest->z = ori_pos[2];
+                        cur_segment->length = cur_segment->calc_length();
+                        cur_segment->radius = original_radius;
+                        cur_segment->can_touch = true;
+                    }
+                }
+                // We cannot increase the diameter, so prune this segment
+                else
+                {
+                    // Restore the state
+                    cur_segment->dest->x = ori_pos[0];
+                    cur_segment->dest->y = ori_pos[1];
+                    cur_segment->dest->z = ori_pos[2];
+                    cur_segment->length = cur_segment->calc_length();
+                    cur_segment->radius = original_radius;
+                    cur_segment->can_touch = true;
+                }
+                
+                //write_pathway(pmj_point);
             }
             else
             {
@@ -1342,11 +1452,12 @@ bool CCO_Network::attempt_connect_using_region_radius (Point *pmj_point, CostFun
                 cur_segment->dest->y = ori_pos[1];
                 cur_segment->dest->z = ori_pos[2];
                 cur_segment->length = cur_segment->calc_length();
+                cur_segment->radius = original_radius;
                 cur_segment->can_touch = true;
             }
         }
     }
-    return sucess;
+    return false;
 }
 
 bool CCO_Network::force_pmj_connection (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point)

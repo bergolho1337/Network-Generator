@@ -1,0 +1,46 @@
+# User-specific stuff:
+.idea/**/workspace.xml
+.idea/codeStyles/
+.idea/**/tasks.xml
+.idea/dictionaries
+
+# Sensitive or high-churn files:
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.xml
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+
+# CMake
+cmake-build-debug/
+cmake-build-release/
+
+## File-based project format:
+*.iws
+
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
+
+# Others
+bin/
+shared-libs/
+.vscode/
+build/
+*~
+.vs/
+*.json
+outputs/
+*.log
+inputs/cco*
+inputs/co*
+clouds/private
+clouds/generated-clouds
+clouds/obstacles/rabbit*
+pmjs/private
+saved-networks/elizabeth*
+references/

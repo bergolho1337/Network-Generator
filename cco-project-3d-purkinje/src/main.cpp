@@ -125,7 +125,7 @@ int main (int argc, char *argv[])
 
             // Set the 'output_dir' and adjust the radius
             linked_network->output_dir = output_dir;
-            linked_network->adjust_radius();
+            //linked_network->adjust_radius();
             
             printf("%s\n",PRINT_DOTS);
             printf("After linking ...\n");

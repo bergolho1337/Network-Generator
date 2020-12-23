@@ -8,6 +8,7 @@ PMJ::PMJ ()
     this->region_radius = 0.002;
     this->lat_error_tolerance = 2.0;
     this->location_filename = "";
+    this->cost_fn = new ActivationTimeFunction;
 }
 
 PMJ::PMJ (PMJConfig *config)
@@ -18,6 +19,7 @@ PMJ::PMJ (PMJConfig *config)
     this->region_radius = config->region_radius;
     this->lat_error_tolerance = config->lat_error_tolerance;
     this->location_filename = config->location_filename;
+    this->cost_fn = new ActivationTimeFunction;
 
     bool sucess = read_points_from_vtk(this->location_filename.c_str(),this->points);
     if (sucess) 
@@ -35,12 +37,16 @@ PMJ::PMJ (PMJConfig *config)
     this->error.assign(n,__DBL_MAX__);
     this->aprox.assign(n,0);
 
+    //std::sort(this->points.begin(),this->points.end(),comparePoint);
+
     // DEBUG
     //print();
 }
 
 PMJ::~PMJ ()
 {
+    if (this->cost_fn)
+        delete this->cost_fn;
     for (uint32_t i = 0; i < this->points.size(); i++)
         delete this->points[i];
 }
@@ -74,4 +80,9 @@ void PMJ::print ()
     printf("[pmj] PMJ location filename = %s\n",this->location_filename.c_str());
     for (uint32_t i = 0; i < this->points.size(); i++)
         this->points[i]->print();
+}
+
+bool comparePoint (Point *a, Point *b)
+{
+    return a->lat < b->lat;
 }

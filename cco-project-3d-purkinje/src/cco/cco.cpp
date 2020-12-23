@@ -14,7 +14,6 @@ CCO_Network::CCO_Network (User_Options *options)
     set_save_network();
     set_cost_function();
     set_local_optimization_function_name();
-    //set_pmj_data();
     
     //test1(this);
     //print();
@@ -110,6 +109,7 @@ void CCO_Network::set_parameters (User_Options *options)
 
     this->Q_TERM = Q_PERF / this->N_term;
     this->R_PERF = powf(((3.0*V_PERF)/(4.0 * M_PI)), (1.0/3.0));
+    this->CUR_MAX_PMJ_INDEX = 10;
 }
 
 void CCO_Network::set_cost_function ()
@@ -235,6 +235,8 @@ void CCO_Network::read_pmj_locations (PMJConfig *config)
 
 void CCO_Network::grow_tree_using_cloud_points (User_Options *options)
 {
+    bool sucess;
+
     CostFunctionConfig *cost_function_config = options->cost_function_config;
     LocalOptimizationConfig *local_opt_config = options->local_opt_config;
     //struct pruning_config *pruning_config = options->pruning_config;
@@ -246,6 +248,7 @@ void CCO_Network::grow_tree_using_cloud_points (User_Options *options)
     else
         make_root_using_cloud_points();
     
+    // ===============================================================================================================
     // MAIN ITERATION LOOP
     while (this->num_terminals < this->N_term)
     {
@@ -256,72 +259,41 @@ void CCO_Network::grow_tree_using_cloud_points (User_Options *options)
 
         if (!this->using_pmj_location)
         {
-            bool sucess = generate_terminal_using_cloud_points(cost_function_config,local_opt_config);
-            if (sucess)
-            {
-                write_to_vtk_iteration();
-            }
+            sucess = generate_terminal_using_cloud_points(cost_function_config,local_opt_config);
         }
         else
         {
-            bool sucess = generate_terminal_using_cloud_points(cost_function_config,local_opt_config);
-            if (sucess)
-            {
-                write_to_vtk_iteration();
-            }
+            sucess = generate_terminal_using_cloud_points(cost_function_config,local_opt_config);
 
-            // Active PMJ
+            // Attempt to connect the Active PMJ's
             if (this->num_terminals % this->pmj_data->connection_rate == 0)
             {
-                bool sucess = attempt_pmj_connection(cost_function_config,local_opt_config);
-                if (sucess)
-                {
-                    write_to_vtk_iteration();
-                }
+                sucess = attempt_pmj_connection(cost_function_config,local_opt_config);
             }
+        }  
+
+        // Write the current stage of the Purkinje network to a file
+        if (sucess)
+        {
+            write_to_vtk_iteration();
         }
 
         printf("%s\n",PRINT_LINE);
         fprintf(log_file,"%s\n",PRINT_LINE);
     }
+    // ===============================================================================================================
 
+    // Check for the remaining active or inactive PMJ's to connect
     if (this->using_pmj_location)
     {
-        printf("Number of connected PMJ's: %u/%u\n",this->pmj_data->total_num_connected,this->pmj_data->connected.size());
+        printf("Number of connected PMJ's in the main loop: %u/%u\n",this->pmj_data->total_num_connected,this->pmj_data->connected.size());
+        fprintf(log_file,"Number of connected PMJ's in the main loop: %u/%u\n",this->pmj_data->total_num_connected,this->pmj_data->connected.size());
 
-        // Connect the remaining PMJ's
-        for (uint32_t i = 0; i < this->pmj_data->points.size(); i++)
-        {
-            Point *cur_pmj = this->pmj_data->points[i];
-
-            while (!this->pmj_data->connected[i])
-            {
-                bool sucess = force_pmj_connection(cost_function_config,local_opt_config,cur_pmj);
-                if (sucess)
-                {
-                    write_to_vtk_iteration();
-                }   
-            }
-        }
+        // Connect the remaining active PMJ's
+        sucess = connect_remaining_active_pmjs(cost_function_config,local_opt_config);
 
         // Connect the remaining inactives terminals
-        uint32_t num_remanaing_inactives = (this->N_term+this->pmj_data->points.size()) - (this->num_terminals);
-        for (uint32_t i = 0; i < num_remanaing_inactives; i++)
-        {
-            printf("%s\n",PRINT_LINE);
-            printf("[cco] Working on inactive terminal number %d\n",this->num_terminals+1);
-            fprintf(log_file,"%s\n",PRINT_LINE);
-            fprintf(log_file,"[cco] Working on inactive terminal number %d\n",this->num_terminals+1);
-
-            bool sucess = generate_terminal_using_cloud_points(cost_function_config,local_opt_config);
-            if (sucess)
-            {
-                write_to_vtk_iteration();
-            }
-
-            printf("%s\n",PRINT_LINE);
-            fprintf(log_file,"%s\n",PRINT_LINE);
-        }
+        sucess = connect_remaining_inactive_pmjs(cost_function_config,local_opt_config);
     }
 }
 
@@ -632,7 +604,6 @@ bool CCO_Network::generate_terminal_using_pmj_locations (CostFunctionConfig *cos
 
         if (point_is_ok)
         {
-
             // [COST FUNCTION]
             iconn = cost_fn->eval(this,cost_function_config,local_opt_config,\
                                 feasible_segments,\
@@ -677,19 +648,17 @@ bool CCO_Network::generate_terminal_using_pmj_locations (CostFunctionConfig *cos
     {
         // Step 1: Connect using normal CCO
         sucess = evaluate_pmj_local_activation_time(inew,pmj_point,cost_function_config);
-        if (sucess) printf("[+] PMJ point %u was connected in step 1!\n",pmj_point->id);
+        if (sucess) printf("[+] PMJ point %u was connected in step 1!\n",pmj_point->id+1);
 
         // Step 2: Connect using normal CCO and region radius
         if (!sucess)
         {   
             sucess = attempt_connect_using_region_radius(pmj_point,cost_function_config);
-            if (sucess) printf("[+] PMJ point %u was connected in step 2!\n",pmj_point->id);
+            if (sucess) printf("[+] PMJ point %u was connected in step 2!\n",pmj_point->id+1);
         }
 
         // Step 3: Connect trying to maximize the LAT (inverse CCO)
-
-        // Step 4: Connect using inverse CCO and region radius
-
+        
     }
     else
     {
@@ -763,8 +732,8 @@ bool CCO_Network::check_collisions_and_fill_feasible_segments (Point *p, std::ve
             feasible_segments.push_back(s);
         }      
     }
-
-    // Sort teh segments by the distance to the middle point
+//TODO: Try to use the NCONN parameter. I believe there is a bug in the Local Optimization function
+    // Sort the segments by the distance to the middle point
     std::sort(arr.begin(),arr.end());
 
     // Get only the closest NCONN segments
@@ -867,6 +836,7 @@ bool CCO_Network::evaluate_pmj_local_activation_time (Segment *inew, Point *pmj_
         inew->can_touch = false;
         this->pmj_data->error[pmj_point->id] = lat_error;
         this->pmj_data->aprox[pmj_point->id] = lat;
+        printf("[PMJ %u] Ref: %g ms -- Aprox: %g ms -- Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
         return true;
     }
 
@@ -897,8 +867,8 @@ bool CCO_Network::evaluate_pmj_local_activation_time (Segment *inew, Point *pmj_
             
                 lat = calc_terminal_local_activation_time(inew) + this->lat_offset;
                 lat_error = (pmj_point->lat - lat);
-                printf("[PMJ %u] Adjusting diameter from %g um to %g um\n",pmj_point->id,original_radius*2.0*MM_TO_UM,inew->radius*2.0*MM_TO_UM);
-                printf("[PMJ %u] Ref: %g ms -- Aprox: %g ms -- Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
+                printf("[PMJ %u] Adjusting diameter from %g um to %g um\n",pmj_point->id+1,original_radius*2.0*MM_TO_UM,inew->radius*2.0*MM_TO_UM);
+                printf("[PMJ %u] Ref: %g ms -- Aprox: %g ms -- Error: %g ms\n",pmj_point->id+1,pmj_point->lat,lat,lat_error);
 
                 if (fabs(lat_error) < this->pmj_data->lat_error_tolerance)
                 {
@@ -925,7 +895,6 @@ bool CCO_Network::evaluate_pmj_local_activation_time (Segment *inew, Point *pmj_
     {
         prune_segment(inew);
     }
-    
     return false;
 }
 
@@ -1312,6 +1281,7 @@ bool CCO_Network::attempt_pmj_connection (CostFunctionConfig *cost_function_conf
     {
         prev_num_connected_pmjs = cur_num_connected_pmjs;
         for (uint32_t i = 0; i < this->pmj_data->points.size(); i++)
+        //for (uint32_t i = 0; i < CUR_MAX_PMJ_INDEX; i++)
         {
             printf("[cco] Trying to insert PMJ point %u ...\n",i+1);
             fprintf(log_file,"[cco] Trying to insert PMJ point %u ...\n",i+1);
@@ -1657,7 +1627,6 @@ CCO_Network* CCO_Network::copy ()
         result->pmj_data = this->pmj_data->copy();
     }
         
-
     memcpy(result->min_max_aprox_lat,this->min_max_aprox_lat,sizeof(double)*2);
     memcpy(result->min_max_ref_lat,this->min_max_ref_lat,sizeof(double)*2);
     
@@ -1859,9 +1828,23 @@ void CCO_Network::adjust_radius ()
     // TODO: Think about we are going adjust the 'ndist' and 'beta' variables
 }
 
+void CCO_Network::adjust_radius_2 ()
+{
+    // Set the output directory first
+    set_save_network();
+
+    for (uint32_t i = 0; i < this->segment_list.size(); i++)
+    {
+        Segment *cur_segment = this->segment_list[i];
+
+        cur_segment->radius = this->start_radius;
+    }    
+}
+
 void CCO_Network::get_electric_error ()
 {
     for (uint32_t i = 0; i < this->pmj_data->aprox.size(); i++)
+    //for (uint32_t i = 0; i < CUR_MAX_PMJ_INDEX; i++)
     {
         double lat = this->pmj_data->aprox[i];
         if (lat < this->min_max_aprox_lat[0]) this->min_max_aprox_lat[0] = lat;
@@ -1869,6 +1852,7 @@ void CCO_Network::get_electric_error ()
     }
 
     for (uint32_t i = 0; i < this->pmj_data->points.size(); i++)
+    //for (uint32_t i = 0; i < CUR_MAX_PMJ_INDEX; i++)
     {
         double lat = this->pmj_data->points[i]->lat;
         if (lat < this->min_max_ref_lat[0]) this->min_max_ref_lat[0] = lat;
@@ -1876,9 +1860,137 @@ void CCO_Network::get_electric_error ()
     }
 
     for (uint32_t i = 0; i < this->pmj_data->error.size(); i++)
+    //for (uint32_t i = 0; i < CUR_MAX_PMJ_INDEX; i++)
     {
         double error = fabs(this->pmj_data->error[i]);
 
         if (error > this->max_lat_error) this->max_lat_error = error;
     }
+}
+
+bool CCO_Network::connect_remaining_active_pmjs (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config)
+{
+    bool sucess;
+    for (uint32_t i = 0; i < this->pmj_data->points.size(); i++)
+    //for (uint32_t i = 0; i < CUR_MAX_PMJ_INDEX; i++)
+    {
+        Point *cur_pmj = this->pmj_data->points[i];
+        
+        while (!this->pmj_data->connected[i])
+        {
+            sucess = force_pmj_connection(cost_function_config,local_opt_config,cur_pmj);
+            if (sucess)
+            {
+                write_to_vtk_iteration();
+            }   
+        }
+    }
+    return sucess;
+}
+
+bool CCO_Network::connect_remaining_inactive_pmjs (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config)
+{
+    bool sucess;
+    uint32_t num_remanaing_inactives = (this->N_term+this->pmj_data->points.size()) - (this->num_terminals);
+    //uint32_t num_remanaing_inactives = (this->N_term+CUR_MAX_PMJ_INDEX) - (this->num_terminals);
+    for (uint32_t i = 0; i < num_remanaing_inactives; i++)
+    {
+        printf("%s\n",PRINT_LINE);
+        printf("[cco] Working on inactive terminal number %d\n",this->num_terminals+1);
+        fprintf(log_file,"%s\n",PRINT_LINE);
+        fprintf(log_file,"[cco] Working on inactive terminal number %d\n",this->num_terminals+1);
+
+        bool sucess = generate_terminal_using_cloud_points(cost_function_config,local_opt_config);
+        if (sucess)
+        {
+            write_to_vtk_iteration();
+        }
+
+        printf("%s\n",PRINT_LINE);
+        fprintf(log_file,"%s\n",PRINT_LINE);
+    }
+    return sucess;
+}
+
+bool CCO_Network::attempt_connect_using_max_lat (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point)
+{
+    bool sucess = false;
+    bool point_is_ok = false;
+    uint32_t counter_tries = 0;
+    uint32_t tosses = 0;
+    uint32_t K_term = this->num_terminals;
+    double d_threash = calc_dthreashold(R_PERF,K_term);     // (r_supp = R_PERF) in this case
+    
+    // Array of feasible segments to connect the new terminal
+    std::vector<Segment*> feasible_segments;
+
+    // Reference to the segment we are going to make the connection
+    Segment *iconn = NULL;
+
+    while (!point_is_ok)
+    {
+        // Reset the feasible segments list
+        feasible_segments.clear();
+
+        // Check the distance criterion for this point
+        point_is_ok = connection_search(pmj_point,d_threash);
+
+        if (point_is_ok) point_is_ok = check_collisions_and_fill_feasible_segments(pmj_point,feasible_segments);
+
+        if (point_is_ok)
+        {
+            // [COST FUNCTION] = Maximize the LAT activation time
+            iconn = this->pmj_data->cost_fn->eval(this,cost_function_config,local_opt_config,\
+                                feasible_segments,\
+                                pmj_point);
+            
+            // No feasible point was found 
+            if (iconn == NULL) point_is_ok = false;
+        }
+
+        // If the point does not attend the distance criterion or if there is a collision
+        // we need to choose another point
+        if (!point_is_ok)
+        {
+            tosses++;
+            if (tosses > NTOSS)
+            {
+                fprintf(log_file,"[!] Reducing dthreash! Before = %g || Now = %g \n",\
+                        d_threash,d_threash*FACTOR);
+                d_threash *= FACTOR;
+                tosses = 0;
+
+                counter_tries++;
+            }
+
+            // GIVE UP
+            if (counter_tries > this->pmj_data->max_connection_tries)
+                return sucess;
+                
+        }
+        // The point is a valid one and we can eliminate it from the cloud
+        else
+        {
+
+        }
+    }
+
+    // Build the new segment of the tree
+    Segment *inew = this->build_segment(local_opt_config,iconn->id,pmj_point);
+
+    // [EVALUATE PMJ ACTIVATION]
+    // Step 1: Connect using normal CCO
+    sucess = evaluate_pmj_local_activation_time(inew,pmj_point,cost_function_config);
+
+    // Step 2: Connect using normal CCO and region radius
+    if (!sucess)
+    {   
+        sucess = attempt_connect_using_region_radius(pmj_point,cost_function_config);
+    }
+
+    if (!sucess)
+    {
+        prune_segment(inew);
+    }    
+    return sucess;    
 }

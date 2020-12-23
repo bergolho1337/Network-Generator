@@ -49,6 +49,7 @@ public:
     static const double V_PERF;
     double R_PERF;                    
     double Q_TERM;
+    uint32_t CUR_MAX_PMJ_INDEX;
 
     // Variable declarations
     uint32_t num_terminals;
@@ -112,6 +113,7 @@ public:
     void restore_state_tree (Segment *iconn);
     void link_segments (Segment *term_1, Segment *term_2);
     void adjust_radius ();
+    void adjust_radius_2 ();
     void print ();
     void print_point_list ();
     void print_segment_list ();
@@ -146,8 +148,11 @@ private:
     bool evaluate_pmj_local_activation_time (Segment *inew, Point *pmj_point, CostFunctionConfig *cost_function_config);
     bool attempt_pmj_connection (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
     bool attempt_connect_using_region_radius (Point *pmj_point, CostFunctionConfig *cost_function_config);
+    bool attempt_connect_using_max_lat (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point);
     bool force_pmj_connection (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point);
     bool force_connection_to_closest_segment (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point);
+    bool connect_remaining_active_pmjs (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
+    bool connect_remaining_inactive_pmjs (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
     Point* generate_bifurcation_node (Segment *iconn, LocalOptimizationConfig *local_opt_config);
     Point* generate_terminal_node (Point *p);
     Point* search_point (const uint32_t index);

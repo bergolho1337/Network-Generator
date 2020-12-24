@@ -648,13 +648,13 @@ bool CCO_Network::generate_terminal_using_pmj_locations (CostFunctionConfig *cos
     {
         // Step 1: Connect using normal CCO
         sucess = evaluate_pmj_local_activation_time(inew,pmj_point,cost_function_config);
-        if (sucess) printf("[+] PMJ point %u was connected in step 1!\n",pmj_point->id+1);
+        if (sucess) printf("\t[+] PMJ point %u was connected in step 1!\n",pmj_point->id);
 
         // Step 2: Connect using normal CCO and region radius
         if (!sucess)
         {   
             sucess = attempt_connect_using_region_radius(pmj_point,cost_function_config);
-            if (sucess) printf("[+] PMJ point %u was connected in step 2!\n",pmj_point->id+1);
+            if (sucess) printf("\t[+] PMJ point %u was connected in step 2!\n",pmj_point->id);
         }
 
         // Step 3: Connect trying to maximize the LAT (inverse CCO)
@@ -861,7 +861,7 @@ bool CCO_Network::evaluate_pmj_local_activation_time (Segment *inew, Point *pmj_
             double new_cv = (delta_s_term - delta_s_parent) / delta_t_target;
             
             // We only update the segment diameter when the new CV is greater than 1000um/ms --> {1m/s}
-            if (new_cv > 1000.0)
+            if (new_cv > CV_THREASHOLD)
             {
                 inew->update_radius(new_cv);
             
@@ -1266,9 +1266,11 @@ void CCO_Network::print_network_info ()
         printf("[INFO] Number of PMJ's connected = %u/%u\n",this->pmj_data->total_num_connected,this->pmj_data->points.size());
         write_vector_to_file(this->pmj_data->error,this->output_dir + "/pmj_error.dat");
 
-        get_electric_error();
-        printf("[INFO] Max Error = %g || Ref Min LAT = %g || Ref Max LAT = %g || Aprox Min LAT = %g || Aprox Max LAT = %g\n",this->max_lat_error,this->min_max_ref_lat[0],this->min_max_ref_lat[1],\
-                                                                                                                    this->min_max_aprox_lat[0],this->min_max_aprox_lat[1]);
+        calc_electric_error();
+        printf("[INFO] Max Error = %.2lf ms || Ref Min LAT = %.2lf ms || Ref Max LAT = %.2lf ms ||\n",this->max_lat_error,this->min_max_ref_lat[0],this->min_max_ref_lat[1]);                                                                                                           
+        printf("                         || Aprox Min LAT = %.2lf ms || Aprox Max LAT = %.2lf ms ||\n",this->min_max_aprox_lat[0],this->min_max_aprox_lat[1]);
+        printf("       RMSE = %.2lf ms || RRMSE = %.2lf %%\n",this->rmse,this->rrmse*100.0);    
+        printf("       Epsilon 2ms = %.2lf %% || Epsilon = 5ms = %.2lf %%\n",this->epsilon_2ms*100.0,this->epsilon_5ms*100.0);                                                                                                        
     }
 }
 
@@ -1283,15 +1285,15 @@ bool CCO_Network::attempt_pmj_connection (CostFunctionConfig *cost_function_conf
         for (uint32_t i = 0; i < this->pmj_data->points.size(); i++)
         //for (uint32_t i = 0; i < CUR_MAX_PMJ_INDEX; i++)
         {
-            printf("[cco] Trying to insert PMJ point %u ...\n",i+1);
-            fprintf(log_file,"[cco] Trying to insert PMJ point %u ...\n",i+1);
-
             Point *cur_pmj_point = this->pmj_data->points[i];
+            
+            printf("[cco] Trying to insert PMJ point %u ...\n",cur_pmj_point->id);
+            fprintf(log_file,"[cco] Trying to insert PMJ point %u ...\n",cur_pmj_point->id);
 
-            if (!this->pmj_data->connected[i])
+            if (!this->pmj_data->connected[cur_pmj_point->id])
             {
                 bool sucess = generate_terminal_using_pmj_locations(cost_function_config,local_opt_config,cur_pmj_point,true);
-                this->pmj_data->connected[i] = sucess;
+                this->pmj_data->connected[cur_pmj_point->id] = sucess;
                 
                 if (sucess)
                 {
@@ -1325,7 +1327,7 @@ bool CCO_Network::attempt_connect_using_region_radius (Point *pmj_point, CostFun
     for (uint32_t i = 0; i < this->segment_list.size(); i++)
     {
         Segment *cur_segment = this->segment_list[i];
-        if (cur_segment->is_terminal() && cur_segment->is_inside_region(center,radius) && cur_segment->is_touchable() )
+        if (cur_segment->is_terminal() && cur_segment->is_inside_region(center,radius) && cur_segment->is_touchable())
         {
             // Try to connect the PMJ location directly to a segment by changing the destination node coordinates
             //printf("Segment %u is inside region for PMJ %u\n",cur_segment->id,pmj_point->id);
@@ -1372,8 +1374,8 @@ bool CCO_Network::attempt_connect_using_region_radius (Point *pmj_point, CostFun
                     double delta_s_parent = cur_segment->parent->calc_pathway_length()*M_TO_UM;
                     double new_cv = (delta_s_term - delta_s_parent) / delta_t_target;
                     
-                    // We only update the segment diameter when the new CV is greater than 500um/ms --> {0.5m/s}
-                    if (new_cv > 500.0)
+                    // We only update the segment diameter when the new CV is greater than CV_THREASHOLD
+                    if (new_cv > CV_THREASHOLD)
                     {
                         cur_segment->update_radius(new_cv);
                     
@@ -1448,8 +1450,8 @@ bool CCO_Network::force_pmj_connection (CostFunctionConfig *cost_function_config
         }
         else
         {
-            printf("\t[cco] Looseing LAT tolerance error from %g to %g\n",this->pmj_data->lat_error_tolerance,this->pmj_data->lat_error_tolerance*1.2);
-            this->pmj_data->lat_error_tolerance *= 1.2;
+            printf("\t[cco] Looseing LAT tolerance error from %g to %g\n",this->pmj_data->lat_error_tolerance,this->pmj_data->lat_error_tolerance*PMJ_LOOSE_RATE);
+            this->pmj_data->lat_error_tolerance *= PMJ_LOOSE_RATE;
         }
 
         // Brute force connection
@@ -1462,10 +1464,7 @@ bool CCO_Network::force_pmj_connection (CostFunctionConfig *cost_function_config
                 sucess = force_connection_to_closest_segment(cost_function_config,local_opt_config,pmj_point);
             }
             this->pmj_data->connected[pmj_point->id] = sucess;
-            if (sucess)
-            {
-                this->pmj_data->total_num_connected++;
-            }
+            this->pmj_data->total_num_connected++;
         }
     }
 
@@ -1841,31 +1840,64 @@ void CCO_Network::adjust_radius_2 ()
     }    
 }
 
-void CCO_Network::get_electric_error ()
+void CCO_Network::calc_electric_error ()
 {
+    // Compute min/max LAT values from the active PMJ's (aproximation)
     for (uint32_t i = 0; i < this->pmj_data->aprox.size(); i++)
-    //for (uint32_t i = 0; i < CUR_MAX_PMJ_INDEX; i++)
     {
         double lat = this->pmj_data->aprox[i];
         if (lat < this->min_max_aprox_lat[0]) this->min_max_aprox_lat[0] = lat;
         if (lat > this->min_max_aprox_lat[1]) this->min_max_aprox_lat[1] = lat;
     }
 
+    // Compute min/max LAT values from the active PMJ's (reference)
     for (uint32_t i = 0; i < this->pmj_data->points.size(); i++)
-    //for (uint32_t i = 0; i < CUR_MAX_PMJ_INDEX; i++)
     {
         double lat = this->pmj_data->points[i]->lat;
         if (lat < this->min_max_ref_lat[0]) this->min_max_ref_lat[0] = lat;
         if (lat > this->min_max_ref_lat[1]) this->min_max_ref_lat[1] = lat;
     }
 
+    // Compute max LAT error from the active PMJ's
     for (uint32_t i = 0; i < this->pmj_data->error.size(); i++)
-    //for (uint32_t i = 0; i < CUR_MAX_PMJ_INDEX; i++)
     {
         double error = fabs(this->pmj_data->error[i]);
 
         if (error > this->max_lat_error) this->max_lat_error = error;
     }
+
+    // Compute the RMSE and RRMSE from the active PMJ's
+    uint32_t n = this->pmj_data->points.size();
+    double sum_num = 0.0;
+    double sum_den = 0.0;
+    for (uint32_t i = 0; i < n; i++)
+    {
+        Point *cur_pmj = this->pmj_data->points[i];
+        uint32_t id = cur_pmj->id;
+
+        double ref_value = cur_pmj->lat;
+        double aprox_value = this->pmj_data->aprox[id];
+        double error = fabs(ref_value-aprox_value);
+
+        sum_num += powf(error,2);
+        sum_den += powf(ref_value,2);
+    }    
+    double l2_norm = sqrt(sum_den);
+    this->rmse = sqrt(sum_num/(double)n);
+    this->rrmse = sqrt(sum_num/sum_den);
+
+    // Compute the number of active PMJ's that have an error less than a certain threashold
+    uint32_t counter_less_2ms = 0;
+    uint32_t counter_less_5ms = 0;
+    for (uint32_t i = 0; i < this->pmj_data->error.size(); i++)
+    {
+        double error = fabs(this->pmj_data->error[i]);
+
+        if (error < 2.0)    counter_less_2ms++;
+        if (error < 5.0)    counter_less_5ms++;
+    }
+    this->epsilon_2ms = (double)counter_less_2ms / (double)this->pmj_data->error.size();
+    this->epsilon_5ms = (double)counter_less_5ms / (double)this->pmj_data->error.size();
 }
 
 bool CCO_Network::connect_remaining_active_pmjs (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config)

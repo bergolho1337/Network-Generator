@@ -29,15 +29,17 @@
 #include "pmj.h"
 
 // CONSTANTS AND MACROS 
-// =================================================================
+// ============================================================================================================================================
 static const double ETA = 3.6e-03;                  // Blood viscosity 
 static const uint32_t NTOSS = 10;                   // Number of tosses for a new terminal
-static const uint32_t NCONN = 20;
+static const uint32_t NCONN = 20;                   // Number of segments to test for connection
 static const double FACTOR = 0.95;                  // Reduction factor for the distance criterion
 static const double D_THREASH_LIMIT = 1.0e-05;      // Limit for the d_threash
 static const uint32_t PRUNING_PASSES = 1;           // Number of times the pruning procedure will be called
-static const uint32_t PMJ_LOOSE_THREASHOLD = 5.0;  // Threashold for loosening the LAT error tolerance and forcing the PMJ connection
-// =================================================================
+static const uint32_t PMJ_LOOSE_THREASHOLD = 5.0;   // Threashold for loosening the LAT error tolerance and forcing the PMJ connection {ms}
+static const double PMJ_LOOSE_RATE = 1.2;           // Loose rate for the PMJ {increase by 20%} (forcing connection)
+static const double CV_THREASHOLD = 1000.0;         // Threashold for the conduction velocity {um/ms} (diameter calibration)
+// ============================================================================================================================================
 
 class CCO_Network
 {
@@ -92,6 +94,10 @@ public:
     FILE *log_file;
 private:
     uint32_t cur_rand_index;
+    double epsilon_2ms;
+    double epsilon_5ms;
+    double rmse;
+    double rrmse;
     double max_lat_error;
     double min_max_aprox_lat[2];
     double min_max_ref_lat[2];
@@ -126,7 +132,7 @@ private:
     void set_local_optimization_function_name ();
     void get_segment_length (std::vector<double> &segments);
     void get_bifurcation_angles(std::vector<double> &angles);
-    void get_electric_error ();
+    void calc_electric_error ();
     void read_cloud_points ();
     void read_pmj_locations (PMJConfig *config);
     void grow_tree_using_cloud_points (User_Options *options);

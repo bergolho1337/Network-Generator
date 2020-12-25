@@ -64,9 +64,14 @@ class Point;
 void create_directory (const char *path);
 void calc_mean_std (std::vector<double> arr, double &mean, double &std);
 void write_vector_to_file (std::vector<double> arr, std::string filename);
-void write_info_to_file (std::string filename,\
+void write_geometric_info_to_file (std::string filename,\
                     std::vector<double> segments,const double mean_segment_length, const double std_segment_length,\
                     std::vector<double> angles,const double mean_biff_angle, const double std_biff_angle);
+void write_electric_info_to_file (std::string filename,\
+                    const double max_lat_error, const double min_ref_lat, const double max_ref_lat,\
+                    const double min_aprox_lat, const double max_aprox_lat,\
+                    const double rmse, const double rrmse,\
+                    const double epsilon_2ms, const double epsilon_5ms);
 
 double euclidean_norm (const double x1, const double y1, const double z1,\
                     const double x2, const double y2, const double z2);

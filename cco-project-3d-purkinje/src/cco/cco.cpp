@@ -1253,7 +1253,7 @@ void CCO_Network::print_network_info ()
     calc_mean_std(angles,mean_biff_angle,std_biff_angle);
     write_vector_to_file(angles,this->output_dir + "/bifurcation_angle.dat");
 
-    write_info_to_file(this->output_dir + "/network_info.txt",\
+    write_geometric_info_to_file(this->output_dir + "/network_info.txt",\
                     segments,mean_segment_length,std_segment_length,\
                     angles,mean_biff_angle,std_biff_angle);
     
@@ -1270,7 +1270,13 @@ void CCO_Network::print_network_info ()
         printf("[INFO] Max Error = %.2lf ms || Ref Min LAT = %.2lf ms || Ref Max LAT = %.2lf ms ||\n",this->max_lat_error,this->min_max_ref_lat[0],this->min_max_ref_lat[1]);                                                                                                           
         printf("                         || Aprox Min LAT = %.2lf ms || Aprox Max LAT = %.2lf ms ||\n",this->min_max_aprox_lat[0],this->min_max_aprox_lat[1]);
         printf("       RMSE = %.2lf ms || RRMSE = %.2lf %%\n",this->rmse,this->rrmse*100.0);    
-        printf("       Epsilon 2ms = %.2lf %% || Epsilon = 5ms = %.2lf %%\n",this->epsilon_2ms*100.0,this->epsilon_5ms*100.0);                                                                                                        
+        printf("       Epsilon 2ms = %.2lf %% || Epsilon = 5ms = %.2lf %%\n",this->epsilon_2ms*100.0,this->epsilon_5ms*100.0);       
+
+        write_electric_info_to_file(this->output_dir + "/network_info.txt",\
+                    this->max_lat_error,this->min_max_ref_lat[0],this->min_max_ref_lat[1],\
+                    this->min_max_aprox_lat[0],this->min_max_aprox_lat[1],\
+                    this->rmse,this->rrmse*100.0,\
+                    this->epsilon_2ms*100.0,this->epsilon_5ms*100.0);                                                                                                 
     }
 }
 

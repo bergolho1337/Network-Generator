@@ -24,7 +24,7 @@ void write_vector_to_file (std::vector<double> arr, std::string filename)
     fclose(file);
 }
 
-void write_info_to_file (std::string filename,\
+void write_geometric_info_to_file (std::string filename,\
                     std::vector<double> segments,const double mean_segment_length, const double std_segment_length,\
                     std::vector<double> angles,const double mean_biff_angle, const double std_biff_angle)
 {
@@ -33,6 +33,20 @@ void write_info_to_file (std::string filename,\
     fprintf(file,"[INFO] Segment length = %g +/- %g mm\n",mean_segment_length,std_segment_length);
     fprintf(file,"[INFO] Total number of bifurcations = %u\n",angles.size());
     fprintf(file,"[INFO] Bifurcation angle = %g +/- %g degrees\n",mean_biff_angle,std_biff_angle);
+    fclose(file);
+}
+
+void write_electric_info_to_file (std::string filename,\
+                    const double max_lat_error, const double min_ref_lat, const double max_ref_lat,\
+                    const double min_aprox_lat, const double max_aprox_lat,\
+                    const double rmse, const double rrmse,\
+                    const double epsilon_2ms, const double epsilon_5ms)
+{
+    FILE *file = fopen(filename.c_str(),"a");
+    fprintf(file,"[INFO] Reference --> || min.LAT = %.2lf ms || max.LAT = %.2lf ms ||\n",min_ref_lat,max_ref_lat);
+    fprintf(file,"[INFO] Aproximation --> || min.LAT = %.2lf ms || max.LAT = %.2lf ms || max.ERROR = %.2lf ms\n",min_aprox_lat,max_aprox_lat,max_lat_error);
+    fprintf(file,"[INFO] || RMSE = %.2lf ms || RRMSE = %.2lf %% ||\n",rmse,rrmse);
+    fprintf(file,"[INFO] || Epsilon 2ms = %.2lf %% || Epsilon 5ms = %.2lf ||\n",epsilon_2ms,epsilon_5ms);
     fclose(file);
 }
 

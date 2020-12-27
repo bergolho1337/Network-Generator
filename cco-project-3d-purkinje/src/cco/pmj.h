@@ -21,6 +21,7 @@
 class PMJ
 {
 public:
+    uint32_t total_num_packages;
     uint32_t total_num_connected;
     uint32_t max_connection_tries;
     uint32_t connection_rate;
@@ -31,6 +32,7 @@ public:
     std::vector<double> error;
     std::vector<double> aprox;
     std::vector<Point*> points;
+    std::vector< std::pair<double,double> > intervals;
     CostFunction *cost_fn;
 public:
     PMJ ();

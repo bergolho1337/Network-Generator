@@ -116,11 +116,11 @@ void CCO_Network::set_cost_function ()
 {
     if (this->cost_function_name == "minimize_custom_function")
     {
-        this->cost_fn = new CustomFunction;
+        this->cost_fn = new MinimizeCustomFunction;
     }
-    else if (this->cost_function_name == "minimize_activation_time_function")
+    else if (this->cost_function_name == "maximize_custom_function")
     {
-        this->cost_fn = new ActivationTimeFunction;
+        this->cost_fn = new MaximizeCustomFunction;
     }
     else
     {
@@ -269,6 +269,7 @@ void CCO_Network::grow_tree_using_cloud_points (User_Options *options)
             if (this->num_terminals % this->pmj_data->connection_rate == 0)
             {
                 sucess = attempt_pmj_connection(cost_function_config,local_opt_config);
+                //sucess = attempt_pmj_package_connection(cost_function_config,local_opt_config);
             }
         }  
 
@@ -284,6 +285,7 @@ void CCO_Network::grow_tree_using_cloud_points (User_Options *options)
     // ===============================================================================================================
 
     // Check for the remaining active or inactive PMJ's to connect
+    /*
     if (this->using_pmj_location)
     {
         printf("Number of connected PMJ's in the main loop: %u/%u\n",this->pmj_data->total_num_connected,this->pmj_data->connected.size());
@@ -295,6 +297,7 @@ void CCO_Network::grow_tree_using_cloud_points (User_Options *options)
         // Connect the remaining inactives terminals
         sucess = connect_remaining_inactive_pmjs(cost_function_config,local_opt_config);
     }
+    */
 }
 
 void CCO_Network::make_root_using_cloud_points ()
@@ -648,17 +651,21 @@ bool CCO_Network::generate_terminal_using_pmj_locations (CostFunctionConfig *cos
     {
         // Step 1: Connect using normal CCO
         sucess = evaluate_pmj_local_activation_time(inew,pmj_point,cost_function_config);
-        if (sucess) printf("\t[+] PMJ point %u was connected in step 1!\n",pmj_point->id);
+        if (sucess) printf("\t\t[+] PMJ point %u was connected in step 1!\n",pmj_point->id);
 
-        // Step 2: Connect using normal CCO and region radius
+        // Step 2: Connect trying to connect using inverse CCO
+        if (!sucess)
+        {
+            sucess = attempt_connect_using_inverse(cost_function_config,local_opt_config,feasible_segments,pmj_point);
+            if (sucess) printf("\t\t[+] PMJ point %u was connected in step 2!\n",pmj_point->id);
+        }
+
+        // Step 3: Connect using normal CCO and region radius
         if (!sucess)
         {   
             sucess = attempt_connect_using_region_radius(pmj_point,cost_function_config);
-            if (sucess) printf("\t[+] PMJ point %u was connected in step 2!\n",pmj_point->id);
+            if (sucess) printf("\t\t[+] PMJ point %u was connected in step 3!\n",pmj_point->id);
         }
-
-        // Step 3: Connect trying to maximize the LAT (inverse CCO)
-        
     }
     else
     {
@@ -836,12 +843,13 @@ bool CCO_Network::evaluate_pmj_local_activation_time (Segment *inew, Point *pmj_
         inew->can_touch = false;
         this->pmj_data->error[pmj_point->id] = lat_error;
         this->pmj_data->aprox[pmj_point->id] = lat;
-        printf("[PMJ %u] Ref: %g ms -- Aprox: %g ms -- Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
+        printf("\t[PMJ %u] Ref: %g ms || Aprox: %g ms || Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
         return true;
     }
 
     // 2) Check if we can adjust the radius of the last segment
     double original_radius = inew->radius;
+    double original_velocity = inew->calc_propagation_velocity();
 
     // DEBUG
     //printf("[PMJ %u] Ref: %g ms -- Aprox: %g ms -- Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
@@ -863,12 +871,13 @@ bool CCO_Network::evaluate_pmj_local_activation_time (Segment *inew, Point *pmj_
             // We only update the segment diameter when the new CV is greater than 1000um/ms --> {1m/s}
             if (new_cv > CV_THREASHOLD)
             {
+                double prev_error = lat_error;
                 inew->update_radius(new_cv);
             
                 lat = calc_terminal_local_activation_time(inew) + this->lat_offset;
                 lat_error = (pmj_point->lat - lat);
-                printf("[PMJ %u] Adjusting diameter from %g um to %g um\n",pmj_point->id+1,original_radius*2.0*MM_TO_UM,inew->radius*2.0*MM_TO_UM);
-                printf("[PMJ %u] Ref: %g ms -- Aprox: %g ms -- Error: %g ms\n",pmj_point->id+1,pmj_point->lat,lat,lat_error);
+                printf("\t[PMJ %u] Adjusting diameter from %g um to %g um || Propagation velocity decreased from %g to %g m/s || Error decreased from %g to %g ms\n",pmj_point->id,original_radius*2.0*MM_TO_UM,inew->radius*2.0*MM_TO_UM,original_velocity,new_cv/1000,prev_error,lat_error);
+                printf("\t[PMJ %u] Ref: %g ms || Aprox: %g ms || Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
 
                 if (fabs(lat_error) < this->pmj_data->lat_error_tolerance)
                 {
@@ -1285,28 +1294,33 @@ bool CCO_Network::attempt_pmj_connection (CostFunctionConfig *cost_function_conf
     uint32_t cur_num_connected_pmjs = 0;
     uint32_t prev_num_connected_pmjs = 0;
     uint32_t total_num_pmjs_connected_before = this->pmj_data->total_num_connected;
+    double min_lat = this->pmj_data->intervals[cur_pmj_package].first;
+    double max_lat = this->pmj_data->intervals[cur_pmj_package].second;
     do
     {
         prev_num_connected_pmjs = cur_num_connected_pmjs;
         for (uint32_t i = 0; i < this->pmj_data->points.size(); i++)
-        //for (uint32_t i = 0; i < CUR_MAX_PMJ_INDEX; i++)
         {
             Point *cur_pmj_point = this->pmj_data->points[i];
-            
-            printf("[cco] Trying to insert PMJ point %u ...\n",cur_pmj_point->id);
-            fprintf(log_file,"[cco] Trying to insert PMJ point %u ...\n",cur_pmj_point->id);
 
-            if (!this->pmj_data->connected[cur_pmj_point->id])
+            // Check if the PMJ LAT is inside the current package LAT limit
+            if (cur_pmj_point->lat > min_lat && cur_pmj_point->lat < max_lat)
             {
-                bool sucess = generate_terminal_using_pmj_locations(cost_function_config,local_opt_config,cur_pmj_point,true);
-                this->pmj_data->connected[cur_pmj_point->id] = sucess;
-                
-                if (sucess)
+                if (!this->pmj_data->connected[cur_pmj_point->id])
                 {
-                    printf("\t[!] SUCESS!\n");
-                    cur_num_connected_pmjs++;
-                    this->pmj_data->total_num_connected++;
-                    write_to_vtk_iteration();
+                    printf("[cco] (Package %u) Trying to insert PMJ point %u ...\n",cur_pmj_package,cur_pmj_point->id);
+                    fprintf(log_file,"[cco] (Package %u) Trying to insert PMJ point %u ...\n",cur_pmj_package,cur_pmj_point->id);
+
+                    bool sucess = generate_terminal_using_pmj_locations(cost_function_config,local_opt_config,cur_pmj_point,true);
+                    this->pmj_data->connected[cur_pmj_point->id] = sucess;
+                    
+                    if (sucess)
+                    {
+                        printf("\t\t\t[!] SUCESS!\n");
+                        cur_num_connected_pmjs++;
+                        this->pmj_data->total_num_connected++;
+                        write_to_vtk_iteration();
+                    }
                 }
             }
             //printf("\t[cco] Previous connected PMJ = %u || Current connected PMJ = %u\n",prev_num_connected_pmjs,cur_num_connected_pmjs);
@@ -1316,6 +1330,8 @@ bool CCO_Network::attempt_pmj_connection (CostFunctionConfig *cost_function_conf
 
     //printf("[cco] Number of connected PMJ in this pass: %u\n",this->total_num_pmjs_connected-total_num_pmjs_connected_before);
     //fprintf(log_file,"[cco] Number of connected PMJ in this pass: %u\n",this->total_num_pmjs_connected-total_num_pmjs_connected_before);
+
+    // Check if we can move to the next PMJ package
     
     return (this->pmj_data->total_num_connected > total_num_pmjs_connected_before) ? true : false;
 }
@@ -1323,7 +1339,7 @@ bool CCO_Network::attempt_pmj_connection (CostFunctionConfig *cost_function_conf
 bool CCO_Network::attempt_connect_using_region_radius (Point *pmj_point, CostFunctionConfig *cost_function_config)
 {
     bool sucess = false;
-    double center[3], ori_pos[3], original_radius;
+    double center[3], ori_pos[3], original_radius, original_velocity;
     double radius = this->pmj_data->region_radius;
 
     center[0] = pmj_point->x;
@@ -1343,6 +1359,7 @@ bool CCO_Network::attempt_connect_using_region_radius (Point *pmj_point, CostFun
             ori_pos[1] = cur_segment->dest->y;
             ori_pos[2] = cur_segment->dest->z;
             original_radius = cur_segment->radius;
+            original_velocity = cur_segment->calc_propagation_velocity();
 
             // Change coordinate position
             cur_segment->dest->x = pmj_point->x;
@@ -1383,12 +1400,13 @@ bool CCO_Network::attempt_connect_using_region_radius (Point *pmj_point, CostFun
                     // We only update the segment diameter when the new CV is greater than CV_THREASHOLD
                     if (new_cv > CV_THREASHOLD)
                     {
+                        double prev_error = lat_error;
                         cur_segment->update_radius(new_cv);
                     
                         lat = calc_terminal_local_activation_time(cur_segment) + this->lat_offset;
                         lat_error = (pmj_point->lat - lat);
-                        printf("[PMJ %u] Adjusting radius from %g um to %g um\n",pmj_point->id,original_radius*MM_TO_UM,cur_segment->radius*MM_TO_UM);
-                        printf("[PMJ %u] Ref: %g ms -- Aprox: %g ms -- Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
+                        printf("\t[PMJ %u] Adjusting diameter from %g um to %g um || Propagation velocity decreased from %g to %g m/s || Error decreased from %g to %g ms\n",pmj_point->id,original_radius*2.0*MM_TO_UM,cur_segment->radius*2.0*MM_TO_UM,original_velocity,new_cv/1000,prev_error,lat_error);
+                        printf("[PMJ %u] Ref: %g ms || Aprox: %g ms || Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
 
                         if (fabs(lat_error) < this->pmj_data->lat_error_tolerance)
                         {
@@ -1613,6 +1631,7 @@ CCO_Network* CCO_Network::copy ()
     result->gamma = this->gamma;
     result->lat_offset = this->lat_offset;
     result->cur_rand_index = 0;
+    result->cur_pmj_package = 0;
     result->max_lat_error = __DBL_MIN__;
     result->min_max_aprox_lat[0] = __DBL_MAX__; result->min_max_aprox_lat[1] = __DBL_MIN__;
     result->min_max_ref_lat[0] = __DBL_MAX__; result->min_max_ref_lat[1] = __DBL_MIN__;
@@ -1851,45 +1870,60 @@ void CCO_Network::calc_electric_error ()
     // Compute min/max LAT values from the active PMJ's (aproximation)
     for (uint32_t i = 0; i < this->pmj_data->aprox.size(); i++)
     {
-        double lat = this->pmj_data->aprox[i];
-        if (lat < this->min_max_aprox_lat[0]) this->min_max_aprox_lat[0] = lat;
-        if (lat > this->min_max_aprox_lat[1]) this->min_max_aprox_lat[1] = lat;
+        bool connected = this->pmj_data->connected[i];
+        if (connected)
+        {
+            double lat = this->pmj_data->aprox[i];
+            if (lat < this->min_max_aprox_lat[0]) this->min_max_aprox_lat[0] = lat;
+            if (lat > this->min_max_aprox_lat[1]) this->min_max_aprox_lat[1] = lat;
+        }   
     }
 
     // Compute min/max LAT values from the active PMJ's (reference)
     for (uint32_t i = 0; i < this->pmj_data->points.size(); i++)
     {
-        double lat = this->pmj_data->points[i]->lat;
-        if (lat < this->min_max_ref_lat[0]) this->min_max_ref_lat[0] = lat;
-        if (lat > this->min_max_ref_lat[1]) this->min_max_ref_lat[1] = lat;
+        bool connected = this->pmj_data->connected[i];
+        if (connected)
+        {
+            double lat = this->pmj_data->points[i]->lat;
+            if (lat < this->min_max_ref_lat[0]) this->min_max_ref_lat[0] = lat;
+            if (lat > this->min_max_ref_lat[1]) this->min_max_ref_lat[1] = lat;
+        }
     }
 
     // Compute max LAT error from the active PMJ's
     for (uint32_t i = 0; i < this->pmj_data->error.size(); i++)
     {
-        double error = fabs(this->pmj_data->error[i]);
-
-        if (error > this->max_lat_error) this->max_lat_error = error;
+        bool connected = this->pmj_data->connected[i];
+        if (connected)
+        {
+            double error = fabs(this->pmj_data->error[i]);
+            if (error > this->max_lat_error) this->max_lat_error = error;
+        }
     }
 
     // Compute the RMSE and RRMSE from the active PMJ's
     uint32_t n = this->pmj_data->points.size();
+    uint32_t counter = 0;
     double sum_num = 0.0;
     double sum_den = 0.0;
     for (uint32_t i = 0; i < n; i++)
     {
-        Point *cur_pmj = this->pmj_data->points[i];
-        uint32_t id = cur_pmj->id;
+        bool connected = this->pmj_data->connected[i];
+        if (connected)
+        {
+            Point *cur_pmj = this->pmj_data->points[i];
 
-        double ref_value = cur_pmj->lat;
-        double aprox_value = this->pmj_data->aprox[id];
-        double error = fabs(ref_value-aprox_value);
+            double ref_value = cur_pmj->lat;
+            double error = fabs(this->pmj_data->error[i]);
 
-        sum_num += powf(error,2);
-        sum_den += powf(ref_value,2);
+            sum_num += powf(error,2);
+            sum_den += powf(ref_value,2);
+            counter++;
+        }
     }    
     double l2_norm = sqrt(sum_den);
-    this->rmse = sqrt(sum_num/(double)n);
+    this->rmse = sqrt(sum_num/(double)counter);
     this->rrmse = sqrt(sum_num/sum_den);
 
     // Compute the number of active PMJ's that have an error less than a certain threashold
@@ -1897,13 +1931,18 @@ void CCO_Network::calc_electric_error ()
     uint32_t counter_less_5ms = 0;
     for (uint32_t i = 0; i < this->pmj_data->error.size(); i++)
     {
-        double error = fabs(this->pmj_data->error[i]);
+        bool connected = this->pmj_data->connected[i];
+        if (connected)
+        {
+            double error = fabs(this->pmj_data->error[i]);
 
-        if (error < 2.0)    counter_less_2ms++;
-        if (error < 5.0)    counter_less_5ms++;
+            if (error < 2.0)    counter_less_2ms++;
+            if (error < 5.0)    counter_less_5ms++;
+        }
+        
     }
-    this->epsilon_2ms = (double)counter_less_2ms / (double)this->pmj_data->error.size();
-    this->epsilon_5ms = (double)counter_less_5ms / (double)this->pmj_data->error.size();
+    this->epsilon_2ms = (double)counter_less_2ms / (double)counter;
+    this->epsilon_5ms = (double)counter_less_5ms / (double)counter;
 }
 
 bool CCO_Network::connect_remaining_active_pmjs (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config)
@@ -1913,14 +1952,16 @@ bool CCO_Network::connect_remaining_active_pmjs (CostFunctionConfig *cost_functi
     //for (uint32_t i = 0; i < CUR_MAX_PMJ_INDEX; i++)
     {
         Point *cur_pmj = this->pmj_data->points[i];
-        
-        while (!this->pmj_data->connected[i])
+        if (cur_pmj->lat > this->pmj_data->intervals[cur_pmj_package].first && cur_pmj->lat < this->pmj_data->intervals[cur_pmj_package].second)
         {
-            sucess = force_pmj_connection(cost_function_config,local_opt_config,cur_pmj);
-            if (sucess)
+            while (!this->pmj_data->connected[i])
             {
-                write_to_vtk_iteration();
-            }   
+                sucess = force_pmj_connection(cost_function_config,local_opt_config,cur_pmj);
+                if (sucess)
+                {
+                    write_to_vtk_iteration();
+                }   
+            }
         }
     }
     return sucess;
@@ -1950,85 +1991,25 @@ bool CCO_Network::connect_remaining_inactive_pmjs (CostFunctionConfig *cost_func
     return sucess;
 }
 
-bool CCO_Network::attempt_connect_using_max_lat (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point)
+bool CCO_Network::attempt_connect_using_inverse (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, std::vector<Segment*> feasible_segments, Point *pmj_point)
 {
     bool sucess = false;
-    bool point_is_ok = false;
-    uint32_t counter_tries = 0;
-    uint32_t tosses = 0;
-    uint32_t K_term = this->num_terminals;
-    double d_threash = calc_dthreashold(R_PERF,K_term);     // (r_supp = R_PERF) in this case
     
-    // Array of feasible segments to connect the new terminal
-    std::vector<Segment*> feasible_segments;
-
-    // Reference to the segment we are going to make the connection
-    Segment *iconn = NULL;
-
-    while (!point_is_ok)
-    {
-        // Reset the feasible segments list
-        feasible_segments.clear();
-
-        // Check the distance criterion for this point
-        point_is_ok = connection_search(pmj_point,d_threash);
-
-        if (point_is_ok) point_is_ok = check_collisions_and_fill_feasible_segments(pmj_point,feasible_segments);
-
-        if (point_is_ok)
-        {
-            // [COST FUNCTION] = Maximize the LAT activation time
-            iconn = this->pmj_data->cost_fn->eval(this,cost_function_config,local_opt_config,\
-                                feasible_segments,\
-                                pmj_point);
+    // [COST FUNCTION] = Maximize the total length
+    Segment *iconn = this->pmj_data->cost_fn->eval(this,cost_function_config,local_opt_config,\
+                        feasible_segments,\
+                        pmj_point);
             
-            // No feasible point was found 
-            if (iconn == NULL) point_is_ok = false;
-        }
-
-        // If the point does not attend the distance criterion or if there is a collision
-        // we need to choose another point
-        if (!point_is_ok)
-        {
-            tosses++;
-            if (tosses > NTOSS)
-            {
-                fprintf(log_file,"[!] Reducing dthreash! Before = %g || Now = %g \n",\
-                        d_threash,d_threash*FACTOR);
-                d_threash *= FACTOR;
-                tosses = 0;
-
-                counter_tries++;
-            }
-
-            // GIVE UP
-            if (counter_tries > this->pmj_data->max_connection_tries)
-                return sucess;
-                
-        }
-        // The point is a valid one and we can eliminate it from the cloud
-        else
-        {
-
-        }
-    }
+    // No feasible point was found 
+    if (iconn == NULL) return sucess;
 
     // Build the new segment of the tree
     Segment *inew = this->build_segment(local_opt_config,iconn->id,pmj_point);
 
     // [EVALUATE PMJ ACTIVATION]
-    // Step 1: Connect using normal CCO
+    // Step 3: Connect using inverse CCO
     sucess = evaluate_pmj_local_activation_time(inew,pmj_point,cost_function_config);
-
-    // Step 2: Connect using normal CCO and region radius
-    if (!sucess)
-    {   
-        sucess = attempt_connect_using_region_radius(pmj_point,cost_function_config);
-    }
-
-    if (!sucess)
-    {
-        prune_segment(inew);
-    }    
+    
     return sucess;    
+
 }

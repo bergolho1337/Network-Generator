@@ -27,7 +27,7 @@ public:
 };
 
 // Types of cost function
-class CustomFunction : public CostFunction
+class MinimizeCustomFunction : public CostFunction
 {
 public:
     double beta;
@@ -52,13 +52,11 @@ public:
     bool check_collision (CCO_Network *the_network, Segment *iconn, Segment *ibiff, Segment *inew);
 };
 
-// Maximize Activation Time
-class ActivationTimeFunction : public CostFunction
+class MaximizeCustomFunction : public CostFunction
 {
 public:
-    double G;
-    double Cf;
-    double tauf;
+    double beta;
+    double alpha;
     double min_degrees_limit;
     double max_degrees_limit;
     double min_segment_length;
@@ -71,7 +69,8 @@ public:
                         LocalOptimizationConfig *local_opt_config,\
                         std::vector<Segment*> feasible_segments,\
                         Point *new_term);
-    double calc_activation_time_function (Segment *s);
+    double calc_custom_function (CCO_Network *the_network);
+    double calc_segment_custom_function (Segment *s);
     bool check_angle_restriction (Segment *iconn, Segment *inew);
     bool check_minimum_segment_size (Segment *iconn, Segment *ibiff, Segment *inew);
     bool check_maximum_segment_size (Segment *iconn, Segment *ibiff, Segment *inew);

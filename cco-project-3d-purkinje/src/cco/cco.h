@@ -94,6 +94,7 @@ public:
     FILE *log_file;
 private:
     uint32_t cur_rand_index;
+    uint32_t cur_pmj_package;
     double epsilon_2ms;
     double epsilon_5ms;
     double rmse;
@@ -154,7 +155,7 @@ private:
     bool evaluate_pmj_local_activation_time (Segment *inew, Point *pmj_point, CostFunctionConfig *cost_function_config);
     bool attempt_pmj_connection (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
     bool attempt_connect_using_region_radius (Point *pmj_point, CostFunctionConfig *cost_function_config);
-    bool attempt_connect_using_max_lat (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point);
+    bool attempt_connect_using_inverse (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, std::vector<Segment*> feasible_segments, Point *pmj_point);
     bool force_pmj_connection (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point);
     bool force_connection_to_closest_segment (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point);
     bool connect_remaining_active_pmjs (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
@@ -168,6 +169,8 @@ private:
     void order_point_list ();
     void order_segment_list ();
     uint32_t sort_point_from_cloud (Point *p);
+
+    void local_backtracking ();
 };
 
 #endif

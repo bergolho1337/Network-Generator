@@ -3,23 +3,25 @@
 PMJ::PMJ ()
 {
     this->total_num_connected = 0;
+    this->total_num_packages = 5;
     this->max_connection_tries = 100;
     this->connection_rate = __UINT32_MAX__;
     this->region_radius = 0.002;
     this->lat_error_tolerance = 2.0;
     this->location_filename = "";
-    this->cost_fn = new ActivationTimeFunction;
+    this->cost_fn = new MaximizeCustomFunction;
 }
 
 PMJ::PMJ (PMJConfig *config)
 {
     this->total_num_connected = 0;
+    this->total_num_packages = 5;
     this->max_connection_tries = config->max_connection_tries;
     this->connection_rate = config->connection_rate;
     this->region_radius = config->region_radius;
     this->lat_error_tolerance = config->lat_error_tolerance;
     this->location_filename = config->location_filename;
-    this->cost_fn = new ActivationTimeFunction;
+    this->cost_fn = new MaximizeCustomFunction;
 
     bool sucess = read_points_from_vtk(this->location_filename.c_str(),this->points);
     if (sucess) 
@@ -37,7 +39,18 @@ PMJ::PMJ (PMJConfig *config)
     this->error.assign(n,__DBL_MAX__);
     this->aprox.assign(n,0);
 
-    //std::sort(this->points.begin(),this->points.end(),comparePoint);
+    std::sort(this->points.begin(),this->points.end(),comparePoint);
+
+    double offset = (this->points.back()->lat - this->points.front()->lat) / (double)this->total_num_packages;
+    double base = this->points.front()->lat;
+
+    for (uint32_t k = 0; k < this->total_num_packages; k++)
+    {
+        double min_lat =  base + k*offset;
+        double max_lat = min_lat + offset;
+
+        this->intervals.push_back(std::make_pair(min_lat,max_lat));
+    }
 
     // DEBUG
     //print();

@@ -2,7 +2,7 @@
 
 #include "../cco/cco.h"
 
-void CustomFunction::init_parameters (CostFunctionConfig *cost_function_config)
+void MinimizeCustomFunction::init_parameters (CostFunctionConfig *cost_function_config)
 {
     beta = 1.0;
     cost_function_config->get_parameter_value_from_map("beta",&beta);
@@ -18,7 +18,7 @@ void CustomFunction::init_parameters (CostFunctionConfig *cost_function_config)
     cost_function_config->get_parameter_value_from_map("max_segment_length",&max_segment_length);
 }
 
-bool CustomFunction::check_restrictions (CCO_Network *the_network, Segment *iconn, Segment *ibiff, Segment *inew)
+bool MinimizeCustomFunction::check_restrictions (CCO_Network *the_network, Segment *iconn, Segment *ibiff, Segment *inew)
 {
     // Check bifurcation size and angle
     bool has_angle_requirement = check_angle_restriction(iconn,inew);
@@ -37,7 +37,7 @@ bool CustomFunction::check_restrictions (CCO_Network *the_network, Segment *icon
            !has_angle_requirement;
 }
 
-Segment* CustomFunction::eval (CCO_Network *the_network,\
+Segment* MinimizeCustomFunction::eval (CCO_Network *the_network,\
                         CostFunctionConfig *cost_function_config,\
                         LocalOptimizationConfig *local_opt_config,\
                         std::vector<Segment*> feasible_segments,\
@@ -173,7 +173,7 @@ Segment* CustomFunction::eval (CCO_Network *the_network,\
     return best;
 }
 
-double CustomFunction::calc_custom_function (CCO_Network *the_network)
+double MinimizeCustomFunction::calc_custom_function (CCO_Network *the_network)
 {
     double result = 0.0;
     for (uint32_t i = 0; i < the_network->segment_list.size(); i++)
@@ -185,7 +185,7 @@ double CustomFunction::calc_custom_function (CCO_Network *the_network)
     return result;
 }
 
-double CustomFunction::calc_segment_custom_function (Segment *s)
+double MinimizeCustomFunction::calc_segment_custom_function (Segment *s)
 {
     double l = s->length;
     double r = s->radius;
@@ -196,7 +196,7 @@ double CustomFunction::calc_segment_custom_function (Segment *s)
     return pow(l,beta) * pow(r,alpha);
 }
 
-bool CustomFunction::check_angle_restriction (Segment *iconn, Segment *inew)
+bool MinimizeCustomFunction::check_angle_restriction (Segment *iconn, Segment *inew)
 {
     double u[3], v[3];
     
@@ -207,17 +207,17 @@ bool CustomFunction::check_angle_restriction (Segment *iconn, Segment *inew)
     return (angle > min_degrees_limit && angle < max_degrees_limit);
 }
 
-bool CustomFunction::check_minimum_segment_size (Segment *iconn, Segment *ibiff, Segment *inew)
+bool MinimizeCustomFunction::check_minimum_segment_size (Segment *iconn, Segment *ibiff, Segment *inew)
 {
     return (iconn->length > min_segment_length && ibiff->length > min_segment_length && inew->length > min_segment_length);
 }
 
-bool CustomFunction::check_maximum_segment_size (Segment *iconn, Segment *ibiff, Segment *inew)
+bool MinimizeCustomFunction::check_maximum_segment_size (Segment *iconn, Segment *ibiff, Segment *inew)
 {
     return (iconn->length < max_segment_length && ibiff->length < max_segment_length && inew->length < max_segment_length);
 }
 
-bool CustomFunction::check_collision (CCO_Network *the_network, Segment *iconn, Segment *ibiff, Segment *inew)
+bool MinimizeCustomFunction::check_collision (CCO_Network *the_network, Segment *iconn, Segment *ibiff, Segment *inew)
 {
     // Get the reference to the points from the 'inew' segment
     Point *src_inew = inew->src;
@@ -255,18 +255,13 @@ bool CustomFunction::check_collision (CCO_Network *the_network, Segment *iconn, 
 }
 
 // ===========================================================================================================================================
-// ACTIVATION TIME FUNCTION
-
-void ActivationTimeFunction::init_parameters (CostFunctionConfig *cost_function_config)
+// MAXIMIZE CUSTOM FUNCTION
+void MaximizeCustomFunction::init_parameters (CostFunctionConfig *cost_function_config)
 {
-    /*
-    G = 7.9;
-    cost_function_config->get_parameter_value_from_map("G",&G);
-    Cf = 3.4;
-    cost_function_config->get_parameter_value_from_map("Cf",&Cf);
-    tauf = 0.1;
-    cost_function_config->get_parameter_value_from_map("tauf",&tauf);
-    */
+    beta = 1.0;
+    cost_function_config->get_parameter_value_from_map("beta",&beta);
+    alpha = 0.0;
+    cost_function_config->get_parameter_value_from_map("alpha",&alpha);
     min_degrees_limit = 1.0;
     cost_function_config->get_parameter_value_from_map("min_degrees_limit",&min_degrees_limit);
     max_degrees_limit = 180.0;
@@ -277,7 +272,7 @@ void ActivationTimeFunction::init_parameters (CostFunctionConfig *cost_function_
     cost_function_config->get_parameter_value_from_map("max_segment_length",&max_segment_length);
 }
 
-bool ActivationTimeFunction::check_restrictions (CCO_Network *the_network, Segment *iconn, Segment *ibiff, Segment *inew)
+bool MaximizeCustomFunction::check_restrictions (CCO_Network *the_network, Segment *iconn, Segment *ibiff, Segment *inew)
 {
     // Check bifurcation size and angle
     bool has_angle_requirement = check_angle_restriction(iconn,inew);
@@ -293,10 +288,10 @@ bool ActivationTimeFunction::check_restrictions (CCO_Network *the_network, Segme
     return has_segment_segment_collision ||\
            !has_minimum_segment_size ||\
            !has_maximum_segment_size ||\
-           !has_angle_requirement;    
+           !has_angle_requirement;
 }
 
-Segment* ActivationTimeFunction::eval (CCO_Network *the_network,\
+Segment* MaximizeCustomFunction::eval (CCO_Network *the_network,\
                         CostFunctionConfig *cost_function_config,\
                         LocalOptimizationConfig *local_opt_config,\
                         std::vector<Segment*> feasible_segments,\
@@ -305,14 +300,14 @@ Segment* ActivationTimeFunction::eval (CCO_Network *the_network,\
     FILE *log_file = the_network->log_file;
 
     Segment *best = NULL;
-    double minimum_eval = __DBL_MAX__;
+    double maximum_eval = __DBL_MIN__;
 
     bool using_local_optimization = the_network->using_local_optimization;
     LocalOptimization *local_opt_fn = the_network->local_opt_fn;
 
     // Get cost function parameters or use the default ones
     init_parameters(cost_function_config);
-
+    
     double u[3], v[3];
     double angle_degrees;
 
@@ -333,20 +328,20 @@ Segment* ActivationTimeFunction::eval (CCO_Network *the_network,\
             local_opt_config->initialize_best_position_as_middle_point(best_pos,ori_pos);
 
             // [EVALUATE COST FUNCTION]
-            //double eval = calc_activation_time_function(inew);
-            double eval = calc_activation_time_function(inew);
+            double eval = calc_custom_function(the_network);
 
             // [RESTRICTION SECTION]
             bool point_is_not_ok = check_restrictions(the_network,iconn,ibiff,inew);
 
-            if (eval < minimum_eval && !point_is_not_ok)
+            if (eval > maximum_eval && !point_is_not_ok)
             {
-                minimum_eval = eval;
+                maximum_eval = eval;
                 best = iconn;
 
                 // The best position of the best segment will be stored inside the 
                 // 'local_optimization' structure
                 memcpy(local_opt_config->best_pos,best_pos,sizeof(double)*3);
+
             }
 
             // 2) Now, call the local optimization function and fill the 'test_positions' array
@@ -364,14 +359,14 @@ Segment* ActivationTimeFunction::eval (CCO_Network *the_network,\
                 the_network->recalculate_length();
 
                 // [EVALUATE COST FUNCTION]
-                double eval = calc_activation_time_function(inew);
+                double eval = calc_custom_function(the_network);
 
                 // [RESTRICTION SECTION]
                 bool point_is_not_ok = check_restrictions(the_network,iconn,ibiff,inew);
 
-                if (eval < minimum_eval && !point_is_not_ok)
+                if (eval > maximum_eval && !point_is_not_ok)
                 {
-                    minimum_eval = eval;
+                    maximum_eval = eval;
                     best = iconn;
 
                     // The best position of the best segment will be stored inside the 'local_optimization' structure
@@ -393,17 +388,17 @@ Segment* ActivationTimeFunction::eval (CCO_Network *the_network,\
         else
         {
             // [EVALUATE COST FUNCTION]
-            double eval = calc_activation_time_function(inew);
+            double eval = calc_custom_function(the_network);
 
             // [RESTRICTION SECTION]
             bool point_is_not_ok = check_restrictions(the_network,iconn,ibiff,inew);
 
-            if (eval < minimum_eval && !point_is_not_ok)
+            if (eval > maximum_eval && !point_is_not_ok)
             {
-                minimum_eval = eval;
+                maximum_eval = eval;
                 best = iconn;
 
-                //printf("[cost_function] Best segment = %d -- Eval = %g\n",best->id,minimum_eval);
+                printf("[cost_function] Best segment = %d -- Eval = %g\n",best->id,maximum_eval);
             }
 
             the_network->restore_state_tree(iconn);
@@ -419,7 +414,30 @@ Segment* ActivationTimeFunction::eval (CCO_Network *the_network,\
     return best;
 }
 
-bool ActivationTimeFunction::check_angle_restriction (Segment *iconn, Segment *inew)
+double MaximizeCustomFunction::calc_custom_function (CCO_Network *the_network)
+{
+    double result = 0.0;
+    for (uint32_t i = 0; i < the_network->segment_list.size(); i++)
+    {
+        Segment *cur_segment = the_network->segment_list[i];
+
+        result += calc_segment_custom_function(cur_segment);
+    }
+    return result;
+}
+
+double MaximizeCustomFunction::calc_segment_custom_function (Segment *s)
+{
+    double l = s->length;
+    double r = s->radius;
+
+    double length = euclidean_norm(s->src->x,s->src->y,s->src->z,\
+                                s->dest->x,s->dest->y,s->dest->z);
+    
+    return pow(l,beta) * pow(r,alpha);
+}
+
+bool MaximizeCustomFunction::check_angle_restriction (Segment *iconn, Segment *inew)
 {
     double u[3], v[3];
     
@@ -430,17 +448,17 @@ bool ActivationTimeFunction::check_angle_restriction (Segment *iconn, Segment *i
     return (angle > min_degrees_limit && angle < max_degrees_limit);
 }
 
-bool ActivationTimeFunction::check_minimum_segment_size (Segment *iconn, Segment *ibiff, Segment *inew)
+bool MaximizeCustomFunction::check_minimum_segment_size (Segment *iconn, Segment *ibiff, Segment *inew)
 {
     return (iconn->length > min_segment_length && ibiff->length > min_segment_length && inew->length > min_segment_length);
 }
 
-bool ActivationTimeFunction::check_maximum_segment_size (Segment *iconn, Segment *ibiff, Segment *inew)
+bool MaximizeCustomFunction::check_maximum_segment_size (Segment *iconn, Segment *ibiff, Segment *inew)
 {
     return (iconn->length < max_segment_length && ibiff->length < max_segment_length && inew->length < max_segment_length);
 }
 
-bool ActivationTimeFunction::check_collision (CCO_Network *the_network, Segment *iconn, Segment *ibiff, Segment *inew)
+bool MaximizeCustomFunction::check_collision (CCO_Network *the_network, Segment *iconn, Segment *ibiff, Segment *inew)
 {
     // Get the reference to the points from the 'inew' segment
     Point *src_inew = inew->src;
@@ -475,20 +493,4 @@ bool ActivationTimeFunction::check_collision (CCO_Network *the_network, Segment 
         }
     }
     return false;
-}
-
-double ActivationTimeFunction::calc_activation_time_function (Segment *s)
-{
-    double result = 0.0; 
-    Segment *tmp = s;
-    while (tmp != NULL)
-    {
-        double dist = tmp->length*MM_TO_UM;
-        double cv = tmp->calc_propagation_velocity();
-        double lat = dist / cv;
-        result += lat;
-
-        tmp = tmp->parent;
-    } 
-    return result;
 }

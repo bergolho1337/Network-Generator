@@ -98,30 +98,19 @@ uint32_t VTK_Reader::search_position (const double pos[])
     return closest_index;
 }
 
-void read_active_terminal_positions (std::string filename, std::vector<Point> &the_terminals)
+void read_points (std::string filename, std::vector<Point> &the_points)
 {
-    // Read all the data from the VTK file
-    vtkSmartPointer<vtkGenericDataObjectReader> reader = vtkSmartPointer<vtkGenericDataObjectReader>::New();
-    reader->SetFileName(filename.c_str());
-    reader->Update();
-
-    if(reader->IsFilePolyData())
+    uint32_t np;
+    FILE *file = fopen(filename.c_str(),"r");
+    fscanf(file,"%u",&np);
+    for (uint32_t i = 0 ; i < np; i++)
     {
-        vtkSmartPointer<vtkPolyData> input_polydata = reader->GetPolyDataOutput();
-
-        uint32_t num_points = input_polydata->GetNumberOfPoints();
-
-        for (uint32_t i = 0; i < num_points; i++)
-        {
-            double pos[3];
-
-            input_polydata->GetPoint(i,pos);
-
-            Point p(i,pos[0],pos[1],pos[2]);
-
-            the_terminals.push_back(p);
-        }
+        double x, y, z;
+        fscanf(file,"%lf %lf %lf",&x,&y,&z);
+        Point p(i,x,y,z);
+        the_points.push_back(p);
     }
+    fclose(file);
 }
 
 void VTK_Reader::print ()

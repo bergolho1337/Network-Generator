@@ -38,7 +38,8 @@ static const double D_THREASH_LIMIT = 1.0e-05;      // Limit for the d_threash
 static const uint32_t PRUNING_PASSES = 1;           // Number of times the pruning procedure will be called
 static const uint32_t PMJ_LOOSE_THREASHOLD = 5.0;   // Threashold for loosening the LAT error tolerance and forcing the PMJ connection {ms}
 static const double PMJ_LOOSE_RATE = 1.2;           // Loose rate for the PMJ {increase by 20%} (forcing connection)
-static const double CV_THREASHOLD = 1000.0;         // Threashold for the conduction velocity {um/ms} (diameter calibration)
+static const double MIN_CV_THREASHOLD = 1000.0;         // Minimum threashold for the conduction velocity {um/ms} (diameter calibration)
+static const double MAX_CV_THREASHOLD = 4000.0;     // Maximum threashold for the conduction velocity {um/ms} (diameter calibration)
 // ============================================================================================================================================
 
 class CCO_Network
@@ -51,7 +52,6 @@ public:
     static const double V_PERF;
     double R_PERF;                    
     double Q_TERM;
-    uint32_t CUR_MAX_PMJ_INDEX;
 
     // Variable declarations
     uint32_t num_terminals;
@@ -154,6 +154,7 @@ private:
     bool has_collision (Segment *iconn, Segment *ibiff, Segment *inew);
     bool evaluate_pmj_local_activation_time (Segment *inew, Point *pmj_point, CostFunctionConfig *cost_function_config);
     bool attempt_pmj_connection (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
+    bool attempt_pmj_package_connection (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
     bool attempt_connect_using_region_radius (Point *pmj_point, CostFunctionConfig *cost_function_config);
     bool attempt_connect_using_inverse (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, std::vector<Segment*> feasible_segments, Point *pmj_point);
     bool force_pmj_connection (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point);
@@ -170,7 +171,7 @@ private:
     void order_segment_list ();
     uint32_t sort_point_from_cloud (Point *p);
 
-    void local_backtracking ();
+    bool attempt_connect_using_local_backtracking (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point);
 };
 
 #endif

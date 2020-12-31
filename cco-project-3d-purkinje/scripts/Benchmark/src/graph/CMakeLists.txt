@@ -1,4 +1,5 @@
-set(SOURCE_FILES_OPTIONS graph.h graph.cpp)
+set(SOURCE_FILES_OPTIONS graph.h graph.cpp
+                         pqueue.h pqueue.cpp)
 
 ADD_LIBRARY(graph STATIC ${SOURCE_FILES_OPTIONS})
 

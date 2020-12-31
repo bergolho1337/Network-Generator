@@ -40,6 +40,6 @@ public:
 };
 
 
-void read_active_terminal_positions (std::string filename, std::vector<Point> &the_terminals);
+void read_points (std::string filename, std::vector<Point> &the_points);
 
 #endif

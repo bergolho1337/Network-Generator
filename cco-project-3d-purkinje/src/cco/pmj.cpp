@@ -3,7 +3,8 @@
 PMJ::PMJ ()
 {
     this->total_num_connected = 0;
-    this->total_num_packages = 5;
+    this->package_size = 10;
+    this->package_head = 0;
     this->max_connection_tries = 100;
     this->connection_rate = __UINT32_MAX__;
     this->region_radius = 0.002;
@@ -15,7 +16,8 @@ PMJ::PMJ ()
 PMJ::PMJ (PMJConfig *config)
 {
     this->total_num_connected = 0;
-    this->total_num_packages = 5;
+    this->package_size = 10;
+    this->package_head = 0;
     this->max_connection_tries = config->max_connection_tries;
     this->connection_rate = config->connection_rate;
     this->region_radius = config->region_radius;
@@ -38,18 +40,15 @@ PMJ::PMJ (PMJConfig *config)
     this->connected.assign(n,false);
     this->error.assign(n,__DBL_MAX__);
     this->aprox.assign(n,0);
+    this->penalty.assign(n,0);
 
     std::sort(this->points.begin(),this->points.end(),comparePoint);
 
-    double offset = (this->points.back()->lat - this->points.front()->lat) / (double)this->total_num_packages;
-    double base = this->points.front()->lat;
-
-    for (uint32_t k = 0; k < this->total_num_packages; k++)
+    for (uint32_t i = 0; i < this->package_size; i++)
     {
-        double min_lat =  base + k*offset;
-        double max_lat = min_lat + offset;
+        this->package.push_back(i);
 
-        this->intervals.push_back(std::make_pair(min_lat,max_lat));
+        this->package_head++;
     }
 
     // DEBUG

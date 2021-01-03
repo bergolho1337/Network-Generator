@@ -15,7 +15,6 @@ CCO_Network::CCO_Network (User_Options *options)
     set_cost_function();
     set_local_optimization_function_name();
     
-    //test1(this);
     //print();
 }
 
@@ -27,8 +26,8 @@ CCO_Network::~CCO_Network ()
         delete this->local_opt_fn;
     if (this->pmj_data)
         delete this->pmj_data;
-    for (uint32_t i = 0; i < this->cloud_points.size(); i++)
-        delete this->cloud_points[i];
+    if (this->cloud_data)
+        delete this->cloud_data;
     for (uint32_t i = 0; i < this->segment_list.size(); i++)
         delete this->segment_list[i];
     for (uint32_t i = 0; i < this->point_list.size(); i++)
@@ -44,8 +43,8 @@ void CCO_Network::grow_tree (User_Options *options)
 
     printf("\n[cco] Growing CCO network !\n");
 
-    read_cloud_points();
-    read_pmj_locations(options->pmj_config);
+    this->cloud_data = new Cloud(options->cloud_config);
+    this->pmj_data = new PMJ(options->pmj_config);
     //read_obstacles();
 
     start_stop_watch(&solver_time);
@@ -57,7 +56,7 @@ void CCO_Network::grow_tree (User_Options *options)
     printf("[INFO] Resolution time = %ld μs (%g min)\n",res_time,res_time/conv_rate);
 
     // Unitary test
-    //bool sucess = check_bifurcation_rule();
+    //bool sucess = check_bifurcation_rule(this->log_file,this->gamma,this->segment_list);
     //if (!sucess)
     //{
     //    printf("[-] ERROR! Bifurcation rule failure!\n");
@@ -76,6 +75,7 @@ void CCO_Network::set_parameters (User_Options *options)
     this->max_rand_offset = options->max_rand_offset;
     this->gamma = options->gamma;
     this->lat_offset = options->lat_offset;
+    this->cur_pmj_package = 0;
     this->cur_rand_index = 0;
     this->max_lat_error = __DBL_MIN__;
     this->min_max_aprox_lat[0] = __DBL_MAX__; this->min_max_aprox_lat[1] = __DBL_MIN__;
@@ -105,7 +105,6 @@ void CCO_Network::set_parameters (User_Options *options)
     this->output_dir = options->output_dir;
     this->cost_function_name = options->cost_function_config->function_name;
     this->local_optimization_function_name = options->local_opt_config->function_name;
-    this->cloud_points_filename = options->cloud_points_filename;
 
     this->Q_TERM = Q_PERF / this->N_term;
     this->R_PERF = powf(((3.0*V_PERF)/(4.0 * M_PI)), (1.0/3.0));
@@ -165,73 +164,6 @@ void CCO_Network::set_save_network ()
     }
 }
 
-void CCO_Network::get_segment_length (std::vector<double> &segments)
-{
-    for (uint32_t i = 0; i < this->segment_list.size(); i++)
-    {
-        Segment *cur_segment = this->segment_list[i];
-
-        // Segment length (This value is given in {m})
-        double length = cur_segment->length;
-        if (length == 0.0)
-        {
-            printf("[!] WARNING! Segment length is equal zero! Indexes: %u %u\n",cur_segment->src->id,cur_segment->dest->id);
-        }
-
-        segments.push_back(length * M_TO_MM);
-    }
-}
-
-void CCO_Network::get_bifurcation_angles(std::vector<double> &angles)
-{
-    for (uint32_t i = 0; i < this->segment_list.size(); i++)
-    {
-        Segment *cur_segment = this->segment_list[i];
-
-        if (cur_segment->left != NULL && cur_segment->right != NULL)
-        {
-            double u[3], v[3], angle;
-            cur_segment->left->calc_unitary_vector(u);
-            cur_segment->right->calc_unitary_vector(v);
-            angle = calc_angle_between_vectors(u,v);
-
-            angles.push_back(angle);
-        }
-    }
-}
-
-void CCO_Network::read_cloud_points ()
-{
-    if (!this->using_cloud_points)
-    {
-        fprintf(stderr,"[-] ERROR! You must supply a cloud of points!\n");
-        exit(EXIT_FAILURE); 
-    }
-
-    bool sucess = read_points_from_vtk(this->cloud_points_filename.c_str(),this->cloud_points);
-    this->cloud_points_connected.assign(this->cloud_points.size(),false);
-    if (sucess) printf("[cco] Cloud of points was sucessfully loaded from: '%s'!\n",this->cloud_points_filename.c_str());
-}
-
-void CCO_Network::read_pmj_locations (PMJConfig *config)
-{
-    if (this->using_pmj_location)
-    {
-        if (config->location_filename.size() == 0)
-        {
-            this->pmj_data = new PMJ();
-        }
-        else
-        {
-            this->pmj_data = new PMJ(config);
-        }
-    }
-    else
-    {
-        this->pmj_data = new PMJ();
-    }
-}
-
 void CCO_Network::grow_tree_using_cloud_points (User_Options *options)
 {
     bool sucess;
@@ -242,10 +174,7 @@ void CCO_Network::grow_tree_using_cloud_points (User_Options *options)
 
     // Root placement
     bool using_initial_network = options->use_initial_network;
-    if (using_initial_network)
-        make_root_using_initial_network();
-    else
-        make_root_using_cloud_points();
+    (using_initial_network) ? make_root_using_initial_network() : make_root_using_cloud_points();
     
     // ===============================================================================================================
     // MAIN ITERATION LOOP
@@ -319,13 +248,13 @@ void CCO_Network::make_root_using_cloud_points ()
     double d_threashold = sqrt( M_PI * r_supp * r_supp );
     while (!is_root_ok)
     {
-        uint32_t selected_index = sort_point_from_cloud(B);
+        uint32_t selected_index = this->cloud_data->sort_point(B,this->max_rand_offset);
         double root_length = euclidean_norm(A->x,A->y,A->z,B->x,B->y,B->z);
 
         //if (root_length >= d_threashold && !has_intersect_obstacle(x_prox,x_inew,obstacle_faces))
         if (root_length >= d_threashold)
         {
-            this->cloud_points_connected[selected_index] = true;
+            this->cloud_data->connected[selected_index] = true;
             is_root_ok = true;
         }
             
@@ -354,12 +283,7 @@ void CCO_Network::make_root_using_cloud_points ()
     write_to_vtk_iteration();
 }
 
-void CCO_Network::make_root_using_initial_network ()
-{
-    
-    
-
-}
+void CCO_Network::make_root_using_initial_network () { }
 
 void CCO_Network::rescale_root (Segment *iroot)
 {
@@ -456,13 +380,13 @@ void CCO_Network::restore_state_tree (Segment *iconn)
     // Eliminate "ibiff" and "inew"
     Point *M = inew->src;
     Point *T = inew->dest;
-    eliminate_point_from_list(M);
-    eliminate_point_from_list(T);
-    eliminate_segment_from_list(inew);
-    eliminate_segment_from_list(ibiff);
+    eliminate_point_from_list(this->point_list,M);
+    eliminate_point_from_list(this->point_list,T);
+    eliminate_segment_from_list(this->segment_list,inew);
+    eliminate_segment_from_list(this->segment_list,ibiff);
 
     // Update "ndist" from "iconn" until we reach the root
-    update_ndist(iconn,true);
+    this->num_terminals = update_ndist(iconn,true);
 
     // Update the 'betas' until we reach the root
     Segment *ipar = iconn->parent;
@@ -509,12 +433,12 @@ bool CCO_Network::generate_terminal_using_cloud_points (CostFunctionConfig *cost
         feasible_segments.clear();
 
         // Sort a terminal position from the cloud of points and update the 'new_term' data
-        uint32_t selected_index = sort_point_from_cloud(new_term);
+        uint32_t selected_index = this->cloud_data->sort_point(new_term,this->max_rand_offset);
 
         // Check the distance criterion for this point
-        point_is_ok = connection_search(new_term,d_threash);
+        point_is_ok = connection_search(this->segment_list,new_term,d_threash);
 
-        if (point_is_ok) point_is_ok = check_collisions_and_fill_feasible_segments(new_term,feasible_segments);
+        if (point_is_ok) point_is_ok = check_collisions_and_fill_feasible_segments(this->segment_list,new_term,feasible_segments);
 
         if (point_is_ok)
         {
@@ -540,8 +464,8 @@ bool CCO_Network::generate_terminal_using_cloud_points (CostFunctionConfig *cost
                 tosses = 0;
             }
 
-            // GIVE UP
-            if (d_threash < 1.0E-10)
+            // GIVE UP!
+            if (d_threash < D_THREASH_LIMIT)
             {
                 delete new_term;
 
@@ -552,15 +476,18 @@ bool CCO_Network::generate_terminal_using_cloud_points (CostFunctionConfig *cost
         // The point is a valid one and we can eliminate it from the cloud
         else
         {   
-            printf("[!] Selected point %u -- (%g %g %g)\n",selected_index,this->cloud_points[selected_index]->x,this->cloud_points[selected_index]->y,this->cloud_points[selected_index]->z);
-            this->cloud_points_connected[selected_index] = true;
+            printf("[!] Selected point %u -- (%g %g %g)\n",selected_index,\
+                                                this->cloud_data->points[selected_index]->x,\
+                                                this->cloud_data->points[selected_index]->y,\
+                                                this->cloud_data->points[selected_index]->z);
+            this->cloud_data->connected[selected_index] = true;
         }
     }
 
     Segment *inew = this->build_segment(local_opt_config,iconn->id,new_term);
     sucess = true;
 
-    if (check_null_segments())
+    if (check_null_segments(this->segment_list))
     {
         sucess = false;
         restore_state_tree(iconn);
@@ -581,7 +508,6 @@ bool CCO_Network::generate_terminal_using_pmj_locations (CostFunctionConfig *cos
     bool sucess = false;
     bool point_is_ok = false;
     uint32_t counter_tries = 0;
-    uint32_t tosses = 0;
     uint32_t K_term = this->num_terminals;
     double d_threash = calc_dthreashold(R_PERF,K_term);     // (r_supp = R_PERF) in this case
     
@@ -597,9 +523,9 @@ bool CCO_Network::generate_terminal_using_pmj_locations (CostFunctionConfig *cos
         feasible_segments.clear();
 
         // Check the distance criterion for this point
-        point_is_ok = connection_search(pmj_point,d_threash);
+        point_is_ok = connection_search(this->segment_list,pmj_point,d_threash);
 
-        if (point_is_ok) point_is_ok = check_collisions_and_fill_feasible_segments(pmj_point,feasible_segments);
+        if (point_is_ok) point_is_ok = check_collisions_and_fill_feasible_segments(this->segment_list,pmj_point,feasible_segments);
 
         if (point_is_ok)
         {
@@ -616,24 +542,16 @@ bool CCO_Network::generate_terminal_using_pmj_locations (CostFunctionConfig *cos
         // we need to choose another point
         if (!point_is_ok)
         {
-            tosses++;
-            if (tosses > NTOSS)
-            {
-                fprintf(log_file,"[!] Reducing dthreash! Before = %g || Now = %g \n",\
+            fprintf(log_file,"[!] Reducing dthreash! Before = %g || Now = %g \n",\
                         d_threash,d_threash*FACTOR);
-                d_threash *= FACTOR;
-                tosses = 0;
-
-                counter_tries++;
-            }
+            d_threash *= FACTOR;
+            counter_tries++;
 
             // GIVE UP
             if (counter_tries > this->pmj_data->max_connection_tries)
             {
                 return sucess;
-            }
-                
-                
+            }    
         }
         // The point is a valid one and we can eliminate it from the cloud
         else
@@ -675,7 +593,7 @@ bool CCO_Network::generate_terminal_using_pmj_locations (CostFunctionConfig *cos
     }
     else
     {
-        double lat = calc_terminal_local_activation_time(inew) + this->lat_offset;
+        double lat = inew->calc_terminal_local_activation_time() + this->lat_offset;
 
         // Compute the LAT error for the current PMJ
         double lat_error = (lat - pmj_point->lat);
@@ -692,297 +610,17 @@ bool CCO_Network::generate_terminal_using_pmj_locations (CostFunctionConfig *cos
     return sucess;
 }
 
-bool CCO_Network::connection_search (Point *p, const double d_threash)
-{
-    // Copy the coordinates of the new terminal to an array
-    double pos[3];
-    pos[0] = p->x;
-    pos[1] = p->y;
-    pos[2] = p->z;
-
-    for (uint32_t i = 0; i < this->segment_list.size(); i++)
-    {
-        Segment *s = this->segment_list[i];
-
-        if (!distance_criterion(s,pos,d_threash))
-            return false;
-    }
-    return true;
-}
-
-bool CCO_Network::distance_criterion (Segment *s, const double pos[], const double d_threash)
-{
-    double d_proj = calc_dproj(s,pos);
-
-    double d_crit;
-    if (d_proj >= 0 && d_proj <= 1)
-        d_crit = calc_dortho(s,pos);
-    else
-        d_crit = calc_dend(s,pos);
-
-    return (d_crit < d_threash) ? false : true;
-}
-
-bool CCO_Network::check_collisions_and_fill_feasible_segments (Point *p, std::vector<Segment*> &feasible_segments)
-{
-    fprintf(log_file,"[!] Checking collisions!\n");
-
-    std::vector< std::pair<double,uint32_t> > arr;
-    for (uint32_t i = 0; i < this->segment_list.size(); i++)
-    {
-        Segment *s = this->segment_list[i];
-
-        //if (!has_collision(s,p) && s->is_touchable())
-        if (!has_collision(s,p))
-        {
-            double middle_pos[3];
-            s->calc_middle_point(middle_pos);
-
-            double dist = euclidean_norm(middle_pos[0],middle_pos[1],middle_pos[2],\
-                                    p->x,p->y,p->z);
-
-            arr.push_back(std::make_pair(dist,s->id));
-
-            feasible_segments.push_back(s);
-        }      
-    }
-    //TODO: Try to use the NCONN parameter. I believe there is a bug in the Local Optimization function
-    // Sort the segments by the distance to the middle point
-    std::sort(arr.begin(),arr.end());
-
-    // Get only the closest NCONN segments
-    for (uint32_t i = 0; i < arr.size() && feasible_segments.size() < NCONN; i++)
-    {
-        uint32_t id = arr[i].second;
-        
-        Segment *s = this->segment_list[id];
-
-        feasible_segments.push_back(s);
-    }
-
-    return (feasible_segments.size() == 0) ? false : true;
-}
-
-bool CCO_Network::check_bifurcation_rule ()
-{
-    double gamma = this->gamma;
-    for (uint32_t i = 0; i < this->segment_list.size(); i++)
-    {
-        Segment *cur_segment = this->segment_list[i];
-        Segment *left = cur_segment->left;
-        Segment *right = cur_segment->right;
-
-        if (left != NULL && right != NULL)
-        {
-            double r = pow(cur_segment->radius,gamma);
-            double r_left = pow(left->radius,gamma);
-            double r_right = pow(right->radius,gamma);
-
-            double diff = r_left + r_right - r;
-            fprintf(log_file,"%g = %g + %g --> %g = %g\n",r,r_left,r_right,r,r_left + r_right);
-
-            if (diff > 1.0E-8)
-            {
-                printf("[-] ERROR! Bifurcation rule was not valid !\n");
-                return false;
-            }
-        }
-    }
-    return true;
-}
-
-bool CCO_Network::check_null_segments ()
-{
-    bool result = false;
-    for (uint32_t i = 0; i < this->segment_list.size(); i++)
-    {
-        if (this->segment_list[i]->length == 0.0)
-        {
-            printf("[!] WARNING! Segment '%u' has a null length!\n",this->segment_list[i]->id);
-            result = true;
-        } 
-    }
-    return result;
-}
-
-// p1 -> proximal || p2 -> distal || p3 -> middle || p4 -> new 
-bool CCO_Network::has_collision (Segment *s, Point *p)
-{
-    double middle_pos[3];
-    s->calc_middle_point(middle_pos);
-
-    //printf("[+] Trying connection with segment %u\n",s->id);
-
-    for (uint32_t i = 0; i < this->segment_list.size(); i++)
-    {
-        Segment *cur_segment = this->segment_list[i];
-        uint32_t cur_id = cur_segment->id;
-
-        if (s->id != cur_id)
-        {
-            //printf("\t[!] Checking collison between segment %d\n",cur_id);
-
-            Point *src = cur_segment->src;
-            Point *dest = cur_segment->dest;
-
-            bool intersect = collision_detection(src->x,src->y,src->z,\
-                                            dest->x,dest->y,dest->z,\
-                                            middle_pos[0],middle_pos[1],middle_pos[2],\
-                                            p->x,p->y,p->z);
-            if (intersect)
-            {
-                printf("\t[-] ERROR! Intersection with segment %d !\n",cur_id);
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-Point* CCO_Network::generate_bifurcation_node (Segment *iconn, LocalOptimizationConfig *local_opt_config)
-{
-    uint32_t cur_num_nodes = this->point_list.size(); 
-    Point *result = new Point(cur_num_nodes);
-
-    if (this->using_local_optimization)
-    {
-        // The local optimization was not executed yet
-        if (local_opt_config->first_call)
-        {
-            double middle_pos[3];
-            iconn->calc_middle_point(middle_pos);
-            result->setCoordinate(middle_pos);
-        }
-        // The best bifurcation position is already stored in the 'best_pos' array
-        else
-        {
-            double *best_pos = local_opt_config->best_pos;
-            result->setCoordinate(best_pos);
-
-            // Reset the 'first_call' flag for the next point
-            local_opt_config->first_call = true;
-        }
-    }
-    else
-    {
-        double middle_pos[3];
-        iconn->calc_middle_point(middle_pos);
-        result->setCoordinate(middle_pos);
-    }
-    result->setLAT(iconn->calc_middle_point_lat());
-    result->setActive(false);
-
-    return result;
-}
-
-Point* CCO_Network::generate_terminal_node (Point *p)
-{
-    uint32_t cur_num_nodes = this->point_list.size();
-    Point *result = new Point(cur_num_nodes);
-
-    double pos[3];
-    pos[0] = p->x;
-    pos[1] = p->y;
-    pos[2] = p->z;
-
-    result->setCoordinate(pos);
-    result->setActive(p->is_active);
-    result->setLAT(p->lat);
-
-    return result;
-}
-
-void CCO_Network::update_segment_pointers (Segment *iconn, Segment *ibiff, Segment *inew, const bool is_restore)
-{
-    // Update pointers when building a new segment
-    if (!is_restore)
-    {
-        // iconn:
-        iconn->parent = ibiff;
-        iconn->src = inew->src;
-
-        // ibiff:
-        ibiff->left = inew;     // CONVENTION: Left will always point to terminal
-        ibiff->right = iconn;   // CONVENTION: Right will always point to subtree
-        if (ibiff->parent != NULL)
-        {
-            Segment *ibiff_parent = ibiff->parent;
-            if (ibiff_parent->left->id == iconn->id)
-                ibiff_parent->left = ibiff;
-            if (ibiff_parent->right->id == iconn->id)
-                ibiff_parent->right = ibiff;
-        }
-    }
-    // Update pointers when restoring the tree state
-    else
-    {
-        Segment *ibiff_par = ibiff->parent;
-
-        // iconn:
-        iconn->parent = ibiff->parent;
-        iconn->src = ibiff->src;
-        iconn->beta = ibiff->beta;
-
-        // ibiff_par:
-        if (ibiff_par != NULL)
-        {
-            if (ibiff_par->right == ibiff)
-                ibiff_par->right = iconn;
-            if (ibiff_par->left == ibiff)
-                ibiff_par->left = iconn;
-        }
-    }
-}
-
-void CCO_Network::update_ndist (Segment *s, const bool is_restore)
-{
-    // Update pointers when building a new segment
-    if (!is_restore)
-    {
-        Segment *tmp = s;
-        while (tmp->parent != NULL)
-        {
-            tmp->ndist++;
-            tmp = tmp->parent;
-        }
-        tmp->ndist++;
-
-        // Update the current number of terminals in the network
-        this->num_terminals = tmp->ndist;
-    }
-    // Update pointers when restoring the tree state
-    else
-    {
-        Segment *tmp = s->parent;
-        if (tmp != NULL)
-        {
-            while (tmp->parent != NULL)
-            {
-                tmp->ndist--;
-                tmp = tmp->parent;
-            }
-            tmp->ndist--;
-            this->num_terminals = tmp->ndist;
-        }
-        else
-        {
-            this->num_terminals = s->ndist;
-        }
-    }
-}
-
 Segment* CCO_Network::build_segment (LocalOptimizationConfig *local_opt_config, const uint32_t index, Point *new_term)
 {
     uint32_t cur_num_segments = this->segment_list.size();
     Segment *iconn = this->segment_list[index];
     
     // Create the bifurcation point
-    Point *M = generate_bifurcation_node(iconn,local_opt_config);
+    Point *M = generate_bifurcation_node(this->point_list,iconn,local_opt_config,this->using_local_optimization);
     this->point_list.push_back(M);
 
     // Create the terminal point
-    Point *T = generate_terminal_node(new_term);
+    Point *T = generate_terminal_node(this->point_list,new_term);
     this->point_list.push_back(T);
 
     // Create 'ibiff'
@@ -1000,7 +638,7 @@ Segment* CCO_Network::build_segment (LocalOptimizationConfig *local_opt_config, 
     update_segment_pointers(iconn,ibiff,inew,false);
 
     // Update ndist from ibiff until the root
-    update_ndist(ibiff,false);
+    this->num_terminals = update_ndist(ibiff,false);
 
     // Rescale the network from the segments of the new bifurcation
     rescale_tree(ibiff,iconn,inew);
@@ -1011,91 +649,6 @@ Segment* CCO_Network::build_segment (LocalOptimizationConfig *local_opt_config, 
 
     // Return a reference to the new node
     return inew;
-}
-
-double CCO_Network::calc_terminal_local_activation_time (Segment *term)
-{
-    double result = 0.0;
-    Segment *tmp = term;
-    while (tmp != NULL)
-    {
-        double cv = tmp->calc_propagation_velocity()*1000.0;    // {m/s}->{um/ms}
-        double dist = tmp->length;
-        double lat = dist*M_TO_UM/cv;
-
-        result += lat;
-        
-        tmp = tmp->parent;
-    }
-
-    // Return the LAT in {ms}
-    return result; 
-}
-
-uint32_t CCO_Network::sort_point_from_cloud (Point *p)
-{
-    uint32_t offset = rand() % this->max_rand_offset + 1;
-
-    // Reset the counter
-    if (this->cur_rand_index > this->cloud_points.size()-1) 
-        this->cur_rand_index = this->cur_rand_index % (this->cloud_points.size()-1);
-
-    uint32_t selected_index = this->cur_rand_index;
-    
-    // Get the current cloud point data
-    bool is_active;
-    double pos[3], ref_lat;
-    pos[0] = this->cloud_points[selected_index]->x;
-    pos[1] = this->cloud_points[selected_index]->y;
-    pos[2] = this->cloud_points[selected_index]->z;
-    ref_lat = this->cloud_points[selected_index]->lat;
-    is_active = this->cloud_points[selected_index]->is_active;
-
-    // Set the point data
-    p->setCoordinate(pos);
-    p->setLAT(ref_lat);
-    p->setActive(is_active);
-    
-    // Increase the counter for the next cloud point
-    this->cur_rand_index += offset;
-
-    return selected_index;
-}
-
-void CCO_Network::eliminate_point_from_list (Point *p)
-{
-    this->point_list.erase(this->point_list.begin() + p->id);
-    order_point_list();
-    delete p;
-    p = NULL;
-}
-
-void CCO_Network::eliminate_segment_from_list (Segment *s)
-{
-    this->segment_list.erase(this->segment_list.begin() + s->id);
-    order_segment_list();
-    delete s;
-    s = NULL;
-}
-
-void CCO_Network::order_point_list ()
-{
-    uint32_t counter = 0;
-    for (uint32_t i = 0; i < this->point_list.size(); i++)
-    {
-        this->point_list[i]->id = counter;
-        counter++;
-    }
-}
-
-void CCO_Network::order_segment_list ()
-{
-    uint32_t counter = 0;
-    for (uint32_t i = 0; i < this->segment_list.size(); i++)
-    {
-        this->segment_list[i]->id = counter;
-        counter++;
-    }
 }
 
 void CCO_Network::prune_segment (Segment *inew)
@@ -1125,13 +678,13 @@ void CCO_Network::prune_segment (Segment *inew)
     // Eliminate the bifurcation and terminal point
     Point *M = inew->src;
     Point *T = inew->dest;
-    eliminate_point_from_list(M);
-    eliminate_point_from_list(T);
-    eliminate_segment_from_list(inew);
-    eliminate_segment_from_list(ibiff);
+    eliminate_point_from_list(this->point_list,M);
+    eliminate_point_from_list(this->point_list,T);
+    eliminate_segment_from_list(this->segment_list,inew);
+    eliminate_segment_from_list(this->segment_list,ibiff);
 
     // Update "ndist" from "iconn" until we reach the root
-    update_ndist(iconn,true);
+    this->num_terminals = update_ndist(iconn,true);
 
     // Update the 'betas' until we reach the root
     Segment *ipar = iconn->parent;
@@ -1152,77 +705,6 @@ void CCO_Network::prune_segment (Segment *inew)
     recalculate_length();
 }
 
-void CCO_Network::print ()
-{
-    print_point_list();
-    print_segment_list();
-
-    printf("Q_PERF = %g\n",Q_PERF);
-    printf("Q_TERM = %g\n",Q_TERM);
-    printf("P_PERF = %g\n",P_PERF);
-    printf("P_TERM = %g\n",P_TERM);
-    printf("V_PERF = %g\n",V_PERF);
-    printf("R_PERF = %g\n",R_PERF);
-}
-
-void CCO_Network::print_point_list ()
-{
-    for (uint32_t i = 0; i < this->point_list.size(); i++)
-        this->point_list[i]->print();
-    printf("Total number of points = %u\n",this->point_list.size());
-}
-
-void CCO_Network::print_segment_list ()
-{
-    for (uint32_t i = 0; i < this->segment_list.size(); i++)
-        this->segment_list[i]->print();
-    printf("Total number of segments = %u\n",this->segment_list.size());
-}
-
-void CCO_Network::print_network_info ()
-{
-    std::vector<double> segments;
-    get_segment_length(segments);
-
-    std::vector<double> angles;
-    get_bifurcation_angles(angles);
-
-    double mean_segment_length, std_segment_length;
-    calc_mean_std(segments,mean_segment_length,std_segment_length);
-    write_vector_to_file(segments,this->output_dir + "/segments_length.dat");
-
-    double mean_biff_angle, std_biff_angle;
-    calc_mean_std(angles,mean_biff_angle,std_biff_angle);
-    write_vector_to_file(angles,this->output_dir + "/bifurcation_angle.dat");
-
-    write_geometric_info_to_file(this->output_dir + "/network_info.txt",\
-                    segments,mean_segment_length,std_segment_length,\
-                    angles,mean_biff_angle,std_biff_angle);
-    
-    printf("[INFO] Total number of segment = %u\n",segments.size());
-    printf("[INFO] Segment length = %g +/- %g mm\n",mean_segment_length,std_segment_length);
-    printf("[INFO] Total number of bifurcations = %u\n",angles.size());
-    printf("[INFO] Bifurcation angle = %g +/- %g degrees\n",mean_biff_angle,std_biff_angle);
-    if (this->using_pmj_location) 
-    {
-        printf("[INFO] Number of PMJ's connected = %u/%u\n",this->pmj_data->total_num_connected,this->pmj_data->points.size());
-        write_vector_to_file(this->pmj_data->error,this->output_dir + "/pmj_error.dat");
-
-        calc_electric_error();
-        printf("[INFO] Max Error = %.2lf ms || Ref Min LAT = %.2lf ms || Ref Max LAT = %.2lf ms ||\n",this->max_lat_error,this->min_max_ref_lat[0],this->min_max_ref_lat[1]);                                                                                                           
-        printf("                         || Aprox Min LAT = %.2lf ms || Aprox Max LAT = %.2lf ms ||\n",this->min_max_aprox_lat[0],this->min_max_aprox_lat[1]);
-        printf("       RMSE = %.2lf ms || RRMSE = %.2lf %%\n",this->rmse,this->rrmse*100.0);    
-        printf("       Epsilon 2ms = %.2lf %% || Epsilon = 5ms = %.2lf %%\n",this->epsilon_2ms*100.0,this->epsilon_5ms*100.0);       
-
-        write_electric_info_to_file(this->output_dir + "/network_info.txt",\
-                    this->max_lat_error,this->min_max_ref_lat[0],this->min_max_ref_lat[1],\
-                    this->min_max_aprox_lat[0],this->min_max_aprox_lat[1],\
-                    this->rmse,this->rrmse*100.0,\
-                    this->epsilon_2ms*100.0,this->epsilon_5ms*100.0);                                                                                                 
-    }
-}
-
-// Refactor this function when its working ...
 bool CCO_Network::attempt_pmj_connection (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config)
 {
     uint32_t cur_num_connected_pmjs = 0;
@@ -1331,7 +813,7 @@ bool CCO_Network::attempt_pmj_connection (CostFunctionConfig *cost_function_conf
 bool CCO_Network::evaluate_pmj_local_activation_time (Segment *inew, Point *pmj_point, CostFunctionConfig *cost_function_config)
 {
     // 1) Check if the LAT error is less then the absolute error tolerance
-    double lat = calc_terminal_local_activation_time(inew) + this->lat_offset;
+    double lat = inew->calc_terminal_local_activation_time() + this->lat_offset;
     double lat_error = (pmj_point->lat - lat);
     if (fabs(lat_error) < this->pmj_data->lat_error_tolerance)
     {
@@ -1350,7 +832,7 @@ bool CCO_Network::evaluate_pmj_local_activation_time (Segment *inew, Point *pmj_
     if (lat_error > 0.0)
     {
         // Try to adjust the diameter of the last segment by decreasing its velocity
-        double lat_parent = calc_terminal_local_activation_time(inew->parent) + this->lat_offset;
+        double lat_parent = inew->parent->calc_terminal_local_activation_time() + this->lat_offset;
         double delta_t_target = pmj_point->lat - lat_parent;
         
         // If the PMJ has been activated too soon we adjust the diameter in order to fit the reference LAT
@@ -1366,7 +848,7 @@ bool CCO_Network::evaluate_pmj_local_activation_time (Segment *inew, Point *pmj_
                 double prev_error = lat_error;
                 inew->update_radius(new_cv);
             
-                lat = calc_terminal_local_activation_time(inew) + this->lat_offset;
+                lat = inew->calc_terminal_local_activation_time() + this->lat_offset;
                 lat_error = (pmj_point->lat - lat);
                 printf("\t[PMJ %u] Adjusting diameter from %g um to %g um || Propagation velocity decreased from %g to %g m/s || Error decreased from %g to %g ms\n",pmj_point->id,original_radius*2.0*MM_TO_UM,inew->radius*2.0*MM_TO_UM,original_velocity,new_cv/1000,prev_error,lat_error);
                 printf("\t[PMJ %u] Ref: %g ms || Aprox: %g ms || Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
@@ -1432,7 +914,7 @@ bool CCO_Network::attempt_connect_using_region_radius (Point *pmj_point, CostFun
             cur_segment->length = cur_segment->calc_length();
             cur_segment->can_touch = false;
 
-            double lat = calc_terminal_local_activation_time(cur_segment) + this->lat_offset;
+            double lat = cur_segment->calc_terminal_local_activation_time() + this->lat_offset;
             lat_error = (lat - pmj_point->lat);
 
             // 1) Check if the LAT error is less then the absolute error tolerance
@@ -1451,7 +933,7 @@ bool CCO_Network::attempt_connect_using_region_radius (Point *pmj_point, CostFun
             if (lat_error > 0.0)
             {
                 // Try to adjust the diameter of the last segment by decreasing its velocity
-                double lat_parent = calc_terminal_local_activation_time(cur_segment->parent) + this->lat_offset;
+                double lat_parent = cur_segment->parent->calc_terminal_local_activation_time() + this->lat_offset;
                 double delta_t_target = pmj_point->lat - lat_parent;
                 
                 // If the PMJ has been activated too soon we adjust the diameter in order to fit the reference LAT
@@ -1467,7 +949,7 @@ bool CCO_Network::attempt_connect_using_region_radius (Point *pmj_point, CostFun
                         double prev_error = lat_error;
                         cur_segment->update_radius(new_cv);
                     
-                        lat = calc_terminal_local_activation_time(cur_segment) + this->lat_offset;
+                        lat = cur_segment->calc_terminal_local_activation_time() + this->lat_offset;
                         lat_error = (pmj_point->lat - lat);
                         printf("\t[PMJ %u] Adjusting diameter from %g um to %g um || Propagation velocity decreased from %g to %g m/s || Error decreased from %g to %g ms\n",pmj_point->id,original_radius*2.0*MM_TO_UM,cur_segment->radius*2.0*MM_TO_UM,original_velocity,new_cv/1000,prev_error,lat_error);
                         printf("[PMJ %u] Ref: %g ms || Aprox: %g ms || Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
@@ -1521,85 +1003,6 @@ bool CCO_Network::attempt_connect_using_region_radius (Point *pmj_point, CostFun
     return false;
 }
 
-bool CCO_Network::force_pmj_connection (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point)
-{
-    bool sucess = false;
-    double original_value = this->pmj_data->lat_error_tolerance;
-
-    printf("[cco] Forcing connection for PMJ point %u ...\n",pmj_point->id);
-    fprintf(log_file,"[cco] Forcing connection for PMJ point %u ... ...\n",pmj_point->id);
-
-    while (!sucess)
-    {
-        sucess = generate_terminal_using_pmj_locations(cost_function_config,local_opt_config,pmj_point,true);
-        if (sucess)
-        {
-            this->pmj_data->connected[pmj_point->id] = sucess;
-            this->pmj_data->total_num_connected++;
-        }
-        else
-        {
-            printf("\t[cco] Looseing LAT tolerance error from %g to %g\n",this->pmj_data->lat_error_tolerance,this->pmj_data->lat_error_tolerance*PMJ_LOOSE_RATE);
-            this->pmj_data->lat_error_tolerance *= PMJ_LOOSE_RATE;
-        }
-
-        // Brute force connection
-        if (this->pmj_data->lat_error_tolerance > PMJ_LOOSE_THREASHOLD)
-        {
-            printf("\t[cco] Forcing connection!\n");
-            sucess = generate_terminal_using_pmj_locations(cost_function_config,local_opt_config,pmj_point,false);
-            if (!sucess)
-            {
-                sucess = force_connection_to_closest_segment(cost_function_config,local_opt_config,pmj_point);
-            }
-            this->pmj_data->connected[pmj_point->id] = sucess;
-            this->pmj_data->total_num_connected++;
-        }
-    }
-
-    // Reset to the original value
-    this->pmj_data->lat_error_tolerance = original_value;
-
-    return sucess;
-}
-
-bool CCO_Network::force_connection_to_closest_segment (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point)
-{
-    Segment *closest = NULL;
-    double min_dist = __DBL_MAX__;
-
-    for (uint32_t i = 0; i < this->segment_list.size(); i++)
-    {
-        Segment *cur_segment = this->segment_list[i];
-
-        if (cur_segment->is_terminal() && cur_segment->is_touchable())
-        {
-            double dist = euclidean_norm(cur_segment->dest->x,cur_segment->dest->y,cur_segment->dest->z,\
-                                        pmj_point->x,pmj_point->y,pmj_point->z);
-            if (dist < min_dist)
-            {
-                min_dist = dist;
-                closest = cur_segment;
-            }
-        }
-    }
-
-    // Change the coordinates
-    closest->dest->x = pmj_point->x;
-    closest->dest->y = pmj_point->y;
-    closest->dest->z = pmj_point->z;
-    closest->length = closest->calc_length();
-    closest->can_touch = false;
-    
-    // Calculate the LAT error
-    double lat = calc_terminal_local_activation_time(closest) + this->lat_offset;
-    double lat_error = fabs(lat-pmj_point->lat);
-    this->pmj_data->error[pmj_point->id] = lat_error;
-    this->pmj_data->aprox[pmj_point->id] = lat;
-    
-    return true;
-}
-
 void CCO_Network::write_to_vtk_iteration ()
 {
     uint32_t num_points = this->point_list.size();
@@ -1644,47 +1047,6 @@ void CCO_Network::write_to_vtk_iteration ()
     fclose(file);
 }
 
-Segment* CCO_Network::get_terminal (const double pos[])
-{
-    uint32_t min_id = 0;
-    double min_dist = __DBL_MAX__;
-
-    // Find the index of the closest point to the one given
-    for (uint32_t i = 0; i < this->point_list.size(); i++)
-    {
-        double middle_pos[3];
-        middle_pos[0] = this->point_list[i]->x*M_TO_UM;
-        middle_pos[1] = this->point_list[i]->y*M_TO_UM;
-        middle_pos[2] = this->point_list[i]->z*M_TO_UM;
-
-        double dist = euclidean_norm(middle_pos[0],middle_pos[1],middle_pos[2],\
-                                    pos[0],pos[1],pos[2]);
-        
-        if (dist < min_dist)
-        {
-            min_dist = dist;
-            min_id = i;
-        }
-    }
-
-    for (uint32_t i = 0; i < this->segment_list.size(); i++)
-    {
-        if (this->segment_list[i]->dest->id == min_id)
-            return this->segment_list[i];
-    }
-    for (uint32_t i = 0; i < this->segment_list.size(); i++)
-    {
-        if (this->segment_list[i]->src->id == min_id)
-            return this->segment_list[i];
-    }
-    return NULL;
-}
-
-Point* CCO_Network::search_point (const uint32_t index)
-{
-    return this->point_list[index];
-}
-
 CCO_Network* CCO_Network::copy ()
 {
     CCO_Network *result = new CCO_Network();
@@ -1700,7 +1062,6 @@ CCO_Network* CCO_Network::copy ()
     result->max_lat_error = __DBL_MIN__;
     result->min_max_aprox_lat[0] = __DBL_MAX__; result->min_max_aprox_lat[1] = __DBL_MIN__;
     result->min_max_ref_lat[0] = __DBL_MAX__; result->min_max_ref_lat[1] = __DBL_MIN__;
-    srand(result->seed);
 
     memcpy(result->root_pos,this->root_pos,sizeof(double)*3);
 
@@ -1710,11 +1071,6 @@ CCO_Network* CCO_Network::copy ()
     result->using_cloud_points = this->using_cloud_points;
     result->using_local_optimization = this->using_local_optimization;
     result->using_pmj_location = this->using_pmj_location;
-
-    if (this->pmj_data)
-    {
-        result->pmj_data = this->pmj_data->copy();
-    }
         
     memcpy(result->min_max_aprox_lat,this->min_max_aprox_lat,sizeof(double)*2);
     memcpy(result->min_max_ref_lat,this->min_max_ref_lat,sizeof(double)*2);
@@ -1722,8 +1078,7 @@ CCO_Network* CCO_Network::copy ()
     result->output_dir = "outputs/copy";
     result->cost_function_name = this->cost_function_name;
     result->local_optimization_function_name = this->local_optimization_function_name;
-    result->cloud_points_filename = this->cloud_points_filename;
-
+    
     result->Q_TERM = Q_PERF / result->N_term;
     result->R_PERF = powf(((3.0*V_PERF)/(4.0 * M_PI)), (1.0/3.0));
 
@@ -1754,6 +1109,7 @@ CCO_Network* CCO_Network::copy ()
 
         result->segment_list.push_back(s);
     }
+    // Set the Segment pointers
     for (uint32_t i = 0; i < this->segment_list.size(); i++)
     {
         Segment *left = this->segment_list[i]->left;
@@ -1765,13 +1121,18 @@ CCO_Network* CCO_Network::copy ()
         result->segment_list[i]->parent = (parent) ? result->segment_list[parent->id] : NULL;
     }
 
-    // Copy cloud of points
-    for (uint32_t i = 0; i < this->cloud_points.size(); i++)
+    // Copy the Cloud data
+    if (this->cloud_data)
     {
-        Point *p = new Point(this->cloud_points[i]);
-        result->cloud_points.push_back(p);
+        result->cloud_data = this->cloud_data->copy();
     }
     
+    // Copy the PMJ data
+    if (this->pmj_data)
+    {
+        result->pmj_data = this->pmj_data->copy();
+    }
+
     return result;
 }
 
@@ -1779,9 +1140,10 @@ CCO_Network* CCO_Network::concatenate (CCO_Network *input)
 {
     uint32_t offset_points, offset_segments;
 
+    // Get a copy of the current network
     CCO_Network *result = this->copy();
 
-    // Sum the number of terminals from both networks
+    // Sum the number of terminals from both networks and update the PMJ flag
     result->num_terminals += input->num_terminals;
     result->using_pmj_location |= input->using_pmj_location;
 
@@ -1792,7 +1154,7 @@ CCO_Network* CCO_Network::concatenate (CCO_Network *input)
     result->min_max_ref_lat[1] = (input->min_max_ref_lat[1] > this->min_max_ref_lat[1]) ? input->min_max_ref_lat[1] : this->min_max_ref_lat[1];
     result->max_lat_error = (input->max_lat_error > this->max_lat_error) ? input->max_lat_error : this->max_lat_error;
 
-    // Concatenate points
+    // Concatenate the points
     offset_points = result->point_list.size();
     for (uint32_t i = 0; i < input->point_list.size(); i++)
     {
@@ -1801,7 +1163,7 @@ CCO_Network* CCO_Network::concatenate (CCO_Network *input)
         result->point_list.push_back(p);
     }
 
-    // Concatenate segments
+    // Concatenate the segments
     offset_segments = result->segment_list.size();
     for (uint32_t i = 0; i < input->segment_list.size(); i++)
     {
@@ -1820,6 +1182,7 @@ CCO_Network* CCO_Network::concatenate (CCO_Network *input)
 
         result->segment_list.push_back(s);
     }
+    // Update the segment pointers
     for (uint32_t i = 0; i < input->segment_list.size(); i++)
     {
         Segment *left = input->segment_list[i]->left;
@@ -1832,33 +1195,12 @@ CCO_Network* CCO_Network::concatenate (CCO_Network *input)
     }
 
     // Concatenate cloud of points
-    offset_points = result->cloud_points.size();
-    for (uint32_t i = 0; i < input->cloud_points.size(); i++)
-    {
-        Point *p = new Point(input->cloud_points[i]);
-        p->id += offset_points;
-        result->cloud_points.push_back(p);
-    }
+    result->cloud_data->concatenate(input->cloud_data);
 
     // Concatenate PMJ's
     if (input->pmj_data)
     {
-        result->pmj_data->total_num_connected += input->pmj_data->total_num_connected;
-        
-        offset_points = result->pmj_data->points.size();
-        for (uint32_t i = 0; i < input->pmj_data->points.size(); i++)
-        {
-            Point *p = new Point(input->pmj_data->points[i]);
-            bool connected = input->pmj_data->connected[i];
-            double aprox = input->pmj_data->aprox[i];
-            double error = input->pmj_data->error[i];
-            p->id += offset_points;
-
-            result->pmj_data->points.push_back(p);
-            result->pmj_data->connected.push_back(connected);
-            result->pmj_data->aprox.push_back(aprox);
-            result->pmj_data->error.push_back(error);
-        }
+        result->pmj_data->concatenate(input->pmj_data);
     }
 
     return result;
@@ -1917,6 +1259,7 @@ void CCO_Network::adjust_radius ()
     // TODO: Think about we are going adjust the 'ndist' and 'beta' variables
 }
 
+// Constant radius
 void CCO_Network::adjust_radius_2 ()
 {
     // Set the output directory first
@@ -2008,14 +1351,96 @@ void CCO_Network::calc_electric_error ()
     this->epsilon_5ms = (double)counter_less_5ms / (double)counter;
 }
 
+bool CCO_Network::force_pmj_connection (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config)
+{
+    for (auto it = this->pmj_data->package.begin(); it != this->pmj_data->package.end(); it++)
+    {
+        uint32_t cur_pmj_id = *it;
+        Point *cur_pmj_point = this->pmj_data->points[cur_pmj_id];
+
+        if (!this->pmj_data->connected[cur_pmj_point->id])
+        {
+            printf("[cco] (Package %u) Forcing connection PMJ point %u ...\n",cur_pmj_package,cur_pmj_point->id);
+            fprintf(log_file,"[cco] (Package %u) Forcing connection PMJ point %u ...\n",cur_pmj_package,cur_pmj_point->id);
+
+            bool sucess = force_connection_to_closest_segment(cost_function_config,local_opt_config,cur_pmj_point);
+            this->pmj_data->connected[cur_pmj_point->id] = sucess;
+            
+            // If it is possible to connect the PMJ point in the desired error range we remove the point from the package
+            if (sucess)
+            {
+                printf("\t\t\t[!] SUCESS!\n");
+                this->pmj_data->total_num_connected++;
+                write_to_vtk_iteration();
+            }
+            // Else, we increase the penalty counter for that point
+            else
+            {
+                printf("[!] ERROR! On 'forcing_pmj_connection'!\n");
+                exit(1);
+            }
+        }
+    }
+    if (this->pmj_data->total_num_connected == this->pmj_data->points.size()) 
+    {
+        this->pmj_data->package.clear();
+        printf("[!] All PMJ's points have been connected!\n");
+        return true;
+    }
+    else
+    {
+        printf("[!] ERROR! On 'forcing_pmj_connection'!\n");
+        exit(1);
+    }
+}
+
+bool CCO_Network::force_connection_to_closest_segment (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj)
+{
+    Segment *closest = NULL;
+    double min_dist = __DBL_MAX__;
+
+    for (uint32_t i = 0; i < this->segment_list.size(); i++)
+    {
+        Segment *cur_segment = this->segment_list[i];
+
+        if (cur_segment->is_terminal() && cur_segment->is_touchable())
+        {
+            double dist = euclidean_norm(cur_segment->dest->x,cur_segment->dest->y,cur_segment->dest->z,\
+                                        pmj->x,pmj->y,pmj->z);
+            if (dist < min_dist)
+            {
+                min_dist = dist;
+                closest = cur_segment;
+            }
+        }
+    }
+
+    // Change the coordinates
+    closest->dest->x = pmj->x;
+    closest->dest->y = pmj->y;
+    closest->dest->z = pmj->z;
+    closest->length = closest->calc_length();
+    closest->can_touch = false;
+    
+    // Calculate the LAT error
+    double lat = closest->calc_terminal_local_activation_time() + this->lat_offset;
+    double lat_error = fabs(lat-pmj->lat);
+    this->pmj_data->error[pmj->id] = lat_error;
+    this->pmj_data->aprox[pmj->id] = lat;
+
+    printf("[PMJ %u] Ref: %g ms || Aprox: %g ms || Error: %g ms\n",pmj->id,pmj->lat,lat,lat_error);
+    
+    return true;
+}
+
 bool CCO_Network::connect_remaining_active_pmjs (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config)
 {
     bool sucess;
     double original_lat_tolerance = this->pmj_data->lat_error_tolerance;
     while (this->pmj_data->total_num_connected < this->pmj_data->points.size())
     {
-        // Loose the LAT error tolerance by 20%
-        this->pmj_data->lat_error_tolerance *= 1.2;
+        // Loose the LAT error tolerance by the PMJ_LOOSE_RATE
+        this->pmj_data->lat_error_tolerance *= PMJ_LOOSE_RATE;
 
         sucess = attempt_pmj_connection(cost_function_config,local_opt_config);
 
@@ -2031,6 +1456,12 @@ bool CCO_Network::connect_remaining_active_pmjs (CostFunctionConfig *cost_functi
                     this->pmj_data->package.push_back(i);
                 }
             }
+        }
+
+        // Corner case - Force connection if the number of packages surpass a maximum value
+        if (this->cur_pmj_package > MAX_PMJ_PACKAGE_TRY)
+        {
+            sucess = force_pmj_connection(cost_function_config,local_opt_config);
         }
     }
     return sucess;
@@ -2091,4 +1522,74 @@ bool CCO_Network::attempt_connect_using_local_backtracking (CostFunctionConfig *
     // For each terminal try to connect the PMJ using Step 1, 2 and 3
     
     return true;
+}
+
+void CCO_Network::print ()
+{
+    print_point_list();
+    print_segment_list();
+
+    printf("Q_PERF = %g\n",Q_PERF);
+    printf("Q_TERM = %g\n",Q_TERM);
+    printf("P_PERF = %g\n",P_PERF);
+    printf("P_TERM = %g\n",P_TERM);
+    printf("V_PERF = %g\n",V_PERF);
+    printf("R_PERF = %g\n",R_PERF);
+}
+
+void CCO_Network::print_point_list ()
+{
+    for (uint32_t i = 0; i < this->point_list.size(); i++)
+        this->point_list[i]->print();
+    printf("Total number of points = %u\n",this->point_list.size());
+}
+
+void CCO_Network::print_segment_list ()
+{
+    for (uint32_t i = 0; i < this->segment_list.size(); i++)
+        this->segment_list[i]->print();
+    printf("Total number of segments = %u\n",this->segment_list.size());
+}
+
+void CCO_Network::print_network_info ()
+{
+    std::vector<double> segments;
+    get_segment_length(this->segment_list,segments);
+
+    std::vector<double> angles;
+    get_bifurcation_angles(this->segment_list,angles);
+
+    double mean_segment_length, std_segment_length;
+    calc_mean_std(segments,mean_segment_length,std_segment_length);
+    write_vector_to_file(segments,this->output_dir + "/segments_length.dat");
+
+    double mean_biff_angle, std_biff_angle;
+    calc_mean_std(angles,mean_biff_angle,std_biff_angle);
+    write_vector_to_file(angles,this->output_dir + "/bifurcation_angle.dat");
+
+    write_geometric_info_to_file(this->output_dir + "/network_info.txt",\
+                    segments,mean_segment_length,std_segment_length,\
+                    angles,mean_biff_angle,std_biff_angle);
+    
+    printf("[INFO] Total number of segment = %u\n",segments.size());
+    printf("[INFO] Segment length = %g +/- %g mm\n",mean_segment_length,std_segment_length);
+    printf("[INFO] Total number of bifurcations = %u\n",angles.size());
+    printf("[INFO] Bifurcation angle = %g +/- %g degrees\n",mean_biff_angle,std_biff_angle);
+    if (this->using_pmj_location) 
+    {
+        printf("[INFO] Number of PMJ's connected = %u/%u\n",this->pmj_data->total_num_connected,this->pmj_data->points.size());
+        write_vector_to_file(this->pmj_data->error,this->output_dir + "/pmj_error.dat");
+
+        calc_electric_error();
+        printf("[INFO] Max Error = %.2lf ms || Ref Min LAT = %.2lf ms || Ref Max LAT = %.2lf ms ||\n",this->max_lat_error,this->min_max_ref_lat[0],this->min_max_ref_lat[1]);                                                                                                           
+        printf("                         || Aprox Min LAT = %.2lf ms || Aprox Max LAT = %.2lf ms ||\n",this->min_max_aprox_lat[0],this->min_max_aprox_lat[1]);
+        printf("       RMSE = %.2lf ms || RRMSE = %.2lf %%\n",this->rmse,this->rrmse*100.0);    
+        printf("       Epsilon 2ms = %.2lf %% || Epsilon = 5ms = %.2lf %%\n",this->epsilon_2ms*100.0,this->epsilon_5ms*100.0);       
+
+        write_electric_info_to_file(this->output_dir + "/network_info.txt",\
+                    this->max_lat_error,this->min_max_ref_lat[0],this->min_max_ref_lat[1],\
+                    this->min_max_aprox_lat[0],this->min_max_aprox_lat[1],\
+                    this->rmse,this->rrmse*100.0,\
+                    this->epsilon_2ms*100.0,this->epsilon_5ms*100.0);                                                                                                 
+    }
 }

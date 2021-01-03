@@ -12,6 +12,7 @@
 #include <cmath>
 
 #include "../point/point.h"
+#include "../cco/constants.h"
 
 class Segment
 {
@@ -111,6 +112,24 @@ public:
         }
         return result;
     }
+    double calc_terminal_local_activation_time ()
+    {
+        double result = 0.0;
+        Segment *tmp = this;
+        while (tmp != NULL)
+        {
+            double cv = tmp->calc_propagation_velocity()*M_S_TO_UM_MS;    // {m/s}->{um/ms}
+            double dist = tmp->length;
+            double lat = dist*M_TO_UM/cv;
+
+            result += lat;
+            
+            tmp = tmp->parent;
+        }
+
+        // Return the LAT in {ms}
+        return result; 
+    }
     uint32_t calc_level ()
     {
         uint32_t result = 0;
@@ -169,5 +188,8 @@ public:
             printf("\tRIGHT = %u\n",this->right->id);
     }
 };
+
+void eliminate_segment_from_list (std::vector<Segment*> &s_list, Segment *s);
+void order_segment_list (std::vector<Segment*> &s_list);
 
 #endif

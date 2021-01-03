@@ -13,6 +13,7 @@ class Point;
 class PMJConfig
 {
 public:
+    bool using_pmj;
     uint32_t max_connection_tries;
     uint32_t connection_rate;
     double region_radius;

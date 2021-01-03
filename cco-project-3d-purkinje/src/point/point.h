@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <cstdbool>
 #include <cstdint>
+#include <vector>
 
 class Point
 {
@@ -28,5 +29,9 @@ public:
     void setActive (const bool is_active) { this->is_active = is_active; }
     void print () { printf("id (x y z) [LAT] {Active} = %u (%g %g %g) [%g] {%d}\n",this->id,this->x,this->y,this->z,this->lat,(int)this->is_active); }
 };
+
+Point* search_point (std::vector<Point*> p_list, const uint32_t index);
+void eliminate_point_from_list (std::vector<Point*> &p_list, Point *p);
+void order_point_list (std::vector<Point*> &p_list);
 
 #endif

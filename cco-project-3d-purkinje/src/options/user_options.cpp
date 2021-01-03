@@ -16,6 +16,7 @@ User_Options::User_Options (const char filename[])
 
     this->cost_function_config = NULL;
     this->local_opt_config = NULL;
+    this->cloud_config = NULL;
     this->pmj_config = NULL;
 
     read_config_file(filename);
@@ -27,6 +28,10 @@ User_Options::~User_Options ()
         delete this->cost_function_config;
     if (this->local_opt_config)
         delete this->local_opt_config;
+    if (this->pmj_config)
+        delete this->pmj_config;
+    if (this->cloud_config)
+        delete this->cloud_config;
 }
 
 void User_Options::read_config_file (const char filename[])
@@ -141,6 +146,11 @@ int parse_config_file (void *user, const char *section, const char *name, const 
     }
     else if (SECTION_STARTS_WITH(CLOUD_SECTION))
     {
+        if (!pconfig->cloud_config)
+        {
+            pconfig->cloud_config = new CloudConfig();
+        }
+
         if (MATCH_NAME("use_cloud_points"))
         {
             if (strcmp(value,"true") == 0 || strcmp(value,"yes") == 0)
@@ -155,7 +165,7 @@ int parse_config_file (void *user, const char *section, const char *name, const 
         }
         else if (MATCH_NAME("cloud_points_filename"))
         {
-            pconfig->cloud_points_filename = value;
+            pconfig->cloud_config->filename = value;
         }
         else if (MATCH_NAME("use_obstacle"))
         {
@@ -195,6 +205,7 @@ int parse_config_file (void *user, const char *section, const char *name, const 
         }
         else if (MATCH_NAME("pmj_location_filename"))
         {
+            pconfig->pmj_config->using_pmj = true;
             pconfig->pmj_config->location_filename = value;
         }
         else if (MATCH_NAME("max_pmj_connection_tries"))
@@ -308,7 +319,7 @@ void User_Options::print ()
 
     printf("%s\n",PRINT_DOTS);
     if (this->use_cloud_points)
-        printf("cloud_points_filename = %s\n",this->cloud_points_filename.c_str());
+        printf("cloud_points_filename = %s\n",this->cloud_config->filename.c_str());
     else
         printf("cloud_points_filename = NULL\n");
     if (this->use_obstacle)

@@ -21,6 +21,7 @@
 #include "cost_function_config.h"
 #include "local_optimization_config.h"
 #include "pmj_config.h"
+#include "cloud_config.h"
 //#include "pruning_config.h"
 
 #define PRINT_LINE "====================================================================================="
@@ -41,7 +42,7 @@ public:
     double lat_offset;
 
     bool use_cloud_points;
-    std::string cloud_points_filename;
+    CloudConfig *cloud_config;
 
     bool use_obstacle;
     std::string obstacle_filename;

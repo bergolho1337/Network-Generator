@@ -17,15 +17,23 @@
 
 #include "../point/point.h"
 #include "../utils/utils.h"
+#include "../options/cloud_config.h"
 
-class Cloud_Point
+class Cloud
 {
 public:
     std::string filename;
+    uint32_t cur_index;
     std::vector<Point*> points;
+    std::vector<bool> connected;
 public:
-    Cloud_Point (std::string cloud_points_filename);
-    ~Cloud_Point ();
+    Cloud ();
+    Cloud (CloudConfig *config);
+    ~Cloud ();
+    uint32_t sort_point (Point *p, const uint32_t rand_offset);
+    Cloud* copy ();
+    void concatenate (Cloud *input);
+    void print ();
 };
 
 #endif

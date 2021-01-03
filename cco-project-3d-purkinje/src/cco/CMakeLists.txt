@@ -1,5 +1,8 @@
 set(SOURCE_FILES_CCO cco.h cco.cpp
-                     pmj.h pmj.cpp)
+                     pmj.h pmj.cpp
+                     cloud.h cloud.cpp
+                     helper.h helper.cpp
+                     constants.h)
 
 ADD_LIBRARY(cco STATIC ${SOURCE_FILES_CCO})
 

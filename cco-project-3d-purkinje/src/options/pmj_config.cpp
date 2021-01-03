@@ -2,6 +2,7 @@
 
 PMJConfig::PMJConfig ()
 {
+    this->using_pmj = false;
     this->lat_error_tolerance = 2.0;
     this->max_connection_tries = 100;
     this->connection_rate = __UINT32_MAX__;

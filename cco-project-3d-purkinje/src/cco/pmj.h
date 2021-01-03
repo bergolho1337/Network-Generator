@@ -32,6 +32,7 @@ public:
     std::string location_filename;
     std::vector<bool> connected;
     std::vector<double> error;
+    std::vector<double> reference;
     std::vector<double> aprox;
     std::vector<Point*> points;
     std::list<uint32_t> package;
@@ -41,8 +42,9 @@ public:
     PMJ ();
     PMJ (PMJConfig *config);
     ~PMJ ();
-    void print ();
+    void concatenate (PMJ *input);
     PMJ* copy ();
+    void print ();
 };
 
 bool comparePoint (Point *a, Point *b);

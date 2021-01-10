@@ -484,7 +484,7 @@ bool CCO_Network::generate_terminal_using_cloud_points (CostFunctionConfig *cost
         }
     }
 
-    Segment *inew = this->build_segment(local_opt_config,iconn->id,new_term);
+    Segment *inew = build_segment(local_opt_config,iconn->id,new_term);
     sucess = true;
 
     if (check_null_segments(this->segment_list))
@@ -509,7 +509,7 @@ bool CCO_Network::generate_terminal_using_pmj_locations (CostFunctionConfig *cos
     bool point_is_ok = false;
     uint32_t counter_tries = 0;
     uint32_t K_term = this->num_terminals;
-    double d_threash = calc_dthreashold(R_PERF,K_term);     // (r_supp = R_PERF) in this case
+    double d_threash = calc_dthreashold(R_PERF,K_term);     
     
     // Array of feasible segments to connect the new terminal
     std::vector<Segment*> feasible_segments;
@@ -542,8 +542,7 @@ bool CCO_Network::generate_terminal_using_pmj_locations (CostFunctionConfig *cos
         // we need to choose another point
         if (!point_is_ok)
         {
-            fprintf(log_file,"[!] Reducing dthreash! Before = %g || Now = %g \n",\
-                        d_threash,d_threash*FACTOR);
+            fprintf(log_file,"[!] Reducing dthreash! Before = %g || Now = %g \n",d_threash,d_threash*FACTOR);
             d_threash *= FACTOR;
             counter_tries++;
 
@@ -553,15 +552,10 @@ bool CCO_Network::generate_terminal_using_pmj_locations (CostFunctionConfig *cos
                 return sucess;
             }    
         }
-        // The point is a valid one and we can eliminate it from the cloud
-        else
-        {
-
-        }
     }
 
     // Build the new segment of the tree
-    Segment *inew = this->build_segment(local_opt_config,iconn->id,pmj_point);
+    Segment *inew = build_segment(local_opt_config,iconn->id,pmj_point);
 
     // [EVALUATE PMJ ACTIVATION]
     if (evaluate)
@@ -570,26 +564,26 @@ bool CCO_Network::generate_terminal_using_pmj_locations (CostFunctionConfig *cos
         sucess = evaluate_pmj_local_activation_time(inew,pmj_point,cost_function_config);
         if (sucess) printf("\t\t[+] PMJ point %u was connected in step 1!\n",pmj_point->id);
 
-        // Step 2: Connect trying to connect using inverse CCO
-        if (!sucess)
-        {
-            sucess = attempt_connect_using_inverse(cost_function_config,local_opt_config,feasible_segments,pmj_point);
-            if (sucess) printf("\t\t[+] PMJ point %u was connected in step 2!\n",pmj_point->id);
-        }
-
-        // Step 3: Connect using normal CCO and region radius
+        // Step 2: Connect using normal CCO and region radius
         if (!sucess)
         {   
             sucess = attempt_connect_using_region_radius(pmj_point,cost_function_config);
-            if (sucess) printf("\t\t[+] PMJ point %u was connected in step 3!\n",pmj_point->id);
+            if (sucess) printf("\t\t[+] PMJ point %u was connected in step 2!\n",pmj_point->id);
         }
 
-        // Step 4: Local backtracking
-        //if (!sucess)
-        //{
-        //    sucess = attempt_connect_using_local_backtracking(cost_function_config,local_opt_config,pmj_point);
-        //    if (sucess) printf("\t\t[+] PMJ point %u was connected in step 4!\n",pmj_point->id);
-        //}
+        // Step 3: Connect using local backtracking
+        if (!sucess)
+        {   
+            //sucess = connect_using_local_backtracking(cost_function_config,local_opt_config,pmj_point);
+            //if (sucess) printf("\t\t[+] PMJ point %u was connected in step 3!\n",pmj_point->id);
+        }
+
+        // Step 4: Connect trying to connect using inverse CCO
+        if (!sucess)
+        {
+            //sucess = attempt_connect_using_inverse(cost_function_config,local_opt_config,feasible_segments,pmj_point);
+            //if (sucess) printf("\t\t[+] PMJ point %u was connected in step 4!\n",pmj_point->id);
+        }
     }
     else
     {
@@ -770,9 +764,6 @@ bool CCO_Network::attempt_pmj_connection (CostFunctionConfig *cost_function_conf
         }
         remove_ids.clear();
 
-        //for (uint32_t i = 0; i < this->pmj_data->connected.size(); i++)
-        //    printf("%u %d\n",i,(int)this->pmj_data->connected[i]);
-   
         // Refill the PMJ package
         for (uint32_t i = this->pmj_data->package_head; i < this->pmj_data->points.size() && this->pmj_data->package.size() < this->pmj_data->package_size; i++)
         {
@@ -806,7 +797,7 @@ bool CCO_Network::attempt_pmj_connection (CostFunctionConfig *cost_function_conf
     } while (prev_num_connected_pmjs != cur_num_connected_pmjs);
 
     cur_pmj_package++;
-    
+
     return (this->pmj_data->total_num_connected > total_num_pmjs_connected_before) ? true : false;
 }
 
@@ -823,10 +814,26 @@ bool CCO_Network::evaluate_pmj_local_activation_time (Segment *inew, Point *pmj_
         printf("\t[PMJ %u] Ref: %g ms || Aprox: %g ms || Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
         return true;
     }
-
+    else
+    {
+        //printf("\t[PMJ %u] Ref: %g ms || Aprox: %g ms || Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
+        prune_segment(inew);
+        return false;
+    }
+    
     // 2) Check if we can adjust the radius of the last segment
+    //adjust_terminal_diameter(inew,pmj_point);
+
+    return false;
+}
+
+bool CCO_Network::adjust_terminal_diameter (Segment *inew, Point *pmj_point)
+{
     double original_radius = inew->radius;
     double original_velocity = inew->calc_propagation_velocity();
+
+    double lat = inew->calc_terminal_local_activation_time() + this->lat_offset;
+    double lat_error = (pmj_point->lat - lat);
 
     // The propagation velocity is too fast for that PMJ
     if (lat_error > 0.0)
@@ -863,20 +870,17 @@ bool CCO_Network::evaluate_pmj_local_activation_time (Segment *inew, Point *pmj_
             }
             else
             {
-                //printf("\t[PMJ %u] No connection! Ref: %g ms || Aprox: %g ms || Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
                 prune_segment(inew);
             }
         }
-        // We cannot increase the diameter, so prune this segment
+        // We could not increase the diameter more then its parent 
         else
         {
-            //printf("\t[PMJ %u] No connection! Ref: %g ms || Aprox: %g ms || Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
             prune_segment(inew);
         }
     }
     else
     {
-        //printf("\t[PMJ %u] No connection! Ref: %g ms || Aprox: %g ms || Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
         prune_segment(inew);
     }
     return false;
@@ -897,9 +901,6 @@ bool CCO_Network::attempt_connect_using_region_radius (Point *pmj_point, CostFun
         Segment *cur_segment = this->segment_list[i];
         if (cur_segment->is_terminal() && cur_segment->is_inside_region(center,radius) && cur_segment->is_touchable())
         {
-            // Try to connect the PMJ location directly to a segment by changing the destination node coordinates
-            //printf("Segment %u is inside region for PMJ %u\n",cur_segment->id,pmj_point->id);
-
             // Save the original position and radius
             ori_pos[0] = cur_segment->dest->x;
             ori_pos[1] = cur_segment->dest->y;
@@ -920,76 +921,14 @@ bool CCO_Network::attempt_connect_using_region_radius (Point *pmj_point, CostFun
             // 1) Check if the LAT error is less then the absolute error tolerance
             if (fabs(lat_error) < this->pmj_data->lat_error_tolerance)
             {
+                printf("\t[PMJ %u] Ref: %g ms || Aprox: %g ms || Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
                 cur_segment->can_touch = false;
                 this->pmj_data->error[pmj_point->id] = lat_error;
                 this->pmj_data->aprox[pmj_point->id] = lat;
                 return true;
             }
-
-            // 2) Check if we can adjust the radius of the last segment
-            double original_radius = cur_segment->radius;
-
-            // The propagation velocity is too fast for that PMJ
-            if (lat_error > 0.0)
-            {
-                // Try to adjust the diameter of the last segment by decreasing its velocity
-                double lat_parent = cur_segment->parent->calc_terminal_local_activation_time() + this->lat_offset;
-                double delta_t_target = pmj_point->lat - lat_parent;
-                
-                // If the PMJ has been activated too soon we adjust the diameter in order to fit the reference LAT
-                if (delta_t_target > 0.0)
-                {
-                    double delta_s_term = cur_segment->calc_pathway_length()*M_TO_UM;
-                    double delta_s_parent = cur_segment->parent->calc_pathway_length()*M_TO_UM;
-                    double new_cv = (delta_s_term - delta_s_parent) / delta_t_target;
-                    
-                    // We only update the segment diameter when the new CV is greater than CV_THREASHOLD
-                    if (new_cv > MIN_CV_THREASHOLD && new_cv < MAX_CV_THREASHOLD)
-                    {
-                        double prev_error = lat_error;
-                        cur_segment->update_radius(new_cv);
-                    
-                        lat = cur_segment->calc_terminal_local_activation_time() + this->lat_offset;
-                        lat_error = (pmj_point->lat - lat);
-                        printf("\t[PMJ %u] Adjusting diameter from %g um to %g um || Propagation velocity decreased from %g to %g m/s || Error decreased from %g to %g ms\n",pmj_point->id,original_radius*2.0*MM_TO_UM,cur_segment->radius*2.0*MM_TO_UM,original_velocity,new_cv/1000,prev_error,lat_error);
-                        printf("[PMJ %u] Ref: %g ms || Aprox: %g ms || Error: %g ms\n",pmj_point->id,pmj_point->lat,lat,lat_error);
-
-                        if (fabs(lat_error) < this->pmj_data->lat_error_tolerance)
-                        {
-                            cur_segment->can_touch = false;
-                            this->pmj_data->error[pmj_point->id] = lat_error;
-                            this->pmj_data->aprox[pmj_point->id] = lat;
-                            return true;
-                        }
-                    }
-                    else
-                    {
-                        // Restore the state
-                        cur_segment->dest->x = ori_pos[0];
-                        cur_segment->dest->y = ori_pos[1];
-                        cur_segment->dest->z = ori_pos[2];
-                        cur_segment->length = cur_segment->calc_length();
-                        cur_segment->radius = original_radius;
-                        cur_segment->can_touch = true;
-                    }
-                }
-                // We cannot increase the diameter, so prune this segment
-                else
-                {
-                    // Restore the state
-                    cur_segment->dest->x = ori_pos[0];
-                    cur_segment->dest->y = ori_pos[1];
-                    cur_segment->dest->z = ori_pos[2];
-                    cur_segment->length = cur_segment->calc_length();
-                    cur_segment->radius = original_radius;
-                    cur_segment->can_touch = true;
-                }
-                
-                //write_pathway(pmj_point);
-            }
             else
             {
-                // Restore the state
                 cur_segment->dest->x = ori_pos[0];
                 cur_segment->dest->y = ori_pos[1];
                 cur_segment->dest->z = ori_pos[2];
@@ -1503,7 +1442,7 @@ bool CCO_Network::attempt_connect_using_inverse (CostFunctionConfig *cost_functi
     if (iconn == NULL) return sucess;
 
     // Build the new segment of the tree
-    Segment *inew = this->build_segment(local_opt_config,iconn->id,pmj_point);
+    Segment *inew = build_segment(local_opt_config,iconn->id,pmj_point);
 
     // [EVALUATE PMJ ACTIVATION]
     // Step 3: Connect using inverse CCO
@@ -1511,17 +1450,6 @@ bool CCO_Network::attempt_connect_using_inverse (CostFunctionConfig *cost_functi
     
     return sucess;    
 
-}
-
-bool CCO_Network::attempt_connect_using_local_backtracking (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point)
-{
-    // Get the inactive points that are around the PMJ at a certain range (2mm)
-    
-    // Generate new terminals using only the points around the PMJ
-
-    // For each terminal try to connect the PMJ using Step 1, 2 and 3
-    
-    return true;
 }
 
 void CCO_Network::print ()
@@ -1592,4 +1520,179 @@ void CCO_Network::print_network_info ()
                     this->rmse,this->rrmse*100.0,\
                     this->epsilon_2ms*100.0,this->epsilon_5ms*100.0);                                                                                                 
     }
+}
+
+bool CCO_Network::connect_using_local_backtracking (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point)
+{
+    bool sucess = false;
+    Segment *iconn = NULL;
+    std::stack<Segment*> backtrack;
+    std::vector<Segment*> feasible_segments;
+
+    double region_radius = this->pmj_data->region_radius;
+    uint32_t num_points_inside_region = 20;
+    uint32_t counter_tries = 0;
+    while (!sucess && counter_tries < 2)
+    {
+        printf("[Local backtracking] Region radius number: %u (Points = %u)\n",counter_tries,num_points_inside_region);
+
+        Cloud *local_cloud = this->cloud_data->get_points_around_region(pmj_point,num_points_inside_region,region_radius);
+
+        for (uint32_t k = 0; k < local_cloud->points.size(); k++) 
+        {
+            uint32_t tosses = 0;
+            uint32_t K_term = this->num_terminals;
+            double d_threash = calc_dthreashold(R_PERF,K_term);   
+
+            uint32_t cur_num_points = this->point_list.size();
+            Point *new_term = new Point(cur_num_points+1);
+            
+            bool point_is_ok = false;
+            while (!point_is_ok)
+            {
+                feasible_segments.clear();
+                
+                local_cloud->sort_point(new_term,this->max_rand_offset);
+
+                point_is_ok = connection_search(this->segment_list,new_term,d_threash);
+
+                if (point_is_ok) point_is_ok = check_collisions_and_fill_feasible_segments(this->segment_list,new_term,feasible_segments);
+
+                if (point_is_ok)
+                {
+                    // COST FUNCTION
+                    iconn = cost_fn->eval(this,cost_function_config,local_opt_config,\
+                                        feasible_segments,\
+                                        new_term);
+                    
+                    // No feasible point was found 
+                    if (iconn == NULL) point_is_ok = false;
+
+                }
+                if (!point_is_ok)
+                {
+                    tosses++;
+                    if (tosses > NTOSS)
+                    {
+                        d_threash *= FACTOR;
+                        tosses = 0;
+                    }
+
+                    // GIVE UP!
+                    if (d_threash < D_THREASH_LIMIT)
+                    {
+                        break;
+                    }   
+                }
+            }
+            
+            if (point_is_ok)
+            {
+                Segment *inew = build_segment(local_opt_config,iconn->id,new_term);
+                backtrack.push(inew);
+                delete new_term;
+
+                sucess = try_connect_pmj(cost_function_config,local_opt_config,pmj_point);
+                if (sucess)
+                {
+                    delete local_cloud;
+                    return sucess;
+                }
+            }
+        }
+        // Restore the network state by pruning the segments added in this step
+        if (!sucess)
+        {
+            counter_tries++;
+
+            // Use the backtrack stack to prune the segments in the reverse order that they were added
+            while (!backtrack.empty())
+            {
+                Segment *s = backtrack.top();
+                prune_segment(s);
+                backtrack.pop();
+            }
+            // Increase the number of points inside the region by 20%
+            num_points_inside_region += num_points_inside_region/5;
+
+            delete local_cloud;
+        }
+    }
+
+    return sucess;
+}
+
+bool CCO_Network::try_connect_pmj (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point)
+{
+    bool sucess = false;
+    bool point_is_ok = false;
+    uint32_t counter_tries = 0;
+    uint32_t K_term = this->num_terminals;
+    double d_threash = calc_dthreashold(R_PERF,K_term);     // (r_supp = R_PERF) in this case
+    
+    // Array of feasible segments to connect the new terminal
+    std::vector<Segment*> feasible_segments;
+
+    // Reference to the segment we are going to make the connection
+    Segment *iconn = NULL;
+
+    while (!point_is_ok)
+    {
+        // Reset the feasible segments list
+        feasible_segments.clear();
+
+        // Check the distance criterion for this point
+        point_is_ok = connection_search(this->segment_list,pmj_point,d_threash);
+
+        if (point_is_ok) point_is_ok = check_collisions_and_fill_feasible_segments(this->segment_list,pmj_point,feasible_segments);
+
+        if (point_is_ok)
+        {
+            // [COST FUNCTION]
+            iconn = cost_fn->eval(this,cost_function_config,local_opt_config,\
+                                feasible_segments,\
+                                pmj_point);
+            
+            // No feasible point was found 
+            if (iconn == NULL) point_is_ok = false;
+        }
+
+        // If the point does not attend the distance criterion or if there is a collision
+        // we need to choose another point
+        if (!point_is_ok)
+        {
+            fprintf(log_file,"[!] Reducing dthreash! Before = %g || Now = %g \n",\
+                        d_threash,d_threash*FACTOR);
+            d_threash *= FACTOR;
+            counter_tries++;
+
+            // GIVE UP
+            if (d_threash < D_THREASH_LIMIT)
+            {
+                return sucess;
+            }    
+        }
+        // The point is a valid one and we can eliminate it from the cloud
+        else
+        {
+
+        }
+    }
+
+    // Build the new segment of the tree
+    Segment *inew = build_segment(local_opt_config,iconn->id,pmj_point);
+
+    // [EVALUATE PMJ ACTIVATION]
+    // Step 1: Connect using normal CCO
+    sucess = evaluate_pmj_local_activation_time(inew,pmj_point,cost_function_config);
+    if (sucess) printf("\t\t[Local backtracking] PMJ point %u was connected in step 1!\n",pmj_point->id);
+    
+    // Step 3: Connect using normal CCO and region radius
+    if (!sucess)
+    {   
+        sucess = attempt_connect_using_region_radius(pmj_point,cost_function_config);
+        if (sucess) printf("\t\t[Local backtracking] PMJ point %u was connected in step 3!\n",pmj_point->id);
+    }
+
+    return sucess;
 }

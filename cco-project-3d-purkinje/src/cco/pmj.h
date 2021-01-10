@@ -14,7 +14,7 @@
 #include "../point/point.h"
 #include "../utils/utils.h"
 #include "../options/pmj_config.h"
-#include "../cost_function_library/cost_function.h"
+#include "../cost_function_library/custom_function.h"
 
 //class Segment;
 //class Point;

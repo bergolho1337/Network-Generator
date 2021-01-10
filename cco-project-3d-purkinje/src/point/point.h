@@ -27,6 +27,17 @@ public:
     void setCoordinate (const double pos[]) { this->x = pos[0]; this->y = pos[1]; this->z = pos[2]; }
     void setLAT (const double lat) { this->lat = lat; }
     void setActive (const bool is_active) { this->is_active = is_active; }
+    Point* copy () 
+    { 
+        Point *result = new Point(); 
+        result->id = this->id;
+        result->x = this->x; 
+        result->y = this->y; 
+        result->z = this->z; 
+        result->lat = this->lat; 
+        result->is_active = this->is_active; 
+        return result; 
+    }
     void print () { printf("id (x y z) [LAT] {Active} = %u (%g %g %g) [%g] {%d}\n",this->id,this->x,this->y,this->z,this->lat,(int)this->is_active); }
 };
 

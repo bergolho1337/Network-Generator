@@ -32,6 +32,7 @@ public:
     ~Cloud ();
     uint32_t sort_point (Point *p, const uint32_t rand_offset);
     Cloud* copy ();
+    Cloud* get_points_around_region (Point *pmj_point, const uint32_t num_points, const double region_radius);
     void concatenate (Cloud *input);
     void print ();
 };

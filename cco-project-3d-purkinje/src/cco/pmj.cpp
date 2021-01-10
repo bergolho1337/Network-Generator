@@ -47,6 +47,10 @@ PMJ::PMJ (PMJConfig *config)
 
         std::sort(this->points.begin(),this->points.end(),comparePoint);
 
+        for (uint32_t i = 0; i < this->points.size(); i++)
+            printf("PMJ %u -- LAT %g\n",this->points[i]->id,this->points[i]->lat);
+        exit(1);
+
         if (n < this->package_size) this->package_size = n;
         for (uint32_t i = 0; i < this->package_size; i++)
         {

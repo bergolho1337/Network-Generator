@@ -13,6 +13,7 @@
 
 #include <vector>
 #include <string>
+#include <stack>
 #include <algorithm>
 
 #include "../point/point.h"
@@ -23,7 +24,7 @@
 #include "../test/test.h"
 
 #include "../local_optimization_library/local_optimization.h"
-#include "../cost_function_library/cost_function.h"
+#include "../cost_function_library/custom_function.h"
 
 #include "cloud.h"
 #include "pmj.h"
@@ -125,12 +126,15 @@ private:
     bool attempt_pmj_connection (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
     bool attempt_connect_using_region_radius (Point *pmj_point, CostFunctionConfig *cost_function_config);
     bool attempt_connect_using_inverse (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, std::vector<Segment*> feasible_segments, Point *pmj_point);
+    bool connect_using_local_backtracking (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point);
     bool connect_remaining_active_pmjs (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
     bool connect_remaining_inactive_pmjs (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
     void prune_segment (Segment *inew);
     bool force_pmj_connection (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
     bool force_connection_to_closest_segment (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj);
     bool attempt_connect_using_local_backtracking (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point);
+    bool adjust_terminal_diameter (Segment *inew, Point *pmj_point);
+    bool try_connect_pmj (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point);
 };
 
 #endif

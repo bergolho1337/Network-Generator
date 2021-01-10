@@ -72,6 +72,27 @@ Cloud* Cloud::copy ()
     return result;
 }
 
+Cloud* Cloud::get_points_around_region (Point *pmj_point, const uint32_t num_points, const double region_radius)
+{
+    Cloud *result = new Cloud();
+    double r = region_radius;
+    while (result->points.size() < num_points)
+    {
+        for (uint32_t i = 0; i < this->points.size(); i++)
+        {
+            double dist = euclidean_norm(this->points[i]->x,this->points[i]->y,this->points[i]->z,\
+                                        pmj_point->x,pmj_point->y,pmj_point->z);
+            if (dist < r)
+            {
+                Point *p = this->points[i]->copy();
+                result->points.push_back(p);
+            }
+        }
+        r *= 1.2;
+    }
+    return result;
+}
+
 void Cloud::concatenate (Cloud *input)
 {
     uint32_t offset_points = this->points.size();

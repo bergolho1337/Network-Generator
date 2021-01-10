@@ -1,4 +1,5 @@
-set(SOURCE_FILES_COST_FUNCTION cost_function.h cost_function.cpp)
+set(SOURCE_FILES_COST_FUNCTION cost_function.h cost_function.cpp
+                            custom_function.h custom_function.cpp)
 
 ADD_LIBRARY(costfunction STATIC ${SOURCE_FILES_COST_FUNCTION})
 

@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Cloud-Generator/src/utils/utils.cpp
+utils.h
+/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Cloud-Generator/src/utils/utils.h
+
+/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Cloud-Generator/src/utils/utils.h
+cstdio
+-
+cstdlib
+-
+cstdbool
+-
+cstdint
+-
+cstring
+-
+cmath
+-
+vector
+-
+algorithm
+-
+

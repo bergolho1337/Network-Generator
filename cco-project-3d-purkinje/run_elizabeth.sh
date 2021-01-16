@@ -4,10 +4,9 @@
 # This script will generate and transform all the Purkinje networks defined in the INPUT_FOLDER. 
 # The output networks will be in the MonoAlg3D domain. 
 
-#SEEDS=( 1562002891 1562002894 1562005513 1562005553 1562006177 1562007596 1562008172 1562008424 1562009134 1562009769 )
-SEEDS=( 1562002891 1562002894 1562005513 1562005555 1562006177 )
+SEEDS=( 1562002891 1562002894 1562005513 1562005553 1562006177 1562007596 1562008172 1562008424 1562009134 1562009769 )
 # ========================================================================================================================
-# 1) MINIMIZE LENGTH (linking PMJ's at the end)
+# 1) MINIMIZE LENGTH (inactives+actives)
 # ========================================================================================================================
 PROGRAM_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/bin/Cco_3D"
 INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/inputs/03_PMJ_Linktries:20"

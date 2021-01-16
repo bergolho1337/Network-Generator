@@ -77,17 +77,14 @@ public:
 	void write_VTK (const char filename[]);
 	void write_pmj_config_file (const char filename[]);
 	void write_longest_segment (const int parents[], const int ref_index);
-	//void printterm ();
-    void error (const char msg[]);
+	void error (const char msg[]);
 	void depth_first_search ();
 	void breadth_first_search ();
-	//void dijkstra (int s);
 	// Inline
 	int get_total_nodes () { return total_nodes; }
 	int get_total_edges () { return total_edges; }
 	Node* get_list_nodes () { return list_nodes; }
 	Node* get_last_node () { return last_node; }
-	//double* get_dist () { return dist; }
 
 	void insert_node_graph (const double pos[]);
 	void insert_edge_graph (const int id_1, const int id_2);
@@ -99,11 +96,8 @@ public:
 private:
 	Node *list_nodes;			// Pointer to the list of Nodes
 	Node *last_node;			// Pointer to the last Node of the list
-	int total_nodes;			// Total number of Nodes
-	int total_edges;			// Total number of Edges
-	//double *dist;				// Distance from the source node to all the others
-
-	//bool is_duplicate (const double pos[]);
+	uint32_t total_nodes;			// Total number of Nodes
+	uint32_t total_edges;			// Total number of Edges
 
 	void dfs (Node *u, vector<int> &dfs_num);
 	void free_list_nodes ();

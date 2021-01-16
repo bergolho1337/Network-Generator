@@ -27,6 +27,7 @@ public:
     uint32_t max_connection_tries;
     uint32_t connection_rate;
     uint32_t package_head;
+    uint32_t cur_package;
     double region_radius;
     double lat_error_tolerance;
     std::string location_filename;
@@ -37,6 +38,7 @@ public:
     std::vector<Point*> points;
     std::list<uint32_t> package;
     std::vector<uint32_t> penalty;
+    std::vector< std::vector<Point*> > packages;
     CostFunction *cost_fn;
 public:
     PMJ ();
@@ -45,6 +47,13 @@ public:
     void concatenate (PMJ *input);
     PMJ* copy ();
     void print ();
+private:
+    void initialize_parameters ();
+    void initialize_parameters (PMJConfig *config);
+    void initialize_arrays (PMJConfig *config);
+    void initialize_points (PMJConfig *config);
+    void initialize_packages ();
+    void initialize_packages_2 ();
 };
 
 bool comparePoint (Point *a, Point *b);

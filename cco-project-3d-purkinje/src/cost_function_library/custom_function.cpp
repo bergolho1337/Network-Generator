@@ -37,11 +37,28 @@ bool MinimizeCustomFunction::check_restrictions (CCO_Network *the_network, Segme
            !has_angle_requirement;
 }
 
+bool MinimizeCustomFunction::check_restrictions_2 (CCO_Network *the_network, Segment *iconn, Segment *ibiff, Segment *inew)
+{
+    // Check bifurcation size and angle
+    //bool has_angle_requirement = check_angle_restriction(iconn,inew);
+    
+    // Check segment sizes
+    bool has_minimum_segment_size = check_minimum_segment_size(iconn,ibiff,inew);
+    bool has_maximum_segment_size = check_maximum_segment_size(iconn,ibiff,inew);
+
+    // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn'
+    //bool has_segment_segment_collision = check_collision(the_network,iconn,ibiff,inew);
+    //bool has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces); 
+
+    return !has_minimum_segment_size ||\
+           !has_maximum_segment_size;
+}
+
 Segment* MinimizeCustomFunction::eval (CCO_Network *the_network,\
                         CostFunctionConfig *cost_function_config,\
                         LocalOptimizationConfig *local_opt_config,\
                         std::vector<Segment*> feasible_segments,\
-                        Point *new_term)
+                        Point *new_term, const bool is_pmj)
 {
     FILE *log_file = the_network->log_file;
 
@@ -74,7 +91,24 @@ Segment* MinimizeCustomFunction::eval (CCO_Network *the_network,\
             local_opt_config->initialize_best_position_as_middle_point(best_pos,ori_pos);
 
             // [EVALUATE COST FUNCTION]
+            // Min.Length (everything)
             double eval = calc_custom_function(the_network);
+
+            // Min.Length (terminals) || Min.Error (PMJ's)
+            /*
+            double eval;
+            if (is_pmj)
+            {
+                double aprox_lat = inew->calc_terminal_local_activation_time() + the_network->lat_offset;
+                double ref_lat = new_term->lat;
+                double error = fabs(ref_lat-aprox_lat);
+                eval = error;
+            }
+            else
+            {
+                eval = calc_custom_function(the_network);
+            }
+            */
 
             // [RESTRICTION SECTION]
             bool point_is_not_ok = check_restrictions(the_network,iconn,ibiff,inew);
@@ -87,13 +121,6 @@ Segment* MinimizeCustomFunction::eval (CCO_Network *the_network,\
                 // The best position of the best segment will be stored inside the 
                 // 'local_optimization' structure
                 memcpy(local_opt_config->best_pos,best_pos,sizeof(double)*3);
-
-                //printf("[cost_function] Best segment = %d -- Eval = %g -- Best position = (%g,%g,%g)\n",\
-                                best->id,\
-                                minimum_eval,\
-                                local_opt_config->best_pos[0],\
-                                local_opt_config->best_pos[1],\
-                                local_opt_config->best_pos[2]);
             }
 
             // 2) Now, call the local optimization function and fill the 'test_positions' array
@@ -111,10 +138,26 @@ Segment* MinimizeCustomFunction::eval (CCO_Network *the_network,\
                 the_network->recalculate_length();
 
                 // [EVALUATE COST FUNCTION]
-                double eval = calc_custom_function(the_network);
+                // Min.Length (everything)
+                eval = calc_custom_function(the_network);
+                
+                // Min.Length (terminals) || Min.Error (PMJ's)
+                /*
+                if (is_pmj)
+                {
+                    double aprox_lat = inew->calc_terminal_local_activation_time() + the_network->lat_offset;
+                    double ref_lat = new_term->lat;
+                    double error = fabs(ref_lat-aprox_lat);
+                    eval = error;
+                }
+                else
+                {
+                    eval = calc_custom_function(the_network);
+                }
+                */
 
                 // [RESTRICTION SECTION]
-                bool point_is_not_ok = check_restrictions(the_network,iconn,ibiff,inew);
+                point_is_not_ok = check_restrictions(the_network,iconn,ibiff,inew);
 
                 if (eval < minimum_eval && !point_is_not_ok)
                 {
@@ -123,13 +166,6 @@ Segment* MinimizeCustomFunction::eval (CCO_Network *the_network,\
 
                     // The best position of the best segment will be stored inside the 'local_optimization' structure
                     local_opt_config->update_bifurcation_position(test_positions[j]);
-
-                    //printf("[cost_function] Best segment = %d -- Eval = %g -- Best position = (%g,%g,%g)\n",\
-                                    best->id,\
-                                    minimum_eval,\
-                                    local_opt_config->best_pos[0],\
-                                    local_opt_config->best_pos[1],\
-                                    local_opt_config->best_pos[2]);
                 }
             }
 
@@ -291,11 +327,28 @@ bool MaximizeCustomFunction::check_restrictions (CCO_Network *the_network, Segme
            !has_angle_requirement;
 }
 
+bool MaximizeCustomFunction::check_restrictions_2 (CCO_Network *the_network, Segment *iconn, Segment *ibiff, Segment *inew)
+{
+    // Check bifurcation size and angle
+    //bool has_angle_requirement = check_angle_restriction(iconn,inew);
+    
+    // Check segment sizes
+    bool has_minimum_segment_size = check_minimum_segment_size(iconn,ibiff,inew);
+    bool has_maximum_segment_size = check_maximum_segment_size(iconn,ibiff,inew);
+
+    // Collision detection: Check if the new segment 'inew' collides with any other segment from the network a part from the 'iconn'
+    //bool has_segment_segment_collision = check_collision(the_network,iconn,ibiff,inew);
+    //bool has_segment_triangle_collision = has_intersect_obstacle(inew,obstacle_faces); 
+
+    return !has_minimum_segment_size ||\
+           !has_maximum_segment_size;
+}
+
 Segment* MaximizeCustomFunction::eval (CCO_Network *the_network,\
                         CostFunctionConfig *cost_function_config,\
                         LocalOptimizationConfig *local_opt_config,\
                         std::vector<Segment*> feasible_segments,\
-                        Point *new_term)
+                        Point *new_term, const bool is_pmj)
 {
     FILE *log_file = the_network->log_file;
 

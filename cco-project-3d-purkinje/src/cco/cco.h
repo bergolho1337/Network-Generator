@@ -88,6 +88,8 @@ private:
     double max_lat_error;
     double min_max_aprox_lat[2];
     double min_max_ref_lat[2];
+    double min_term_lat;
+    double max_term_lat;
 
 public:
     CCO_Network ();
@@ -135,6 +137,8 @@ private:
     bool attempt_connect_using_local_backtracking (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point);
     bool adjust_terminal_diameter (Segment *inew, Point *pmj_point);
     bool try_connect_pmj (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point);
+    bool connect_active_pmjs (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
+    void update_min_max_terminal_lat ();
 };
 
 #endif

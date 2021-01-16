@@ -12,21 +12,10 @@ Graph::Graph (const char filename[])
 {
     last_node = NULL;
     list_nodes = NULL;
+    total_nodes = 0;
+    total_edges = 0;
 
-    // Test file format
-    bool is_vtk = check_file_extension(filename,"vtk");
-    bool is_txt = check_file_extension(filename,"txt");
-    if (!is_vtk && !is_txt)
-    {
-        fprintf(stderr,"[-] ERROR! Input file must be in '.vtk' or '.txt' file format\n");
-        exit(EXIT_FAILURE);
-    }
-
-    if (is_vtk)
-        read_graph_from_vtk(filename);
-    else if (is_txt)
-        read_graph_from_txt(filename);
-    
+    read_graph_from_vtk(filename);
 }
 
 void Graph::read_graph_from_txt (const char filename[])
@@ -88,7 +77,6 @@ void Graph::read_graph_from_vtk (const char filename[])
         fscanf(file,"%lf %lf %lf",&pos[0],&pos[1],&pos[2]);
         insert_node_graph(pos);
     }
-
     // Find the LINES section
     while (fscanf(file,"%s",str) != EOF)
     {
@@ -167,10 +155,8 @@ Graph::~Graph ()
 
 void Graph::insert_node_graph (const double pos[])
 {
-    // TODO: Add a check for duplicates ...
-
     Node *node = new Node(total_nodes,pos);
-
+    
     // First node of the list
     if (last_node == NULL)
     {
@@ -185,7 +171,6 @@ void Graph::insert_node_graph (const double pos[])
         last_node = node;
     }
     total_nodes++;
-
 }
 
 void Graph::insert_edge_graph (const int id_1, const int id_2)

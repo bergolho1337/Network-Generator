@@ -47,6 +47,7 @@ void write_electric_info_to_file (std::string filename,\
     fprintf(file,"[INFO] Aproximation --> || min.LAT = %.2lf ms || max.LAT = %.2lf ms || max.ERROR = %.2lf ms\n",min_aprox_lat,max_aprox_lat,max_lat_error);
     fprintf(file,"[INFO] || RMSE = %.2lf ms || RRMSE = %.2lf %% ||\n",rmse,rrmse);
     fprintf(file,"[INFO] || Epsilon 2ms = %.2lf %% || Epsilon 5ms = %.2lf ||\n",epsilon_2ms,epsilon_5ms);
+    fprintf(file,"%.2lf\t%.2lf\t%.2lf\t%.2lf\t%.2lf\t%.2lf\t%.2lf\n",min_aprox_lat,max_aprox_lat,max_lat_error,rmse,rrmse,epsilon_2ms,epsilon_5ms);
     fclose(file);
 }
 

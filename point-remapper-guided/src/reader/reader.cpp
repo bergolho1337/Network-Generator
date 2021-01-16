@@ -4,8 +4,8 @@ Reader::Reader (int argc, char *argv[])
 {
     char *network_filename = argv[1];
     this->the_network = new Graph(network_filename);
-    //this->the_network->print();
-    this->the_network->print_terminals();
+    this->the_network->print();
+    //this->the_network->print_terminals();
 
     char *cloud_points_filename = argv[2];
     this->the_cloud = new Cloud_Point(cloud_points_filename);

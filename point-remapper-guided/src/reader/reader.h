@@ -16,8 +16,8 @@ using namespace std;
 //#define RADIUS 4.0
 //#define SCALE_RATIO 0.001
 
-#define RADIUS 0.01
-#define SCALE_RATIO 0.25
+#define RADIUS 0.002
+#define SCALE_RATIO 1.0
 
 class Reader
 {

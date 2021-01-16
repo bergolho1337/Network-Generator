@@ -2,75 +2,23 @@
 
 PMJ::PMJ ()
 {
-    this->total_num_connected = 0;
-    this->package_size = 10;
-    this->package_head = 0;
-    this->max_connection_tries = 100;
-    this->connection_rate = __UINT32_MAX__;
-    this->region_radius = 0.002;
-    this->lat_error_tolerance = 2.0;
-    this->location_filename = "";
-    this->cost_fn = new MaximizeCustomFunction;
+    initialize_parameters();
 }
 
 PMJ::PMJ (PMJConfig *config)
 {
     if (config->using_pmj)
     {
-        this->total_num_connected = 0;
-        this->package_size = 10;
-        this->package_head = 0;
-        this->max_connection_tries = config->max_connection_tries;
-        this->connection_rate = config->connection_rate;
-        this->region_radius = config->region_radius;
-        this->lat_error_tolerance = config->lat_error_tolerance;
-        this->location_filename = config->location_filename;
-        this->cost_fn = new MaximizeCustomFunction;
-
-        bool sucess = read_points_from_vtk(this->location_filename.c_str(),this->points);
-        if (sucess) 
-        {
-            printf("[pmj] PMJ location file was sucessfully loaded from: '%s'!\n",this->location_filename.c_str());
-        }
-        else
-        {
-            fprintf(stderr,"[-] ERROR! Cannot read PMJ location file: '%s'!\n",config->location_filename.c_str());
-            exit(EXIT_FAILURE);
-        }
-
-        uint32_t n = this->points.size();
-        for (uint32_t i = 0; i < n; i++) this->reference.push_back(this->points[i]->lat);
-        this->connected.assign(n,false);
-        this->error.assign(n,__DBL_MAX__);
-        this->aprox.assign(n,0);
-        this->penalty.assign(n,0);
-
-        std::sort(this->points.begin(),this->points.end(),comparePoint);
-
-        for (uint32_t i = 0; i < this->points.size(); i++)
-            printf("PMJ %u -- LAT %g\n",this->points[i]->id,this->points[i]->lat);
-        exit(1);
-
-        if (n < this->package_size) this->package_size = n;
-        for (uint32_t i = 0; i < this->package_size; i++)
-        {
-            this->package.push_back(i);
-
-            this->package_head++;
-        }
+        initialize_parameters(config);
+        initialize_points(config);
+        initialize_arrays(config);
+        //initialize_packages();
+        initialize_packages_2();
     }
     else
     {
         printf("[pmj] No PMJ configuration provided\n");
-        this->total_num_connected = 0;
-        this->package_size = 10;
-        this->package_head = 0;
-        this->max_connection_tries = 100;
-        this->connection_rate = __UINT32_MAX__;
-        this->region_radius = 0.002;
-        this->lat_error_tolerance = 2.0;
-        this->location_filename = "";
-        this->cost_fn = new MaximizeCustomFunction;
+        initialize_parameters();
     }
     
     // DEBUG
@@ -83,6 +31,92 @@ PMJ::~PMJ ()
         delete this->cost_fn;
     for (uint32_t i = 0; i < this->points.size(); i++)
         delete this->points[i];
+}
+
+void PMJ::initialize_parameters ()
+{
+    this->total_num_connected = 0;
+    this->package_size = 10;
+    this->package_head = 0;
+    this->cur_package = 0;
+    this->max_connection_tries = 100;
+    this->connection_rate = __UINT32_MAX__;
+    this->region_radius = 0.002;
+    this->lat_error_tolerance = 2.0;
+    this->location_filename = "";
+    this->cost_fn = new MaximizeCustomFunction;
+}
+
+void PMJ::initialize_parameters (PMJConfig *config)
+{
+    this->total_num_connected = 0;
+    this->package_size = 10;
+    this->package_head = 0;
+    this->cur_package = 0;
+    this->max_connection_tries = config->max_connection_tries;
+    this->connection_rate = config->connection_rate;
+    this->region_radius = config->region_radius;
+    this->lat_error_tolerance = config->lat_error_tolerance;
+    this->location_filename = config->location_filename;
+    this->cost_fn = new MaximizeCustomFunction;
+}
+
+void PMJ::initialize_arrays (PMJConfig *config)
+{
+    uint32_t n = this->points.size();
+    for (uint32_t i = 0; i < n; i++) this->reference.push_back(this->points[i]->lat);
+    this->connected.assign(n,false);
+    this->error.assign(n,__DBL_MAX__);
+    this->aprox.assign(n,0);
+    this->penalty.assign(n,0);
+}
+
+void PMJ::initialize_points (PMJConfig *config)
+{
+    bool sucess = read_points_from_vtk(this->location_filename.c_str(),this->points);
+    if (sucess) 
+    {
+        printf("[pmj] PMJ location file was sucessfully loaded from: '%s'!\n",this->location_filename.c_str());
+    }
+    else
+    {
+        fprintf(stderr,"[-] ERROR! Cannot read PMJ location file: '%s'!\n",config->location_filename.c_str());
+        exit(EXIT_FAILURE);
+    }
+}
+
+void PMJ::initialize_packages ()
+{
+    this->packages.assign(this->package_size,std::vector<Point*>());
+    std::sort(this->points.begin(),this->points.end(),comparePoint);
+
+    double offset = (this->points.back()->lat-this->points.front()->lat) / (double)this->package_size;
+    double base = this->points.front()->lat;
+    for (uint32_t i = 0; i < this->package_size; i++)
+    {
+        double min_value = base + i*offset;
+        double max_value = min_value + offset + 1.0e-8;
+
+        uint32_t counter = 0;
+        for (uint32_t j = 0; j < this->points.size(); j++)
+        {
+            double value = this->points[j]->lat;
+            if (value >= min_value && value <= max_value)
+                this->packages[i].push_back(this->points[j]);
+        }
+    }
+}
+
+void PMJ::initialize_packages_2 ()
+{
+    std::sort(this->points.begin(),this->points.end(),comparePoint);
+
+    if (this->points.size() < this->package_size) this->package_size = this->points.size();
+    for (uint32_t i = 0; i < this->package_size; i++)
+    {
+        this->package.push_back(i);
+        this->package_head++;
+    }
 }
 
 void PMJ::concatenate (PMJ *input)

@@ -8,6 +8,7 @@ Cloud::Cloud ()
 
 Cloud::Cloud (CloudConfig *config)
 {
+    this->cur_index = 0;
     this->filename = config->filename;
     bool sucess = read_points_from_vtk(config->filename.c_str(),this->points);
     if (sucess) 
@@ -20,8 +21,11 @@ Cloud::Cloud (CloudConfig *config)
         exit(EXIT_FAILURE);
     }
     this->connected.assign(this->points.size(),false);
-    this->cur_index = 0;
-
+    this->aprox.assign(this->points.size(),__DBL_MAX__);
+    this->error.assign(this->points.size(),__DBL_MIN__);
+    this->ref.assign(this->points.size(),0);
+    for (uint32_t i = 0; i < this->points.size(); i++) this->ref[i] = this->points[i]->lat;
+    
     //print();
 }
 
@@ -35,8 +39,10 @@ uint32_t Cloud::sort_point (Point *p, const uint32_t rand_offset)
     uint32_t selected_index = this->cur_index;
     
     // Get the current cloud point data
+    uint32_t id;
     bool is_active;
     double pos[3], ref_lat;
+    id = selected_index;
     pos[0] = this->points[selected_index]->x;
     pos[1] = this->points[selected_index]->y;
     pos[2] = this->points[selected_index]->z;
@@ -44,6 +50,7 @@ uint32_t Cloud::sort_point (Point *p, const uint32_t rand_offset)
     is_active = this->points[selected_index]->is_active;
 
     // Set the point data
+    p->setId(id);
     p->setCoordinate(pos);
     p->setLAT(ref_lat);
     p->setActive(is_active);
@@ -68,6 +75,9 @@ Cloud* Cloud::copy ()
     {
         result->points.push_back(this->points[i]);
         result->connected.push_back(this->connected[i]);
+        result->error.push_back(this->error[i]);
+        result->aprox.push_back(this->aprox[i]);
+        result->ref.push_back(this->ref[i]);
     }
     return result;
 }
@@ -100,11 +110,17 @@ void Cloud::concatenate (Cloud *input)
     {
         Point *p = new Point(input->points[i]);
         bool connected = input->connected[i];
+        double error = input->error[i];
+        double aprox = input->aprox[i];
+        double ref = input->ref[i];
 
         p->id += offset_points;
         
         this->points.push_back(p);
         this->connected.push_back(connected);
+        this->error.push_back(error);
+        this->aprox.push_back(aprox);
+        this->ref.push_back(ref);
     }
 }
 
@@ -114,4 +130,6 @@ void Cloud::print ()
     printf("[cloud] Number of points: %u\n",this->points.size());
     for (uint32_t i = 0; i < this->points.size(); i++)
         this->points[i]->print();
+    for (uint32_t i = 0; i < this->points.size(); i++)
+        printf("Point %u -- [Ref: %g] [Aprox: %g] [Error:%g]\n",i,ref[i],aprox[i],error[i]);
 }

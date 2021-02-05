@@ -92,10 +92,9 @@ Segment* MinimizeCustomFunction::eval (CCO_Network *the_network,\
 
             // [EVALUATE COST FUNCTION]
             // Min.Length (everything)
-            double eval = calc_custom_function(the_network);
+            //double eval = calc_custom_function(the_network);
 
             // Min.Length (terminals) || Min.Error (PMJ's)
-            /*
             double eval;
             if (is_pmj)
             {
@@ -108,7 +107,6 @@ Segment* MinimizeCustomFunction::eval (CCO_Network *the_network,\
             {
                 eval = calc_custom_function(the_network);
             }
-            */
 
             // [RESTRICTION SECTION]
             bool point_is_not_ok = check_restrictions(the_network,iconn,ibiff,inew);
@@ -139,10 +137,9 @@ Segment* MinimizeCustomFunction::eval (CCO_Network *the_network,\
 
                 // [EVALUATE COST FUNCTION]
                 // Min.Length (everything)
-                eval = calc_custom_function(the_network);
+                //eval = calc_custom_function(the_network);
                 
                 // Min.Length (terminals) || Min.Error (PMJ's)
-                /*
                 if (is_pmj)
                 {
                     double aprox_lat = inew->calc_terminal_local_activation_time() + the_network->lat_offset;
@@ -154,7 +151,6 @@ Segment* MinimizeCustomFunction::eval (CCO_Network *the_network,\
                 {
                     eval = calc_custom_function(the_network);
                 }
-                */
 
                 // [RESTRICTION SECTION]
                 point_is_not_ok = check_restrictions(the_network,iconn,ibiff,inew);

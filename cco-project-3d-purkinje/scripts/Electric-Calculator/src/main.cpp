@@ -29,10 +29,10 @@ int main (int argc, char *argv[])
     Graph *aprox_network = new Graph(aprox_reader->the_points,aprox_reader->the_lines);    
 
     ref_network->compute_errors(aprox_network,pmj_filename);
-    //ref_network->write_terminals("outputs/reference_terminals.vtk");
+    ref_network->write_terminals("outputs/reference_terminals_2.vtk");
     //ref_network->write_LAT("outputs/reference_LAT.vtk");
     
-    aprox_network->write_LAT(output_filename.c_str());
+    //aprox_network->write_LAT(output_filename.c_str());
 
     return 0;
 }

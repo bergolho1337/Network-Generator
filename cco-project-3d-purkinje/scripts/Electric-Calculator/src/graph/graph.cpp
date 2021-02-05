@@ -238,6 +238,7 @@ void Graph::compute_errors (Graph *input, std::string pmj_filename)
     this->fill_terminal_indexes(pmj_points,true);
     input->fill_terminal_indexes(pmj_points,false);
 
+/*
     uint32_t ref_min_lat_id, ref_max_lat_id;
     double ref_min_lat, ref_max_lat;
     uint32_t aprox_min_lat_id, aprox_max_lat_id;
@@ -260,7 +261,7 @@ void Graph::compute_errors (Graph *input, std::string pmj_filename)
     double ref_dist_max_lat = this->dist[ref_max_lat_id];
     double aprox_dist_min_lat = input->dist[aprox_min_lat_id];
     double aprox_dist_max_lat = input->dist[aprox_max_lat_id];
-
+*/
     //printf("========================================================================================================================================================================\n");
     /*
     printf("Max error PMJ's = %g ms\n",max_error);
@@ -271,23 +272,23 @@ void Graph::compute_errors (Graph *input, std::string pmj_filename)
     printf("[reference] Min. LAT PMJ's = %g || Max. LAT PMJ's = %g || Min. LAT cell id = %u || Max. LAT cell id = %u || Min. LAT dist = %g || Max. LAT dist = %g\n",ref_min_lat,ref_max_lat,ref_min_lat_id,ref_max_lat_id,ref_dist_min_lat,ref_dist_max_lat);
     printf("[aproximation] Min. LAT PMJ's = %g || Max. LAT PMJ's = %g || Min. LAT cell id = %u || Max. LAT cell id = %u || Min. LAT dist = %g || Max. LAT dist = %g\n",aprox_min_lat,aprox_max_lat,aprox_min_lat_id,aprox_max_lat_id,aprox_dist_min_lat,aprox_dist_max_lat);
     */
-    printf("%.2lf\t%.2lf\t%.2lf\t%.2lf\t%.2lf\t%.2lf\t%.2lf\n",aprox_min_lat,aprox_max_lat,max_error,rmse,rrmse*100.0,percentage_2ms,percentage_5ms);
+    //printf("%.2lf\t%.2lf\t%.2lf\t%.2lf\t%.2lf\t%.2lf\t%.2lf\n",aprox_min_lat,aprox_max_lat,max_error,rmse,rrmse*100.0,percentage_2ms,percentage_5ms);
     //printf("========================================================================================================================================================================\n");
 
     // [GLOBAL] Recalculate the propagation velocity of the aproximation Purkinje network using proportion calculus
-    double new_cv = aprox_dist_max_lat / ref_max_lat;
-    double new_diameter = calculate_diameter(new_cv);
-    input->compute_activation_times(new_cv);
+    //double new_cv = aprox_dist_max_lat / ref_max_lat;
+    //double new_diameter = calculate_diameter(new_cv);
+    //input->compute_activation_times(new_cv);
     //printf("New CV = %g um/mm\n",new_cv);
     //printf("New diameter = %g um\n",new_diameter);
     //printf("\n");
-
+/*
     std::vector<double> aprox_lat_2 = input->lat;
     compute_rmse_rrmse_maxerror(ref_lat,aprox_lat_2,ref_term_ids,aprox_term_ids,rmse,rrmse,max_error);
     compute_min_max_lat(aprox_lat_2,aprox_term_ids,aprox_min_lat,aprox_max_lat,aprox_min_lat_id,aprox_max_lat_id);
     compute_epsilon_percentage(ref_lat,aprox_lat_2,ref_term_ids,aprox_term_ids,2,percentage_2ms);
     compute_epsilon_percentage(ref_lat,aprox_lat_2,ref_term_ids,aprox_term_ids,5,percentage_5ms);
-
+*/
     //printf("========================================================================================================================================================================\n");
     /*
     printf("Max error PMJ's = %g ms\n",max_error);
@@ -409,6 +410,7 @@ double adjust_propagation_velocity (const double ref_cv, const double ref_max_la
 void Graph::write_terminals (const char filename[])
 {
     FILE *file = fopen(filename,"w+");
+    /*
     fprintf(file,"# vtk DataFile Version 4.1\n");
     fprintf(file,"vtk output\n");
     fprintf(file,"ASCII\n");
@@ -432,6 +434,13 @@ void Graph::write_terminals (const char filename[])
     {
         uint32_t index = this->terminals_indexes[i];
         fprintf(file,"%g\n",this->lat[index]);
+    }
+    */
+
+    for (uint32_t i = 0; i < this->terminals_indexes.size(); i++)
+    {
+        uint32_t index = this->terminals_indexes[i];
+        fprintf(file,"%g %g %g %g\n",this->list_nodes[index].x,this->list_nodes[index].y,this->list_nodes[index].z,this->lat[index]);
     }
 
     fclose(file);
@@ -468,4 +477,7 @@ void Graph::write_LAT (const char filename[])
         fprintf(file,"%g\n",this->lat[i]);
     }
     fclose(file);
+
+    for (uint32_t i = 0; i < this->terminals_indexes.size(); i++)
+        printf("Active PMJ = %u || LAT = %g\n",this->terminals_indexes[i],this->lat[this->terminals_indexes[i]]);
 }

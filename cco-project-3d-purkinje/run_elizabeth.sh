@@ -4,16 +4,17 @@
 # This script will generate and transform all the Purkinje networks defined in the INPUT_FOLDER. 
 # The output networks will be in the MonoAlg3D domain. 
 
-SEEDS=( 1562002891 1562002894 1562005513 1562005553 1562006177 1562007596 1562008172 1562008424 1562009134 1562009769 )
+#SEEDS=( 1562002891 1562002894 1562005513 1562005553 1562006177 1562007596 1562008172 1562008424 1562009134 1562009769 )
+SEEDS=( 1562002891 1562002894 1562005513 1562005553 1562006177 1562008172 )
 # ========================================================================================================================
 # 1) MINIMIZE LENGTH (inactives+actives)
 # ========================================================================================================================
 PROGRAM_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/bin/Cco_3D"
-INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/inputs/03_PMJ_Linktries:20"
-OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/outputs/03_PMJ_Linktries:20"
+INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/inputs/"
+OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/outputs/Patient-Specific-Experiment/Homogenous-Cloud-Min.Length-Min.Error"
 PURKINJE_MERGER_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Purkinje-Merger"
-PURKINJE_MERGER_INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Purkinje-Merger/inputs/04_PMJ_Linkrate:40"
-PURKINJE_MERGER_OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Purkinje-Merger/outputs/04_PMJ_Linkrate:40"
+PURKINJE_MERGER_INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Purkinje-Merger/inputs"
+PURKINJE_MERGER_OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Purkinje-Merger/outputs"
 ELECTRIC_ERROR_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Electric-Calculator"
 ELECTRIC_ERROR_INPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Electric-Calculator/inputs/PMJ_Linkrate:40"
 ELECTRIC_ERROR_OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-purkinje/scripts/Electric-Calculator/outputs/PMJ_Linkrate:40"
@@ -30,10 +31,10 @@ ELECTRIC_ERROR_OUTPUT_PATH="/home/berg/Github/Network-Generator/cco-project-3d-p
 #done
 
 # Copying
-#for SEED in "${SEEDS[@]}"; do
-#    cp ${OUTPUT_PATH}/LV_seed:${SEED}/tree_nterm_650.vtk ${PURKINJE_MERGER_INPUT_PATH}/LV/LV_seed:${SEED}.vtk
-#    cp ${OUTPUT_PATH}/RV_seed:${SEED}/tree_nterm_192.vtk ${PURKINJE_MERGER_INPUT_PATH}/RV/RV_seed:${SEED}.vtk
-#done
+for SEED in "${SEEDS[@]}"; do
+    cp ${OUTPUT_PATH}/test_LV__seed:${SEED}_homogenous_min:length+error/tree_nterm_650.vtk ${PURKINJE_MERGER_INPUT_PATH}/LV_seed:${SEED}.vtk
+    cp ${OUTPUT_PATH}/test_RV__seed:${SEED}_homogenous_min:length+error/tree_nterm_352.vtk ${PURKINJE_MERGER_INPUT_PATH}/RV_seed:${SEED}.vtk
+done
 
 # Merging
 #for SEED in "${SEEDS[@]}"; do

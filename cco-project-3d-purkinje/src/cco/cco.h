@@ -123,7 +123,8 @@ private:
     void rescale_root (Segment *iroot);
     void rescale_until_root (Segment *ipar, Segment *ipar_left, Segment *ipar_right);
     bool generate_terminal_using_cloud_points (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
-    bool generate_terminal_using_pmj_locations (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point, const bool evaluate);
+    bool generate_terminal_using_point (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point, const bool evaluate);
+    bool generate_terminal (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
     bool evaluate_pmj_local_activation_time (Segment *inew, Point *pmj_point, CostFunctionConfig *cost_function_config);
     bool attempt_pmj_connection (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
     bool attempt_connect_using_region_radius (Point *pmj_point, CostFunctionConfig *cost_function_config);
@@ -138,7 +139,9 @@ private:
     bool adjust_terminal_diameter (Segment *inew, Point *pmj_point);
     bool try_connect_pmj (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config, Point *pmj_point);
     bool connect_active_pmjs (CostFunctionConfig *cost_function_config, LocalOptimizationConfig *local_opt_config);
+    bool check_active_pmjs_connection ();
     void update_min_max_terminal_lat ();
+
 };
 
 #endif

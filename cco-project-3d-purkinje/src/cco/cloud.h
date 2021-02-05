@@ -26,6 +26,9 @@ public:
     uint32_t cur_index;
     std::vector<Point*> points;
     std::vector<bool> connected;
+    std::vector<double> error;
+    std::vector<double> ref;
+    std::vector<double> aprox;
 public:
     Cloud ();
     Cloud (CloudConfig *config);
